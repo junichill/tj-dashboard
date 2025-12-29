@@ -1,4 +1,4 @@
-html, body {
+html, body { 
   margin: 0;
   padding: 0;
   width: 100%;
@@ -17,52 +17,65 @@ html, body {
 
 /* 左側: 時計・日付・天気 */
 #left-panel {
-  width: 50%; /* 横幅 2/5 */
+  width: 50%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-left: 50px;
+  align-items: center;
+  padding: 0 20px;
   box-sizing: border-box;
 }
 
 #clock.tick {
-    font-size: 120px;  /* 大きく */
+    font-size: 15vw;       /* 画面幅に応じて自動調整 */
     font-weight: bold;
     color: white;
+    line-height: 1;        /* Flipカード内の縦中央寄せ */
+    letter-spacing: 0.05em; /* 文字間隔調整 */
+    width: 100%;           /* 左パネル幅に合わせる */
+    text-align: center;
+}
+
+/* Flip 内部カードのサイズ調整 */
+.tick .flip-unit {
+    width: auto;
+    height: auto;
 }
 
 #date {
-  font-size: 28px;
-  margin-top: 10px;
+  font-size: 3vw;       /* 左パネル幅に応じて小さめ */
+  margin-top: 1vh;
   text-align: right;
+  width: 100%;
 }
 
 #weather {
-  font-size: 28px;
-  margin-top: 10px;
+  font-size: 3vw;
+  margin-top: 1vh;
   text-align: left;
+  width: 100%;
 }
 
 /* 右側: ニュースカード */
 #right-panel {
-  width: 50%; /* 横幅 3/5 */
+  width: 50%;
   background: url('news-bg.png') center/cover no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px; /* 余白を増やす */
+  padding: 40px;
   box-sizing: border-box;
 }
 
 #news-card {
-  width: 90%;      /* 横幅を少し小さく */
-  height: 80%;     /* 高さも少し小さく */
+  width: 90%;
+  height: 80%;
   background: rgba(0,0,0,0.6);
   border-radius: 15px;
   overflow: hidden;
   position: relative;
-  margin: auto;    /* 中央寄せ */
-  padding: 20px;   /* 内側の余白 */
+  margin: auto;
+  padding: 20px;
   box-sizing: border-box;
 }
 
@@ -73,7 +86,7 @@ html, body {
   right: 20px;
   opacity: 0;
   transition: opacity 1s ease-in-out;
-  font-size: 24px; /* 本文少し小さめ */
+  font-size: 24px;
   line-height: 1.4;
 }
 
@@ -82,7 +95,7 @@ html, body {
 }
 
 .news-title {
-  font-size: 46px;          /* タイトル大きく */
+  font-size: 46px;
   font-weight: bold;
   color: white;
   text-decoration: none;
@@ -90,13 +103,13 @@ html, body {
 }
 
 .news-pubdate {
-  font-size: 14px;          /* 日時小さく */
+  font-size: 14px;
   color: #ccc;
   text-align: right;
   margin-top: 5px;
 }
 
 .news-description {
-  font-size: 20px;          /* 本文小さく */
+  font-size: 20px;
   margin-top: 5px;
 }
