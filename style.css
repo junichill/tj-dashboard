@@ -1,17 +1,15 @@
-/* 全体 */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  background-color: #000;
+  background: #000;
   color: #fff;
-  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Segoe UI", system-ui, sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* ダッシュボード中央配置 */
 #dashboard {
   display: flex;
   flex-direction: column;
@@ -22,21 +20,37 @@ html, body {
   box-sizing: border-box;
 }
 
-/* 時計 */
 #clock {
   font-size: 160px;
   font-weight: 900;
   text-align: center;
-  margin-bottom: 60px;
+  margin-bottom: 50px;
   color: #fff;
   text-shadow: 0 0 15px #fff, 0 0 30px #fff, 0 0 45px #fff;
+  perspective: 1000px;
 }
 
-/* ニュースリスト */
-#news {
+#panels {
   width: 100%;
+  max-width: 1000px;
+  position: relative;
+  height: 400px;
 }
 
+.panel {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.panel.active {
+  opacity: 1;
+}
+
+/* ニュースカード */
 #news-list {
   list-style: none;
   padding: 0;
@@ -44,18 +58,15 @@ html, body {
 }
 
 #news-list li {
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 700;
   line-height: 1.5;
   margin-bottom: 20px;
-  padding: 20px 30px;
+  padding: 12px 20px;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  transition: all 0.2s ease-in-out;
+  border-radius: 10px;
 }
 
-/* ホバー時 */
-#news-list li:hover {
-  background: rgba(255, 255, 255, 0.15);
-  transform: translateX(10px);
+#qr {
+  margin-top: 20px;
 }
