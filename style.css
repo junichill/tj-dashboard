@@ -1,92 +1,37 @@
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  font-family: Arial, sans-serif;
-  background-color: black;
-  color: white;
-}
-
-#container {
-  display: flex;
-  width: 100%;
-  height: 100%;
-}
-
-#left-panel {
-  width: 50%;
-  padding: 40px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-#clock {
-  font-size: 120px;
-  font-weight: bold;
-}
-
-#date {
-  font-size: 24px;
-  text-align: right;
-  margin-top: 10px;
-}
-
-#weather {
-  font-size: 20px;
-  margin-top: 20px;
-}
-
-#right-panel {
-  width: 50%;
-  padding: 30px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 #news-card {
   width: 100%;
+  height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .news-item {
-  padding: 20px;
-  margin: 15px 0;
-  background: rgba(0,0,0,0.6);
+  padding: 20px;                   /* 上下左右余白 */
+  margin: 15px 0;                   /* カード間の余白 */
+  background: rgba(0,0,0,0.6);      /* パネル風 */
   border-radius: 10px;
+  color: white;
   opacity: 0;
   transition: opacity 1s ease;
-  color: white;
 }
 
 .news-item.show {
   opacity: 1;
 }
 
-.news-img {
-  width: 100%;
-  max-height: 200px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 10px;
-}
-
 .news-title {
-  font-size: 28px;
+  font-size: 28px;                  /* 大きく */
   font-weight: bold;
   margin-bottom: 10px;
 }
 
 .news-pubdate {
-  font-size: 12px;
-  text-align: right;
+  font-size: 12px;                  /* 小さめ */
+  text-align: right;                /* 右寄せ */
   margin-bottom: 10px;
 }
 
 .news-description {
-  font-size: 16px;
+  font-size: 16px;                  /* 小さめ */
   line-height: 1.5;
 }
