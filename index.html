@@ -4,60 +4,64 @@
 <meta charset="UTF-8">
 <title>大きい時計＋NHKニュースカード</title>
 <style>
-  body {
+  html, body {
     margin: 0;
+    padding: 0;
+    height: 100%;
     font-family: Arial, sans-serif;
-    display: flex;
-    height: 100vh;
     background: #000;
     color: #fff;
   }
 
+  body {
+    display: flex;
+  }
+
   /* 左カラム：時計・日付・天気 */
   #left-panel {
-    width: 66.66%; /* 横幅2/3 */
-    background: #000;
+    width: 66.66%; /* 2/3 */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding-left: 50px;
+    padding-left: 20px;
     box-sizing: border-box;
   }
 
   #clock {
-    font-size: 300px; /* さらに大きく */
+    font-size: 20vw; /* 画面幅に応じて大きく */
     font-weight: bold;
     line-height: 1;
   }
 
   #date {
-    font-size: 48px;
-    margin-top: 20px;
+    font-size: 3vw;
+    margin-top: 10px;
   }
 
   #weather-today, #weather-tomorrow {
-    font-size: 28px;
-    margin-top: 10px;
+    font-size: 2.5vw;
+    margin-top: 5px;
   }
 
   /* 右カラム：ニュースカード */
   #right-panel {
-    width: 33.33%; /* 横幅1/3 */
-    background: #111;
+    width: 33.33%; /* 1/3 */
     display: flex;
     justify-content: center;
     align-items: center;
+    background: #111;
     padding: 20px;
+    box-sizing: border-box;
   }
 
   #news-card {
     background: #1a1a1a;
     padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     text-align: left;
-    font-size: 22px; /* ニュース文字大きめ */
+    font-size: 1.5em; /* 本文を少し大きく */
     width: 100%;
     transition: opacity 0.5s;
     white-space: pre-line;
@@ -66,7 +70,7 @@
   #news-card a {
     color: #1e90ff;
     text-decoration: none;
-    font-size: 28px; /* タイトルさらに大きめ */
+    font-size: 2em; /* タイトル大きめ */
     font-weight: bold;
   }
 
@@ -89,9 +93,7 @@
 </div>
 
 <script>
-  // ---------------------------
-  // 時計と日付表示
-  // ---------------------------
+  // 時計と日付
   function updateClock() {
     const now = new Date();
     const h = String(now.getHours()).padStart(2,'0');
@@ -108,9 +110,7 @@
   setInterval(updateClock, 1000);
   updateClock();
 
-  // ---------------------------
-  // NHKニュースRSS取得（タイトル＋description＋pubDate）
-  // ---------------------------
+  // NHKニュースRSS取得
   const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
   const rss2jsonApi = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
   const newsCard = document.getElementById('news-card');
@@ -146,33 +146,24 @@
   }
 
   fetchNews();
-  setInterval(fetchNews, 5*60*1000); // 5分ごと更新
-  setInterval(showNews, 5000); // 5秒ごと切替
+  setInterval(fetchNews, 5*60*1000); // 5分ごとRSS更新
+  setInterval(showNews, 5000); // 5秒ごとニュース切替
 
-  // ---------------------------
-  // 天気情報取得（今日＋明日）
-  // ---------------------------
+  // 天気情報（OpenWeatherMap）
   const weatherTodayDiv = document.getElementById('weather-today');
   const weatherTomorrowDiv = document.getElementById('weather-tomorrow');
-
-  const CITY_ID = '<YOUR_CITY_ID>'; // 都市ID
-  const API_KEY = '<YOUR_API_KEY>'; // OpenWeatherMap APIキー
+  const CITY_ID = '<YOUR_CITY_ID>';
+  const API_KEY = '<YOUR_API_KEY>';
 
   async function fetchWeather() {
     try {
       const res = await fetch(`https://api.openweathermap.org/data/2.5/forecast?id=${CITY_ID}&appid=${API_KEY}&lang=ja&units=metric`);
       const data = await res.json();
       const today = new Date().getDate();
-
       const todayWeather = data.list.find(item => new Date(item.dt_txt).getDate() === today);
-      if(todayWeather) {
-        weatherTodayDiv.textContent = `今日の天気: ${todayWeather.main.temp.toFixed(1)}℃ / ${todayWeather.weather[0].description}`;
-      }
-
+      if(todayWeather) weatherTodayDiv.textContent = `今日の天気: ${todayWeather.main.temp.toFixed(1)}℃ / ${todayWeather.weather[0].description}`;
       const tomorrowWeather = data.list.find(item => new Date(item.dt_txt).getDate() === today + 1);
-      if(tomorrowWeather) {
-        weatherTomorrowDiv.textContent = `明日の天気: ${tomorrowWeather.main.temp.toFixed(1)}℃ / ${tomorrowWeather.weather[0].description}`;
-      }
+      if(tomorrowWeather) weatherTomorrowDiv.textContent = `明日の天気: ${tomorrowWeather.main.temp.toFixed(1)}℃ / ${tomorrowWeather.weather[0].description}`;
     } catch(err) {
       weatherTodayDiv.textContent = '今日の天気: 取得失敗';
       weatherTomorrowDiv.textContent = '明日の天気: 取得失敗';
