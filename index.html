@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>大きい時計＋NHKニュースカード</title>
+<title>時計＋日付＋天気＋NHKニュースカード</title>
 <style>
   body {
     margin: 0;
@@ -13,15 +13,16 @@
     color: #fff;
   }
 
-  /* 左カラム：大きい時計・日付 */
+  /* 左カラム：時計・日付・天気 */
   #left-panel {
     width: 50%;
     background: #000;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    position: relative;
+    padding-top: 50px;
+    box-sizing: border-box;
   }
 
   #clock {
@@ -32,9 +33,12 @@
 
   #date {
     font-size: 36px;
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
+    margin-top: 20px;
+  }
+
+  #weather-today, #weather-tomorrow {
+    font-size: 24px;
+    margin-top: 10px;
   }
 
   /* 右カラム：ニュースカード */
@@ -57,6 +61,7 @@
     width: 100%;
     max-width: 600px;
     transition: opacity 0.5s;
+    white-space: pre-line;
   }
 
   #news-card a {
@@ -67,15 +72,6 @@
   #news-card a:hover {
     text-decoration: underline;
   }
-
-  .news-field {
-    margin-bottom: 8px;
-  }
-
-  .news-field strong {
-    display: inline-block;
-    width: 100px;
-  }
 </style>
 </head>
 <body>
@@ -83,6 +79,8 @@
 <div id="left-panel">
   <div id="clock">00:00</div>
   <div id="date">2025/12/29(月)</div>
+  <div id="weather-today">今日の天気: 読み込み中...</div>
+  <div id="weather-tomorrow">明日の天気: 読み込み中...</div>
 </div>
 
 <div id="right-panel">
@@ -126,7 +124,7 @@
       newsIndex = 0;
       showNews();
     } catch(err) {
-      newsCard.innerHTML = 'ニュース取得に失敗しました';
+      newsCard.textContent = 'ニュース取得に失敗しました';
       console.error(err);
     }
   }
@@ -136,12 +134,11 @@
     const item = newsItems[newsIndex];
     newsCard.style.opacity = 0;
     setTimeout(() => {
-      newsCard.innerHTML = `
-        <div class="news-field"><strong>Title:</strong> <a href="${item.link}" target="_blank">${item.title}</a></div>
-        <div class="news-field"><strong>GUID:</strong> ${item.guid}</div>
-        <div class="news-field"><strong>Description:</strong> ${item.description}</div>
-        <div class="news-field"><strong>PubDate:</strong> ${item.pubDate}</div>
-      `;
+      newsCard.innerHTML =
+        `<a href="${item.link}" target="_blank">${item.title}</a>\n` +
+        `${item.guid}\n` +
+        `${item.description}\n` +
+        `${item.pubDate}`;
       newsCard.style.opacity = 1;
     }, 500);
 
@@ -149,8 +146,44 @@
   }
 
   fetchNews();
-  setInterval(fetchNews, 5*60*1000); // 5分ごとに更新
-  setInterval(showNews, 2000); // 2秒ごとに1件ずつ切替
+  setInterval(fetchNews, 5*60*1000); // 5分ごと更新
+  setInterval(showNews, 2000); // 2秒ごと切替
+
+  // ---------------------------
+  // 天気情報取得（今日＋明日）
+  // ---------------------------
+  const weatherTodayDiv = document.getElementById('weather-today');
+  const weatherTomorrowDiv = document.getElementById('weather-tomorrow');
+
+  const CITY_ID = '<YOUR_CITY_ID>'; // 都市ID
+  const API_KEY = '<YOUR_API_KEY>'; // OpenWeatherMap APIキー
+
+  async function fetchWeather() {
+    try {
+      const res = await fetch(`https://api.openweathermap.org/data/2.5/forecast?id=${CITY_ID}&appid=${API_KEY}&lang=ja&units=metric`);
+      const data = await res.json();
+      const today = new Date().getDate();
+
+      // 今日の天気（午前12時〜23時の最初のデータを取得）
+      const todayWeather = data.list.find(item => new Date(item.dt_txt).getDate() === today);
+      if(todayWeather) {
+        weatherTodayDiv.textContent = `今日の天気: ${todayWeather.main.temp.toFixed(1)}℃ / ${todayWeather.weather[0].description}`;
+      }
+
+      // 明日の天気（翌日の最初のデータを取得）
+      const tomorrowWeather = data.list.find(item => new Date(item.dt_txt).getDate() === today + 1);
+      if(tomorrowWeather) {
+        weatherTomorrowDiv.textContent = `明日の天気: ${tomorrowWeather.main.temp.toFixed(1)}℃ / ${tomorrowWeather.weather[0].description}`;
+      }
+    } catch(err) {
+      weatherTodayDiv.textContent = '今日の天気: 取得失敗';
+      weatherTomorrowDiv.textContent = '明日の天気: 取得失敗';
+      console.error(err);
+    }
+  }
+
+  fetchWeather();
+  setInterval(fetchWeather, 10*60*1000); // 10分ごと更新
 </script>
 
 </body>
