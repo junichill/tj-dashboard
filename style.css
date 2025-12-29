@@ -69,4 +69,14 @@ html, body {
 
 #qr {
   margin-top: 20px;
+  text-align: center;
+}
+
+/* 天気・地震パネル */
+#weather, #quake {
+  font-size: 32px;
+  text-align: center;
+  padding: 20px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
 }
