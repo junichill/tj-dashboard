@@ -52,6 +52,7 @@ function prepareNewsElements() {
     div.className = 'news-item';
     div.innerHTML =
       `<div class="news-title">${item.title}</div>` +
+      `<hr>` +
       `<div class="news-pubdate">${item.pubDate}</div>` +
       `<div class="news-description">${item.description}</div>`;
     newsCard.appendChild(div);
@@ -106,4 +107,4 @@ async function fetchWeather() {
 }
 
 fetchWeather();
-setInterval(fetchWeather, 10*60*1000); // 10分ごと更新
+setInterval(fetchWeather, 10*60*1000);
