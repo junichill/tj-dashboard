@@ -1,119 +1,111 @@
-// ---------------- CLOCK & DATE ----------------
-const clockEl = document.getElementById('clock');
-const dateEl = document.getElementById('date');
-const weatherEl = document.getElementById('weather');
+// ---------------- FLIP CLOCK ----------------
+function updateFlip(unitId, value){
+  const unit = document.getElementById(unitId);
+  const top = unit.querySelector('.top');
+  const bottom = unit.querySelector('.bottom');
+  const flip = unit.querySelector('.flip');
+
+  const currentValue = parseInt(top.textContent);
+  if(currentValue === value) return;
+
+  flip.innerHTML = `<div class="flip-top">${currentValue}</div><div class="flip-bottom">${value}</div>`;
+  flip.style.transform = 'rotateX(0deg)';
+  flip.style.transition = 'transform 0.6s ease-in-out';
+  requestAnimationFrame(()=>flip.style.transform='rotateX(-180deg)');
+
+  setTimeout(()=>{
+    top.textContent = value.toString().padStart(2,'0');
+    bottom.textContent = value.toString().padStart(2,'0');
+    flip.style.transition='none';
+    flip.style.transform='rotateX(0deg)';
+    flip.innerHTML='';
+  },600);
+}
 
 function updateClock() {
   const now = new Date();
-  const h = String(now.getHours()).padStart(2,'0');
-  const m = String(now.getMinutes()).padStart(2,'0');
-  const s = String(now.getSeconds()).padStart(2,'0');
-  clockEl.textContent = `${h}:${m}:${s}`;
+  updateFlip('hours', now.getHours());
+  updateFlip('minutes', now.getMinutes());
+  updateFlip('seconds', now.getSeconds());
 
-  // 日付を右寄せ、英語表記
   const year = now.getFullYear();
   const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const month = monthNames[now.getMonth()];
   const date = now.getDate();
   const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   const day = weekdays[now.getDay()];
-  dateEl.textContent = `${day}, ${month} ${date}, ${year}`;
-  dateEl.style.textAlign = 'right';
+  document.getElementById('date').textContent = `${day}, ${month} ${date}, ${year}`;
 }
-setInterval(updateClock, 1000);
+
+setInterval(updateClock,1000);
 updateClock();
 
 // ---------------- NEWS ----------------
-const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
-const rss2jsonApi = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
-const newsCard = document.getElementById('news-card');
-let newsItems = [];
-let newsIndex = 0;
-let newsElements = [];
+const rssUrl='https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
+const rss2jsonApi='https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(rssUrl);
+const newsCard=document.getElementById('news-card');
+let newsItems=[], newsIndex=0, newsElements=[];
 
-async function fetchNews() {
-  try {
-    const res = await fetch(rss2jsonApi);
-    const data = await res.json();
-    newsItems = data.items;
-    newsIndex = 0;
+async function fetchNews(){
+  try{
+    const res=await fetch(rss2jsonApi);
+    const data=await res.json();
+    newsItems=data.items;
+    newsIndex=0;
     prepareNewsElements();
     showNews();
-  } catch(err) {
-    newsCard.textContent = 'News fetch failed';
+  }catch(err){
+    newsCard.textContent='News fetch failed';
     console.error(err);
   }
 }
 
-function prepareNewsElements() {
-  newsCard.innerHTML = '';
-  newsElements = newsItems.map(item => {
-    const div = document.createElement('div');
-    div.className = 'news-item';
-
-    // ニュース画像がある場合は表示
-    let imgHtml = '';
-    if(item.thumbnail) {
-      imgHtml = `<img src="${item.thumbnail}" class="news-img" alt="news image"><br>`;
-    }
-
-    // タイトル → 日時（右寄せ） → 本文
-    div.innerHTML =
-      imgHtml +
-      `<a href="${item.link}" target="_blank" class="news-title">${item.title}</a><hr>` +
-      `<div class="news-pubdate" style="text-align:right;">${item.pubDate}</div>` +
+function prepareNewsElements(){
+  newsCard.innerHTML='';
+  newsElements=newsItems.map(item=>{
+    const div=document.createElement('div');
+    div.className='news-item';
+    div.innerHTML=
+      `<div class="news-title">${item.title}</div>` +
+      `<div class="news-pubdate">${item.pubDate}</div>` +
       `<div class="news-description">${item.description}</div>`;
-
     newsCard.appendChild(div);
     return div;
   });
 }
 
-function showNews() {
-  if(newsElements.length === 0) return;
-  newsElements.forEach((el,i) => {
-    el.classList.remove('show');
-    if(i === newsIndex) el.classList.add('show');
-  });
-  newsIndex = (newsIndex + 1) % newsElements.length;
+function showNews(){
+  if(newsElements.length===0) return;
+  newsElements.forEach((el,i)=>el.classList.remove('show'));
+  newsElements[newsIndex].classList.add('show');
+  newsIndex=(newsIndex+1)%newsElements.length;
 }
 
 fetchNews();
-setInterval(fetchNews, 5*60*1000);   // 5分ごと更新
-setInterval(showNews, 5000);          // 5秒ごと切替
+setInterval(fetchNews,5*60*1000);
+setInterval(showNews,5000);
 
-// ---------------- WEATHER (Geo coords, English) ----------------
-const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
-const LAT = 35.5309;  // Kawasaki
-const LON = 139.7033;
+// ---------------- WEATHER ----------------
+const API_KEY='eed3942fcebd430b2e32dfff2c611b11';
+const LAT=35.5309, LON=139.7033;
+const weatherEl=document.getElementById('weather');
 
-async function fetchWeather() {
-  try {
-    const res = await fetch(
-      `https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&lang=en&units=metric`
-    );
-    const data = await res.json();
-
-    const now = new Date();
-    const todayDate = now.getDate();
-    const tomorrowDate = new Date(now.getTime() + 24*60*60*1000).getDate();
-
-    const todayWeather = data.list.find(item => new Date(item.dt_txt).getDate() === todayDate);
-    const tomorrowWeather = data.list.find(item => new Date(item.dt_txt).getDate() === tomorrowDate);
-
+async function fetchWeather(){
+  try{
+    const res=await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&lang=en&units=metric`);
+    const data=await res.json();
+    const now=new Date();
+    const todayDate=now.getDate();
+    const tomorrowDate=new Date(now.getTime()+24*60*60*1000).getDate();
+    const todayWeather=data.list.find(item=>new Date(item.dt_txt).getDate()===todayDate);
+    const tomorrowWeather=data.list.find(item=>new Date(item.dt_txt).getDate()===tomorrowDate);
     if(todayWeather && tomorrowWeather){
-      weatherEl.innerHTML =
-        `Today: ${todayWeather.main.temp.toFixed(1)}℃ / ${todayWeather.weather[0].description}<br>` +
-        `Tomorrow: ${tomorrowWeather.main.temp.toFixed(1)}℃ / ${tomorrowWeather.weather[0].description}`;
-      weatherEl.style.textAlign = 'left';
-    } else {
-      weatherEl.textContent = 'Weather info unavailable';
-    }
-  } catch(err) {
-    weatherEl.textContent = 'Weather fetch failed';
-    console.error(err);
-  }
+      weatherEl.innerHTML=`Today: ${todayWeather.main.temp.toFixed(1)}�� / ${todayWeather.weather[0].description}<br>`+
+                          `Tomorrow: ${tomorrowWeather.main.temp.toFixed(1)}�� / ${tomorrowWeather.weather[0].description}`;
+      weatherEl.style.textAlign='left';
+    }else weatherEl.textContent='Weather info unavailable';
+  }catch(err){ weatherEl.textContent='Weather fetch failed'; console.error(err);}
 }
 
 fetchWeather();
-setInterval(fetchWeather, 10*60*1000); // 10分ごと更新
+setInterval(fetchWeather,10*60*1000);

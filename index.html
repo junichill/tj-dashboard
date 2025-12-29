@@ -2,24 +2,42 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Digital Display</title>
+<title>Split Display with Flip Clock</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="container">
-    <!-- 左側: 時計・日付・天気 -->
-    <div id="left-panel">
-      <div id="clock"></div>
-      <div id="date"></div>
-      <div id="weather"></div>
+<div id="container">
+  <!-- 左パネル -->
+  <div id="left-panel">
+    <div id="flip-clock">
+      <div class="flip-unit" id="hours">
+        <div class="top">00</div>
+        <div class="bottom">00</div>
+        <div class="flip"></div>
+      </div>
+      <div class="separator">:</div>
+      <div class="flip-unit" id="minutes">
+        <div class="top">00</div>
+        <div class="bottom">00</div>
+        <div class="flip"></div>
+      </div>
+      <div class="separator">:</div>
+      <div class="flip-unit" id="seconds">
+        <div class="top">00</div>
+        <div class="bottom">00</div>
+        <div class="flip"></div>
+      </div>
     </div>
-
-    <!-- 右側: ニュースカード -->
-    <div id="right-panel">
-      <div id="news-card"></div>
-    </div>
+    <div id="date"></div>
+    <div id="weather"></div>
   </div>
+
+  <!-- 右パネル -->
+  <div id="right-panel">
+    <div id="news-card"></div>
+  </div>
+</div>
+
 <script src="script.js"></script>
 </body>
 </html>

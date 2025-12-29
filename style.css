@@ -1,101 +1,43 @@
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  background: black;
-  font-family: Arial, sans-serif;
-  color: white;
-  overflow: hidden;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Split Display with Flip Clock</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="container">
+  <!-- ���p�l�� -->
+  <div id="left-panel">
+    <div id="flip-clock">
+      <div class="flip-unit" id="hours">
+        <div class="top">00</div>
+        <div class="bottom">00</div>
+        <div class="flip"></div>
+      </div>
+      <div class="separator">:</div>
+      <div class="flip-unit" id="minutes">
+        <div class="top">00</div>
+        <div class="bottom">00</div>
+        <div class="flip"></div>
+      </div>
+      <div class="separator">:</div>
+      <div class="flip-unit" id="seconds">
+        <div class="top">00</div>
+        <div class="bottom">00</div>
+        <div class="flip"></div>
+      </div>
+    </div>
+    <div id="date"></div>
+    <div id="weather"></div>
+  </div>
 
-#container {
-  display: flex;
-  width: 100%;
-  height: 100%;
-}
+  <!-- �E�p�l�� -->
+  <div id="right-panel">
+    <div id="news-card"></div>
+  </div>
+</div>
 
-/* 左側: 時計・日付・天気 */
-#left-panel {
-  width: 50%; /* 横幅 2/5 */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding-left: 50px;
-  box-sizing: border-box;
-}
-
-#clock {
-  font-size: 120px; /* 大きく */
-  font-weight: bold;
-}
-
-#date {
-  font-size: 28px;
-  margin-top: 10px;
-  text-align: right;
-}
-
-#weather {
-  font-size: 28px;
-  margin-top: 10px;
-  text-align: left;
-}
-
-/* 右側: ニュースカード */
-#right-panel {
-  width: 50%; /* 横幅 3/5 */
-  background: url('news-bg.png') center/cover no-repeat;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px; /* 余白を増やす */
-  box-sizing: border-box;
-}
-
-#news-card {
-  width: 90%;      /* 横幅を少し小さく */
-  height: 80%;     /* 高さも少し小さく */
-  background: rgba(0,0,0,0.6);
-  border-radius: 15px;
-  overflow: hidden;
-  position: relative;
-  margin: auto;    /* 中央寄せ */
-  padding: 20px;   /* 内側の余白 */
-  box-sizing: border-box;
-}
-
-.news-item {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  right: 20px;
-  opacity: 0;
-  transition: opacity 1s ease-in-out;
-  font-size: 24px; /* 本文少し小さめ */
-  line-height: 1.4;
-}
-
-.news-item.show {
-  opacity: 1;
-}
-
-.news-title {
-  font-size: 46px;          /* タイトル大きく */
-  font-weight: bold;
-  color: white;
-  text-decoration: none;
-  margin-bottom: 10px;
-}
-
-.news-pubdate {
-  font-size: 14px;          /* 日時小さく */
-  color: #ccc;
-  text-align: right;
-  margin-top: 5px;
-}
-
-.news-description {
-  font-size: 20px;          /* 本文小さく */
-  margin-top: 5px;
-}
+<script src="script.js"></script>
+</body>
+</html>
