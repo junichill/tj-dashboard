@@ -49,17 +49,20 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 40px; /* 余白を増やす */
   box-sizing: border-box;
 }
 
 #news-card {
-  width: 100%;
-  height: 90%;
+  width: 90%;      /* 横幅を少し小さく */
+  height: 80%;     /* 高さも少し小さく */
   background: rgba(0,0,0,0.6);
   border-radius: 15px;
   overflow: hidden;
   position: relative;
+  margin: auto;    /* 中央寄せ */
+  padding: 20px;   /* 内側の余白 */
+  box-sizing: border-box;
 }
 
 .news-item {
@@ -69,7 +72,7 @@ html, body {
   right: 20px;
   opacity: 0;
   transition: opacity 1s ease-in-out;
-  font-size: 28px;
+  font-size: 24px; /* 本文少し小さめ */
   line-height: 1.4;
 }
 
@@ -82,6 +85,7 @@ html, body {
   font-weight: bold;
   color: white;
   text-decoration: none;
+  margin-bottom: 10px;
 }
 
 .news-pubdate {
@@ -91,4 +95,7 @@ html, body {
   margin-top: 5px;
 }
 
-
+.news-description {
+  font-size: 20px;          /* 本文小さく */
+  margin-top: 5px;
+}
