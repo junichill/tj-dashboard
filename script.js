@@ -1,5 +1,5 @@
 // ---------------- CLOCK (Flip) ----------------
-const clockEl = document.getElementById('clock');
+const clockEl = document.getElementById('flip-clock');
 
 // Flip Clock 初期化
 function initClock(tick) {
@@ -22,8 +22,9 @@ function resizeClock(tick) {
         const panelWidth = document.getElementById('left-panel').clientWidth;
         const panelHeight = document.getElementById('left-panel').clientHeight;
 
-        // パネルに収まる最大フォントサイズを計算
-        const fontSize = Math.floor(Math.min(panelWidth / 6, panelHeight / 2));
+        // 左パネルいっぱいに表示されるサイズに調整
+        // 以前より割る値を小さくして大きくする
+        const fontSize = Math.floor(Math.min(panelWidth / 2, panelHeight * 0.8));
         tick.root.style.fontSize = fontSize + 'px';
     }
     updateSize();
@@ -32,14 +33,13 @@ function resizeClock(tick) {
 
 // 初期化
 document.addEventListener('DOMContentLoaded', () => {
-    const tick = new FlipClock.Clock(clockEl); // Flip Clock ライブラリで生成
+    const tick = new FlipClock.Clock(clockEl);
     initClock(tick);
     resizeClock(tick);
 });
 
 // ---------------- DATE ----------------
 const dateEl = document.getElementById('date');
-
 function updateDate() {
     const now = new Date();
     const year = now.getFullYear();
@@ -49,16 +49,14 @@ function updateDate() {
     const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     const day = weekdays[now.getDay()];
     dateEl.textContent = `${day}, ${month} ${date}, ${year}`;
-    dateEl.style.textAlign = 'right';
 }
-
 updateDate();
-setInterval(updateDate, 60*1000); // 1分ごと更新
+setInterval(updateDate, 60*1000);
 
 // ---------------- WEATHER ----------------
 const weatherEl = document.getElementById('weather');
-const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
-const LAT = 35.5309;  // Kawasaki
+const API_KEY = 'YOUR_OPENWEATHERMAP_KEY';
+const LAT = 35.5309;
 const LON = 139.7033;
 
 async function fetchWeather() {
@@ -79,7 +77,6 @@ async function fetchWeather() {
             weatherEl.innerHTML =
                 `Today: ${todayWeather.main.temp.toFixed(1)}℃ / ${todayWeather.weather[0].description}<br>` +
                 `Tomorrow: ${tomorrowWeather.main.temp.toFixed(1)}℃ / ${tomorrowWeather.weather[0].description}`;
-            weatherEl.style.textAlign = 'left';
         } else {
             weatherEl.textContent = 'Weather info unavailable';
         }
@@ -88,9 +85,8 @@ async function fetchWeather() {
         console.error(err);
     }
 }
-
 fetchWeather();
-setInterval(fetchWeather, 10*60*1000); // 10分ごと更新
+setInterval(fetchWeather, 10*60*1000);
 
 // ---------------- NEWS ----------------
 const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
@@ -119,18 +115,12 @@ function prepareNewsElements() {
     newsElements = newsItems.map(item => {
         const div = document.createElement('div');
         div.className = 'news-item';
-
-        let imgHtml = '';
-        if(item.thumbnail) {
-            imgHtml = `<img src="${item.thumbnail}" class="news-img" alt="news image"><br>`;
-        }
-
+        let imgHtml = item.thumbnail ? `<img src="${item.thumbnail}" class="news-img" alt="news image"><br>` : '';
         div.innerHTML =
             imgHtml +
             `<a href="${item.link}" target="_blank" class="news-title">${item.title}</a><hr>` +
-            `<div class="news-pubdate" style="text-align:right;">${item.pubDate}</div>` +
+            `<div class="news-pubdate">${item.pubDate}</div>` +
             `<div class="news-description">${item.description}</div>`;
-
         newsCard.appendChild(div);
         return div;
     });
@@ -146,5 +136,5 @@ function showNews() {
 }
 
 fetchNews();
-setInterval(fetchNews, 5*60*1000); // 5分ごと更新
-setInterval(showNews, 5000);        // 5秒ごと切替
+setInterval(fetchNews, 5*60*1000);
+setInterval(showNews, 5000);
