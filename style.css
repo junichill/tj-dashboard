@@ -3,26 +3,38 @@ html, body {
   padding: 0;
   background: #000;
   color: #fff;
-  font-family: system-ui, sans-serif;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  height: 100%;
 }
 
 #dashboard {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  height: 100vh;
-  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 50px 20px;
   box-sizing: border-box;
+  min-height: 100vh;
 }
 
 #clock {
-  font-size: 96px;
+  font-size: 120px;
+  font-weight: bold;
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 50px;
+}
+
+#news {
+  width: 100%;
+  max-width: 800px;
 }
 
 #news h2 {
-  font-size: 32px;
-  margin-bottom: 16px;
+  font-size: 36px;
+  margin-bottom: 24px;
+  text-align: center;
+  border-bottom: 2px solid #fff;
+  padding-bottom: 10px;
 }
 
 #news-list {
@@ -32,7 +44,10 @@ html, body {
 }
 
 #news-list li {
-  font-size: 24px;
-  margin-bottom: 12px;
-  line-height: 1.4;
+  font-size: 28px;
+  margin-bottom: 18px;
+  line-height: 1.6;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
 }
