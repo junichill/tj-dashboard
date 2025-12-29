@@ -10,7 +10,6 @@ function updateClock() {
   const s = String(now.getSeconds()).padStart(2,'0');
   clockEl.textContent = `${h}:${m}:${s}`;
 
-  // 日付を右寄せ、英語表記
   const year = now.getFullYear();
   const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const month = monthNames[now.getMonth()];
@@ -29,25 +28,23 @@ const rss2jsonApi = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIC
 const newsCard = document.getElementById('news-card');
 let newsItems = [];
 let newsIndex = 0;
-let newsElements = [];
 
 async function fetchNews() {
   try {
     const res = await fetch(rss2jsonApi);
     const data = await res.json();
     newsItems = data.items;
-    newsIndex = 0;
-    prepareNewsElements();
-    showNews();
+    renderNewsItems();
+    slideNews();
   } catch(err) {
     newsCard.textContent = 'News fetch failed';
     console.error(err);
   }
 }
 
-function prepareNewsElements() {
+function renderNewsItems() {
   newsCard.innerHTML = '';
-  newsElements = newsItems.map(item => {
+  newsItems.forEach(item => {
     const div = document.createElement('div');
     div.className = 'news-item';
     div.innerHTML =
@@ -56,26 +53,24 @@ function prepareNewsElements() {
       `<div class="news-description">${item.description}</div>` +
       `<br>${item.pubDate}`;
     newsCard.appendChild(div);
-    return div;
   });
 }
 
-function showNews() {
-  if(newsElements.length === 0) return;
-  newsElements.forEach((el,i) => {
-    el.classList.remove('show');
-    if(i === newsIndex) el.classList.add('show');
-  });
-  newsIndex = (newsIndex + 1) % newsElements.length;
+function slideNews() {
+  if(newsItems.length === 0) return;
+  setInterval(() => {
+    newsIndex = (newsIndex + 1) % newsItems.length;
+    const offset = -newsIndex * 100;
+    newsCard.style.transform = `translateX(${offset}%)`;
+  }, 5000); // 5秒ごとにスライド
 }
 
 fetchNews();
-setInterval(fetchNews, 5*60*1000);   // 5分ごと更新
-setInterval(showNews, 5000);          // 5秒ごと切替
+setInterval(fetchNews, 5*60*1000); // 5分ごと更新
 
-// ---------------- WEATHER (Geo coords, English) ----------------
+// ---------------- WEATHER ----------------
 const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
-const LAT = 35.5309;  // Kawasaki
+const LAT = 35.5309;
 const LON = 139.7033;
 
 async function fetchWeather() {
@@ -107,4 +102,4 @@ async function fetchWeather() {
 }
 
 fetchWeather();
-setInterval(fetchWeather, 10*60*1000); // 10分ごと更新
+setInterval(fetchWeather, 10*60*1000);
