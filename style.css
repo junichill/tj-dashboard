@@ -1,43 +1,60 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Split Display with Flip Clock</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div id="container">
-  <!-- 左パネル -->
-  <div id="left-panel">
-    <div id="flip-clock">
-      <div class="flip-unit" id="hours">
-        <div class="top">00</div>
-        <div class="bottom">00</div>
-        <div class="flip"></div>
-      </div>
-      <div class="separator">:</div>
-      <div class="flip-unit" id="minutes">
-        <div class="top">00</div>
-        <div class="bottom">00</div>
-        <div class="flip"></div>
-      </div>
-      <div class="separator">:</div>
-      <div class="flip-unit" id="seconds">
-        <div class="top">00</div>
-        <div class="bottom">00</div>
-        <div class="flip"></div>
-      </div>
-    </div>
-    <div id="date"></div>
-    <div id="weather"></div>
-  </div>
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: black;
+  color: #0ff;
+  font-family: 'Arial', sans-serif;
+}
 
-  <!-- 右パネル -->
-  <div id="right-panel">
-    <div id="news-card"></div>
-  </div>
-</div>
+#flip-clock {
+  display: flex;
+  align-items: center;
+  font-size: 100px;
+}
 
-<script src="script.js"></script>
-</body>
-</html>
+.flip-unit {
+  position: relative;
+  width: 120px;
+  height: 160px;
+  perspective: 1000px;
+  margin: 0 5px;
+}
+
+.flip-unit .top,
+.flip-unit .bottom {
+  position: absolute;
+  width: 100%;
+  height: 50%;
+  line-height: 80px;
+  text-align: center;
+  background: rgba(0,0,0,0.8);
+  border: 2px solid #0ff;
+  box-sizing: border-box;
+  backface-visibility: hidden;
+}
+
+.flip-unit .top {
+  top: 0;
+  border-bottom: none;
+}
+
+.flip-unit .bottom {
+  bottom: 0;
+  transform: rotateX(180deg);
+  border-top: none;
+}
+
+.flip-unit .flip {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform-origin: top;
+  top: 0;
+  left: 0;
+}
+
+.separator {
+  margin: 0 10px;
+}
