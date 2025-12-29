@@ -70,7 +70,7 @@ setInterval(showNews, 5000);
 
 // ---------------- 天気（OpenWeatherMap API） ----------------
 const weatherEl = document.getElementById('weather');
-const CITY_ID = '1850147';       // 東京の都市ID
+const CITY_ID = '1859140';       // 川崎の都市ID
 const API_KEY = '6de856548e96ad1b5e27260be60e4f51'; // ここに自分のAPIキーを入力
 
 async function fetchWeather() {
