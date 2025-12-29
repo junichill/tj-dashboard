@@ -15,53 +15,56 @@ html, body {
   height: 100%;
 }
 
-/* 左側: 時計・日付・天気 */
+/* ����: ���v�E���t�E�V�C */
 #left-panel {
-  width: 50%; /* 横幅 2/5 */
+  width: 40%; /* ���� 2/5 */
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-  padding-left: 50px;
+  padding: 20px;
   box-sizing: border-box;
 }
 
-#clock {
-  font-size: 120px; /* 大きく */
-  font-weight: bold;
+#clockSVG {
+  width: 80%;
+  height: auto;
+  margin-bottom: 20px;
 }
 
 #date {
-  font-size: 28px;
+  font-size: 20px;
   margin-top: 10px;
   text-align: right;
+  width: 90%;
 }
 
 #weather {
-  font-size: 28px;
+  font-size: 20px;
   margin-top: 10px;
   text-align: left;
+  width: 90%;
 }
 
-/* 右側: ニュースカード */
+/* �E��: �j���[�X�J�[�h */
 #right-panel {
-  width: 50%; /* 横幅 3/5 */
+  width: 60%; /* ���� 3/5 */
   background: url('news-bg.png') center/cover no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px; /* 余白を増やす */
+  padding: 20px;
   box-sizing: border-box;
 }
 
 #news-card {
-  width: 90%;      /* 横幅を少し小さく */
-  height: 80%;     /* 高さも少し小さく */
+  width: 90%;
+  height: 80%;
   background: rgba(0,0,0,0.6);
   border-radius: 15px;
   overflow: hidden;
   position: relative;
-  margin: auto;    /* 中央寄せ */
-  padding: 20px;   /* 内側の余白 */
+  padding: 20px;
   box-sizing: border-box;
 }
 
@@ -72,7 +75,7 @@ html, body {
   right: 20px;
   opacity: 0;
   transition: opacity 1s ease-in-out;
-  font-size: 24px; /* 本文少し小さめ */
+  font-size: 28px;
   line-height: 1.4;
 }
 
@@ -81,21 +84,15 @@ html, body {
 }
 
 .news-title {
-  font-size: 46px;          /* タイトル大きく */
+  font-size: 66px;
   font-weight: bold;
   color: white;
   text-decoration: none;
-  margin-bottom: 10px;
 }
 
 .news-pubdate {
-  font-size: 14px;          /* 日時小さく */
+  font-size: 14px;
   color: #ccc;
   text-align: right;
-  margin-top: 5px;
-}
-
-.news-description {
-  font-size: 20px;          /* 本文小さく */
   margin-top: 5px;
 }

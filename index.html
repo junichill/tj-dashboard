@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Digital Display</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Panorama Display</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="container">
-    <!-- 左側: 時計・日付・天気 -->
+    <!-- 左側: グラフィカル時計 -->
     <div id="left-panel">
-      <div id="clock"></div>
+      <svg id="clockSVG" viewBox="0 0 300 300">
+        <circle cx="150" cy="150" r="140" stroke="#0ff" stroke-width="8" fill="#000"/>
+        <line id="hourHand" x1="150" y1="150" x2="150" y2="90" stroke="#0ff" stroke-width="8" stroke-linecap="round"/>
+        <line id="minuteHand" x1="150" y1="150" x2="150" y2="60" stroke="#0ff" stroke-width="5" stroke-linecap="round"/>
+        <line id="secondHand" x1="150" y1="150" x2="150" y2="40" stroke="#f00" stroke-width="2" stroke-linecap="round"/>
+      </svg>
       <div id="date"></div>
       <div id="weather"></div>
     </div>
 
-    <!-- 右側: ニュースカード -->
+    <!-- 右側: ニュース -->
     <div id="right-panel">
       <div id="news-card"></div>
     </div>
   </div>
-<script src="script.js"></script>
+
+  <script src="script.js"></script>
 </body>
 </html>
