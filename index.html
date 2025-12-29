@@ -2,71 +2,125 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>時計とRSSニュース自動更新スクロール</title>
+<title>時計＋日付＋ニュース＋天気</title>
 <style>
   body {
+    margin: 0;
     font-family: Arial, sans-serif;
+    display: flex;
+    height: 100vh;
     background: #f5f5f5;
-    color: #333;
+  }
+
+  /* 左カラム：時計・日付 */
+  #left-panel {
+    width: 40%;
+    background: #222;
+    color: #fff;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
-    padding: 30px;
+    position: relative;
+    padding: 20px;
   }
 
   #clock {
-    font-size: 48px;
+    font-size: 64px;
     font-weight: bold;
-    margin-bottom: 40px;
   }
 
-  #news-container {
-    width: 80%;
-    max-width: 600px;
+  #date {
+    font-size: 24px;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+  }
+
+  /* 右カラム：ニュース・天気 */
+  #right-panel {
+    width: 60%;
     background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    overflow: hidden;
-    height: 300px; /* ニュース表示エリア高さ */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     position: relative;
+    padding: 20px;
   }
 
-  #news-list {
+  #content-container {
+    width: 100%;
+    max-width: 600px;
+    min-height: 300px;
+  }
+
+  .section {
+    display: none;
+  }
+
+  .section.active {
+    display: block;
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  ul {
     list-style: none;
     padding: 0;
     margin: 0;
-    position: absolute;
-    top: 0;
-    width: 100%;
   }
 
-  #news-list li {
-    padding: 10px 0;
+  ul li {
+    padding: 8px 0;
     border-bottom: 1px solid #ddd;
   }
 
-  #news-list a {
+  ul li:last-child {
+    border-bottom: none;
+  }
+
+  a {
     text-decoration: none;
     color: #0077cc;
   }
 
-  #news-list a:hover {
+  a:hover {
     text-decoration: underline;
+  }
+
+  #weather {
+    text-align: center;
+    font-size: 20px;
   }
 </style>
 </head>
 <body>
 
-<div id="clock">00:00:00</div>
+<div id="left-panel">
+  <div id="clock">00:00:00</div>
+  <div id="date">2025/12/29(月)</div>
+</div>
 
-<div id="news-container">
-  <ul id="news-list"></ul>
+<div id="right-panel">
+  <div id="content-container">
+    <div id="news-section" class="section active">
+      <h2>最新ニュース</h2>
+      <ul id="news-list"></ul>
+    </div>
+    <div id="weather-section" class="section">
+      <h2>天気情報</h2>
+      <div id="weather">読み込み中...</div>
+    </div>
+  </div>
 </div>
 
 <script>
   // ---------------------------
-  // 時計表示
+  // 時計と日付表示
   // ---------------------------
   function updateClock() {
     const now = new Date();
@@ -74,6 +128,13 @@
     const m = String(now.getMinutes()).padStart(2,'0');
     const s = String(now.getSeconds()).padStart(2,'0');
     document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth()+1).padStart(2,'0');
+    const date = String(now.getDate()).padStart(2,'0');
+    const weekdays = ['日','月','火','水','木','金','土'];
+    const day = weekdays[now.getDay()];
+    document.getElementById('date').textContent = `${year}/${month}/${date}(${day})`;
   }
   setInterval(updateClock, 1000);
   updateClock();
@@ -81,52 +142,68 @@
   // ---------------------------
   // RSSニュース取得
   // ---------------------------
-  const rssFeedUrl = 'https://www3.nhk.or.jp/rss/news/cat0.xml'; // NHK総合ニュース RSS
+  const rssFeedUrl = 'https://www3.nhk.or.jp/rss/news/cat0.xml';
   const rss2jsonApi = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssFeedUrl);
   const newsList = document.getElementById('news-list');
 
-  let newsItems = [];
-
-  async function fetchRSSNews() {
+  async function fetchNews() {
     try {
-      const response = await fetch(rss2jsonApi);
-      const data = await response.json();
-      newsItems = data.items.slice(0, 20); // 最新20件を取得
-      renderNews();
-    } catch (err) {
-      console.error(err);
+      const res = await fetch(rss2jsonApi);
+      const data = await res.json();
+      newsList.innerHTML = '';
+      data.items.slice(0, 10).forEach(item => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = item.link;
+        a.target = '_blank';
+        a.textContent = item.title;
+        li.appendChild(a);
+        newsList.appendChild(li);
+      });
+    } catch(err) {
       newsList.innerHTML = '<li>ニュース取得に失敗しました</li>';
+      console.error(err);
     }
   }
 
-  function renderNews() {
-    newsList.innerHTML = '';
-    newsItems.forEach(item => {
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.href = item.link;
-      a.target = '_blank';
-      a.textContent = item.title;
-      li.appendChild(a);
-      newsList.appendChild(li);
-    });
-  }
+  fetchNews();
+  setInterval(fetchNews, 5 * 60 * 1000); // 5分ごとに更新
 
   // ---------------------------
-  // ニュース自動スクロール
+  // 天気情報取得
   // ---------------------------
-  let scrollPosition = 0;
-  function scrollNews() {
-    scrollPosition += 1;
-    if (scrollPosition >= newsList.scrollHeight) {
-      scrollPosition = -newsList.parentElement.clientHeight;
+  const weatherDiv = document.getElementById('weather');
+  const CITY_ID = '<YOUR_CITY_ID>'; // OpenWeatherMap 都市ID
+  const API_KEY = '<YOUR_API_KEY>';  // OpenWeatherMap APIキー
+
+  async function fetchWeather() {
+    try {
+      const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?id=${CITY_ID}&appid=${API_KEY}&lang=ja&units=metric`);
+      const data = await res.json();
+      const temp = data.main.temp.toFixed(1);
+      const desc = data.weather[0].description;
+      const city = data.name;
+      weatherDiv.textContent = `${city}：${temp}℃ / ${desc}`;
+    } catch(err) {
+      weatherDiv.textContent = '天気情報取得に失敗';
+      console.error(err);
     }
-    newsList.style.top = -scrollPosition + 'px';
   }
 
-  setInterval(scrollNews, 50); // スクロール速度調整
-  setInterval(fetchRSSNews, 5 * 60 * 1000); // 5分ごとに最新ニュース取得
-  fetchRSSNews(); // 初回取得
+  fetchWeather();
+  setInterval(fetchWeather, 10 * 60 * 1000); // 10分ごとに更新
+
+  // ---------------------------
+  // ニュース/天気 自動切替
+  // ---------------------------
+  const sections = [document.getElementById('news-section'), document.getElementById('weather-section')];
+  let currentIndex = 0;
+
+  setInterval(() => {
+    sections[currentIndex].classList.remove('active');
+    currentIndex = (currentIndex + 1) % sections.length;
+    sections[currentIndex].classList.add('active');
+  }, 10000); // 10秒ごとに切替
 </script>
 
 </body>
