@@ -1,4 +1,4 @@
-// ---------------- 時計・日付 ----------------
+// ---------------- CLOCK & DATE ----------------
 const clockEl = document.getElementById('clock');
 const dateEl = document.getElementById('date');
 const weatherEl = document.getElementById('weather');
@@ -10,17 +10,19 @@ function updateClock() {
   const s = String(now.getSeconds()).padStart(2,'0');
   clockEl.textContent = `${h}:${m}:${s}`;
 
+  // Date in English
   const year = now.getFullYear();
-  const month = String(now.getMonth()+1).padStart(2,'0');
-  const date = String(now.getDate()).padStart(2,'0');
-  const weekdays = ['日','月','火','水','木','金','土'];
+  const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const month = monthNames[now.getMonth()];
+  const date = now.getDate();
+  const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   const day = weekdays[now.getDay()];
-  dateEl.textContent = `${year}/${month}/${date}(${day})`;
+  dateEl.textContent = `${day}, ${month} ${date}, ${year}`;
 }
 setInterval(updateClock, 1000);
 updateClock();
 
-// ---------------- ニュース ----------------
+// ---------------- NEWS ----------------
 const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
 const rss2jsonApi = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
 const newsCard = document.getElementById('news-card');
@@ -37,7 +39,7 @@ async function fetchNews() {
     prepareNewsElements();
     showNews();
   } catch(err) {
-    newsCard.textContent = 'ニュース取得に失敗';
+    newsCard.textContent = 'News fetch failed';
     console.error(err);
   }
 }
@@ -66,18 +68,18 @@ function showNews() {
 }
 
 fetchNews();
-setInterval(fetchNews, 5*60*1000);
-setInterval(showNews, 5000);
+setInterval(fetchNews, 5*60*1000);   // 5 min refresh
+setInterval(showNews, 5000);          // 5 sec per news
 
-// ---------------- 天気（緯度経度 Geo coords対応） ----------------
+// ---------------- WEATHER (Geo coords) ----------------
 const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
-const LAT = 35.5309;  // 川崎市
+const LAT = 35.5309;  // Kawasaki
 const LON = 139.7033;
 
 async function fetchWeather() {
   try {
     const res = await fetch(
-      `https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&lang=ja&units=metric`
+      `https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&lang=en&units=metric`
     );
     const data = await res.json();
 
@@ -90,16 +92,16 @@ async function fetchWeather() {
 
     if(todayWeather && tomorrowWeather){
       weatherEl.textContent =
-        `今日: ${todayWeather.main.temp.toFixed(1)}℃/${todayWeather.weather[0].description}  ` +
-        `明日: ${tomorrowWeather.main.temp.toFixed(1)}℃/${tomorrowWeather.weather[0].description}`;
+        `Today: ${todayWeather.main.temp.toFixed(1)}℃ / ${todayWeather.weather[0].description}  ` +
+        `Tomorrow: ${tomorrowWeather.main.temp.toFixed(1)}℃ / ${tomorrowWeather.weather[0].description}`;
     } else {
-      weatherEl.textContent = '天気情報なし';
+      weatherEl.textContent = 'Weather info unavailable';
     }
   } catch(err) {
-    weatherEl.textContent = '天気取得失敗';
+    weatherEl.textContent = 'Weather fetch failed';
     console.error(err);
   }
 }
 
 fetchWeather();
-setInterval(fetchWeather, 10*60*1000); // 10分ごと更新
+setInterval(fetchWeather, 10*60*1000); // 10 min refresh
