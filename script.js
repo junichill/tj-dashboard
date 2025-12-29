@@ -30,7 +30,9 @@ let newsItems = [];
 let newsIndex = 0;
 let fadeInterval;
 
+// ニュース取得
 async function fetchNews() {
+  newsCard.innerHTML = '<div class="news-item" style="opacity:1;">Loading news...</div>';
   try {
     const res = await fetch(rss2jsonApi);
     const data = await res.json();
@@ -38,64 +40,20 @@ async function fetchNews() {
     renderNewsItems();
     startFadeNews();
   } catch(err) {
-    newsCard.textContent = 'News fetch failed';
+    newsCard.innerHTML = '<div class="news-item" style="opacity:1;">News fetch failed</div>';
     console.error(err);
   }
 }
 
+// ニュース表示要素作成
 function renderNewsItems() {
   newsCard.innerHTML = '';
   newsItems.forEach((item, idx) => {
     const div = document.createElement('div');
     div.className = 'news-item';
-    div.style.opacity = idx === 0 ? '1' : '0';
+    div.style.opacity = idx === 0 ? '1' : '0'; // 最初のニュースは表示
     div.innerHTML =
       `<div class="news-title">${item.title}</div>` +
       `<hr>` +
       `<div class="news-pubdate">${item.pubDate}</div>` +
-      `<div class="news-description">${item.description}</div>`;
-    newsCard.appendChild(div);
-  });
-}
-
-// フェード切替
-function startFadeNews() {
-  if(newsItems.length === 0) return;
-  const items = document.querySelectorAll('.news-item');
-  newsIndex = 0;
-
-  if(fadeInterval) clearInterval(fadeInterval);
-
-  fadeInterval = setInterval(() => {
-    const prevIndex = newsIndex;
-    newsIndex = (newsIndex + 1) % items.length;
-
-    // フェードアウト前のニュース
-    items[prevIndex].style.opacity = '0';
-
-    // フェードイン次のニュース
-    items[newsIndex].style.opacity = '1';
-  }, 5000);
-}
-
-fetchNews();
-setInterval(fetchNews, 5*60*1000);
-
-// ---------------- WEATHER ----------------
-const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
-const LAT = 35.5309;
-const LON = 139.7033;
-
-async function fetchWeather() {
-  try {
-    const res = await fetch(
-      `https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&lang=en&units=metric`
-    );
-    const data = await res.json();
-
-    const now = new Date();
-    const todayDate = now.getDate();
-    const tomorrowDate = new Date(now.getTime() + 24*60*60*1000).getDate();
-
-    const todayWeather = data.list.find(item => new Date(item.dt_txt).getDate() === todayDate);
-    const tomorrowWeather = data.list.find(item => new Date(item.dt_txt).getDate()_
+      `
