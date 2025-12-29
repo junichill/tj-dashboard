@@ -1,4 +1,6 @@
-const URL = "/api/nhk-news"; // サーバー経由でNHKニュース取得
+// news.js
+const URL = "https://api.allorigins.win/get?url=" +
+            encodeURIComponent("https://www3.nhk.or.jp/news/easy/top-list.json");
 
 fetch(URL)
   .then(res => res.json())
@@ -8,7 +10,10 @@ fetch(URL)
 
     list.innerHTML = "";
 
-    data.slice(0, 5).forEach(item => {
+    // allorigins は data.contents に JSON 文字列が入る
+    const nhkData = JSON.parse(data.contents);
+
+    nhkData.slice(0, 5).forEach(item => {
       const li = document.createElement("li");
       li.textContent = item.title;
       list.appendChild(li);
