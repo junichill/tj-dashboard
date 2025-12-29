@@ -68,20 +68,27 @@ fetchNews();
 setInterval(fetchNews, 5*60*1000);
 setInterval(showNews, 5000);
 
-// ---------------- 天気 ----------------
+// ---------------- 天気（OpenWeatherMap API） ----------------
 const weatherEl = document.getElementById('weather');
-const CITY_ID = '1850147'; // OpenWeatherMapの都市ID
-const API_KEY = '6de856548e96ad1b5e27260be60e4f51'; // APIキー
+const CITY_ID = '1850147';       // 東京の都市ID
+const API_KEY = '<YOUR_API_KEY>'; // ここに自分のAPIキーを入力
 
 async function fetchWeather() {
   try {
     const res = await fetch(`https://api.openweathermap.org/data/2.5/forecast?id=${CITY_ID}&appid=${API_KEY}&lang=ja&units=metric`);
     const data = await res.json();
-    const today = new Date().getDate();
+
+    const now = new Date();
+    const today = now.getDate();
+    const tomorrow = new Date(now.getTime() + 24*60*60*1000).getDate();
+
     const todayWeather = data.list.find(item => new Date(item.dt_txt).getDate() === today);
-    const tomorrowWeather = data.list.find(item => new Date(item.dt_txt).getDate() === today + 1);
+    const tomorrowWeather = data.list.find(item => new Date(item.dt_txt).getDate() === tomorrow);
+
     if(todayWeather && tomorrowWeather) {
-      weatherEl.textContent = `今日: ${todayWeather.main.temp.toFixed(1)}℃/${todayWeather.weather[0].description}  明日: ${tomorrowWeather.main.temp.toFixed(1)}℃/${tomorrowWeather.weather[0].description}`;
+      weatherEl.textContent = 
+        `今日: ${todayWeather.main.temp.toFixed(1)}℃/${todayWeather.weather[0].description}  ` +
+        `明日: ${tomorrowWeather.main.temp.toFixed(1)}℃/${tomorrowWeather.weather[0].description}`;
     }
   } catch(err) {
     weatherEl.textContent = '天気取得失敗';
