@@ -14,7 +14,7 @@ fetch(URL)
     list.innerHTML = "";
 
     items.forEach((item, i) => {
-      if (i >= 5) return; // 先頭5件だけ表示
+      if (i >= 5) return; // 先頭5件
       const title = item.querySelector("title").textContent;
       const li = document.createElement("li");
       li.textContent = title;
