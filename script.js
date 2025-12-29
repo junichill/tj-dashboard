@@ -1,6 +1,7 @@
-// ---------------- CLOCK & DATE ----------------
+// ---------------- CLOCK (Flip) ----------------
 const clockEl = document.getElementById('clock');
 
+// Flip Clock 初期化
 function initClock(tick) {
     function update() {
         const now = new Date();
@@ -8,36 +9,67 @@ function initClock(tick) {
         const m = String(now.getMinutes()).padStart(2,'0');
         const s = String(now.getSeconds()).padStart(2,'0');
         const str = `${h}:${m}:${s}`;  // コロンを入れる
-
-        tick.value = str;  // Flip に表示
+        tick.value = str;             // Flip に表示
         tick.root.setAttribute('aria-label', str); // アクセシビリティ
     }
-    update(); // 初回表示
+    update();             // 初回表示
     setInterval(update, 1000); // 1秒ごと更新
 }
 
+// ---------------- DATE ----------------
 const dateEl = document.getElementById('date');
-const weatherEl = document.getElementById('weather');
 
-function updateClock() {
-  const now = new Date();
-  const h = String(now.getHours()).padStart(2,'0');
-  const m = String(now.getMinutes()).padStart(2,'0');
-  const s = String(now.getSeconds()).padStart(2,'0');
-  clockEl.textContent = `${h}:${m}:${s}`;
-
-  // 日付を右寄せ、英語表記
-  const year = now.getFullYear();
-  const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  const month = monthNames[now.getMonth()];
-  const date = now.getDate();
-  const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const day = weekdays[now.getDay()];
-  dateEl.textContent = `${day}, ${month} ${date}, ${year}`;
-  dateEl.style.textAlign = 'right';
+function updateDate() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const month = monthNames[now.getMonth()];
+    const date = now.getDate();
+    const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const day = weekdays[now.getDay()];
+    dateEl.textContent = `${day}, ${month} ${date}, ${year}`;
+    dateEl.style.textAlign = 'right';
 }
-setInterval(updateClock, 1000);
-updateClock();
+
+updateDate();
+setInterval(updateDate, 60*1000); // 1分ごと更新
+
+// ---------------- WEATHER ----------------
+const weatherEl = document.getElementById('weather');
+const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
+const LAT = 35.5309;  // Kawasaki
+const LON = 139.7033;
+
+async function fetchWeather() {
+    try {
+        const res = await fetch(
+            `https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&lang=en&units=metric`
+        );
+        const data = await res.json();
+
+        const now = new Date();
+        const todayDate = now.getDate();
+        const tomorrowDate = new Date(now.getTime() + 24*60*60*1000).getDate();
+
+        const todayWeather = data.list.find(item => new Date(item.dt_txt).getDate() === todayDate);
+        const tomorrowWeather = data.list.find(item => new Date(item.dt_txt).getDate() === tomorrowDate);
+
+        if(todayWeather && tomorrowWeather){
+            weatherEl.innerHTML =
+                `Today: ${todayWeather.main.temp.toFixed(1)}℃ / ${todayWeather.weather[0].description}<br>` +
+                `Tomorrow: ${tomorrowWeather.main.temp.toFixed(1)}℃ / ${tomorrowWeather.weather[0].description}`;
+            weatherEl.style.textAlign = 'left';
+        } else {
+            weatherEl.textContent = 'Weather info unavailable';
+        }
+    } catch(err) {
+        weatherEl.textContent = 'Weather fetch failed';
+        console.error(err);
+    }
+}
+
+fetchWeather();
+setInterval(fetchWeather, 10*60*1000); // 10分ごと更新
 
 // ---------------- NEWS ----------------
 const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
@@ -48,88 +80,50 @@ let newsIndex = 0;
 let newsElements = [];
 
 async function fetchNews() {
-  try {
-    const res = await fetch(rss2jsonApi);
-    const data = await res.json();
-    newsItems = data.items;
-    newsIndex = 0;
-    prepareNewsElements();
-    showNews();
-  } catch(err) {
-    newsCard.textContent = 'News fetch failed';
-    console.error(err);
-  }
+    try {
+        const res = await fetch(rss2jsonApi);
+        const data = await res.json();
+        newsItems = data.items;
+        newsIndex = 0;
+        prepareNewsElements();
+        showNews();
+    } catch(err) {
+        newsCard.textContent = 'News fetch failed';
+        console.error(err);
+    }
 }
 
 function prepareNewsElements() {
-  newsCard.innerHTML = '';
-  newsElements = newsItems.map(item => {
-    const div = document.createElement('div');
-    div.className = 'news-item';
+    newsCard.innerHTML = '';
+    newsElements = newsItems.map(item => {
+        const div = document.createElement('div');
+        div.className = 'news-item';
 
-    // ニュース画像がある場合は表示
-    let imgHtml = '';
-    if(item.thumbnail) {
-      imgHtml = `<img src="${item.thumbnail}" class="news-img" alt="news image"><br>`;
-    }
+        let imgHtml = '';
+        if(item.thumbnail) {
+            imgHtml = `<img src="${item.thumbnail}" class="news-img" alt="news image"><br>`;
+        }
 
-    // タイトル → 日時（右寄せ） → 本文
-    div.innerHTML =
-      imgHtml +
-      `<a href="${item.link}" target="_blank" class="news-title">${item.title}</a><hr>` +
-      `<div class="news-pubdate" style="text-align:right;">${item.pubDate}</div>` +
-      `<div class="news-description">${item.description}</div>`;
+        div.innerHTML =
+            imgHtml +
+            `<a href="${item.link}" target="_blank" class="news-title">${item.title}</a><hr>` +
+            `<div class="news-pubdate" style="text-align:right;">${item.pubDate}</div>` +
+            `<div class="news-description">${item.description}</div>`;
 
-    newsCard.appendChild(div);
-    return div;
-  });
+        newsCard.appendChild(div);
+        return div;
+    });
 }
 
 function showNews() {
-  if(newsElements.length === 0) return;
-  newsElements.forEach((el,i) => {
-    el.classList.remove('show');
-    if(i === newsIndex) el.classList.add('show');
-  });
-  newsIndex = (newsIndex + 1) % newsElements.length;
+    if(newsElements.length === 0) return;
+    newsElements.forEach((el,i) => {
+        el.classList.remove('show');
+        if(i === newsIndex) el.classList.add('show');
+    });
+    newsIndex = (newsIndex + 1) % newsElements.length;
 }
 
 fetchNews();
-setInterval(fetchNews, 5*60*1000);   // 5分ごと更新
-setInterval(showNews, 5000);          // 5秒ごと切替
-
-// ---------------- WEATHER (Geo coords, English) ----------------
-const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
-const LAT = 35.5309;  // Kawasaki
-const LON = 139.7033;
-
-async function fetchWeather() {
-  try {
-    const res = await fetch(
-      `https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&lang=en&units=metric`
-    );
-    const data = await res.json();
-
-    const now = new Date();
-    const todayDate = now.getDate();
-    const tomorrowDate = new Date(now.getTime() + 24*60*60*1000).getDate();
-
-    const todayWeather = data.list.find(item => new Date(item.dt_txt).getDate() === todayDate);
-    const tomorrowWeather = data.list.find(item => new Date(item.dt_txt).getDate() === tomorrowDate);
-
-    if(todayWeather && tomorrowWeather){
-      weatherEl.innerHTML =
-        `Today: ${todayWeather.main.temp.toFixed(1)}℃ / ${todayWeather.weather[0].description}<br>` +
-        `Tomorrow: ${tomorrowWeather.main.temp.toFixed(1)}℃ / ${tomorrowWeather.weather[0].description}`;
-      weatherEl.style.textAlign = 'left';
-    } else {
-      weatherEl.textContent = 'Weather info unavailable';
-    }
-  } catch(err) {
-    weatherEl.textContent = 'Weather fetch failed';
-    console.error(err);
-  }
-}
-
-fetchWeather();
-setInterval(fetchWeather, 10*60*1000); // 10分ごと更新
+setInterval(fetchNews, 5*60*1000); // 5分ごと更新
+setInterval(showNews, 5000);        // 5秒ごと切替
