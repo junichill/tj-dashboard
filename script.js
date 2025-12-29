@@ -8,13 +8,34 @@ function initClock(tick) {
         const h = String(now.getHours()).padStart(2,'0');
         const m = String(now.getMinutes()).padStart(2,'0');
         const s = String(now.getSeconds()).padStart(2,'0');
-        const str = `${h}:${m}:${s}`;  // コロンを入れる
-        tick.value = str;             // Flip に表示
-        tick.root.setAttribute('aria-label', str); // アクセシビリティ
+        const str = `${h}:${m}:${s}`;
+        tick.value = str;
+        tick.root.setAttribute('aria-label', str);
     }
-    update();             // 初回表示
-    setInterval(update, 1000); // 1秒ごと更新
+    update();
+    setInterval(update, 1000);
 }
+
+// ---------------- 自動リサイズ ----------------
+function resizeClock(tick) {
+    function updateSize() {
+        const panelWidth = document.getElementById('left-panel').clientWidth;
+        const panelHeight = document.getElementById('left-panel').clientHeight;
+
+        // パネルに収まる最大フォントサイズを計算
+        const fontSize = Math.floor(Math.min(panelWidth / 6, panelHeight / 2));
+        tick.root.style.fontSize = fontSize + 'px';
+    }
+    updateSize();
+    window.addEventListener('resize', updateSize);
+}
+
+// 初期化
+document.addEventListener('DOMContentLoaded', () => {
+    const tick = new FlipClock.Clock(clockEl); // Flip Clock ライブラリで生成
+    initClock(tick);
+    resizeClock(tick);
+});
 
 // ---------------- DATE ----------------
 const dateEl = document.getElementById('date');
