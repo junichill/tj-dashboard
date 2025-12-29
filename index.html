@@ -1,8 +1,32 @@
-<h1>Flip Clock</h1>
-<div id="watch"><div id="hour10"></div>
-<div id="hour1"></div>:<div id="min10"></div>
-<div id="min1"></div><div id="sec10"></div>
-<div id="sec1"></div></div>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Flip Clock</title>
 
-<br><br>
-<img src="c_bg.png">
+    <!-- PQINA Flip CSS -->
+    <link href="https://unpkg.com/@pqina/flip/dist/flip.min.css" rel="stylesheet">
+
+    <!-- Style -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- 時計表示 -->
+    <div class="clock-container">
+        <div id="flip-clock" class="tick" data-did-init="initClock">
+            <!-- 4 つのセクション（HH:MM:SS） -->
+            <div data-repeat="true">
+                <span data-view="flip"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- PQINA Flip JS -->
+    <script src="https://unpkg.com/@pqina/flip/dist/flip.min.js"></script>
+
+    <!-- Script -->
+    <script src="script.js"></script>
+</body>
+</html>

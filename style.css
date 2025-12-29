@@ -1,31 +1,22 @@
-#watch {
-  background-image: -webkit-linear-gradient(270deg,rgba(102,102,102,1.00) 0%,rgba(51,51,51,1.00) 100%);
-  background-image: -moz-linear-gradient(270deg,rgba(102,102,102,1.00) 0%,rgba(51,51,51,1.00) 100%);
-  background-image: -o-linear-gradient(270deg,rgba(102,102,102,1.00) 0%,rgba(51,51,51,1.00) 100%);
-  background-image: linear-gradient(180deg,rgba(102,102,102,1.00) 0%,rgba(51,51,51,1.00) 100%);
-  color: #FFF;
-  font-size: 80px;
-  line-height: .5em;
-  text-align: center;
-  padding: 5px;
-  box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
-  border-radius: 6px;
-  -webkit-box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
-  width: 400px;
-  border-top: thin solid #CCCCCC;
-  border-bottom: thin solid #000000;
+/* ボディの設定 */
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: #222;
 }
-#hour10, #hour1, #min10, #min10, #min1, #sec10, #sec1 {
-  background-image: url(c_bg.png);
-  height: 98px;
-  width: 56px;
-  margin: 2px;
-  display: inline-block;
-  vertical-align: middle;
-  background-repeat: no-repeat;
+
+/* コンテナ */
+.clock-container {
+    text-align: center;
 }
-#sec10, #sec1 {
-  transform: scale3d(.6, .6, .6);
-  -webkit-transform: scale3d(.6, .6, .6);
-  margin: 10px -18px -15px 0;
+
+/* Flip カードの大きさ調整 */
+.tick {
+    font-size: 4rem;
+    color: #fff;
 }
