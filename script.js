@@ -1,4 +1,8 @@
 // ---------------- CLOCK & DATE ----------------
+const clockEl = document.getElementById('clock');
+const dateEl = document.getElementById('date');
+const weatherEl = document.getElementById('weather');
+
 function updateClock() {
   const now = new Date();
   const h = String(now.getHours()).padStart(2,'0');
@@ -6,7 +10,7 @@ function updateClock() {
   const s = String(now.getSeconds()).padStart(2,'0');
   clockEl.textContent = `${h}:${m}:${s}`;
 
-  // 日付を右寄せ（CSSで右寄せしている想定）
+  // 日付を右寄せ、英語表記
   const year = now.getFullYear();
   const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const month = monthNames[now.getMonth()];
@@ -16,8 +20,63 @@ function updateClock() {
   dateEl.textContent = `${day}, ${month} ${date}, ${year}`;
   dateEl.style.textAlign = 'right';
 }
+setInterval(updateClock, 1000);
+updateClock();
 
-// ---------------- WEATHER ----------------
+// ---------------- NEWS ----------------
+const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
+const rss2jsonApi = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
+const newsCard = document.getElementById('news-card');
+let newsItems = [];
+let newsIndex = 0;
+let newsElements = [];
+
+async function fetchNews() {
+  try {
+    const res = await fetch(rss2jsonApi);
+    const data = await res.json();
+    newsItems = data.items;
+    newsIndex = 0;
+    prepareNewsElements();
+    showNews();
+  } catch(err) {
+    newsCard.textContent = 'News fetch failed';
+    console.error(err);
+  }
+}
+
+function prepareNewsElements() {
+  newsCard.innerHTML = '';
+  newsElements = newsItems.map(item => {
+    const div = document.createElement('div');
+    div.className = 'news-item';
+    div.innerHTML =
+      `<a href="${item.link}" target="_blank" class="news-title">${item.title}</a>` +
+      `<br>${item.description}<br>` +
+      `${item.pubDate}`;
+    newsCard.appendChild(div);
+    return div;
+  });
+}
+
+function showNews() {
+  if(newsElements.length === 0) return;
+  newsElements.forEach((el,i) => {
+    el.classList.remove('show');
+    if(i === newsIndex) el.classList.add('show');
+  });
+  newsIndex = (newsIndex + 1) % newsElements.length;
+}
+
+fetchNews();
+setInterval(fetchNews, 5*60*1000);   // 5分ごと更新
+setInterval(showNews, 5000);          // 5秒ごと切替
+
+// ---------------- WEATHER (Geo coords, English) ----------------
+const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
+const LAT = 35.5309;  // Kawasaki
+const LON = 139.7033;
+
 async function fetchWeather() {
   try {
     const res = await fetch(
@@ -36,7 +95,7 @@ async function fetchWeather() {
       weatherEl.innerHTML =
         `Today: ${todayWeather.main.temp.toFixed(1)}℃ / ${todayWeather.weather[0].description}<br>` +
         `Tomorrow: ${tomorrowWeather.main.temp.toFixed(1)}℃ / ${tomorrowWeather.weather[0].description}`;
-      weatherEl.style.textAlign = 'left'; // 天気は左寄せ
+      weatherEl.style.textAlign = 'left';
     } else {
       weatherEl.textContent = 'Weather info unavailable';
     }
@@ -45,3 +104,6 @@ async function fetchWeather() {
     console.error(err);
   }
 }
+
+fetchWeather();
+setInterval(fetchWeather, 10*60*1000); // 10分ごと更新
