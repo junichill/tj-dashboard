@@ -1,12 +1,14 @@
 // ---------------- 時計・日付 ----------------
 const clockEl = document.getElementById('clock');
 const dateEl = document.getElementById('date');
+const weatherEl = document.getElementById('weather');
 
 function updateClock() {
   const now = new Date();
   const h = String(now.getHours()).padStart(2,'0');
   const m = String(now.getMinutes()).padStart(2,'0');
-  clockEl.textContent = `${h}:${m}`;
+  const s = String(now.getSeconds()).padStart(2,'0');
+  clockEl.textContent = `${h}:${m}:${s}`;
 
   const year = now.getFullYear();
   const month = String(now.getMonth()+1).padStart(2,'0');
@@ -35,7 +37,7 @@ async function fetchNews() {
     prepareNewsElements();
     showNews();
   } catch(err) {
-    newsCard.textContent = 'ニュース取得に失敗しました';
+    newsCard.textContent = 'ニュース取得に失敗';
     console.error(err);
   }
 }
@@ -47,7 +49,7 @@ function prepareNewsElements() {
     div.className = 'news-item';
     div.innerHTML =
       `<a href="${item.link}" target="_blank" class="news-title">${item.title}</a>` +
-      `${item.description}<br>` +
+      `<br>${item.description}<br>` +
       `${item.pubDate}`;
     newsCard.appendChild(div);
     return div;
@@ -57,9 +59,8 @@ function prepareNewsElements() {
 function showNews() {
   if(newsElements.length === 0) return;
   newsElements.forEach((el,i) => {
-    el.classList.remove('show','hide');
+    el.classList.remove('show');
     if(i === newsIndex) el.classList.add('show');
-    else el.classList.add('hide');
   });
   newsIndex = (newsIndex + 1) % newsElements.length;
 }
@@ -68,26 +69,27 @@ fetchNews();
 setInterval(fetchNews, 5*60*1000);
 setInterval(showNews, 5000);
 
-// ---------------- 天気（川崎市 OpenWeatherMap API対応） ----------------
-const weatherEl = document.getElementById('weather');
-const CITY_ID = '1852776';       // 川崎市の都市ID
-const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11'; // ここに自分のOpenWeatherMap APIキーを貼る
+// ---------------- 天気（緯度経度 Geo coords対応） ----------------
+const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
+const LAT = 35.5309;  // 川崎市
+const LON = 139.7033;
 
 async function fetchWeather() {
   try {
-    const res = await fetch(`https://api.openweathermap.org/data/2.5/forecast?id=${CITY_ID}&appid=${API_KEY}&lang=ja&units=metric`);
+    const res = await fetch(
+      `https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&lang=ja&units=metric`
+    );
     const data = await res.json();
 
     const now = new Date();
-    const today = now.getDate();
-    const tomorrow = new Date(now.getTime() + 24*60*60*1000).getDate();
+    const todayDate = now.getDate();
+    const tomorrowDate = new Date(now.getTime() + 24*60*60*1000).getDate();
 
-    // 今日と明日の天気情報を取得
-    const todayWeather = data.list.find(item => new Date(item.dt_txt).getDate() === today);
-    const tomorrowWeather = data.list.find(item => new Date(item.dt_txt).getDate() === tomorrow);
+    const todayWeather = data.list.find(item => new Date(item.dt_txt).getDate() === todayDate);
+    const tomorrowWeather = data.list.find(item => new Date(item.dt_txt).getDate() === tomorrowDate);
 
-    if(todayWeather && tomorrowWeather) {
-      weatherEl.textContent = 
+    if(todayWeather && tomorrowWeather){
+      weatherEl.textContent =
         `今日: ${todayWeather.main.temp.toFixed(1)}℃/${todayWeather.weather[0].description}  ` +
         `明日: ${tomorrowWeather.main.temp.toFixed(1)}℃/${tomorrowWeather.weather[0].description}`;
     } else {
@@ -100,4 +102,4 @@ async function fetchWeather() {
 }
 
 fetchWeather();
-setInterval(fetchWeather, 10*60*1000);  // 10分ごとに更新
+setInterval(fetchWeather, 10*60*1000); // 10分ごと更新
