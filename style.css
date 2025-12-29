@@ -78,7 +78,15 @@ html, body {
 }
 
 .news-title {
+  font-size: 28px;          /* タイトル大きく */
   font-weight: bold;
   color: white;
   text-decoration: none;
+}
+
+.news-pubdate {
+  font-size: 14px;          /* 日時小さく */
+  color: #ccc;
+  text-align: right;
+  margin-top: 5px;
 }
