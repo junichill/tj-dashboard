@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>時計＋日付＋天気＋NHKニュースカード</title>
+<title>大きい時計＋NHKニュースカード</title>
 <style>
   body {
     margin: 0;
@@ -15,35 +15,35 @@
 
   /* 左カラム：時計・日付・天気 */
   #left-panel {
-    width: 50%;
+    width: 66.66%; /* 横幅2/3 */
     background: #000;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
-    padding-top: 50px;
+    padding-left: 50px;
     box-sizing: border-box;
   }
 
   #clock {
-    font-size: 200px; 
+    font-size: 300px; /* さらに大きく */
     font-weight: bold;
     line-height: 1;
   }
 
   #date {
-    font-size: 36px;
+    font-size: 48px;
     margin-top: 20px;
   }
 
   #weather-today, #weather-tomorrow {
-    font-size: 24px;
+    font-size: 28px;
     margin-top: 10px;
   }
 
   /* 右カラム：ニュースカード */
   #right-panel {
-    width: 50%;
+    width: 33.33%; /* 横幅1/3 */
     background: #111;
     display: flex;
     justify-content: center;
@@ -57,26 +57,21 @@
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     text-align: left;
-    font-size: 18px;
+    font-size: 22px; /* ニュース文字大きめ */
     width: 100%;
-    max-width: 600px;
     transition: opacity 0.5s;
-    white-space: pre-line; /* 改行反映 */
+    white-space: pre-line;
   }
 
   #news-card a {
     color: #1e90ff;
     text-decoration: none;
-    font-size: 24px; /* タイトル大きめ */
+    font-size: 28px; /* タイトルさらに大きめ */
     font-weight: bold;
   }
 
   #news-card a:hover {
     text-decoration: underline;
-  }
-
-  .news-field {
-    margin-top: 10px;
   }
 </style>
 </head>
@@ -152,7 +147,7 @@
 
   fetchNews();
   setInterval(fetchNews, 5*60*1000); // 5分ごと更新
-  setInterval(showNews, 10000); // 5秒ごとに切替
+  setInterval(showNews, 5000); // 5秒ごと切替
 
   // ---------------------------
   // 天気情報取得（今日＋明日）
@@ -191,4 +186,3 @@
 
 </body>
 </html>
-
