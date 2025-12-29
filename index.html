@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TJ Dashboard</title>
   <link rel="stylesheet" href="style.css" />
@@ -10,23 +11,18 @@
 
   <div class="container">
     <div class="left">
-      <div id="clock">00:00</div>
+      <div id="clock">--:--</div>
       <div id="date">----</div>
     </div>
 
     <div class="right">
       <div class="panel">
-        <h2>Weather</h2>
-        <div id="weather">Loading...</div>
-      </div>
-
-      <div class="panel">
-        <h2>News</h2>
-        <div id="news">Loading...</div>
+        <h2>System</h2>
+        <div>Dashboard online</div>
       </div>
     </div>
   </div>
 
-  <script src="main.js"></script>
+  <script src="main.js" defer></script>
 </body>
 </html>
