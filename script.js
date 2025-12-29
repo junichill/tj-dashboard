@@ -1,23 +1,119 @@
-// ‰Šú‰»ŠÖ”
-function initClock(tick) {
+// ---------------- CLOCK & DATE ----------------
+const clockEl = document.getElementById('clock');
+const dateEl = document.getElementById('date');
+const weatherEl = document.getElementById('weather');
 
-    // 1 •b‚²‚Æ‚ÉŒ»İ‚ğXV
-    setInterval(function () {
-        const now = new Date();
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const s = String(now.getSeconds()).padStart(2,'0');
+  clockEl.textContent = `${h}:${m}:${s}`;
 
-        // ‚ğ HH:MM:SS ‚Ì•¶š—ñ‚É‚·‚é
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-
-        // ƒRƒƒ“‚ğ“ü‚ê‚é
-        const str = `${hours}:${minutes}:${seconds}`;
-
-        // tick ‚É’l‚ğƒZƒbƒg
-        tick.value = str;
-
-        // aria-label ‚ÉŠÔ•\¦‚ğ“ü‚ê‚éiƒAƒNƒZƒVƒrƒŠƒeƒB‘Î‰j
-        tick.root.setAttribute('aria-label', str);
-    }, 1000);
-
+  // æ—¥ä»˜ã‚’å³å¯„ã›ã€è‹±èªè¡¨è¨˜
+  const year = now.getFullYear();
+  const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const month = monthNames[now.getMonth()];
+  const date = now.getDate();
+  const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const day = weekdays[now.getDay()];
+  dateEl.textContent = `${day}, ${month} ${date}, ${year}`;
+  dateEl.style.textAlign = 'right';
 }
+setInterval(updateClock, 1000);
+updateClock();
+
+// ---------------- NEWS ----------------
+const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
+const rss2jsonApi = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
+const newsCard = document.getElementById('news-card');
+let newsItems = [];
+let newsIndex = 0;
+let newsElements = [];
+
+async function fetchNews() {
+  try {
+    const res = await fetch(rss2jsonApi);
+    const data = await res.json();
+    newsItems = data.items;
+    newsIndex = 0;
+    prepareNewsElements();
+    showNews();
+  } catch(err) {
+    newsCard.textContent = 'News fetch failed';
+    console.error(err);
+  }
+}
+
+function prepareNewsElements() {
+  newsCard.innerHTML = '';
+  newsElements = newsItems.map(item => {
+    const div = document.createElement('div');
+    div.className = 'news-item';
+
+    // ãƒ‹ãƒ¥ãƒ¼ã‚¹ç”»åƒãŒã‚ã‚‹å ´åˆã¯è¡¨ç¤º
+    let imgHtml = '';
+    if(item.thumbnail) {
+      imgHtml = `<img src="${item.thumbnail}" class="news-img" alt="news image"><br>`;
+    }
+
+    // ã‚¿ã‚¤ãƒˆãƒ« â†’ æ—¥æ™‚ï¼ˆå³å¯„ã›ï¼‰ â†’ æœ¬æ–‡
+    div.innerHTML =
+      imgHtml +
+      `<a href="${item.link}" target="_blank" class="news-title">${item.title}</a><hr>` +
+      `<div class="news-pubdate" style="text-align:right;">${item.pubDate}</div>` +
+      `<div class="news-description">${item.description}</div>`;
+
+    newsCard.appendChild(div);
+    return div;
+  });
+}
+
+function showNews() {
+  if(newsElements.length === 0) return;
+  newsElements.forEach((el,i) => {
+    el.classList.remove('show');
+    if(i === newsIndex) el.classList.add('show');
+  });
+  newsIndex = (newsIndex + 1) % newsElements.length;
+}
+
+fetchNews();
+setInterval(fetchNews, 5*60*1000);   // 5åˆ†ã”ã¨æ›´æ–°
+setInterval(showNews, 5000);          // 5ç§’ã”ã¨åˆ‡æ›¿
+
+// ---------------- WEATHER (Geo coords, English) ----------------
+const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
+const LAT = 35.5309;  // Kawasaki
+const LON = 139.7033;
+
+async function fetchWeather() {
+  try {
+    const res = await fetch(
+      `https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&lang=en&units=metric`
+    );
+    const data = await res.json();
+
+    const now = new Date();
+    const todayDate = now.getDate();
+    const tomorrowDate = new Date(now.getTime() + 24*60*60*1000).getDate();
+
+    const todayWeather = data.list.find(item => new Date(item.dt_txt).getDate() === todayDate);
+    const tomorrowWeather = data.list.find(item => new Date(item.dt_txt).getDate() === tomorrowDate);
+
+    if(todayWeather && tomorrowWeather){
+      weatherEl.innerHTML =
+        `Today: ${todayWeather.main.temp.toFixed(1)}â„ƒ / ${todayWeather.weather[0].description}<br>` +
+        `Tomorrow: ${tomorrowWeather.main.temp.toFixed(1)}â„ƒ / ${tomorrowWeather.weather[0].description}`;
+      weatherEl.style.textAlign = 'left';
+    } else {
+      weatherEl.textContent = 'Weather info unavailable';
+    }
+  } catch(err) {
+    weatherEl.textContent = 'Weather fetch failed';
+    console.error(err);
+  }
+}
+
+fetchWeather();
+setInterval(fetchWeather, 10*60*1000); // 10åˆ†ã”ã¨æ›´æ–°
