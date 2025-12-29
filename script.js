@@ -51,7 +51,7 @@ function renderNewsItems() {
       `<div class="news-title">${item.title}</div>` +
       `<hr>` +
       `<div class="news-description">${item.description}</div>` +
-      `<br>${item.pubDate}`;
+      `<div class="news-pubdate">${item.pubDate}</div>`;
     newsCard.appendChild(div);
   });
 }
@@ -62,11 +62,11 @@ function slideNews() {
     newsIndex = (newsIndex + 1) % newsItems.length;
     const offset = -newsIndex * 100;
     newsCard.style.transform = `translateX(${offset}%)`;
-  }, 5000); // 5秒ごとにスライド
+  }, 5000);
 }
 
 fetchNews();
-setInterval(fetchNews, 5*60*1000); // 5分ごと更新
+setInterval(fetchNews, 5*60*1000);
 
 // ---------------- WEATHER ----------------
 const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
