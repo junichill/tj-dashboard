@@ -50,14 +50,18 @@ function renderNewsItems() {
     div.innerHTML =
       `<div class="news-title">${item.title}</div>` +
       `<hr>` +
-      `<div class="news-description">${item.description}</div>` +
-      `<div class="news-pubdate">${item.pubDate}</div>`;
+      `<div class="news-pubdate">${item.pubDate}</div>` +
+      `<div class="news-description">${item.description}</div>`;
     newsCard.appendChild(div);
   });
 }
 
+// スライドで連続表示
 function slideNews() {
   if(newsItems.length === 0) return;
+  newsIndex = 0;
+  newsCard.style.transform = `translateX(0%)`;
+
   setInterval(() => {
     newsIndex = (newsIndex + 1) % newsItems.length;
     const offset = -newsIndex * 100;
