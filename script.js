@@ -1,25 +1,16 @@
-// ---------------- CLOCK & DATE (SVG) ----------------
-const hourHand = document.getElementById('hourHand');
-const minuteHand = document.getElementById('minuteHand');
-const secondHand = document.getElementById('secondHand');
+// ---------------- CLOCK & DATE ----------------
+const clockEl = document.getElementById('clock');
 const dateEl = document.getElementById('date');
 const weatherEl = document.getElementById('weather');
 
-function updateSVGClock() {
+function updateClock() {
   const now = new Date();
-  const hour = now.getHours() % 12;
-  const minute = now.getMinutes();
-  const second = now.getSeconds();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const s = String(now.getSeconds()).padStart(2,'0');
+  clockEl.textContent = `${h}:${m}:${s}`;
 
-  const hourAngle = (hour + minute/60) * 30; // 360/12
-  const minuteAngle = (minute + second/60) * 6; // 360/60
-  const secondAngle = second * 6;
-
-  hourHand.setAttribute('transform', `rotate(${hourAngle} 150 150)`);
-  minuteHand.setAttribute('transform', `rotate(${minuteAngle} 150 150)`);
-  secondHand.setAttribute('transform', `rotate(${secondAngle} 150 150)`);
-
-  // ���t (�E��)
+  // 日付を右寄せ、英語表記
   const year = now.getFullYear();
   const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const month = monthNames[now.getMonth()];
@@ -27,9 +18,10 @@ function updateSVGClock() {
   const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   const day = weekdays[now.getDay()];
   dateEl.textContent = `${day}, ${month} ${date}, ${year}`;
+  dateEl.style.textAlign = 'right';
 }
-setInterval(updateSVGClock, 1000/60);
-updateSVGClock();
+setInterval(updateClock, 1000);
+updateClock();
 
 // ---------------- NEWS ----------------
 const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
@@ -58,10 +50,20 @@ function prepareNewsElements() {
   newsElements = newsItems.map(item => {
     const div = document.createElement('div');
     div.className = 'news-item';
+
+    // ニュース画像がある場合は表示
+    let imgHtml = '';
+    if(item.thumbnail) {
+      imgHtml = `<img src="${item.thumbnail}" class="news-img" alt="news image"><br>`;
+    }
+
+    // タイトル → 日時（右寄せ） → 本文
     div.innerHTML =
-      `<div class="news-title">${item.title}</div>` +
-      `<div class="news-pubdate">${item.pubDate}</div>` +
+      imgHtml +
+      `<a href="${item.link}" target="_blank" class="news-title">${item.title}</a><hr>` +
+      `<div class="news-pubdate" style="text-align:right;">${item.pubDate}</div>` +
       `<div class="news-description">${item.description}</div>`;
+
     newsCard.appendChild(div);
     return div;
   });
@@ -77,10 +79,10 @@ function showNews() {
 }
 
 fetchNews();
-setInterval(fetchNews, 5*60*1000);
-setInterval(showNews, 5000);
+setInterval(fetchNews, 5*60*1000);   // 5分ごと更新
+setInterval(showNews, 5000);          // 5秒ごと切替
 
-// ---------------- WEATHER ----------------
+// ---------------- WEATHER (Geo coords, English) ----------------
 const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
 const LAT = 35.5309;  // Kawasaki
 const LON = 139.7033;
@@ -101,8 +103,8 @@ async function fetchWeather() {
 
     if(todayWeather && tomorrowWeather){
       weatherEl.innerHTML =
-        `Today: ${todayWeather.main.temp.toFixed(1)}�� / ${todayWeather.weather[0].description}<br>` +
-        `Tomorrow: ${tomorrowWeather.main.temp.toFixed(1)}�� / ${tomorrowWeather.weather[0].description}`;
+        `Today: ${todayWeather.main.temp.toFixed(1)}℃ / ${todayWeather.weather[0].description}<br>` +
+        `Tomorrow: ${tomorrowWeather.main.temp.toFixed(1)}℃ / ${tomorrowWeather.weather[0].description}`;
       weatherEl.style.textAlign = 'left';
     } else {
       weatherEl.textContent = 'Weather info unavailable';
@@ -114,4 +116,4 @@ async function fetchWeather() {
 }
 
 fetchWeather();
-setInterval(fetchWeather, 10*60*1000);
+setInterval(fetchWeather, 10*60*1000); // 10分ごと更新
