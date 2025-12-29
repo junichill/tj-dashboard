@@ -1,58 +1,46 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  background: #111;
-  color: #fff;
-  font-family: "Segoe UI", system-ui;
+  background: #0b0e14;
+  color: #e6e6eb;
+  font-family: "Segoe UI", system-ui, sans-serif;
 }
 
-.header {
-  text-align: center;
-  font-size: 24px;
-  letter-spacing: 0.1em;
-  padding: 12px 0;
-  opacity: 0.7;
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 40px;
+  font-size: 32px;
+  border-bottom: 1px solid #222;
 }
 
-.grid {
+main {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 16px;
-  padding: 16px;
-  height: calc(100vh - 56px);
+  height: calc(100vh - 96px);
 }
 
-.card {
-  background: #1c1c1c;
-  border-radius: 20px;
-  padding: 24px;
-  transition: transform 0.1s ease, background 0.1s ease;
+section {
+  padding: 40px;
 }
 
-.card:active {
-  transform: scale(0.97);
-  background: #2a2a2a;
+h2 {
+  font-size: 36px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 8px;
 }
 
-.clock {
-  font-size: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.weather {
+  font-size: 48px;
+  line-height: 1.4;
 }
 
 .news div {
-  margin: 8px 0;
-  font-size: 18px;
-}
-
-.market-item {
-  display: flex;
-  justify-content: space-between;
-  font-size: 20px;
-  margin: 12px 0;
-}
-
-* {
-  user-select: none;
+  font-size: 28px;
+  margin-bottom: 16px;
 }
