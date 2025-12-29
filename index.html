@@ -3,27 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard with Flip Clock</title>
+<title>Digital Display</title>
 <link rel="stylesheet" href="style.css">
-<!-- Flip.js ライブラリ読み込み -->
-<script src="https://unpkg.com/@pqina/flip/dist/flip.min.js"></script>
+<link href="flip.min.css" rel="stylesheet">
 </head>
 <body>
-<div id="container">
+  <div id="container">
     <!-- 左側: 時計・日付・天気 -->
     <div id="left-panel">
-        <div id="clock" class="tick" data-flip="true"></div>
-        <div id="date"></div>
-        <div id="weather"></div>
+    <div class="clock-container">
+        <div id="flip-clock" class="tick" data-did-init="initClock">
+            <!-- 4 つのセクション（HH:MM:SS） -->
+            <div data-repeat="true">
+                <span data-view="flip"></span>
+            </div>
+        </div>
+    </div>
+      <div id="date"></div>
+      <div id="weather"></div>
     </div>
 
     <!-- 右側: ニュースカード -->
     <div id="right-panel">
-        <div id="news-card"></div>
+      <div id="news-card"></div>
     </div>
-</div>
-
-<!-- メインスクリプト -->
+  </div>
+<script src="flip.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
