@@ -1,19 +1,10 @@
 function updateClock() {
   const now = new Date();
-
-  const hh = String(now.getHours()).padStart(2, "0");
-  const mm = String(now.getMinutes()).padStart(2, "0");
-
-  document.getElementById("clock").textContent = `${hh}:${mm}`;
-
-  const dateText = now.toLocaleDateString("ja-JP", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    weekday: "short",
+  const time = now.toLocaleTimeString("ja-JP", {
+    hour: "2-digit",
+    minute: "2-digit"
   });
-
-  document.getElementById("date").textContent = dateText;
+  document.getElementById("clock").textContent = time;
 }
 
 updateClock();
