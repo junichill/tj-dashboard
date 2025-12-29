@@ -1,24 +1,19 @@
 function updateClock() {
   const now = new Date();
 
-  const hours = String(now.getHours()).padStart(2, "0");
-  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const hh = String(now.getHours()).padStart(2, "0");
+  const mm = String(now.getMinutes()).padStart(2, "0");
 
-  const clockEl = document.getElementById("clock");
-  const dateEl = document.getElementById("date");
+  document.getElementById("clock").textContent = `${hh}:${mm}`;
 
-  if (clockEl) {
-    clockEl.textContent = `${hours}:${minutes}`;
-  }
+  const dateText = now.toLocaleDateString("ja-JP", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    weekday: "short",
+  });
 
-  if (dateEl) {
-    dateEl.textContent = now.toLocaleDateString("ja-JP", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      weekday: "short"
-    });
-  }
+  document.getElementById("date").textContent = dateText;
 }
 
 updateClock();
