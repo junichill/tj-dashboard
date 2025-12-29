@@ -50,11 +50,19 @@ function prepareNewsElements() {
   newsElements = newsItems.map(item => {
     const div = document.createElement('div');
     div.className = 'news-item';
+
+    let imgHtml = '';
+    if(item.thumbnail) {
+      imgHtml = `<img class="news-img" src="${item.thumbnail}" alt="news image">`;
+    }
+
     div.innerHTML =
+      imgHtml +
       `<div class="news-title">${item.title}</div>` +
       `<hr>` +
       `<div class="news-pubdate">${item.pubDate}</div>` +
       `<div class="news-description">${item.description}</div>`;
+
     newsCard.appendChild(div);
     return div;
   });
@@ -70,12 +78,12 @@ function showNews() {
 }
 
 fetchNews();
-setInterval(fetchNews, 5*60*1000);   // 5分ごと更新
-setInterval(showNews, 5000);          // 5秒ごと切替
+setInterval(fetchNews, 5*60*1000);
+setInterval(showNews, 5000);
 
 // ---------------- WEATHER ----------------
 const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
-const LAT = 35.5309;  // Kawasaki
+const LAT = 35.5309;
 const LON = 139.7033;
 
 async function fetchWeather() {
