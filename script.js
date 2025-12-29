@@ -47,7 +47,7 @@ function prepareNewsElements() {
     div.className = 'news-item';
     div.innerHTML =
       `<a href="${item.link}" target="_blank" class="news-title">${item.title}</a>` +
-      `${item.description}<br>` +
+      `<br>${item.description}<br>` +
       `${item.pubDate}`;
     newsCard.appendChild(div);
     return div;
@@ -68,22 +68,35 @@ fetchNews();
 setInterval(fetchNews, 5*60*1000);
 setInterval(showNews, 5000);
 
-// ---------------- 天気（Yahoo!天気RSS） ----------------
+// ---------------- 天気（OpenWeatherMap 川崎市対応） ----------------
 const weatherEl = document.getElementById('weather');
-const weatherRSS = 'https://rss.weather.yahoo.co.jp/rss/days/13.xml'; // 川崎
+const CITY_ID = '1859140'; // 川崎市
+const API_KEY = '6de856548e96ad1b5e27260be60e4f51';
 
-async function fetchWeatherRSS() {
+async function fetchWeather() {
   try {
-    const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(weatherRSS)}`);
+    const res = await fetch(`https://api.openweathermap.org/data/2.5/forecast?id=${CITY_ID}&appid=${API_KEY}&lang=ja&units=metric`);
     const data = await res.json();
-    const todayItem = data.items[0];     // 今日
-    const tomorrowItem = data.items[1];  // 明日
-    weatherEl.textContent = `今日: ${todayItem.title}  明日: ${tomorrowItem.title}`;
+
+    const now = new Date();
+    const todayDate = now.getDate();
+    const tomorrowDate = new Date(now.getTime() + 24*60*60*1000).getDate();
+
+    const todayWeather = data.list.find(item => new Date(item.dt_txt).getDate() === todayDate);
+    const tomorrowWeather = data.list.find(item => new Date(item.dt_txt).getDate() === tomorrowDate);
+
+    if(todayWeather && tomorrowWeather){
+      weatherEl.textContent =
+        `今日: ${todayWeather.main.temp.toFixed(1)}℃/${todayWeather.weather[0].description}  ` +
+        `明日: ${tomorrowWeather.main.temp.toFixed(1)}℃/${tomorrowWeather.weather[0].description}`;
+    } else {
+      weatherEl.textContent = '天気情報なし';
+    }
   } catch(err) {
     weatherEl.textContent = '天気取得失敗';
     console.error(err);
   }
 }
 
-fetchWeatherRSS();
-setInterval(fetchWeatherRSS, 10*60*1000);
+fetchWeather();
+setInterval(fetchWeather, 10*60*1000); // 10分ごと更新
