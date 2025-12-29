@@ -1,6 +1,7 @@
 // ---------------- 時計・日付 ----------------
 const clockEl = document.getElementById('clock');
 const dateEl = document.getElementById('date');
+const weatherEl = document.getElementById('weather');
 
 function updateClock() {
   const now = new Date();
@@ -35,7 +36,7 @@ async function fetchNews() {
     prepareNewsElements();
     showNews();
   } catch(err) {
-    newsCard.textContent = 'ニュース取得に失敗しました';
+    newsCard.textContent = 'ニュース取得に失敗';
     console.error(err);
   }
 }
@@ -57,9 +58,8 @@ function prepareNewsElements() {
 function showNews() {
   if(newsElements.length === 0) return;
   newsElements.forEach((el,i) => {
-    el.classList.remove('show','hide');
+    el.classList.remove('show');
     if(i === newsIndex) el.classList.add('show');
-    else el.classList.add('hide');
   });
   newsIndex = (newsIndex + 1) % newsElements.length;
 }
@@ -68,14 +68,10 @@ fetchNews();
 setInterval(fetchNews, 5*60*1000);
 setInterval(showNews, 5000);
 
-// ---------------- 天気（OpenWeatherMap 川崎市対応） ----------------
-const weatherEl = document.getElementById('weather');
-const CITY_ID = '1859140'; // 川崎市
-const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
-
+// ---------------- 天気（Vercel経由） ----------------
 async function fetchWeather() {
   try {
-    const res = await fetch(`https://api.openweathermap.org/data/2.5/forecast?id=${CITY_ID}&appid=${API_KEY}&lang=ja&units=metric`);
+    const res = await fetch('/api/weather'); // Vercel Function
     const data = await res.json();
 
     const now = new Date();
@@ -99,4 +95,4 @@ async function fetchWeather() {
 }
 
 fetchWeather();
-setInterval(fetchWeather, 10*60*1000); // 10分ごと更新
+setInterval(fetchWeather, 10*60*1000);
