@@ -1,6 +1,7 @@
 const URL = "https://www3.nhk.or.jp/news/easy/top-list.json";
+const PROXY = "https://api.allorigins.win/get?url=" + encodeURIComponent(URL);
 
-fetch(URL)
+fetch(PROXY)
   .then(res => res.json())
   .then(data => {
     const list = document.getElementById("news-list");
@@ -8,7 +9,10 @@ fetch(URL)
 
     list.innerHTML = "";
 
-    data.slice(0, 5).forEach(item => {
+    // allorigins は data.contents に JSON 文字列が入っている
+    const nhkData = JSON.parse(data.contents);
+
+    nhkData.slice(0, 5).forEach(item => {
       const li = document.createElement("li");
       li.textContent = item.title;
       list.appendChild(li);
@@ -17,4 +21,5 @@ fetch(URL)
   .catch(err => {
     const list = document.getElementById("news-list");
     if (list) list.innerHTML = "<li>NHKニュース取得失敗</li>";
+    console.error(err);
   });
