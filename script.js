@@ -22,12 +22,13 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// ---------------- NEWS ----------------
+// ---------------- NEWS (fade) ----------------
 const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
 const rss2jsonApi = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
 const newsCard = document.getElementById('news-card');
 let newsItems = [];
 let newsIndex = 0;
+let fadeInterval;
 
 async function fetchNews() {
   try {
@@ -35,7 +36,7 @@ async function fetchNews() {
     const data = await res.json();
     newsItems = data.items;
     renderNewsItems();
-    slideNews();
+    startFadeNews();
   } catch(err) {
     newsCard.textContent = 'News fetch failed';
     console.error(err);
@@ -44,9 +45,10 @@ async function fetchNews() {
 
 function renderNewsItems() {
   newsCard.innerHTML = '';
-  newsItems.forEach(item => {
+  newsItems.forEach((item, idx) => {
     const div = document.createElement('div');
     div.className = 'news-item';
+    div.style.opacity = idx === 0 ? '1' : '0';
     div.innerHTML =
       `<div class="news-title">${item.title}</div>` +
       `<hr>` +
@@ -56,16 +58,24 @@ function renderNewsItems() {
   });
 }
 
-// スライドで連続表示
-function slideNews() {
+function startFadeNews() {
   if(newsItems.length === 0) return;
   newsIndex = 0;
-  newsCard.style.transform = `translateX(0%)`;
+  const items = document.querySelectorAll('.news-item');
+  
+  if(fadeInterval) clearInterval(fadeInterval);
 
-  setInterval(() => {
-    newsIndex = (newsIndex + 1) % newsItems.length;
-    const offset = -newsIndex * 100;
-    newsCard.style.transform = `translateX(${offset}%)`;
+  fadeInterval = setInterval(() => {
+    const prevIndex = newsIndex;
+    newsIndex = (newsIndex + 1) % items.length;
+
+    // フェードアウト前のニュース
+    items[prevIndex].style.transition = 'opacity 1s ease';
+    items[prevIndex].style.opacity = '0';
+
+    // フェードイン次のニュース
+    items[newsIndex].style.transition = 'opacity 1s ease';
+    items[newsIndex].style.opacity = '1';
   }, 5000);
 }
 
