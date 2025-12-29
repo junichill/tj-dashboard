@@ -9,14 +9,29 @@
   <div id="dashboard">
     <div id="clock"></div>
 
-    <div id="news">
-      <ul id="news-list">
-        <li>読み込み中...</li>
-      </ul>
+    <div id="panels">
+      <div class="panel" id="news-panel">
+        <ul id="news-list">
+          <li>読み込み中...</li>
+        </ul>
+        <div id="qr"></div>
+      </div>
+
+      <div class="panel" id="weather-panel">
+        <div id="weather">読み込み中...</div>
+      </div>
+
+      <div class="panel" id="quake-panel">
+        <div id="quake">読み込み中...</div>
+      </div>
     </div>
   </div>
 
+  <!-- QRコードライブラリ -->
+  <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="main.js"></script>
   <script src="news.js"></script>
+  <script src="weather.js"></script>
+  <script src="quake.js"></script>
 </body>
 </html>
