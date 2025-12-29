@@ -1,3 +1,4 @@
+/* ----------------- 基本 ----------------- */
 html, body {
   margin: 0;
   padding: 0;
@@ -15,9 +16,9 @@ html, body {
   height: 100%;
 }
 
-/* 左側: 時計・日付・天気 */
+/* ----------------- 左側: 時計・日付・天気 ----------------- */
 #left-panel {
-  width: 50%;
+  width: 40%; /* 時計横幅 2/5 */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -26,77 +27,84 @@ html, body {
 }
 
 #clock {
-  font-size: 150px;
+  font-size: 120px; /* 大きな時計 */
   font-weight: bold;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease; /* 滑らかに変化 */
 }
 
 #date {
-  font-size: 24px;
+  font-size: 28px;
   margin-top: 10px;
   text-align: right;
 }
 
 #weather {
-  font-size: 24px;
+  font-size: 28px;
   margin-top: 10px;
   text-align: left;
 }
 
-/* 右側: ニュースカード */
+/* ----------------- 右側: ニュースカード ----------------- */
 #right-panel {
-  width: 50%;
+  width: 60%; /* ニュース横幅 3/5 */
   background: url('news-bg.png') center/cover no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px;
+  padding: 20px;
   box-sizing: border-box;
-  overflow: hidden;
-  position: relative;
 }
 
 #news-card {
   width: 100%;
-  height: 100%;
+  height: 90%;
+  background: rgba(0,0,0,0.6);
+  border-radius: 15px;
+  overflow: hidden;
   position: relative;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
+/* ----------------- ニュースアイテム ----------------- */
 .news-item {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  padding: 30px;
-  box-sizing: border-box;
+  top: 20px;
+  left: 20px;
+  right: 20px;
   opacity: 0;
-  transition: opacity 1s ease;
-  display: flex;
-  flex-direction: column;
+  transition: opacity 1s ease-in-out;
+  font-size: 24px;
+  line-height: 1.4;
+}
+
+.news-item.show {
+  opacity: 1;
 }
 
 .news-title {
-  font-size: 44px;
+  font-size: 32px; /* タイトル大きく */
   font-weight: bold;
   color: white;
-}
-
-.news-pubdate {
-  font-size: 16px;
-  color: #aaa;
-  text-align: right;
-  margin-top: 10px;
+  text-decoration: none;
 }
 
 .news-description {
-  font-size: 20px;
+  font-size: 24px; /* 本文少し小さく */
   color: #ddd;
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
 .news-item hr {
   border: 0;
   border-top: 2px solid #fff;
-  margin: 10px 0;
+  margin: 5px 0;
+}
+
+/* ----------------- ニュースカードのフェードアニメーション ----------------- */
+@keyframes fadeInOut {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
 }
