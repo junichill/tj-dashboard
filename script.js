@@ -1,38 +1,32 @@
-function updateFlip(unitId, value) {
-  const unit = document.getElementById(unitId);
-  const top = unit.querySelector('.top');
-  const bottom = unit.querySelector('.bottom');
-  const flip = unit.querySelector('.flip');
-
-  const currentValue = parseInt(top.textContent);
-  if(currentValue === value) return;
-
-  flip.innerHTML = `<div class="flip-top">${currentValue}</div><div class="flip-bottom">${value}</div>`;
-  flip.style.transform = 'rotateX(0deg)';
-  flip.style.transition = 'transform 0.6s ease-in-out';
-  requestAnimationFrame(() => {
-    flip.style.transform = 'rotateX(-180deg)';
-  });
-
-  setTimeout(() => {
-    top.textContent = value.toString().padStart(2,'0');
-    bottom.textContent = value.toString().padStart(2,'0');
-    flip.style.transition = 'none';
-    flip.style.transform = 'rotateX(0deg)';
-    flip.innerHTML = '';
-  }, 600);
+var a_id=["hour10","hour1","min10","min1","sec10","sec1"];
+var v_timeOld="";
+f_timeSet();
+function f_timeSet(){
+  var d_d=new Date();
+  var v_hour=f_zeroPadding(d_d.getHours());
+  var v_min=f_zeroPadding(d_d.getMinutes());
+  var v_sec=f_zeroPadding(d_d.getSeconds());
+  var v_time=""+v_hour+v_min+v_sec;
+  for(var v_i=0; v_i<v_time.length; v_i++){
+    if(v_time[v_i]!=v_timeOld[v_i]){
+      f_moveTime(a_id[v_i],v_time[v_i],0);
+    }
+  }
+  v_timeOld=v_time;
+  setTimeout(f_timeSet, 200);
 }
-
-function updateClock() {
-  const now = new Date();
-  const h = now.getHours();
-  const m = now.getMinutes();
-  const s = now.getSeconds();
-
-  updateFlip('hours', h);
-  updateFlip('minutes', m);
-  updateFlip('seconds', s);
+function f_moveTime(v_id,v_no,v_y){
+  document.getElementById(v_id).style.backgroundPosition=-(v_no*60)+"px -"+v_y+"px";
+  if(v_y<300){
+    v_y+=100;
+    setTimeout(function(){
+        f_moveTime(v_id,v_no,v_y);
+    },150);
+  }
 }
-
-setInterval(updateClock, 1000);
-updateClock();
+function f_zeroPadding(v_n){
+  if(v_n<10){
+    v_n="0"+v_n;
+  }
+  return v_n;
+}
