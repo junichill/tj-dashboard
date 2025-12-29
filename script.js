@@ -10,6 +10,7 @@ function updateClock() {
   const s = String(now.getSeconds()).padStart(2,'0');
   clockEl.textContent = `${h}:${m}:${s}`;
 
+  // 日付を右寄せ、英語表記
   const year = now.getFullYear();
   const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const month = monthNames[now.getMonth()];
@@ -31,7 +32,6 @@ let newsIndex = 0;
 let newsElements = [];
 
 async function fetchNews() {
-  newsCard.innerHTML = '<div class="news-item show">Loading news...</div>';
   try {
     const res = await fetch(rss2jsonApi);
     const data = await res.json();
@@ -40,7 +40,7 @@ async function fetchNews() {
     prepareNewsElements();
     showNews();
   } catch(err) {
-    newsCard.innerHTML = '<div class="news-item show">News fetch failed</div>';
+    newsCard.textContent = 'News fetch failed';
     console.error(err);
   }
 }
@@ -51,9 +51,9 @@ function prepareNewsElements() {
     const div = document.createElement('div');
     div.className = 'news-item';
     div.innerHTML =
-      `<div class="news-title">${item.title}</div>` +
-      `<div class="news-pubdate">${item.pubDate}</div>` +
-      `<div class="news-description">${item.description}</div>`;
+      `<a href="${item.link}" target="_blank" class="news-title">${item.title}</a>` +
+      `<br>${item.description}<br>` +
+      `${item.pubDate}`;
     newsCard.appendChild(div);
     return div;
   });
@@ -72,7 +72,7 @@ fetchNews();
 setInterval(fetchNews, 5*60*1000);   // 5分ごと更新
 setInterval(showNews, 5000);          // 5秒ごと切替
 
-// ---------------- WEATHER ----------------
+// ---------------- WEATHER (Geo coords, English) ----------------
 const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
 const LAT = 35.5309;  // Kawasaki
 const LON = 139.7033;
