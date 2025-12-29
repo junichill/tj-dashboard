@@ -1,13 +1,13 @@
-// --------------------------
-// 時計・日付
-// --------------------------
+// ---------------- 時計・日付 ----------------
 const clockEl = document.getElementById('clock');
 const dateEl = document.getElementById('date');
+
 function updateClock() {
   const now = new Date();
   const h = String(now.getHours()).padStart(2,'0');
   const m = String(now.getMinutes()).padStart(2,'0');
   clockEl.textContent = `${h}:${m}`;
+
   const year = now.getFullYear();
   const month = String(now.getMonth()+1).padStart(2,'0');
   const date = String(now.getDate()).padStart(2,'0');
@@ -18,9 +18,7 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// --------------------------
-// ニュースRSS
-// --------------------------
+// ---------------- ニュース ----------------
 const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
 const rss2jsonApi = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
 const newsCard = document.getElementById('news-card');
@@ -70,12 +68,10 @@ fetchNews();
 setInterval(fetchNews, 5*60*1000);
 setInterval(showNews, 5000);
 
-// --------------------------
-// 天気
-// --------------------------
+// ---------------- 天気 ----------------
 const weatherEl = document.getElementById('weather');
-const CITY_ID = '<YOUR_CITY_ID>';
-const API_KEY = '<YOUR_API_KEY>';
+const CITY_ID = '<YOUR_CITY_ID>'; // OpenWeatherMapの都市ID
+const API_KEY = '<YOUR_API_KEY>'; // APIキー
 
 async function fetchWeather() {
   try {
