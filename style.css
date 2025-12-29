@@ -4,49 +4,56 @@ html, body {
   width: 1920px;
   height: 720px;
   font-family: 'Segoe UI', Arial, sans-serif;
+  display: flex;
   background-color: #000;
   color: #fff;
   overflow: hidden;
-  display: flex;
 }
 
+/* ---------------- 左パネル ---------------- */
 #left-panel {
   width: 50%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-start;
-  padding-left: 80px;
-  position: relative;
+  padding: 60px 40px;
+  background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+  color: #fff;
 }
 
 #clock {
-  font-size: 180px;
-  font-weight: bold;
+  font-size: 160px;
+  font-weight: 700;
   line-height: 1;
-  transition: all 0.5s ease-in-out;
+  letter-spacing: -2px;
+  color: #f0f0f0;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+  transition: all 0.3s ease-in-out;
 }
 
 #date {
   font-size: 36px;
-  position: absolute;
-  bottom: 20px;
-  left: 80px;
+  margin-top: 20px;
+  color: #cccccc;
+  text-shadow: 1px 1px 5px rgba(0,0,0,0.4);
 }
 
 #weather {
   font-size: 36px;
-  position: absolute;
-  bottom: 20px;
-  right: 80px;
+  margin-top: 10px;
+  color: #a0dfff;
+  text-shadow: 1px 1px 5px rgba(0,0,0,0.4);
 }
 
+/* ---------------- 右パネル ---------------- */
 #right-panel {
   width: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 40px 20px;
+  padding: 40px;
   box-sizing: border-box;
 }
 
@@ -70,10 +77,6 @@ html, body {
   font-size: 32px;
   font-weight: bold;
   text-decoration: none;
-}
-
-#news-card a:hover {
-  text-decoration: underline;
 }
 
 .news-item {
