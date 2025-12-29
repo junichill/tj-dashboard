@@ -2,36 +2,35 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>時計＋日付＋ニュース＋天気</title>
+<title>大きい時計＋ニュース＋天気</title>
 <style>
   body {
     margin: 0;
     font-family: Arial, sans-serif;
     display: flex;
     height: 100vh;
-    background: #f5f5f5;
+    background: #000;
+    color: #fff;
   }
 
-  /* 左カラム：時計・日付 */
+  /* 左カラム：大きい時計・日付 */
   #left-panel {
-    width: 40%;
-    background: #222;
-    color: #fff;
+    width: 50%;
+    background: #000;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     position: relative;
-    padding: 20px;
   }
 
   #clock {
-    font-size: 64px;
+    font-size: 150px;
     font-weight: bold;
   }
 
   #date {
-    font-size: 24px;
+    font-size: 32px;
     position: absolute;
     bottom: 20px;
     left: 20px;
@@ -39,14 +38,14 @@
 
   /* 右カラム：ニュース・天気 */
   #right-panel {
-    width: 60%;
-    background: #fff;
+    width: 50%;
+    background: #111;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     position: relative;
     padding: 20px;
+    color: #fff;
   }
 
   #content-container {
@@ -66,6 +65,7 @@
   h2 {
     text-align: center;
     margin-bottom: 20px;
+    color: #fff;
   }
 
   ul {
@@ -76,7 +76,7 @@
 
   ul li {
     padding: 8px 0;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #555;
   }
 
   ul li:last-child {
@@ -85,7 +85,7 @@
 
   a {
     text-decoration: none;
-    color: #0077cc;
+    color: #1e90ff;
   }
 
   a:hover {
@@ -94,14 +94,14 @@
 
   #weather {
     text-align: center;
-    font-size: 20px;
+    font-size: 24px;
   }
 </style>
 </head>
 <body>
 
 <div id="left-panel">
-  <div id="clock">00:00:00</div>
+  <div id="clock">00:00</div>
   <div id="date">2025/12/29(月)</div>
 </div>
 
@@ -126,8 +126,7 @@
     const now = new Date();
     const h = String(now.getHours()).padStart(2,'0');
     const m = String(now.getMinutes()).padStart(2,'0');
-    const s = String(now.getSeconds()).padStart(2,'0');
-    document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+    document.getElementById('clock').textContent = `${h}:${m}`;
 
     const year = now.getFullYear();
     const month = String(now.getMonth()+1).padStart(2,'0');
@@ -139,72 +138,4 @@
   setInterval(updateClock, 1000);
   updateClock();
 
-  // ---------------------------
-  // RSSニュース取得
-  // ---------------------------
-  const rssFeedUrl = 'https://www3.nhk.or.jp/rss/news/cat0.xml';
-  const rss2jsonApi = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssFeedUrl);
-  const newsList = document.getElementById('news-list');
-
-  async function fetchNews() {
-    try {
-      const res = await fetch(rss2jsonApi);
-      const data = await res.json();
-      newsList.innerHTML = '';
-      data.items.slice(0, 10).forEach(item => {
-        const li = document.createElement('li');
-        const a = document.createElement('a');
-        a.href = item.link;
-        a.target = '_blank';
-        a.textContent = item.title;
-        li.appendChild(a);
-        newsList.appendChild(li);
-      });
-    } catch(err) {
-      newsList.innerHTML = '<li>ニュース取得に失敗しました</li>';
-      console.error(err);
-    }
-  }
-
-  fetchNews();
-  setInterval(fetchNews, 5 * 60 * 1000); // 5分ごとに更新
-
-  // ---------------------------
-  // 天気情報取得
-  // ---------------------------
-  const weatherDiv = document.getElementById('weather');
-  const CITY_ID = '<YOUR_CITY_ID>'; // OpenWeatherMap 都市ID
-  const API_KEY = '<YOUR_API_KEY>';  // OpenWeatherMap APIキー
-
-  async function fetchWeather() {
-    try {
-      const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?id=${CITY_ID}&appid=${API_KEY}&lang=ja&units=metric`);
-      const data = await res.json();
-      const temp = data.main.temp.toFixed(1);
-      const desc = data.weather[0].description;
-      const city = data.name;
-      weatherDiv.textContent = `${city}：${temp}℃ / ${desc}`;
-    } catch(err) {
-      weatherDiv.textContent = '天気情報取得に失敗';
-      console.error(err);
-    }
-  }
-
-  fetchWeather();
-  setInterval(fetchWeather, 10 * 60 * 1000); // 10分ごとに更新
-
-  // ---------------------------
-  // ニュース/天気 自動切替
-  // ---------------------------
-  const sections = [document.getElementById('news-section'), document.getElementById('weather-section')];
-  let currentIndex = 0;
-
-  setInterval(() => {
-    sections[currentIndex].classList.remove('active');
-    currentIndex = (currentIndex + 1) % sections.length;
-    sections[currentIndex].classList.add('active');
-  }, 10000); // 10秒ごとに切替
-</script>
-
-</body>
-</html>
+  // --------------------
