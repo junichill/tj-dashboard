@@ -1,23 +1,20 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <title>TJ Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-</head>
 <body>
-  <header class="header">
-    TJ Dashboard
+  <header>
+    <div>TJ Dashboard</div>
+    <div id="clock"></div>
   </header>
 
-  <div class="grid">
-    <div class="card clock" id="clock"></div>
-    <div class="card weather" id="weather"></div>
-    <div class="card news" id="news"></div>
-    <div class="card market" id="market"></div>
-  </div>
+  <main>
+    <section class="weather" id="weather">
+      <h2>Weather</h2>
+      Loading...
+    </section>
+
+    <section class="news" id="news">
+      <h2>News</h2>
+      Loading...
+    </section>
+  </main>
 
   <script src="main.js"></script>
 </body>
-</html>
