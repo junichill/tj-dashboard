@@ -51,9 +51,10 @@ function prepareNewsElements() {
     const div = document.createElement('div');
     div.className = 'news-item';
     div.innerHTML =
-      `<a href="${item.link}" target="_blank" class="news-title">${item.title}</a>` +
-      `<br>${item.description}<br>` +
-      `${item.pubDate}`;
+      `<div class="news-title">${item.title}</div>` +
+      `<hr>` +
+      `<div class="news-description">${item.description}</div>` +
+      `<br>${item.pubDate}`;
     newsCard.appendChild(div);
     return div;
   });
