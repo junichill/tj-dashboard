@@ -1,30 +1,133 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>TJ Dashboard</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>時計とRSSニュース自動更新スクロール</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+  }
+
+  #clock {
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 40px;
+  }
+
+  #news-container {
+    width: 80%;
+    max-width: 600px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+    height: 300px; /* ニュース表示エリア高さ */
+    position: relative;
+  }
+
+  #news-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
+  #news-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+  }
+
+  #news-list a {
+    text-decoration: none;
+    color: #0077cc;
+  }
+
+  #news-list a:hover {
+    text-decoration: underline;
+  }
+</style>
 </head>
 <body>
-  <div id="dashboard">
-    <div id="clock"></div>
-    <div id="panels">
-      <div class="panel" id="news-panel">
-        <ul id="news-list"><li>読み込み中...</li></ul>
-        <div id="qr"></div>
-      </div>
-      <div class="panel" id="weather-panel">
-        <div id="weather">読み込み中...</div>
-      </div>
-      <div class="panel" id="quake-panel">
-        <div id="quake">読み込み中...</div>
-      </div>
-    </div>
-  </div>
 
-  <!-- QRコードライブラリ -->
-  <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
-  <script src="main.js"></script>
-  <script src="dashboard.js"></script>
+<div id="clock">00:00:00</div>
+
+<div id="news-container">
+  <ul id="news-list"></ul>
+</div>
+
+<script>
+  // ---------------------------
+  // 時計表示
+  // ---------------------------
+  function updateClock() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2,'0');
+    const m = String(now.getMinutes()).padStart(2,'0');
+    const s = String(now.getSeconds()).padStart(2,'0');
+    document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // ---------------------------
+  // RSSニュース取得
+  // ---------------------------
+  const rssFeedUrl = 'https://www3.nhk.or.jp/rss/news/cat0.xml'; // NHK総合ニュース RSS
+  const rss2jsonApi = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssFeedUrl);
+  const newsList = document.getElementById('news-list');
+
+  let newsItems = [];
+
+  async function fetchRSSNews() {
+    try {
+      const response = await fetch(rss2jsonApi);
+      const data = await response.json();
+      newsItems = data.items.slice(0, 20); // 最新20件を取得
+      renderNews();
+    } catch (err) {
+      console.error(err);
+      newsList.innerHTML = '<li>ニュース取得に失敗しました</li>';
+    }
+  }
+
+  function renderNews() {
+    newsList.innerHTML = '';
+    newsItems.forEach(item => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = item.link;
+      a.target = '_blank';
+      a.textContent = item.title;
+      li.appendChild(a);
+      newsList.appendChild(li);
+    });
+  }
+
+  // ---------------------------
+  // ニュース自動スクロール
+  // ---------------------------
+  let scrollPosition = 0;
+  function scrollNews() {
+    scrollPosition += 1;
+    if (scrollPosition >= newsList.scrollHeight) {
+      scrollPosition = -newsList.parentElement.clientHeight;
+    }
+    newsList.style.top = -scrollPosition + 'px';
+  }
+
+  setInterval(scrollNews, 50); // スクロール速度調整
+  setInterval(fetchRSSNews, 5 * 60 * 1000); // 5分ごとに最新ニュース取得
+  fetchRSSNews(); // 初回取得
+</script>
+
 </body>
 </html>
