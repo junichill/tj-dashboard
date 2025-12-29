@@ -1,4 +1,5 @@
-const URL = "https://YOUR_PROJECT_URL.vercel.app/api/nhk-news"; // Vercel にデプロイ後のURL
+const URL = "https://api.allorigins.win/get?url=" +
+            encodeURIComponent("https://www3.nhk.or.jp/news/easy/top-list.json");
 
 fetch(URL)
   .then(res => res.json())
@@ -8,7 +9,10 @@ fetch(URL)
 
     list.innerHTML = "";
 
-    data.slice(0, 5).forEach(item => {
+    // allorigins の場合、data.contents にJSON文字列が入る
+    const nhkData = JSON.parse(data.contents);
+
+    nhkData.slice(0, 5).forEach(item => {
       const li = document.createElement("li");
       li.textContent = item.title;
       list.appendChild(li);
