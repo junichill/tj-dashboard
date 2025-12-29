@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>大きい時計＋ニュース＋天気</title>
+<title>大きな時計＋ニュース＋天気</title>
 <style>
   body {
     margin: 0;
@@ -25,12 +25,13 @@
   }
 
   #clock {
-    font-size: 150px;
+    font-size: 200px; /* 時計をさらに大きく */
     font-weight: bold;
+    line-height: 1;
   }
 
   #date {
-    font-size: 32px;
+    font-size: 36px;
     position: absolute;
     bottom: 20px;
     left: 20px;
@@ -94,7 +95,7 @@
 
   #weather {
     text-align: center;
-    font-size: 24px;
+    font-size: 28px;
   }
 </style>
 </head>
@@ -138,4 +139,72 @@
   setInterval(updateClock, 1000);
   updateClock();
 
-  // --------------------
+  // ---------------------------
+  // RSSニュース取得
+  // ---------------------------
+  const rssFeedUrl = 'https://www3.nhk.or.jp/rss/news/cat0.xml';
+  const rss2jsonApi = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssFeedUrl);
+  const newsList = document.getElementById('news-list');
+
+  async function fetchNews() {
+    try {
+      const res = await fetch(rss2jsonApi);
+      const data = await res.json();
+      newsList.innerHTML = '';
+      data.items.slice(0, 10).forEach(item => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = item.link;
+        a.target = '_blank';
+        a.textContent = item.title;
+        li.appendChild(a);
+        newsList.appendChild(li);
+      });
+    } catch(err) {
+      newsList.innerHTML = '<li>ニュース取得に失敗しました</li>';
+      console.error(err);
+    }
+  }
+
+  fetchNews();
+  setInterval(fetchNews, 5 * 60 * 1000);
+
+  // ---------------------------
+  // 天気情報取得
+  // ---------------------------
+  const weatherDiv = document.getElementById('weather');
+  const CITY_ID = '<YOUR_CITY_ID>'; // OpenWeatherMap 都市ID
+  const API_KEY = '<YOUR_API_KEY>';  // OpenWeatherMap APIキー
+
+  async function fetchWeather() {
+    try {
+      const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?id=${CITY_ID}&appid=${API_KEY}&lang=ja&units=metric`);
+      const data = await res.json();
+      const temp = data.main.temp.toFixed(1);
+      const desc = data.weather[0].description;
+      const city = data.name;
+      weatherDiv.textContent = `${city}：${temp}℃ / ${desc}`;
+    } catch(err) {
+      weatherDiv.textContent = '天気情報取得に失敗';
+      console.error(err);
+    }
+  }
+
+  fetchWeather();
+  setInterval(fetchWeather, 10 * 60 * 1000);
+
+  // ---------------------------
+  // ニュース/天気 自動切替
+  // ---------------------------
+  const sections = [document.getElementById('news-section'), document.getElementById('weather-section')];
+  let currentIndex = 0;
+
+  setInterval(() => {
+    sections[currentIndex].classList.remove('active');
+    currentIndex = (currentIndex + 1) % sections.length;
+    sections[currentIndex].classList.add('active');
+  }, 10000); // 10秒ごとに切替
+</script>
+
+</body>
+</html>
