@@ -70,8 +70,8 @@ setInterval(showNews, 5000);
 
 // ---------------- 天気 ----------------
 const weatherEl = document.getElementById('weather');
-const CITY_ID = '<YOUR_CITY_ID>'; // OpenWeatherMapの都市ID
-const API_KEY = '<YOUR_API_KEY>'; // APIキー
+const CITY_ID = '1850147'; // OpenWeatherMapの都市ID
+const API_KEY = '6de856548e96ad1b5e27260be60e4f51'; // APIキー
 
 async function fetchWeather() {
   try {
