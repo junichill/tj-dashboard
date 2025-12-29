@@ -22,7 +22,7 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// ---------------- NEWS (fade) ----------------
+// ---------------- NEWS ----------------
 const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
 const rss2jsonApi = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
 const newsCard = document.getElementById('news-card');
@@ -58,11 +58,12 @@ function renderNewsItems() {
   });
 }
 
+// フェード切替
 function startFadeNews() {
   if(newsItems.length === 0) return;
-  newsIndex = 0;
   const items = document.querySelectorAll('.news-item');
-  
+  newsIndex = 0;
+
   if(fadeInterval) clearInterval(fadeInterval);
 
   fadeInterval = setInterval(() => {
@@ -70,11 +71,9 @@ function startFadeNews() {
     newsIndex = (newsIndex + 1) % items.length;
 
     // フェードアウト前のニュース
-    items[prevIndex].style.transition = 'opacity 1s ease';
     items[prevIndex].style.opacity = '0';
 
     // フェードイン次のニュース
-    items[newsIndex].style.transition = 'opacity 1s ease';
     items[newsIndex].style.opacity = '1';
   }, 5000);
 }
@@ -99,21 +98,4 @@ async function fetchWeather() {
     const tomorrowDate = new Date(now.getTime() + 24*60*60*1000).getDate();
 
     const todayWeather = data.list.find(item => new Date(item.dt_txt).getDate() === todayDate);
-    const tomorrowWeather = data.list.find(item => new Date(item.dt_txt).getDate() === tomorrowDate);
-
-    if(todayWeather && tomorrowWeather){
-      weatherEl.innerHTML =
-        `Today: ${todayWeather.main.temp.toFixed(1)}℃ / ${todayWeather.weather[0].description}<br>` +
-        `Tomorrow: ${tomorrowWeather.main.temp.toFixed(1)}℃ / ${tomorrowWeather.weather[0].description}`;
-      weatherEl.style.textAlign = 'left';
-    } else {
-      weatherEl.textContent = 'Weather info unavailable';
-    }
-  } catch(err) {
-    weatherEl.textContent = 'Weather fetch failed';
-    console.error(err);
-  }
-}
-
-fetchWeather();
-setInterval(fetchWeather, 10*60*1000);
+    const tomorrowWeather = data.list.find(item => new Date(item.dt_txt).getDate()_
