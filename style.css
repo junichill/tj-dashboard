@@ -78,7 +78,7 @@ html, body {
 }
 
 .news-title {
-  font-size: 44px;          /* タイトル大きく */
+  font-size: 66px;          /* タイトル大きく */
   font-weight: bold;
   color: white;
   text-decoration: none;
@@ -90,4 +90,5 @@ html, body {
   text-align: right;
   margin-top: 5px;
 }
+
 
