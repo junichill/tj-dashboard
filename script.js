@@ -68,33 +68,22 @@ fetchNews();
 setInterval(fetchNews, 5*60*1000);
 setInterval(showNews, 5000);
 
-// ---------------- 天気（OpenWeatherMap API） ----------------
+// ---------------- 天気（Yahoo!天気RSS） ----------------
 const weatherEl = document.getElementById('weather');
-const CITY_ID = '1859140';       // 川崎の都市ID
-const API_KEY = '6de856548e96ad1b5e27260be60e4f51'; // ここに自分のAPIキーを入力
+const weatherRSS = 'https://rss.weather.yahoo.co.jp/rss/days/13.xml'; // 川崎
 
-async function fetchWeather() {
+async function fetchWeatherRSS() {
   try {
-    const res = await fetch(`https://api.openweathermap.org/data/2.5/forecast?id=${CITY_ID}&appid=${API_KEY}&lang=ja&units=metric`);
+    const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(weatherRSS)}`);
     const data = await res.json();
-
-    const now = new Date();
-    const today = now.getDate();
-    const tomorrow = new Date(now.getTime() + 24*60*60*1000).getDate();
-
-    const todayWeather = data.list.find(item => new Date(item.dt_txt).getDate() === today);
-    const tomorrowWeather = data.list.find(item => new Date(item.dt_txt).getDate() === tomorrow);
-
-    if(todayWeather && tomorrowWeather) {
-      weatherEl.textContent = 
-        `今日: ${todayWeather.main.temp.toFixed(1)}℃/${todayWeather.weather[0].description}  ` +
-        `明日: ${tomorrowWeather.main.temp.toFixed(1)}℃/${tomorrowWeather.weather[0].description}`;
-    }
+    const todayItem = data.items[0];     // 今日
+    const tomorrowItem = data.items[1];  // 明日
+    weatherEl.textContent = `今日: ${todayItem.title}  明日: ${tomorrowItem.title}`;
   } catch(err) {
     weatherEl.textContent = '天気取得失敗';
     console.error(err);
   }
 }
 
-fetchWeather();
-setInterval(fetchWeather, 10*60*1000);
+fetchWeatherRSS();
+setInterval(fetchWeatherRSS, 10*60*1000);
