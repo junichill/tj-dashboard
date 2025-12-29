@@ -72,13 +72,6 @@ html, body {
   font-size: 24px;
 }
 
-#news-card a {
-  color: #1e90ff;
-  font-size: 32px;
-  font-weight: bold;
-  text-decoration: none;
-}
-
 .news-item {
   position: absolute;
   width: 100%;
@@ -95,4 +88,18 @@ html, body {
 .news-item.hide {
   opacity: 0;
   transform: translateX(-50px);
+}
+
+/* ---------------- ニュースタイトル ---------------- */
+.news-title {
+  color: #ffffff;        
+  font-weight: 700;      
+  font-size: 32px;       
+  text-decoration: none; 
+  display: block;        
+  margin-bottom: 10px;   
+}
+
+.news-item a:hover {
+  color: #1e90ff;        
 }
