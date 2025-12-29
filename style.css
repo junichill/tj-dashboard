@@ -1,105 +1,79 @@
-html, body {
+body {
   margin: 0;
-  padding: 0;
-  width: 1920px;
-  height: 720px;
-  font-family: 'Segoe UI', Arial, sans-serif;
-  display: flex;
-  background-color: #000;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  background: #000;
   color: #fff;
-  overflow: hidden;
 }
 
-/* ---------------- 左パネル ---------------- */
+#container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
 #left-panel {
-  width: 50%;
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 60px 40px;
-  background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);
-  border-radius: 20px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
-  color: #fff;
+  padding-left: 50px;
 }
 
 #clock {
-  font-size: 160px;
-  font-weight: 700;
+  font-size: 12vw;
+  font-weight: bold;
   line-height: 1;
-  letter-spacing: -2px;
-  color: #f0f0f0;
-  text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
-  transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease;
 }
 
 #date {
-  font-size: 36px;
-  margin-top: 20px;
-  color: #cccccc;
-  text-shadow: 1px 1px 5px rgba(0,0,0,0.4);
+  font-size: 2.5vw;
+  margin-top: 10px;
 }
 
 #weather {
-  font-size: 36px;
+  font-size: 2.5vw;
   margin-top: 10px;
-  color: #a0dfff;
-  text-shadow: 1px 1px 5px rgba(0,0,0,0.4);
+  text-align: right;
 }
 
-/* ---------------- 右パネル ---------------- */
 #right-panel {
-  width: 50%;
+  flex: 1;
+  position: relative;
+  background: url('news-bg.png') center/cover no-repeat;
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: 40px;
-  box-sizing: border-box;
+  justify-content: center;
 }
 
 #news-card {
-  width: 100%;
-  height: 300px;
-  position: relative;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.7);
-  background-image: url('img/news-bg.png');
-  background-size: cover;
-  background-position: center;
+  background: rgba(0,0,0,0.6);
   padding: 30px;
+  border-radius: 20px;
+  width: 80%;
+  height: 60%;
+  overflow: hidden;
   color: #fff;
-  font-size: 24px;
+  font-size: 1.5vw;
+  position: relative;
 }
 
 .news-item {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   opacity: 0;
-  transform: translateX(50px);
-  transition: all 1s ease;
+  transition: opacity 1s;
 }
 
 .news-item.show {
   opacity: 1;
-  transform: translateX(0);
 }
 
-.news-item.hide {
-  opacity: 0;
-  transform: translateX(-50px);
-}
-
-/* ---------------- ニュースタイトル ---------------- */
 .news-title {
-  color: #ffffff;        
-  font-weight: 700;      
-  font-size: 32px;       
-  text-decoration: none; 
-  display: block;        
-  margin-bottom: 10px;   
-}
-
-.news-item a:hover {
-  color: #1e90ff;        
+  font-weight: bold;
+  font-size: 2vw;
+  color: #fff;
+  text-decoration: none;
 }
