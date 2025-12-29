@@ -3,32 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Digital Display</title>
-<link rel="stylesheet" href="style.css">
-<link href="flip.min.css" rel="stylesheet">
-</head>
-<body>
-  <div id="container">
-    <!-- 左側: 時計・日付・天気 -->
-    <div id="left-panel">
-    <div class="clock-container">
-        <div id="flip-clock" class="tick" data-did-init="initClock">
-            <!-- 4 つのセクション（HH:MM:SS） -->
-            <div data-repeat="true">
-                <span data-view="flip"></span>
-            </div>
-        </div>
-    </div>
-      <div id="date"></div>
-      <div id="weather"></div>
-    </div>
+<title>Flip Clock Dashboard</title>
+<style>
+/* ---------- style.css ---------- */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  font-family: Arial, sans-serif;
+  color: white;
+  overflow: hidden;
+}
 
-    <!-- 右側: ニュースカード -->
-    <div id="right-panel">
-      <div id="news-card"></div>
-    </div>
-  </div>
-<script src="flip.min.js"></script>
-<script src="script.js"></script>
-</body>
-</html>
+#container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+/* 左パネル: 時計・日付・天気 */
+#left-panel {
+  width: 60%; /* 左パネル広くして時計大きく */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 50px;
+  box-sizing: border-box;
+}
+
+.clock-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#clock.tick {
+  font-size: 15vw; /* 左パネルいっぱいに大きく表示 */
+  font-weight:
