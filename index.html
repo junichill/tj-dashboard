@@ -61,7 +61,7 @@
     width: 100%;
     max-width: 600px;
     transition: opacity 0.5s;
-    white-space: pre-line; /* 改行を反映 */
+    white-space: pre-line; /* 改行反映 */
   }
 
   #news-card a {
@@ -114,7 +114,7 @@
   updateClock();
 
   // ---------------------------
-  // NHKニュースRSS取得
+  // NHKニュースRSS取得（タイトル＋description＋pubDate）
   // ---------------------------
   const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
   const rss2jsonApi = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
@@ -142,7 +142,6 @@
     setTimeout(() => {
       newsCard.innerHTML =
         `<a href="${item.link}" target="_blank">${item.title}</a>\n` +
-        `${item.guid}\n` +
         `${item.description}\n` +
         `${item.pubDate}`;
       newsCard.style.opacity = 1;
@@ -153,7 +152,7 @@
 
   fetchNews();
   setInterval(fetchNews, 5*60*1000); // 5分ごと更新
-  setInterval(showNews, 2000); // 2秒ごと切替
+  setInterval(showNews, 5000); // 5秒ごとに切替
 
   // ---------------------------
   // 天気情報取得（今日＋明日）
