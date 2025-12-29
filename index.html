@@ -61,16 +61,22 @@
     width: 100%;
     max-width: 600px;
     transition: opacity 0.5s;
-    white-space: pre-line;
+    white-space: pre-line; /* 改行を反映 */
   }
 
   #news-card a {
     color: #1e90ff;
     text-decoration: none;
+    font-size: 24px; /* タイトル大きめ */
+    font-weight: bold;
   }
 
   #news-card a:hover {
     text-decoration: underline;
+  }
+
+  .news-field {
+    margin-top: 10px;
   }
 </style>
 </head>
@@ -164,13 +170,11 @@
       const data = await res.json();
       const today = new Date().getDate();
 
-      // 今日の天気（午前12時〜23時の最初のデータを取得）
       const todayWeather = data.list.find(item => new Date(item.dt_txt).getDate() === today);
       if(todayWeather) {
         weatherTodayDiv.textContent = `今日の天気: ${todayWeather.main.temp.toFixed(1)}℃ / ${todayWeather.weather[0].description}`;
       }
 
-      // 明日の天気（翌日の最初のデータを取得）
       const tomorrowWeather = data.list.find(item => new Date(item.dt_txt).getDate() === today + 1);
       if(tomorrowWeather) {
         weatherTomorrowDiv.textContent = `明日の天気: ${tomorrowWeather.main.temp.toFixed(1)}℃ / ${tomorrowWeather.weather[0].description}`;
