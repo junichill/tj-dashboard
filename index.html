@@ -1,20 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>TJ Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
 <body>
-  <header>
-    <div>TJ Dashboard</div>
-    <div id="clock"></div>
-  </header>
-
-  <main>
-    <section class="weather" id="weather">
-      <h2>Weather</h2>
-      Loading...
-    </section>
-
-    <section class="news" id="news">
-      <h2>News</h2>
-      Loading...
-    </section>
-  </main>
+  <div class="dashboard">
+    <div class="left">
+      <div id="clock">00:00</div>
+      <div id="date">----</div>
+    </div>
+    <div class="right">
+      <div class="panel">Weather</div>
+      <div class="panel">News</div>
+    </div>
+  </div>
 
   <script src="main.js"></script>
 </body>
+</html>
