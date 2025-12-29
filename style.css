@@ -16,7 +16,7 @@
   border-bottom: thin solid #000000;
 }
 #hour10, #hour1, #min10, #min10, #min1, #sec10, #sec1 {
-  background-image: url(https://woopeer.com/img/codepen/c_bg.png);
+  background-image: url(c_bg.png);
   height: 98px;
   width: 56px;
   margin: 2px;
