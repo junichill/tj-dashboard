@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panorama風スマートディスプレイ 1920x720最適化</title>
+<title>Panorama風スマートディスプレイ アニメーション版</title>
 <style>
   html, body {
     margin: 0;
@@ -21,37 +21,42 @@
     flex-direction: row;
   }
 
-  /* 左カラム：時計・日付・天気 */
+  /* 左カラム: 時計 */
   #left-panel {
-    width: 1280px; /* 2/3 */
+    width: 60%; /* 横幅5/3相当 */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
     padding-left: 80px;
     box-sizing: border-box;
+    position: relative;
   }
 
   #clock {
-    font-size: 200px; /* 1920x720向けに調整 */
+    font-size: 180px;
     font-weight: bold;
     line-height: 1;
-    color: #ffffff;
+    transition: all 0.5s ease-in-out;
   }
 
   #date {
-    font-size: 48px;
-    margin-top: 10px;
-  }
-
-  #weather-today, #weather-tomorrow {
     font-size: 36px;
-    margin-top: 5px;
+    position: absolute;
+    bottom: 20px;
+    left: 80px;
   }
 
-  /* 右カラム：ニュースカード */
+  #weather {
+    font-size: 36px;
+    position: absolute;
+    bottom: 20px;
+    right: 80px;
+  }
+
+  /* 右カラム: ニュースカード */
   #right-panel {
-    width: 640px; /* 1/3 */
+    width: 40%; /* 横幅2/5 */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -66,10 +71,11 @@
     box-shadow: 0 8px 20px rgba(0,0,0,0.7);
     padding: 30px;
     width: 100%;
-    font-size: 24px; /* 読みやすく調整 */
+    font-size: 24px;
     white-space: pre-line;
-    transition: opacity 0.7s;
     overflow-wrap: break-word;
+    position: relative;
+    height: 300px;
   }
 
   #news-card a {
@@ -83,6 +89,23 @@
     text-decoration: underline;
   }
 
+  .fade {
+    position: absolute;
+    width: 100%;
+    opacity: 0;
+    transition: opacity 1s ease, transform 1s ease;
+  }
+
+  .fade.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .fade.hide {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
 </style>
 </head>
 <body>
@@ -90,8 +113,7 @@
 <div id="left-panel">
   <div id="clock">00:00</div>
   <div id="date">2025/12/29(月)</div>
-  <div id="weather-today">今日の天気: 読み込み中...</div>
-  <div id="weather-tomorrow">明日の天気: 読み込み中...</div>
+  <div id="weather">今日の天気: 読み込み中...</div>
 </div>
 
 <div id="right-panel">
@@ -102,30 +124,36 @@
   // --------------------------
   // 時計と日付
   // --------------------------
+  const clockEl = document.getElementById('clock');
+  const dateEl = document.getElementById('date');
+
   function updateClock() {
     const now = new Date();
     const h = String(now.getHours()).padStart(2,'0');
     const m = String(now.getMinutes()).padStart(2,'0');
-    document.getElementById('clock').textContent = `${h}:${m}`;
+
+    // 滑らかに変化
+    clockEl.textContent = `${h}:${m}`;
 
     const year = now.getFullYear();
     const month = String(now.getMonth()+1).padStart(2,'0');
     const date = String(now.getDate()).padStart(2,'0');
     const weekdays = ['日','月','火','水','木','金','土'];
     const day = weekdays[now.getDay()];
-    document.getElementById('date').textContent = `${year}/${month}/${date}(${day})`;
+    dateEl.textContent = `${year}/${month}/${date}(${day})`;
   }
   setInterval(updateClock, 1000);
   updateClock();
 
   // --------------------------
-  // NHKニュースRSS取得
+  // ニュースRSS取得
   // --------------------------
   const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
   const rss2jsonApi = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
   const newsCard = document.getElementById('news-card');
   let newsItems = [];
   let newsIndex = 0;
+  let newsElements = [];
 
   async function fetchNews() {
     try {
@@ -133,6 +161,7 @@
       const data = await res.json();
       newsItems = data.items;
       newsIndex = 0;
+      prepareNewsElements();
       showNews();
     } catch(err) {
       newsCard.textContent = 'ニュース取得に失敗しました';
@@ -140,53 +169,65 @@
     }
   }
 
-  function showNews() {
-    if(newsItems.length === 0) return;
-    const item = newsItems[newsIndex];
-    newsCard.style.opacity = 0;
-    setTimeout(() => {
-      newsCard.innerHTML =
+  function prepareNewsElements() {
+    newsCard.innerHTML = '';
+    newsElements = newsItems.map(item => {
+      const div = document.createElement('div');
+      div.className = 'fade';
+      div.innerHTML =
         `<a href="${item.link}" target="_blank">${item.title}</a>\n` +
         `${item.description}\n` +
         `${item.pubDate}`;
-      newsCard.style.opacity = 1;
-    }, 500);
-    newsIndex = (newsIndex + 1) % newsItems.length;
+      newsCard.appendChild(div);
+      return div;
+    });
+  }
+
+  function showNews() {
+    if(newsElements.length === 0) return;
+
+    newsElements.forEach((el, i) => {
+      el.classList.remove('show','hide');
+      if(i === newsIndex) {
+        el.classList.add('show');
+      } else {
+        el.classList.add('hide');
+      }
+    });
+
+    newsIndex = (newsIndex + 1) % newsElements.length;
   }
 
   fetchNews();
-  setInterval(fetchNews, 5*60*1000); // RSS 5分ごと更新
-  setInterval(showNews, 5000); // ニュース 5秒ごと切替
+  setInterval(fetchNews, 5*60*1000);
+  setInterval(showNews, 5000);
 
   // --------------------------
-  // 天気取得（OpenWeatherMap）
+  // 天気取得
   // --------------------------
-  const weatherTodayDiv = document.getElementById('weather-today');
-  const weatherTomorrowDiv = document.getElementById('weather-tomorrow');
-  const CITY_ID = '<YOUR_CITY_ID>'; // 都市ID
-  const API_KEY = '<YOUR_API_KEY>'; // APIキー
+  const weatherEl = document.getElementById('weather');
+  const CITY_ID = '<YOUR_CITY_ID>';
+  const API_KEY = '<YOUR_API_KEY>';
 
   async function fetchWeather() {
     try {
       const res = await fetch(`https://api.openweathermap.org/data/2.5/forecast?id=${CITY_ID}&appid=${API_KEY}&lang=ja&units=metric`);
       const data = await res.json();
       const today = new Date().getDate();
-
       const todayWeather = data.list.find(item => new Date(item.dt_txt).getDate() === today);
-      if(todayWeather) weatherTodayDiv.textContent = `今日の天気: ${todayWeather.main.temp.toFixed(1)}℃ / ${todayWeather.weather[0].description}`;
-
       const tomorrowWeather = data.list.find(item => new Date(item.dt_txt).getDate() === today + 1);
-      if(tomorrowWeather) weatherTomorrowDiv.textContent = `明日の天気: ${tomorrowWeather.main.temp.toFixed(1)}℃ / ${tomorrowWeather.weather[0].description}`;
-
+      if(todayWeather && tomorrowWeather) {
+        weatherEl.textContent = `今日: ${todayWeather.main.temp.toFixed(1)}℃/${todayWeather.weather[0].description}  明日: ${tomorrowWeather.main.temp.toFixed(1)}℃/${tomorrowWeather.weather[0].description}`;
+      }
     } catch(err) {
-      weatherTodayDiv.textContent = '今日の天気: 取得失敗';
-      weatherTomorrowDiv.textContent = '明日の天気: 取得失敗';
+      weatherEl.textContent = '天気取得失敗';
       console.error(err);
     }
   }
 
   fetchWeather();
-  setInterval(fetchWeather, 10*60*1000); // 天気 10分ごと更新
+  setInterval(fetchWeather, 10*60*1000);
+
 </script>
 
 </body>
