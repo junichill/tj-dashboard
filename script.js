@@ -70,7 +70,7 @@ setInterval(showNews, 5000);
 
 // ---------------- 天気（川崎市 OpenWeatherMap API対応） ----------------
 const weatherEl = document.getElementById('weather');
-const CITY_ID = '1859140';       // 川崎市の都市ID
+const CITY_ID = '1852776';       // 川崎市の都市ID
 const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11'; // ここに自分のOpenWeatherMap APIキーを貼る
 
 async function fetchWeather() {
