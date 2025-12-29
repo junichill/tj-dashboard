@@ -1,46 +1,42 @@
-* {
-  box-sizing: border-box;
-}
-
 body {
   margin: 0;
-  background: #0b0e14;
-  color: #e6e6eb;
-  font-family: "Segoe UI", system-ui, sans-serif;
+  background: #000;
+  color: #fff;
+  font-family: system-ui, sans-serif;
 }
 
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 24px 40px;
-  font-size: 32px;
-  border-bottom: 1px solid #222;
-}
-
-main {
+.dashboard {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  height: calc(100vh - 96px);
+  grid-template-columns: 2fr 1fr;
+  height: 100vh;
 }
 
-section {
+.left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 80px;
+}
+
+#clock {
+  font-size: 120px;
+  font-weight: bold;
+}
+
+#date {
+  font-size: 32px;
+  opacity: 0.7;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24px;
   padding: 40px;
 }
 
-h2 {
-  font-size: 36px;
-  margin-bottom: 24px;
-  border-bottom: 1px solid #333;
-  padding-bottom: 8px;
-}
-
-.weather {
-  font-size: 48px;
-  line-height: 1.4;
-}
-
-.news div {
-  font-size: 28px;
-  margin-bottom: 16px;
+.panel {
+  border: 1px solid #333;
+  padding: 20px;
 }
