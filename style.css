@@ -1,40 +1,40 @@
+/* 全体 */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  background: #000;
+  background-color: #000;
   color: #fff;
-  font-family: "Segoe UI", system-ui, sans-serif;
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+/* ダッシュボード中央配置 */
 #dashboard {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 60px 20px;
+  width: 100%;
+  max-width: 1200px;
+  padding: 40px;
   box-sizing: border-box;
-  min-height: 100vh;
 }
 
+/* 時計 */
 #clock {
-  font-size: 140px;
+  font-size: 160px;
   font-weight: 900;
   text-align: center;
   margin-bottom: 60px;
-  text-shadow: 0 0 20px #fff, 0 0 40px #fff;
+  color: #fff;
+  text-shadow: 0 0 15px #fff, 0 0 30px #fff, 0 0 45px #fff;
 }
 
+/* ニュースリスト */
 #news {
   width: 100%;
-  max-width: 900px;
-}
-
-#news h2 {
-  font-size: 42px;
-  margin-bottom: 30px;
-  text-align: center;
-  border-bottom: 3px solid #fff;
-  padding-bottom: 12px;
 }
 
 #news-list {
@@ -45,16 +45,17 @@ html, body {
 
 #news-list li {
   font-size: 32px;
-  font-weight: 600;
+  font-weight: 700;
+  line-height: 1.5;
   margin-bottom: 20px;
-  line-height: 1.6;
-  padding: 12px 20px;
+  padding: 20px 30px;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-  transition: background 0.3s, transform 0.2s;
+  border-radius: 12px;
+  transition: all 0.2s ease-in-out;
 }
 
+/* ホバー時 */
 #news-list li:hover {
   background: rgba(255, 255, 255, 0.15);
-  transform: translateX(5px);
+  transform: translateX(10px);
 }
