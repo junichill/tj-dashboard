@@ -7,6 +7,7 @@ fetch(URL)
     if (!list) return;
 
     list.innerHTML = "";
+
     data.slice(0, 5).forEach(item => {
       const li = document.createElement("li");
       li.textContent = item.title;
