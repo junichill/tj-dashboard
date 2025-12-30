@@ -123,17 +123,8 @@ function updateIndicator() {
 
       stopAuto();
 
-      const lastIndex = newsElements.length - 1;
-      let direction;
-
-      // 向き判定（常に「次＝右、前＝左」で統一）
-      if (newsIndex === lastIndex && i === 0) {
-        direction = 'right'; // 最後 → 最初
-      } else if (newsIndex === 0 && i === lastIndex) {
-        direction = 'left';  // 最初 → 最後
-      } else {
-        direction = i > newsIndex ? 'right' : 'left';
-      }
+// 常に「次方向（右）」で統一
+const direction = 'right';
 
       showNews(i, direction);
       startAuto();
