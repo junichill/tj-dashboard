@@ -131,10 +131,8 @@ function updateIndicator() {
   showNews(i, direction);
   startAuto();
 });
-      startAuto();
-    });
-
-    indicator.appendChild(dot);
+  indicator.appendChild(dot);
+});
 }
 
 // ---------- ニュース取得 ----------
