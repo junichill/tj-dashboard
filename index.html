@@ -1,34 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Digital Display</title>
-<link rel="stylesheet" href="style.css">
-<link href="flip.min.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <title>Flip Clock News Dashboard</title>
+
+  <!-- Tick.js（Flip） -->
+  <link rel="stylesheet" href="flip.min.css">
+  <script src="flip.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="container">
-    <!-- 左側: 時計・日付・天気 -->
+
+    <!-- ================= 左パネル ================= -->
     <div id="left-panel">
-    <div class="clock-container">
-        <div id="flip-clock" class="tick" data-did-init="initClock">
-            <!-- 4 つのセクション（HH:MM:SS） -->
-            <div data-repeat="true">
-                <span data-view="flip"></span>
-            </div>
-        </div>
-    </div>
+      <div id="flip-clock" class="tick"></div>
       <div id="date"></div>
       <div id="weather"></div>
     </div>
 
-    <!-- 右側: ニュースカード -->
+    <!-- ================= 右パネル ================= -->
     <div id="right-panel">
       <div id="news-card"></div>
+      <div id="news-indicator"></div>
     </div>
+
   </div>
-<script src="flip.min.js"></script>
-<script src="script.js"></script>
+
+  <script src="script.js"></script>
 </body>
 </html>
