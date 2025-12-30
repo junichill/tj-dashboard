@@ -135,7 +135,6 @@ function updateIndicator() {
     });
 
     indicator.appendChild(dot);
-  });
 }
 
 // ---------- ニュース取得 ----------
