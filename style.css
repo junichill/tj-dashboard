@@ -9,138 +9,115 @@ html, body {
   overflow: hidden;
 }
 
-/* =========================
-   全体レイアウト
-   ========================= */
+/* 全体 */
 #container {
   display: flex;
   width: 100%;
   height: 100%;
 }
 
-/* =========================
-   左側：時計・日付・天気
-   ========================= */
+/* ================= 左：時計 ================= */
 #left-panel {
   width: 50%;
   height: 100%;
-
   display: flex;
   flex-direction: column;
   justify-content: center;
-
   padding-left: 50px;
   box-sizing: border-box;
 }
 
-/* Flip Clock */
-#clock.tick {
+#flip-clock {
   font-size: 200px;
-  font-weight: bold;
-  color: white;
-  line-height: 1;
 }
 
-/* 日付 */
 #date {
   font-size: 28px;
   margin-top: 10px;
   text-align: right;
 }
 
-/* 天気 */
 #weather {
   font-size: 28px;
   margin-top: 10px;
-  text-align: left;
 }
 
-/* =========================
-   右側：ニュース（背景とパネル同期）
-   ========================= */
+/* ================= 右：ニュース ================= */
 #right-panel {
   width: 50%;
   height: 100%;
-
-  background-image: url('news-bg.png');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 80% 63%;   /* 背景画像もパネルと完全同期 */
-
+  background: url("news-bg.png") center / 80% 63% no-repeat;
   display: flex;
-  align-items: center;       /* 縦中央 */
-  justify-content: center;   /* 横中央 */
-
-  box-sizing: border-box;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-/* 黒透過ニュースパネル */
+/* ニュースカード */
 #news-card {
   width: 80%;
-  height: 63%;               /* 背景画像と完全一致 */
-
-  background: rgba(0, 0, 0, 0.6);
+  height: 63%;
+  background: rgba(0,0,0,0.6);
   border-radius: 15px;
-
   position: relative;
   overflow: hidden;
-
-  padding: 20px;
-  box-sizing: border-box;
-
-  /* ▼ 横スワイプ必須設定 */
-  pointer-events: auto;
-  touch-action: pan-y;
 }
 
-/* =========================
-   ニュース表示
-   ========================= */
+/* ニュース */
 .news-item {
   position: absolute;
-  top: 20px;
-  left: 20px;
-  right: 20px;
-
+  inset: 20px;
   opacity: 0;
-  transition: opacity 0.8s ease-in-out;
-
-  font-size: 24px;
-  line-height: 1.4;
+  transform: translateX(0);
+  transition: transform 0.8s ease, opacity 0.8s ease;
 }
 
 .news-item.show {
   opacity: 1;
-  z-index: 1;
 }
 
-/* タイトル */
+.news-item.from-right {
+  transform: translateX(100%);
+}
+
+.news-item.from-left {
+  transform: translateX(-100%);
+}
+
+/* テキスト */
 .news-title {
-  display: block;
-  font-size: 40px;
+  font-size: 38px;
   font-weight: bold;
   color: white;
   text-decoration: none;
-  margin-bottom: 10px;
 }
 
-/* 日時 */
-.news-pubdate {
-  font-size: 14px;
-  color: #ccc;
-  text-align: right;
-  margin-top: 5px;
-}
-
-/* 本文 */
 .news-description {
   font-size: 20px;
   margin-top: 10px;
 }
 
-/* =========================
-   クリック・選択抑止（誤操作防止）
-   ========================= */
-#news-card * {
-  user-select: none;
+.news-pubdate {
+  font-size: 14px;
+  color: #ccc;
+  text-align: right;
+}
+
+/* インジケータ */
+#news-indicator {
+  margin-top: 15px;
+}
+
+.indicator-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin: 0 5px;
+  border-radius: 50%;
+  background: #555;
+  cursor: pointer;
+}
+
+.indicator-dot.active {
+  background: white;
 }
