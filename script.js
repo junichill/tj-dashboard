@@ -91,7 +91,7 @@ let newsIndex = 0;
 
 let autoTimer = null;
 let isInteracting = false;
-const SLIDE_DURATION = 1.3; // ← スライド速度（秒）
+const SLIDE_DURATION = 0.8; // ← スライド速度（秒）
 
 // ---------- インジケータ ----------
 const indicator = document.createElement('div');
@@ -206,7 +206,7 @@ function startAuto() {
     if (!isInteracting) {
       showNews((newsIndex + 1) % newsElements.length, 'right');
     }
-  }, 7000);
+  }, 5000);
 }
 
 function stopAuto() {
