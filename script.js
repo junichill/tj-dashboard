@@ -77,12 +77,14 @@ fetchWeather();
 setInterval(fetchWeather, 600000);
 
 // =========================
-// NEWS + SWIPE
+// NEWS + SWIPE + INDICATOR
 // =========================
 const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
-const rss2jsonApi = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
+const rss2jsonApi =
+  'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
 
 const newsCard = document.getElementById('news-card');
+
 let newsItems = [];
 let newsElements = [];
 let newsIndex = 0;
@@ -112,16 +114,20 @@ function updateIndicator() {
   });
 }
 
-// ---------- ニュース生成 ----------
+// ---------- ニュース取得 ----------
 async function fetchNews() {
   const res = await fetch(rss2jsonApi);
   const data = await res.json();
+
   newsItems = data.items;
   createNewsElements();
+
+  // ★ 初期表示は必ず1件目を即表示
   showNews(0, 'init');
   startAuto();
 }
 
+// ---------- DOM生成 ----------
 function createNewsElements() {
   newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
   newsElements = newsItems.map(item => {
@@ -137,32 +143,45 @@ function createNewsElements() {
   });
 }
 
-// ---------- 表示 & アニメーション ----------
+// ---------- 表示制御 ----------
 function showNews(nextIndex, direction) {
   const current = newsElements[newsIndex];
   const next = newsElements[nextIndex];
 
+  // ===== 初回表示（アニメーションなし）=====
+  if (direction === 'init') {
+    newsElements.forEach(el => {
+      el.style.transition = 'none';
+      el.style.transform = 'translateX(0)';
+      el.style.opacity = 0;
+      el.classList.remove('show');
+    });
+
+    next.style.opacity = 1;
+    next.style.transform = 'translateX(0)';
+    next.classList.add('show');
+
+    newsIndex = nextIndex;
+    updateIndicator();
+    return;
+  }
+
+  // ===== スライド =====
   if (current) {
-    current.style.transform = 'translateX(0)';
-    current.style.opacity = 1;
+    current.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
+    current.style.transform =
+      direction === 'left' ? 'translateX(100%)' : 'translateX(-100%)';
+    current.style.opacity = 0;
+    current.classList.remove('show');
   }
 
   next.style.transition = 'none';
   next.style.transform =
-    direction === 'left' ? 'translateX(-100%)' :
-    direction === 'right' ? 'translateX(100%)' : 'translateX(0)';
+    direction === 'left' ? 'translateX(-100%)' : 'translateX(100%)';
   next.style.opacity = 1;
   next.classList.add('show');
 
   requestAnimationFrame(() => {
-    if (current) {
-      current.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
-      current.style.transform =
-        direction === 'left' ? 'translateX(100%)' : 'translateX(-100%)';
-      current.style.opacity = 0;
-      current.classList.remove('show');
-    }
-
     next.style.transition = 'transform 0.4s ease';
     next.style.transform = 'translateX(0)';
   });
@@ -185,7 +204,7 @@ function stopAuto() {
   if (autoTimer) clearInterval(autoTimer);
 }
 
-// ---------- スワイプ検出 ----------
+// ---------- スワイプ ----------
 let startX = 0;
 
 newsCard.addEventListener('pointerdown', e => {
