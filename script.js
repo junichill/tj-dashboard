@@ -1,6 +1,7 @@
 // ---------------- CLOCK (Flip) ----------------
 const clockEl = document.getElementById('clock');
 
+// Flip Clock 初期化
 function initClock(tick) {
     function update() {
         const now = new Date();
@@ -15,20 +16,23 @@ function initClock(tick) {
     setInterval(update, 1000);
 }
 
+// ---------------- 自動リサイズ ----------------
 function resizeClock(tick) {
     function updateSize() {
-        const panel = document.getElementById('left-panel');
-        const fontSize = Math.floor(
-            Math.min(panel.clientWidth / 6, panel.clientHeight / 2)
-        );
+        const panelWidth = document.getElementById('left-panel').clientWidth;
+        const panelHeight = document.getElementById('left-panel').clientHeight;
+
+        // パネルに収まる最大フォントサイズを計算
+        const fontSize = Math.floor(Math.min(panelWidth / 6, panelHeight / 2));
         tick.root.style.fontSize = fontSize + 'px';
     }
     updateSize();
     window.addEventListener('resize', updateSize);
 }
 
+// 初期化
 document.addEventListener('DOMContentLoaded', () => {
-    const tick = new FlipClock.Clock(clockEl);
+    const tick = new FlipClock.Clock(clockEl); // Flip Clock ライブラリで生成
     initClock(tick);
     resizeClock(tick);
 });
@@ -38,19 +42,23 @@ const dateEl = document.getElementById('date');
 
 function updateDate() {
     const now = new Date();
+    const year = now.getFullYear();
     const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const month = monthNames[now.getMonth()];
+    const date = now.getDate();
     const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    dateEl.textContent =
-        `${weekdays[now.getDay()]}, ${monthNames[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+    const day = weekdays[now.getDay()];
+    dateEl.textContent = `${day}, ${month} ${date}, ${year}`;
     dateEl.style.textAlign = 'right';
 }
+
 updateDate();
-setInterval(updateDate, 60000);
+setInterval(updateDate, 60*1000); // 1分ごと更新
 
 // ---------------- WEATHER ----------------
 const weatherEl = document.getElementById('weather');
 const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
-const LAT = 35.5309;
+const LAT = 35.5309;  // Kawasaki
 const LON = 139.7033;
 
 async function fetchWeather() {
@@ -61,30 +69,32 @@ async function fetchWeather() {
         const data = await res.json();
 
         const now = new Date();
-        const today = data.list.find(i => new Date(i.dt_txt).getDate() === now.getDate());
-        const tomorrow = data.list.find(i =>
-            new Date(i.dt_txt).getDate() === new Date(now.getTime()+86400000).getDate()
-        );
+        const todayDate = now.getDate();
+        const tomorrowDate = new Date(now.getTime() + 24*60*60*1000).getDate();
 
-        if (today && tomorrow) {
+        const todayWeather = data.list.find(item => new Date(item.dt_txt).getDate() === todayDate);
+        const tomorrowWeather = data.list.find(item => new Date(item.dt_txt).getDate() === tomorrowDate);
+
+        if(todayWeather && tomorrowWeather){
             weatherEl.innerHTML =
-                `Today: ${today.main.temp.toFixed(1)}℃ / ${today.weather[0].description}<br>` +
-                `Tomorrow: ${tomorrow.main.temp.toFixed(1)}℃ / ${tomorrow.weather[0].description}`;
+                `Today: ${todayWeather.main.temp.toFixed(1)}℃ / ${todayWeather.weather[0].description}<br>` +
+                `Tomorrow: ${tomorrowWeather.main.temp.toFixed(1)}℃ / ${tomorrowWeather.weather[0].description}`;
+            weatherEl.style.textAlign = 'left';
         } else {
             weatherEl.textContent = 'Weather info unavailable';
         }
-    } catch {
+    } catch(err) {
         weatherEl.textContent = 'Weather fetch failed';
+        console.error(err);
     }
 }
+
 fetchWeather();
-setInterval(fetchWeather, 600000);
+setInterval(fetchWeather, 10*60*1000); // 10分ごと更新
 
 // ---------------- NEWS ----------------
 const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
-const rss2jsonApi =
-    'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
-
+const rss2jsonApi = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
 const newsCard = document.getElementById('news-card');
 let newsItems = [];
 let newsIndex = 0;
@@ -94,12 +104,13 @@ async function fetchNews() {
     try {
         const res = await fetch(rss2jsonApi);
         const data = await res.json();
-        newsItems = data.items || [];
+        newsItems = data.items;
         newsIndex = 0;
         prepareNewsElements();
-        showNews(newsIndex);
-    } catch {
+        showNews();
+    } catch(err) {
         newsCard.textContent = 'News fetch failed';
+        console.error(err);
     }
 }
 
@@ -109,52 +120,31 @@ function prepareNewsElements() {
         const div = document.createElement('div');
         div.className = 'news-item';
 
-        div.innerHTML = `
-            ${item.thumbnail ? `<img src="${item.thumbnail}" class="news-img">` : ''}
-            <a href="${item.link}" target="_blank" class="news-title">${item.title}</a>
-            <hr>
-            <div class="news-pubdate">${item.pubDate}</div>
-            <div class="news-description">${item.description}</div>
-        `;
+        let imgHtml = '';
+        if(item.thumbnail) {
+            imgHtml = `<img src="${item.thumbnail}" class="news-img" alt="news image"><br>`;
+        }
+
+        div.innerHTML =
+            imgHtml +
+            `<a href="${item.link}" target="_blank" class="news-title">${item.title}</a><hr>` +
+            `<div class="news-pubdate" style="text-align:right;">${item.pubDate}</div>` +
+            `<div class="news-description">${item.description}</div>`;
+
         newsCard.appendChild(div);
         return div;
     });
 }
 
-function showNews(index) {
-    if (!newsElements.length) return;
-    newsElements.forEach((el,i) =>
-        el.classList.toggle('show', i === index)
-    );
+function showNews() {
+    if(newsElements.length === 0) return;
+    newsElements.forEach((el,i) => {
+        el.classList.remove('show');
+        if(i === newsIndex) el.classList.add('show');
+    });
+    newsIndex = (newsIndex + 1) % newsElements.length;
 }
 
-// 自動切替
-setInterval(() => {
-    if (!newsElements.length) return;
-    newsIndex = (newsIndex + 1) % newsElements.length;
-    showNews(newsIndex);
-}, 5000);
-
-// -------- 横スクロール操作で切替 --------
-let scrollAccumulator = 0;
-const SCROLL_THRESHOLD = 80;
-
-newsCard.addEventListener('wheel', e => {
-    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-        e.preventDefault();
-        scrollAccumulator += e.deltaX;
-
-        if (scrollAccumulator > SCROLL_THRESHOLD) {
-            newsIndex = (newsIndex + 1) % newsElements.length;
-            showNews(newsIndex);
-            scrollAccumulator = 0;
-        } else if (scrollAccumulator < -SCROLL_THRESHOLD) {
-            newsIndex = (newsIndex - 1 + newsElements.length) % newsElements.length;
-            showNews(newsIndex);
-            scrollAccumulator = 0;
-        }
-    }
-}, { passive: false });
-
 fetchNews();
-setInterval(fetchNews, 300000);
+setInterval(fetchNews, 5*60*1000); // 5分ごと更新
+setInterval(showNews, 5000);        // 5秒ごと切替
