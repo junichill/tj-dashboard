@@ -9,7 +9,7 @@ html, body {
   overflow: hidden;
 }
 
-/* 全体コンテナ */
+/* 全体 */
 #container {
   display: flex;
   width: 100%;
@@ -53,7 +53,7 @@ html, body {
 }
 
 /* =========================
-   右側：ニュース
+   右側：ニュース（上下中央）
    ========================= */
 #right-panel {
   width: 50%;
@@ -65,13 +65,13 @@ html, body {
   background-size: 80% 90%;
 
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: center;      /* ← 縦方向中央 */
+  justify-content: center;  /* ← 横方向中央 */
 
   box-sizing: border-box;
 }
 
-/* 黒透過ニュースカード */
+/* 黒透過ニュースパネル（上下中央に配置） */
 #news-card {
   width: 80%;
   height: 90%;
@@ -79,14 +79,16 @@ html, body {
   background: rgba(0, 0, 0, 0.6);
   border-radius: 15px;
 
-  position: relative;
+  position: relative;   /* ← absolute にしないのが重要 */
   overflow: hidden;
 
   padding: 20px;
   box-sizing: border-box;
 }
 
-/* 個々のニュース */
+/* =========================
+   ニュース表示
+   ========================= */
 .news-item {
   position: absolute;
   top: 20px;
@@ -104,7 +106,7 @@ html, body {
   opacity: 1;
 }
 
-/* ニュースタイトル */
+/* タイトル */
 .news-title {
   font-size: 46px;
   font-weight: bold;
@@ -113,7 +115,7 @@ html, body {
   margin-bottom: 10px;
 }
 
-/* 公開日時 */
+/* 日時 */
 .news-pubdate {
   font-size: 14px;
   color: #ccc;
