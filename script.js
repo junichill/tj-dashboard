@@ -124,7 +124,7 @@ function updateIndicator() {
       stopAuto();
 
 // 常に「次方向（右）」で統一
-const direction = 'left';
+const direction = 'right';
 
       showNews(i, direction);
       startAuto();
