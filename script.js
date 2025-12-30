@@ -1,6 +1,6 @@
-// =========================
+// =====================
 // CLOCK (Flip)
-// =========================
+// =====================
 const clockEl = document.getElementById('clock');
 
 function initClock(tick) {
@@ -20,8 +20,8 @@ function initClock(tick) {
 function resizeClock(tick) {
   function updateSize() {
     const panel = document.getElementById('left-panel');
-    const fontSize = Math.min(panel.clientWidth / 6, panel.clientHeight / 2);
-    tick.root.style.fontSize = Math.floor(fontSize) + 'px';
+    const size = Math.min(panel.clientWidth / 5, panel.clientHeight / 2.5);
+    tick.root.style.fontSize = size + 'px';
   }
   updateSize();
   window.addEventListener('resize', updateSize);
@@ -33,24 +33,24 @@ document.addEventListener('DOMContentLoaded', () => {
   resizeClock(tick);
 });
 
-// =========================
+// =====================
 // DATE
-// =========================
+// =====================
 const dateEl = document.getElementById('date');
 
 function updateDate() {
   const now = new Date();
-  const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const week = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const month = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   dateEl.textContent =
-    `${weekdays[now.getDay()]}, ${monthNames[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+    `${week[now.getDay()]}, ${month[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
 }
 updateDate();
 setInterval(updateDate, 60000);
 
-// =========================
+// =====================
 // WEATHER
-// =========================
+// =====================
 const weatherEl = document.getElementById('weather');
 const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
 const LAT = 35.5309;
@@ -59,12 +59,12 @@ const LON = 139.7033;
 async function fetchWeather() {
   try {
     const res = await fetch(
-      `https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&lang=en&units=metric`
+      `https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=en`
     );
     const data = await res.json();
 
     const today = data.list[0];
-    const tomorrow = data.list.find(v => v.dt > today.dt + 86400);
+    const tomorrow = data.list.find(v => v.dt_txt.includes('12:00'));
 
     weatherEl.innerHTML =
       `Today: ${today.main.temp.toFixed(1)}℃ / ${today.weather[0].description}<br>` +
@@ -73,69 +73,79 @@ async function fetchWeather() {
     weatherEl.textContent = 'Weather fetch failed';
   }
 }
+
 fetchWeather();
 setInterval(fetchWeather, 600000);
 
-// =========================
-// NEWS + SWIPE + INDICATOR
-// =========================
+// =====================
+// NEWS
+// =====================
 const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
-const rss2jsonApi =
-  'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
+const rss2json = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
 
 const newsCard = document.getElementById('news-card');
+const indicator = document.getElementById('news-indicator');
 
 let newsItems = [];
 let newsElements = [];
 let newsIndex = 0;
-
 let autoTimer = null;
-let isInteracting = false;
-const SLIDE_DURATION = 0.8; // ← スライド速度（秒）
+let isAnimating = false;
 
-// ---------- インジケータ ----------
-const indicator = document.createElement('div');
-indicator.style.position = 'absolute';
-indicator.style.bottom = '10px';
-indicator.style.left = '50%';
-indicator.style.transform = 'translateX(-50%)';
-indicator.style.display = 'flex';
-indicator.style.gap = '8px';
-newsCard.appendChild(indicator);
-
-function updateIndicator() {
-  indicator.innerHTML = '';
-  newsItems.forEach((_, i) => {
-    const dot = document.createElement('div');
-    dot.style.width = '10px';
-    dot.style.height = '10px';
-    dot.style.borderRadius = '50%';
-    dot.style.background = i === newsIndex ? '#fff' : '#555';
-    dot.style.cursor = 'pointer';
-
-    // ★ クリックでジャンプ
-    dot.addEventListener('click', () => {
-      if (i === newsIndex) return;
-      stopAuto();
-      dot.addEventListener('click', () => {
-  if (i === newsIndex) return;
-
-  stopAuto();
-
-  const lastIndex = newsElements.length - 1;
-  let direction;
-
-  if (newsIndex === lastIndex && i === 0) {
-    direction = 'right'; // 最後 → 最初
-  } else if (newsIndex === 0 && i === lastIndex) {
-    direction = 'left';  // 最初 → 最後
-  } else {
-    direction = i > newsIndex ? 'right' : 'left';
-  }
-
-  showNews(i, direction);
+// ---------- Fetch ----------
+async function fetchNews() {
+  const res = await fetch(rss2json);
+  const data = await res.json();
+  newsItems = data.items;
+  buildNews();
+  buildIndicator();
+  showNews(0, 'right', true);
   startAuto();
-});
+}
+
+// ---------- Build News ----------
+function buildNews() {
+  newsCard.innerHTML = '';
+  newsElements = [];
+
+  newsItems.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'news-item';
+    el.innerHTML = `
+      <a href="${item.link}" target="_blank" class="news-title">${item.title}</a>
+      <div class="news-pubdate">${item.pubDate}</div>
+      <div class="news-description">${item.description}</div>
+    `;
+    newsCard.appendChild(el);
+    newsElements.push(el);
+  });
+}
+
+// ---------- Indicator ----------
+function buildIndicator() {
+  indicator.innerHTML = '';
+
+  newsElements.forEach((_, i) => {
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+
+    dot.addEventListener('click', () => {
+      if (i === newsIndex || isAnimating) return;
+
+      stopAuto();
+
+      const last = newsElements.length - 1;
+      let direction;
+
+      if (newsIndex === last && i === 0) {
+        direction = 'right';
+      } else if (newsIndex === 0 && i === last) {
+        direction = 'left';
+      } else {
+        direction = i > newsIndex ? 'right' : 'left';
+      }
+
+      showNews(i, direction);
       startAuto();
     });
 
@@ -143,114 +153,74 @@ function updateIndicator() {
   });
 }
 
-// ---------- ニュース取得 ----------
-async function fetchNews() {
-  const res = await fetch(rss2jsonApi);
-  const data = await res.json();
-
-  newsItems = data.items;
-  createNewsElements();
-
-  showNews(0, 'init');
-  startAuto();
-}
-
-// ---------- DOM生成 ----------
-function createNewsElements() {
-  newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
-  newsElements = newsItems.map(item => {
-    const div = document.createElement('div');
-    div.className = 'news-item';
-    div.innerHTML = `
-      <a class="news-title" href="${item.link}" target="_blank">${item.title}</a>
-      <div class="news-pubdate">${item.pubDate}</div>
-      <div class="news-description">${item.description}</div>
-    `;
-    newsCard.appendChild(div);
-    return div;
+function updateIndicator() {
+  [...indicator.children].forEach((d, i) => {
+    d.classList.toggle('active', i === newsIndex);
   });
 }
 
-// ---------- 表示制御 ----------
-function showNews(nextIndex, direction) {
+// ---------- Show ----------
+function showNews(next, direction = 'right', immediate = false) {
+  if (isAnimating) return;
+  isAnimating = true;
+
   const current = newsElements[newsIndex];
-  const next = newsElements[nextIndex];
+  const target = newsElements[next];
 
-  // 初期表示
-  if (direction === 'init') {
-    newsElements.forEach(el => {
-      el.style.transition = 'none';
-      el.style.transform = 'translateX(0)';
-      el.style.opacity = 0;
-      el.classList.remove('show');
-    });
-
-    next.style.opacity = 1;
-    next.classList.add('show');
-    newsIndex = nextIndex;
+  if (immediate) {
+    target.classList.add('show');
+    newsIndex = next;
     updateIndicator();
+    isAnimating = false;
     return;
   }
 
-  if (current) {
-    current.style.transition =
-      `transform ${SLIDE_DURATION}s ease, opacity ${SLIDE_DURATION}s ease`;
-    current.style.transform =
-      direction === 'left' ? 'translateX(100%)' : 'translateX(-100%)';
-    current.style.opacity = 0;
-    current.classList.remove('show');
-  }
+  current.className = `news-item slide-out-${direction}`;
+  target.className = `news-item slide-in-${direction} show`;
 
-  next.style.transition = 'none';
-  next.style.transform =
-    direction === 'left' ? 'translateX(-100%)' : 'translateX(100%)';
-  next.style.opacity = 1;
-  next.classList.add('show');
-
-  requestAnimationFrame(() => {
-    next.style.transition = `transform ${SLIDE_DURATION}s ease`;
-    next.style.transform = 'translateX(0)';
-  });
-
-  newsIndex = nextIndex;
-  updateIndicator();
+  setTimeout(() => {
+    current.className = 'news-item';
+    newsIndex = next;
+    updateIndicator();
+    isAnimating = false;
+  }, 800);
 }
 
-// ---------- 自動切替 ----------
+// ---------- Auto ----------
 function startAuto() {
-  stopAuto();
   autoTimer = setInterval(() => {
-    if (!isInteracting) {
-      showNews((newsIndex + 1) % newsElements.length, 'right');
-    }
-  }, 5000);
+    const next = (newsIndex + 1) % newsElements.length;
+    showNews(next, 'right');
+  }, 7000);
 }
 
 function stopAuto() {
-  if (autoTimer) clearInterval(autoTimer);
+  clearInterval(autoTimer);
 }
 
-// ---------- スワイプ ----------
+// ---------- Swipe ----------
 let startX = 0;
 
 newsCard.addEventListener('pointerdown', e => {
-  isInteracting = true;
   startX = e.clientX;
+  stopAuto();
 });
 
 newsCard.addEventListener('pointerup', e => {
   const dx = e.clientX - startX;
-  isInteracting = false;
-
-  if (Math.abs(dx) > 50) {
-    stopAuto();
-    if (dx > 0) {
-      showNews((newsIndex - 1 + newsElements.length) % newsElements.length, 'left');
-    } else {
-      showNews((newsIndex + 1) % newsElements.length, 'right');
-    }
+  if (Math.abs(dx) < 50) {
     startAuto();
+    return;
   }
+
+  if (dx < 0) {
+    const next = (newsIndex + 1) % newsElements.length;
+    showNews(next, 'right');
+  } else {
+    const prev = (newsIndex - 1 + newsElements.length) % newsElements.length;
+    showNews(prev, 'left');
+  }
+  startAuto();
 });
 
 fetchNews();
