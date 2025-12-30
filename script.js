@@ -117,8 +117,25 @@ function updateIndicator() {
     dot.addEventListener('click', () => {
       if (i === newsIndex) return;
       stopAuto();
-      const dir = i > newsIndex ? 'right' : 'left';
-      showNews(i, dir);
+      dot.addEventListener('click', () => {
+  if (i === newsIndex) return;
+
+  stopAuto();
+
+  const lastIndex = newsElements.length - 1;
+  let direction;
+
+  if (newsIndex === lastIndex && i === 0) {
+    direction = 'right'; // 最後 → 最初
+  } else if (newsIndex === 0 && i === lastIndex) {
+    direction = 'left';  // 最初 → 最後
+  } else {
+    direction = i > newsIndex ? 'right' : 'left';
+  }
+
+  showNews(i, direction);
+  startAuto();
+});
       startAuto();
     });
 
