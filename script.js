@@ -105,6 +105,7 @@ newsCard.appendChild(indicator);
 
 function updateIndicator() {
   indicator.innerHTML = '';
+
   newsItems.forEach((_, i) => {
     const dot = document.createElement('div');
     dot.style.width = '10px';
@@ -113,27 +114,35 @@ function updateIndicator() {
     dot.style.background = i === newsIndex ? '#fff' : '#555';
     dot.style.cursor = 'pointer';
 
-    // ★ クリックでジャンプ
-    dot.addEventListener('click', () => {
-  if (i === newsIndex) return;
-  stopAuto();
-  const lastIndex = newsElements.length - 1;
-  let direction;
+    // ★ シングルクリックでジャンプ
+    dot.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-  if (newsIndex === lastIndex && i === 0) {
-    direction = 'right'; // 最後 → 最初
-  } else if (newsIndex === 0 && i === lastIndex) {
-    direction = 'left';  // 最初 → 最後
-  } else {
-    direction = i > newsIndex ? 'right' : 'left';
-  }
+      if (i === newsIndex) return;
 
-  showNews(i, direction);
-  startAuto();
-});
-  indicator.appendChild(dot);
-});
+      stopAuto();
+
+      const lastIndex = newsElements.length - 1;
+      let direction;
+
+      // 向き判定（常に「次＝右、前＝左」で統一）
+      if (newsIndex === lastIndex && i === 0) {
+        direction = 'right'; // 最後 → 最初
+      } else if (newsIndex === 0 && i === lastIndex) {
+        direction = 'left';  // 最初 → 最後
+      } else {
+        direction = i > newsIndex ? 'right' : 'left';
+      }
+
+      showNews(i, direction);
+      startAuto();
+    });
+
+    indicator.appendChild(dot);
+  });
 }
+
 
 // ---------- ニュース取得 ----------
 async function fetchNews() {
