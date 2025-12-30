@@ -96,55 +96,99 @@ setInterval(fetchWeather, 10*60*1000); // 10分ごと更新
 const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
 const rss2jsonApi = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
 const newsCard = document.getElementById('news-card');
+
 let newsItems = [];
 let newsIndex = 0;
 let newsElements = [];
 
+// 取得
 async function fetchNews() {
     try {
         const res = await fetch(rss2jsonApi);
         const data = await res.json();
-        newsItems = data.items;
+        newsItems = data.items || [];
         newsIndex = 0;
         prepareNewsElements();
-        showNews();
-    } catch(err) {
+        showNews(newsIndex);
+    } catch (err) {
         newsCard.textContent = 'News fetch failed';
         console.error(err);
     }
 }
 
+// DOM生成
 function prepareNewsElements() {
     newsCard.innerHTML = '';
     newsElements = newsItems.map(item => {
         const div = document.createElement('div');
         div.className = 'news-item';
 
-        let imgHtml = '';
-        if(item.thumbnail) {
-            imgHtml = `<img src="${item.thumbnail}" class="news-img" alt="news image"><br>`;
-        }
-
-        div.innerHTML =
-            imgHtml +
-            `<a href="${item.link}" target="_blank" class="news-title">${item.title}</a><hr>` +
-            `<div class="news-pubdate" style="text-align:right;">${item.pubDate}</div>` +
-            `<div class="news-description">${item.description}</div>`;
+        div.innerHTML = `
+            <a href="${item.link}" target="_blank" class="news-title">${item.title}</a>
+            <div class="news-pubdate">${item.pubDate}</div>
+            <div class="news-description">${item.description}</div>
+        `;
 
         newsCard.appendChild(div);
         return div;
     });
 }
 
-function showNews() {
-    if(newsElements.length === 0) return;
-    newsElements.forEach((el,i) => {
-        el.classList.remove('show');
-        if(i === newsIndex) el.classList.add('show');
+// 表示
+function showNews(index) {
+    newsElements.forEach((el, i) => {
+        el.classList.toggle('show', i === index);
     });
-    newsIndex = (newsIndex + 1) % newsElements.length;
 }
 
+// 次／前
+function nextNews() {
+    if (!newsElements.length) return;
+    newsIndex = (newsIndex + 1) % newsElements.length;
+    showNews(newsIndex);
+}
+
+function prevNews() {
+    if (!newsElements.length) return;
+    newsIndex = (newsIndex - 1 + newsElements.length) % newsElements.length;
+    showNews(newsIndex);
+}
+
+// ---------------- 横スワイプ検出 ----------------
+let touchStartX = 0;
+let touchStartY = 0;
+const SWIPE_THRESHOLD = 50;
+
+newsCard.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+});
+
+newsCard.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+
+    // 縦スクロール誤判定防止
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > SWIPE_THRESHOLD) {
+        if (dx > 0) {
+            // 右スワイプ → 次
+            nextNews();
+        } else {
+            // 左スワイプ → 前
+            prevNews();
+        }
+    }
+});
+
+// マウス・トラックパッド対応（横優先）
+newsCard.addEventListener('wheel', e => {
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 20) {
+        e.preventDefault();
+        e.deltaX > 0 ? nextNews() : prevNews();
+    }
+}, { passive: false });
+
+// 自動切替
 fetchNews();
-setInterval(fetchNews, 5*60*1000); // 5分ごと更新
-setInterval(showNews, 5000);        // 5秒ごと切替
+setInterval(fetchNews, 5 * 60 * 1000);
+setInterval(nextNews, 5000);
