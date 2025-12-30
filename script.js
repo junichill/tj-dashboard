@@ -92,6 +92,7 @@ let newsIndex = 0;
 let autoTimer = null;
 let isInteracting = false;
 const SLIDE_DURATION = 0.8; // ← スライド速度（秒）
+let lastDirection = 'right';
 
 // ---------- インジケータ ----------
 const indicator = document.createElement('div');
@@ -127,6 +128,7 @@ function updateIndicator() {
 const direction = 'right';
 
       showNews(i, direction);
+      lastDirection = 'right';   // ★ 次の自動切替を必ず右方向に戻す
       startAuto();
     });
 
@@ -181,6 +183,7 @@ function showNews(nextIndex, direction) {
     next.classList.add('show');
     newsIndex = nextIndex;
     updateIndicator();
+    lastDirection = direction;
     return;
   }
 
