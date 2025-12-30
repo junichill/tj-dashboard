@@ -65,21 +65,21 @@ html, body {
   background-size: 80% 90%;
 
   display: flex;
-  align-items: center;      /* ← 縦方向中央 */
-  justify-content: center;  /* ← 横方向中央 */
+  align-items: center;      /* 縦方向中央 */
+  justify-content: center;  /* 横方向中央 */
 
   box-sizing: border-box;
 }
 
-/* 黒透過ニュースパネル（上下中央に配置） */
+/* 黒透過ニュースパネル（縦70%化） */
 #news-card {
   width: 80%;
-  height: 90%;
+  height: 63%;   /* ← 90% の 70% = 63% */
 
   background: rgba(0, 0, 0, 0.6);
   border-radius: 15px;
 
-  position: relative;   /* ← absolute にしないのが重要 */
+  position: relative;
   overflow: hidden;
 
   padding: 20px;
