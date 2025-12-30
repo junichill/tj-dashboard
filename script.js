@@ -114,12 +114,8 @@ function updateIndicator() {
     dot.style.cursor = 'pointer';
 
     // ★ クリックでジャンプ
-    dot.addEventListener('click', () => {
-      if (i === newsIndex) return;
-      stopAuto();
       dot.addEventListener('click', () => {
   if (i === newsIndex) return;
-
   stopAuto();
 
   const lastIndex = newsElements.length - 1;
