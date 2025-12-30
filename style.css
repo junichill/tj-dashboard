@@ -9,7 +9,9 @@ html, body {
   overflow: hidden;
 }
 
-/* 全体 */
+/* =========================
+   全体
+   ========================= */
 #container {
   display: flex;
   width: 100%;
@@ -53,7 +55,7 @@ html, body {
 }
 
 /* =========================
-   右側：ニュース（上下中央）
+   右側：ニュース（背景とパネル同期）
    ========================= */
 #right-panel {
   width: 50%;
@@ -62,19 +64,19 @@ html, body {
   background-image: url('news-bg.png');
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 80% 90%;
+  background-size: 80% 63%;   /* ← 背景画像も縦70% */
 
   display: flex;
-  align-items: center;      /* 縦方向中央 */
-  justify-content: center;  /* 横方向中央 */
+  align-items: center;      /* 縦中央 */
+  justify-content: center;  /* 横中央 */
 
   box-sizing: border-box;
 }
 
-/* 黒透過ニュースパネル（縦70%化） */
+/* 黒透過ニュースパネル */
 #news-card {
   width: 80%;
-  height: 63%;   /* ← 90% の 70% = 63% */
+  height: 63%;   /* ← 背景と完全一致 */
 
   background: rgba(0, 0, 0, 0.6);
   border-radius: 15px;
