@@ -215,7 +215,7 @@ function startAuto() {
     if (!isInteracting) {
       showNews((newsIndex + 1) % newsElements.length, 'right');
     }
-  }, 9000);
+  }, 2000);
 }
 
 function stopAuto() {
