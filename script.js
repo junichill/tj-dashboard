@@ -1,194 +1,211 @@
-// ---------------- CLOCK (Flip) ----------------
+// =========================
+// CLOCK (Flip)
+// =========================
 const clockEl = document.getElementById('clock');
 
-// Flip Clock 初期化
 function initClock(tick) {
-    function update() {
-        const now = new Date();
-        const h = String(now.getHours()).padStart(2,'0');
-        const m = String(now.getMinutes()).padStart(2,'0');
-        const s = String(now.getSeconds()).padStart(2,'0');
-        const str = `${h}:${m}:${s}`;
-        tick.value = str;
-        tick.root.setAttribute('aria-label', str);
-    }
-    update();
-    setInterval(update, 1000);
+  function update() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    const s = String(now.getSeconds()).padStart(2, '0');
+    const str = `${h}:${m}:${s}`;
+    tick.value = str;
+    tick.root.setAttribute('aria-label', str);
+  }
+  update();
+  setInterval(update, 1000);
 }
 
-// ---------------- 自動リサイズ ----------------
 function resizeClock(tick) {
-    function updateSize() {
-        const panelWidth = document.getElementById('left-panel').clientWidth;
-        const panelHeight = document.getElementById('left-panel').clientHeight;
-
-        // パネルに収まる最大フォントサイズを計算
-        const fontSize = Math.floor(Math.min(panelWidth / 6, panelHeight / 2));
-        tick.root.style.fontSize = fontSize + 'px';
-    }
-    updateSize();
-    window.addEventListener('resize', updateSize);
+  function updateSize() {
+    const panel = document.getElementById('left-panel');
+    const fontSize = Math.min(panel.clientWidth / 6, panel.clientHeight / 2);
+    tick.root.style.fontSize = Math.floor(fontSize) + 'px';
+  }
+  updateSize();
+  window.addEventListener('resize', updateSize);
 }
 
-// 初期化
 document.addEventListener('DOMContentLoaded', () => {
-    const tick = new FlipClock.Clock(clockEl); // Flip Clock ライブラリで生成
-    initClock(tick);
-    resizeClock(tick);
+  const tick = new FlipClock.Clock(clockEl);
+  initClock(tick);
+  resizeClock(tick);
 });
 
-// ---------------- DATE ----------------
+// =========================
+// DATE
+// =========================
 const dateEl = document.getElementById('date');
 
 function updateDate() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    const month = monthNames[now.getMonth()];
-    const date = now.getDate();
-    const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    const day = weekdays[now.getDay()];
-    dateEl.textContent = `${day}, ${month} ${date}, ${year}`;
-    dateEl.style.textAlign = 'right';
+  const now = new Date();
+  const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  dateEl.textContent =
+    `${weekdays[now.getDay()]}, ${monthNames[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
 }
-
 updateDate();
-setInterval(updateDate, 60*1000); // 1分ごと更新
+setInterval(updateDate, 60000);
 
-// ---------------- WEATHER ----------------
+// =========================
+// WEATHER
+// =========================
 const weatherEl = document.getElementById('weather');
 const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
-const LAT = 35.5309;  // Kawasaki
+const LAT = 35.5309;
 const LON = 139.7033;
 
 async function fetchWeather() {
-    try {
-        const res = await fetch(
-            `https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&lang=en&units=metric`
-        );
-        const data = await res.json();
+  try {
+    const res = await fetch(
+      `https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&lang=en&units=metric`
+    );
+    const data = await res.json();
 
-        const now = new Date();
-        const todayDate = now.getDate();
-        const tomorrowDate = new Date(now.getTime() + 24*60*60*1000).getDate();
+    const today = data.list[0];
+    const tomorrow = data.list.find(v => v.dt > today.dt + 86400);
 
-        const todayWeather = data.list.find(item => new Date(item.dt_txt).getDate() === todayDate);
-        const tomorrowWeather = data.list.find(item => new Date(item.dt_txt).getDate() === tomorrowDate);
-
-        if(todayWeather && tomorrowWeather){
-            weatherEl.innerHTML =
-                `Today: ${todayWeather.main.temp.toFixed(1)}℃ / ${todayWeather.weather[0].description}<br>` +
-                `Tomorrow: ${tomorrowWeather.main.temp.toFixed(1)}℃ / ${tomorrowWeather.weather[0].description}`;
-            weatherEl.style.textAlign = 'left';
-        } else {
-            weatherEl.textContent = 'Weather info unavailable';
-        }
-    } catch(err) {
-        weatherEl.textContent = 'Weather fetch failed';
-        console.error(err);
-    }
+    weatherEl.innerHTML =
+      `Today: ${today.main.temp.toFixed(1)}℃ / ${today.weather[0].description}<br>` +
+      `Tomorrow: ${tomorrow.main.temp.toFixed(1)}℃ / ${tomorrow.weather[0].description}`;
+  } catch {
+    weatherEl.textContent = 'Weather fetch failed';
+  }
 }
-
 fetchWeather();
-setInterval(fetchWeather, 10*60*1000); // 10分ごと更新
+setInterval(fetchWeather, 600000);
 
-// ---------------- NEWS ----------------
+// =========================
+// NEWS + SWIPE
+// =========================
 const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
 const rss2jsonApi = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
+
 const newsCard = document.getElementById('news-card');
-
 let newsItems = [];
-let newsIndex = 0;
 let newsElements = [];
+let newsIndex = 0;
 
-// 取得
+let autoTimer = null;
+let isInteracting = false;
+
+// ---------- インジケータ ----------
+const indicator = document.createElement('div');
+indicator.style.position = 'absolute';
+indicator.style.bottom = '10px';
+indicator.style.left = '50%';
+indicator.style.transform = 'translateX(-50%)';
+indicator.style.display = 'flex';
+indicator.style.gap = '8px';
+newsCard.appendChild(indicator);
+
+function updateIndicator() {
+  indicator.innerHTML = '';
+  newsItems.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.style.width = '10px';
+    dot.style.height = '10px';
+    dot.style.borderRadius = '50%';
+    dot.style.background = i === newsIndex ? '#fff' : '#555';
+    indicator.appendChild(dot);
+  });
+}
+
+// ---------- ニュース生成 ----------
 async function fetchNews() {
-    try {
-        const res = await fetch(rss2jsonApi);
-        const data = await res.json();
-        newsItems = data.items || [];
-        newsIndex = 0;
-        prepareNewsElements();
-        showNews(newsIndex);
-    } catch (err) {
-        newsCard.textContent = 'News fetch failed';
-        console.error(err);
+  const res = await fetch(rss2jsonApi);
+  const data = await res.json();
+  newsItems = data.items;
+  createNewsElements();
+  showNews(0, 'init');
+  startAuto();
+}
+
+function createNewsElements() {
+  newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
+  newsElements = newsItems.map(item => {
+    const div = document.createElement('div');
+    div.className = 'news-item';
+    div.innerHTML = `
+      <a class="news-title" href="${item.link}" target="_blank">${item.title}</a>
+      <div class="news-pubdate">${item.pubDate}</div>
+      <div class="news-description">${item.description}</div>
+    `;
+    newsCard.appendChild(div);
+    return div;
+  });
+}
+
+// ---------- 表示 & アニメーション ----------
+function showNews(nextIndex, direction) {
+  const current = newsElements[newsIndex];
+  const next = newsElements[nextIndex];
+
+  if (current) {
+    current.style.transform = 'translateX(0)';
+    current.style.opacity = 1;
+  }
+
+  next.style.transition = 'none';
+  next.style.transform =
+    direction === 'left' ? 'translateX(-100%)' :
+    direction === 'right' ? 'translateX(100%)' : 'translateX(0)';
+  next.style.opacity = 1;
+  next.classList.add('show');
+
+  requestAnimationFrame(() => {
+    if (current) {
+      current.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
+      current.style.transform =
+        direction === 'left' ? 'translateX(100%)' : 'translateX(-100%)';
+      current.style.opacity = 0;
+      current.classList.remove('show');
     }
+
+    next.style.transition = 'transform 0.4s ease';
+    next.style.transform = 'translateX(0)';
+  });
+
+  newsIndex = nextIndex;
+  updateIndicator();
 }
 
-// DOM生成
-function prepareNewsElements() {
-    newsCard.innerHTML = '';
-    newsElements = newsItems.map(item => {
-        const div = document.createElement('div');
-        div.className = 'news-item';
-
-        div.innerHTML = `
-            <a href="${item.link}" target="_blank" class="news-title">${item.title}</a>
-            <div class="news-pubdate">${item.pubDate}</div>
-            <div class="news-description">${item.description}</div>
-        `;
-
-        newsCard.appendChild(div);
-        return div;
-    });
+// ---------- 自動切替 ----------
+function startAuto() {
+  stopAuto();
+  autoTimer = setInterval(() => {
+    if (!isInteracting) {
+      showNews((newsIndex + 1) % newsElements.length, 'right');
+    }
+  }, 5000);
 }
 
-// 表示
-function showNews(index) {
-    newsElements.forEach((el, i) => {
-        el.classList.toggle('show', i === index);
-    });
+function stopAuto() {
+  if (autoTimer) clearInterval(autoTimer);
 }
 
-// 次／前
-function nextNews() {
-    if (!newsElements.length) return;
-    newsIndex = (newsIndex + 1) % newsElements.length;
-    showNews(newsIndex);
-}
+// ---------- スワイプ検出 ----------
+let startX = 0;
 
-function prevNews() {
-    if (!newsElements.length) return;
-    newsIndex = (newsIndex - 1 + newsElements.length) % newsElements.length;
-    showNews(newsIndex);
-}
-
-// ---------------- 横スワイプ検出 ----------------
-let touchStartX = 0;
-let touchStartY = 0;
-const SWIPE_THRESHOLD = 50;
-
-newsCard.addEventListener('touchstart', e => {
-    touchStartX = e.touches[0].clientX;
-    touchStartY = e.touches[0].clientY;
+newsCard.addEventListener('pointerdown', e => {
+  isInteracting = true;
+  startX = e.clientX;
 });
 
-newsCard.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - touchStartX;
-    const dy = e.changedTouches[0].clientY - touchStartY;
+newsCard.addEventListener('pointerup', e => {
+  const dx = e.clientX - startX;
+  isInteracting = false;
 
-    // 縦スクロール誤判定防止
-    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > SWIPE_THRESHOLD) {
-        if (dx > 0) {
-            // 右スワイプ → 次
-            nextNews();
-        } else {
-            // 左スワイプ → 前
-            prevNews();
-        }
+  if (Math.abs(dx) > 50) {
+    stopAuto();
+    if (dx > 0) {
+      showNews((newsIndex - 1 + newsElements.length) % newsElements.length, 'left');
+    } else {
+      showNews((newsIndex + 1) % newsElements.length, 'right');
     }
+    startAuto();
+  }
 });
 
-// マウス・トラックパッド対応（横優先）
-newsCard.addEventListener('wheel', e => {
-    if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 20) {
-        e.preventDefault();
-        e.deltaX > 0 ? nextNews() : prevNews();
-    }
-}, { passive: false });
-
-// 自動切替
 fetchNews();
-setInterval(fetchNews, 5 * 60 * 1000);
-setInterval(nextNews, 5000);
