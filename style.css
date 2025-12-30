@@ -110,7 +110,7 @@ html, body {
 
 /* タイトル */
 .news-title {
-  font-size: 46px;
+  font-size: 40px;
   font-weight: bold;
   color: white;
   text-decoration: none;
@@ -130,3 +130,4 @@ html, body {
   font-size: 20px;
   margin-top: 5px;
 }
+
