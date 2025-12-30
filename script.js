@@ -91,6 +91,7 @@ let newsIndex = 0;
 
 let autoTimer = null;
 let isInteracting = false;
+const SLIDE_DURATION = 0.8; // ← スライド速度（秒）
 
 // ---------- インジケータ ----------
 const indicator = document.createElement('div');
@@ -110,6 +111,17 @@ function updateIndicator() {
     dot.style.height = '10px';
     dot.style.borderRadius = '50%';
     dot.style.background = i === newsIndex ? '#fff' : '#555';
+    dot.style.cursor = 'pointer';
+
+    // ★ クリックでジャンプ
+    dot.addEventListener('click', () => {
+      if (i === newsIndex) return;
+      stopAuto();
+      const dir = i > newsIndex ? 'right' : 'left';
+      showNews(i, dir);
+      startAuto();
+    });
+
     indicator.appendChild(dot);
   });
 }
@@ -122,7 +134,6 @@ async function fetchNews() {
   newsItems = data.items;
   createNewsElements();
 
-  // ★ 初期表示は必ず1件目を即表示
   showNews(0, 'init');
   startAuto();
 }
@@ -148,7 +159,7 @@ function showNews(nextIndex, direction) {
   const current = newsElements[newsIndex];
   const next = newsElements[nextIndex];
 
-  // ===== 初回表示（アニメーションなし）=====
+  // 初期表示
   if (direction === 'init') {
     newsElements.forEach(el => {
       el.style.transition = 'none';
@@ -158,17 +169,15 @@ function showNews(nextIndex, direction) {
     });
 
     next.style.opacity = 1;
-    next.style.transform = 'translateX(0)';
     next.classList.add('show');
-
     newsIndex = nextIndex;
     updateIndicator();
     return;
   }
 
-  // ===== スライド =====
   if (current) {
-    current.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
+    current.style.transition =
+      `transform ${SLIDE_DURATION}s ease, opacity ${SLIDE_DURATION}s ease`;
     current.style.transform =
       direction === 'left' ? 'translateX(100%)' : 'translateX(-100%)';
     current.style.opacity = 0;
@@ -182,7 +191,7 @@ function showNews(nextIndex, direction) {
   next.classList.add('show');
 
   requestAnimationFrame(() => {
-    next.style.transition = 'transform 0.4s ease';
+    next.style.transition = `transform ${SLIDE_DURATION}s ease`;
     next.style.transform = 'translateX(0)';
   });
 
