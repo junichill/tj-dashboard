@@ -115,6 +115,9 @@ function updateIndicator() {
 
     // ★ クリックでジャンプ
     dot.addEventListener('click', () => {
+      if (i === newsIndex) return;
+      stopAuto();
+      dot.addEventListener('click', () => {
   if (i === newsIndex) return;
 
   stopAuto();
@@ -133,6 +136,9 @@ function updateIndicator() {
   showNews(i, direction);
   startAuto();
 });
+      startAuto();
+    });
+
     indicator.appendChild(dot);
   });
 }
