@@ -14,7 +14,7 @@ function initClock(tick) {
     tick.root.setAttribute('aria-label', str);
   }
   update();
-  setInterval(update, 5000);
+  setInterval(update, 1000);
 }
 
 function resizeClock(tick) {
