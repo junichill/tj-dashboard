@@ -2,27 +2,31 @@
 // CLOCK (Flip)
 // =========================
 const clockEl = document.getElementById('clock');
+const leftPanel = document.getElementById('left-panel');
 
 function initClock(tick) {
-  function update() {
+  const update = () => {
     const now = new Date();
-    const h = String(now.getHours()).padStart(2, '0');
-    const m = String(now.getMinutes()).padStart(2, '0');
-    const s = String(now.getSeconds()).padStart(2, '0');
-    const str = `${h}:${m}:${s}`;
+    const str = [
+      now.getHours(),
+      now.getMinutes(),
+      now.getSeconds()
+    ].map(v => String(v).padStart(2, '0')).join(':');
+
     tick.value = str;
     tick.root.setAttribute('aria-label', str);
-  }
+  };
+
   update();
   setInterval(update, 1000);
 }
 
 function resizeClock(tick) {
-  function updateSize() {
-    const panel = document.getElementById('left-panel');
-    const fontSize = Math.min(panel.clientWidth / 6, panel.clientHeight / 2);
-    tick.root.style.fontSize = Math.floor(fontSize) + 'px';
-  }
+  const updateSize = () => {
+    const size = Math.min(leftPanel.clientWidth / 6, leftPanel.clientHeight / 2);
+    tick.root.style.fontSize = Math.floor(size) + 'px';
+  };
+
   updateSize();
   window.addEventListener('resize', updateSize);
 }
@@ -37,14 +41,15 @@ document.addEventListener('DOMContentLoaded', () => {
 // DATE
 // =========================
 const dateEl = document.getElementById('date');
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const WEEKDAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
 function updateDate() {
   const now = new Date();
-  const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   dateEl.textContent =
-    `${weekdays[now.getDay()]}, ${monthNames[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+    `${WEEKDAYS[now.getDay()]}, ${MONTHS[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
 }
+
 updateDate();
 setInterval(updateDate, 60000);
 
@@ -73,11 +78,12 @@ async function fetchWeather() {
     weatherEl.textContent = 'Weather fetch failed';
   }
 }
+
 fetchWeather();
 setInterval(fetchWeather, 600000);
 
 // =========================
-// NEWS + SWIPE + INDICATOR
+// NEWS
 // =========================
 const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
 const rss2jsonApi =
@@ -91,49 +97,50 @@ let newsIndex = 0;
 
 let autoTimer = null;
 let isInteracting = false;
-const SLIDE_DURATION = 0.8; // ← スライド速度（秒）
+
+const SLIDE_DURATION = 0.8;
+const AUTO_INTERVAL = 8000;
+const SWIPE_THRESHOLD = 50;
 
 // ---------- インジケータ ----------
 const indicator = document.createElement('div');
-indicator.style.position = 'absolute';
-indicator.style.bottom = '10px';
-indicator.style.left = '50%';
-indicator.style.transform = 'translateX(-50%)';
-indicator.style.display = 'flex';
-indicator.style.gap = '8px';
+Object.assign(indicator.style, {
+  position: 'absolute',
+  bottom: '10px',
+  left: '50%',
+  transform: 'translateX(-50%)',
+  display: 'flex',
+  gap: '8px'
+});
 newsCard.appendChild(indicator);
+
+function createDot(i) {
+  const dot = document.createElement('div');
+  Object.assign(dot.style, {
+    width: '10px',
+    height: '10px',
+    borderRadius: '50%',
+    background: i === newsIndex ? '#fff' : '#555',
+    cursor: 'pointer'
+  });
+
+  dot.addEventListener('click', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (i === newsIndex) return;
+
+    stopAuto();
+    showNews(i, 'right');
+    startAuto();
+  });
+
+  return dot;
+}
 
 function updateIndicator() {
   indicator.innerHTML = '';
-
-  newsItems.forEach((_, i) => {
-    const dot = document.createElement('div');
-    dot.style.width = '10px';
-    dot.style.height = '10px';
-    dot.style.borderRadius = '50%';
-    dot.style.background = i === newsIndex ? '#fff' : '#555';
-    dot.style.cursor = 'pointer';
-
-    // ★ シングルクリックでジャンプ
-    dot.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      if (i === newsIndex) return;
-
-      stopAuto();
-
-// 常に「次方向（右）」で統一
-const direction = 'right';
-
-      showNews(i, direction);
-      startAuto();
-    });
-
-    indicator.appendChild(dot);
-  });
+  newsItems.forEach((_, i) => indicator.appendChild(createDot(i)));
 }
-
 
 // ---------- ニュース取得 ----------
 async function fetchNews() {
@@ -142,7 +149,6 @@ async function fetchNews() {
 
   newsItems = data.items;
   createNewsElements();
-
   showNews(0, 'init');
   startAuto();
 }
@@ -150,6 +156,7 @@ async function fetchNews() {
 // ---------- DOM生成 ----------
 function createNewsElements() {
   newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
+
   newsElements = newsItems.map(item => {
     const div = document.createElement('div');
     div.className = 'news-item';
@@ -168,7 +175,6 @@ function showNews(nextIndex, direction) {
   const current = newsElements[newsIndex];
   const next = newsElements[nextIndex];
 
-  // 初期表示
   if (direction === 'init') {
     newsElements.forEach(el => {
       el.style.transition = 'none';
@@ -176,7 +182,6 @@ function showNews(nextIndex, direction) {
       el.style.opacity = 0;
       el.classList.remove('show');
     });
-
     next.style.opacity = 1;
     next.classList.add('show');
     newsIndex = nextIndex;
@@ -215,7 +220,7 @@ function startAuto() {
     if (!isInteracting) {
       showNews((newsIndex + 1) % newsElements.length, 'right');
     }
-  }, 8000);
+  }, AUTO_INTERVAL);
 }
 
 function stopAuto() {
@@ -234,13 +239,12 @@ newsCard.addEventListener('pointerup', e => {
   const dx = e.clientX - startX;
   isInteracting = false;
 
-  if (Math.abs(dx) > 50) {
+  if (Math.abs(dx) > SWIPE_THRESHOLD) {
     stopAuto();
-    if (dx > 0) {
-      showNews((newsIndex - 1 + newsElements.length) % newsElements.length, 'left');
-    } else {
-      showNews((newsIndex + 1) % newsElements.length, 'right');
-    }
+    showNews(
+      (newsIndex + (dx > 0 ? -1 : 1) + newsElements.length) % newsElements.length,
+      dx > 0 ? 'left' : 'right'
+    );
     startAuto();
   }
 });
