@@ -69,8 +69,8 @@ html, body {
   border-radius: 0.12em;
 }
 .clock-container {
-  margin-top: 30px;
-  transform: scaleY(1.5);   /* 縦だけ大きく */
+  margin-top: 60px;
+  transform: scaleY(1.7);   /* 縦だけ大きく */
   transform-origin: left center;
 }
 
@@ -123,6 +123,7 @@ html, body {
   font-size: 20px;
   margin-top: 5px;
 }
+
 
 
 
