@@ -43,11 +43,13 @@ html, body {
 
 /* 日付・天気 */
 #weather {
+  font-family: 'Noto Sans JP', sans-serif;
   font-size: 26px;
   text-align: left;
 }
 
 #date {
+  font-family: 'Noto Sans JP', sans-serif;
   font-size: 26px;
   text-align: right;
 }
@@ -154,3 +156,4 @@ html, body {
   .news-description { font-size: 3.5vw; }
   .news-pubdate { font-size: 2.5vw; }
 }
+
