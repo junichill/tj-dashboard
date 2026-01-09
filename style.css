@@ -72,6 +72,11 @@ html, body {
   border-radius: 0.12em;
 }
 
+.tick-flip-panel-text-wrapper {
+  line-height: 1.7;   /* ← 1.5〜1.8で好みに調整 */
+}
+
+
 /* 右側ニュース */
 #right-panel {
   width: 50%;
@@ -121,6 +126,7 @@ html, body {
   font-size: 20px;
   margin-top: 5px;
 }
+
 
 
 
