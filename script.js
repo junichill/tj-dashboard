@@ -1,37 +1,17 @@
 // =========================
-// CLOCK (Flip)
+// Tick CLOCK
 // =========================
-const clockEl = document.getElementById('clock');
-
-function initClock(tick) {
-  function update() {
-    const now = new Date();
-    const h = String(now.getHours()).padStart(2, '0');
-    const m = String(now.getMinutes()).padStart(2, '0');
-    const s = String(now.getSeconds()).padStart(2, '0');
-    const str = `${h}:${m}:${s}`;
-    tick.value = str;
-    tick.root.setAttribute('aria-label', str);
-  }
-  update();
-  setInterval(update, 1000);
+function handleTickInit(tick) {
+  Tick.helper.interval(() => {
+    const d = Tick.helper.date();
+    tick.value = {
+      sep: '.',
+      hours: d.getHours(),
+      minutes: d.getMinutes(),
+      seconds: d.getSeconds()
+    };
+  });
 }
-
-function resizeClock(tick) {
-  function updateSize() {
-    const panel = document.getElementById('left-panel');
-    const fontSize = Math.min(panel.clientWidth / 6, panel.clientHeight / 2);
-    tick.root.style.fontSize = Math.floor(fontSize) + 'px';
-  }
-  updateSize();
-  window.addEventListener('resize', updateSize);
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  const tick = new FlipClock.Clock(clockEl);
-  initClock(tick);
-  resizeClock(tick);
-});
 
 // =========================
 // DATE
@@ -39,11 +19,10 @@ document.addEventListener('DOMContentLoaded', () => {
 const dateEl = document.getElementById('date');
 
 function updateDate() {
-  const now = new Date();
-  const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  dateEl.textContent =
-    `${weekdays[now.getDay()]}, ${monthNames[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+  const d = new Date();
+  const m = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const w = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  dateEl.textContent = `${w[d.getDay()]}, ${m[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
 }
 updateDate();
 setInterval(updateDate, 60000);
@@ -58,13 +37,12 @@ const LON = 139.7033;
 
 async function fetchWeather() {
   try {
-    const res = await fetch(
-      `https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&lang=en&units=metric`
+    const r = await fetch(
+      `https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=en`
     );
-    const data = await res.json();
-
-    const today = data.list[0];
-    const tomorrow = data.list.find(v => v.dt > today.dt + 86400);
+    const d = await r.json();
+    const today = d.list[0];
+    const tomorrow = d.list.find(v => v.dt > today.dt + 86400);
 
     weatherEl.innerHTML =
       `Today: ${today.main.temp.toFixed(1)}℃ / ${today.weather[0].description}<br>` +
@@ -77,24 +55,19 @@ fetchWeather();
 setInterval(fetchWeather, 600000);
 
 // =========================
-// NEWS (Fade Switch)
+// NEWS (Fade)
 // =========================
 const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
-const rss2jsonApi =
-  'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
-
+const api = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
 const newsCard = document.getElementById('news-card');
 
 let newsItems = [];
-let newsElements = [];
-let newsIndex = 0;
+let newsEls = [];
+let index = 0;
+let timer = null;
+const FADE = 1.5;
 
-let autoTimer = null;
-let isInteracting = false;
-
-const FADE_DURATION = 2.0; // フェード秒数
-
-// ---------- インジケータ ----------
+// indicator
 const indicator = document.createElement('div');
 indicator.style.position = 'absolute';
 indicator.style.bottom = '10px';
@@ -108,123 +81,73 @@ function updateIndicator() {
   indicator.innerHTML = '';
   newsItems.forEach((_, i) => {
     const dot = document.createElement('div');
-    dot.style.width = '10px';
-    dot.style.height = '10px';
+    dot.style.width = dot.style.height = '10px';
     dot.style.borderRadius = '50%';
-    dot.style.background = i === newsIndex ? '#fff' : '#555';
+    dot.style.background = i === index ? '#fff' : '#555';
     dot.style.cursor = 'pointer';
-
-    dot.addEventListener('click', () => {
-      if (i === newsIndex) return;
+    dot.onclick = () => {
+      if (i === index) return;
       stopAuto();
       showNews(i);
       startAuto();
-    });
-
+    };
     indicator.appendChild(dot);
   });
 }
 
-// ---------- ニュース取得 ----------
 async function fetchNews() {
-  const res = await fetch(rss2jsonApi);
-  const data = await res.json();
-
-  newsItems = data.items;
-  createNewsElements();
-
+  const r = await fetch(api);
+  const d = await r.json();
+  newsItems = d.items;
+  createNews();
   showNews(0, true);
   startAuto();
 }
 
-// ---------- DOM生成 ----------
-function createNewsElements() {
+function createNews() {
   newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
-
-  newsElements = newsItems.map(item => {
+  newsEls = newsItems.map(n => {
     const div = document.createElement('div');
     div.className = 'news-item';
-    div.style.opacity = 0;
     div.innerHTML = `
-      <a class="news-title" href="${item.link}" target="_blank">${item.title}</a>
-      <div class="news-pubdate">${item.pubDate}</div>
-      <div class="news-description">${item.description}</div>
+      <a class="news-title" href="${n.link}" target="_blank">${n.title}</a>
+      <div class="news-pubdate">${n.pubDate}</div>
+      <div class="news-description">${n.description}</div>
     `;
     newsCard.appendChild(div);
     return div;
   });
 }
 
-// ---------- 表示制御（完全フェード） ----------
-function showNews(nextIndex, isInit = false) {
-  const current = newsElements[newsIndex];
-  const next = newsElements[nextIndex];
+function showNews(next, init = false) {
+  const cur = newsEls[index];
+  const nxt = newsEls[next];
 
-  if (isInit) {
-    next.style.transition = 'none';
-    next.style.opacity = 1;
-    next.classList.add('show');
-    newsIndex = nextIndex;
+  if (init) {
+    nxt.classList.add('show');
+    index = next;
     updateIndicator();
     return;
   }
 
-  if (current) {
-    current.style.transition = `opacity ${FADE_DURATION}s ease`;
-    current.style.opacity = 0;
-    current.classList.remove('show');
-  }
+  if (cur) cur.classList.remove('show');
 
   setTimeout(() => {
-    next.style.transition = 'none';
-    next.style.opacity = 0;
-    next.classList.add('show');
-
-    requestAnimationFrame(() => {
-      next.style.transition = `opacity ${FADE_DURATION}s ease`;
-      next.style.opacity = 1;
-    });
-
-    newsIndex = nextIndex;
+    nxt.classList.add('show');
+    index = next;
     updateIndicator();
-  }, FADE_DURATION * 1000);
+  }, FADE * 1000);
 }
 
-// ---------- 自動切替 ----------
 function startAuto() {
   stopAuto();
-  autoTimer = setInterval(() => {
-    if (!isInteracting) {
-      showNews((newsIndex + 1) % newsElements.length);
-    }
-  }, 8000); // ← ここがニュース切替間隔
+  timer = setInterval(() => {
+    showNews((index + 1) % newsEls.length);
+  }, 5000);
 }
 
 function stopAuto() {
-  if (autoTimer) clearInterval(autoTimer);
+  if (timer) clearInterval(timer);
 }
-
-// ---------- スワイプ ----------
-let startX = 0;
-
-newsCard.addEventListener('pointerdown', e => {
-  isInteracting = true;
-  startX = e.clientX;
-});
-
-newsCard.addEventListener('pointerup', e => {
-  const dx = e.clientX - startX;
-  isInteracting = false;
-
-  if (Math.abs(dx) > 50) {
-    stopAuto();
-    if (dx > 0) {
-      showNews((newsIndex - 1 + newsElements.length) % newsElements.length);
-    } else {
-      showNews((newsIndex + 1) % newsElements.length);
-    }
-    startAuto();
-  }
-});
 
 fetchNews();
