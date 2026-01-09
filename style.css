@@ -59,34 +59,40 @@ html, body {
   font-feature-settings: "tnum";
 }
 
-/* 1桁の幅を固定（最終保険） */
+/* 1桁の幅を固定（最重要） */
 .tick-char {
   width: 1.55em;
 }
 
-.tick-flip {
-  font-size: 3.2em;
-  font-weight: 700;
-  color: #fff;
-}
+/* 表示サイズはここで一元管理 */
+.tick-flip,
 .tick-text-inline {
   font-size: 3.2em;
-  opacity: 0.8;
-  margin-left: -0.05em;
-  margin-right: -0.05em;
 }
 
+/* 数字は太く */
+.tick-flip {
+  font-weight: 700;
+  color: #fff;
+  border-radius: 0.12em;
+}
+
+/* コロンは控えめ */
+.tick-text-inline {
+  opacity: 0.8;
+  margin: 0 -0.05em;
+}
+
+/* フリップ背景 */
 .tick-flip-panel {
   background-color: #3c3e3c;
   color: #fff;
 }
 
-.tick-flip {
-  border-radius: 0.12em;
-}
+/* 縦方向をゆったり */
 .clock-container {
   margin-top: 60px;
-  transform: scaleY(1.7);   /* 縦だけ大きく */
+  transform: scaleY(1.7);
   transform-origin: left center;
 }
 
@@ -139,6 +145,7 @@ html, body {
   font-size: 20px;
   margin-top: 5px;
 }
+
 
 
 
