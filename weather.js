@@ -1,5 +1,5 @@
-const apiKey = 'YOUR_API_KEY';  // OpenWeatherMap の API キー
-const lat = '35.6895';  // 東京
+const apiKey = 'YOUR_API_KEY'; // OpenWeatherMapのAPIキー
+const lat = '35.6895'; // 東京
 const lon = '139.6917';
 
 fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=ja`)
