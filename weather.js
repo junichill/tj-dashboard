@@ -1,4 +1,4 @@
-const apiKey = 'YOUR_API_KEY'; // OpenWeatherMapのAPIキー
+const apiKey = 'eed3942fcebd430b2e32dfff2c611b11'; // OpenWeatherMapのAPIキー
 const lat = '35.6895'; // 東京
 const lon = '139.6917';
 
