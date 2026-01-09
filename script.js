@@ -197,7 +197,7 @@ function startAuto() {
     if (!isInteracting) {
       showNews((newsIndex + 1) % newsElements.length);
     }
-  }, 5000); // ← ここがニュース切替間隔
+  }, 8000); // ← ここがニュース切替間隔
 }
 
 function stopAuto() {
