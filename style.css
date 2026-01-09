@@ -18,24 +18,31 @@ html, body {
 
 /* 左側 */
 #left-panel {
-  width: 50%;
+  width: 55%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding-left: 50px;
+  padding: 40px 40px 30px 50px;
   box-sizing: border-box;
 }
 
-/* 日付・天気 */
-#date {
-  font-size: 28px;
-  margin-top: 10px;
-  text-align: right;
+.left-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+
+  margin-top: auto;   /* ← A案の要 */
 }
 
+/* 日付・天気 */
 #weather {
-  font-size: 28px;
-  margin-top: 10px;
+  font-size: 26px;
+  text-align: left;
+}
+
+#date {
+  font-size: 26px;
+  text-align: right;
 }
 
 /* Tick 時計 */
@@ -68,7 +75,7 @@ html, body {
 
 /* 右側ニュース */
 #right-panel {
-  width: 50%;
+  width: 45%;
   background: url('news-bg.png') center / 80% 63% no-repeat;
   display: flex;
   align-items: center;
