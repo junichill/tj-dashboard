@@ -1,33 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Digital Display</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Digital Dashboard</title>
+
+<link rel="stylesheet" href="flip.min.css">
 <link rel="stylesheet" href="style.css">
-<link href="flip.min.css" rel="stylesheet">
 </head>
+
 <body>
-  <div id="container">
-    <!-- 左側: 時計・日付・天気 -->
-    <div id="left-panel">
+
+<div id="container">
+
+  <!-- 左：時計・日付・天気 -->
+  <div id="left-panel">
+
     <div class="clock-container">
-        <div id="flip-clock" class="tick" data-did-init="initClock">
-            <!-- 4 つのセクション（HH:MM:SS） -->
-            <div data-repeat="true">
-                <span data-view="flip"></span>
-            </div>
+      <div class="tick" data-did-init="handleTickInit">
+        <div data-layout="horizontal fit">
+          <span data-key="hours" data-transform="pad(00)" data-view="flip"></span>
+          <span data-view="text" data-key="sep" class="tick-text-inline"></span>
+          <span data-key="minutes" data-transform="pad(00)" data-view="flip"></span>
+          <span data-view="text" data-key="sep" class="tick-text-inline"></span>
+          <span data-key="seconds" data-transform="pad(00)" data-view="flip"></span>
         </div>
-    </div>
-      <div id="date"></div>
-      <div id="weather"></div>
+      </div>
     </div>
 
-    <!-- 右側: ニュースカード -->
-    <div id="right-panel">
-      <div id="news-card"></div>
-    </div>
+    <div id="date"></div>
+    <div id="weather"></div>
   </div>
+
+  <!-- 右：ニュース -->
+  <div id="right-panel">
+    <div id="news-card"></div>
+  </div>
+
+</div>
+
 <script src="flip.min.js"></script>
 <script src="script.js"></script>
 </body>
