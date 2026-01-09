@@ -47,7 +47,6 @@ html, body {
   text-align: right;
 }
 
-
 /* Tick 時計 */
 .tick {
   font-size: 1rem;
@@ -71,11 +70,6 @@ html, body {
 .tick-flip {
   border-radius: 0.12em;
 }
-
-.tick-flip-panel-text-wrapper {
-  line-height: 1.7;   /* ← 1.5〜1.8で好みに調整 */
-}
-
 
 /* 右側ニュース */
 #right-panel {
@@ -126,6 +120,7 @@ html, body {
   font-size: 20px;
   margin-top: 5px;
 }
+
 
 
 
