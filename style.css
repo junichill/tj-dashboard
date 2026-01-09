@@ -61,7 +61,10 @@ html, body {
 .tick-flip {
   border-radius: 0.12em;
 }
-
+.clock-container {
+  transform: scaleY(1.3);   /* 縦だけ大きく */
+  transform-origin: left center;
+}
 
 /* 右側ニュース */
 #right-panel {
@@ -112,6 +115,7 @@ html, body {
   font-size: 20px;
   margin-top: 5px;
 }
+
 
 
 
