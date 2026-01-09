@@ -9,138 +9,105 @@ html, body {
   overflow: hidden;
 }
 
-/* =========================
-   全体レイアウト
-   ========================= */
+/* 全体 */
 #container {
   display: flex;
   width: 100%;
   height: 100%;
 }
 
-/* =========================
-   左側：時計・日付・天気
-   ========================= */
+/* 左側 */
 #left-panel {
   width: 50%;
-  height: 100%;
-
   display: flex;
   flex-direction: column;
   justify-content: center;
-
   padding-left: 50px;
   box-sizing: border-box;
 }
 
-/* Flip Clock */
-#clock.tick {
-  font-size: 200px;
-  font-weight: bold;
-  color: white;
-  line-height: 1;
-}
-
-/* 日付 */
+/* 日付・天気 */
 #date {
   font-size: 28px;
   margin-top: 10px;
   text-align: right;
 }
 
-/* 天気 */
 #weather {
   font-size: 28px;
   margin-top: 10px;
-  text-align: left;
 }
 
-/* =========================
-   右側：ニュース（背景とパネル同期）
-   ========================= */
+/* Tick 時計 */
+.tick {
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.tick-flip,
+.tick-text-inline {
+  font-size: 2.5em;
+}
+
+.tick-text-inline {
+  color: #fff;
+}
+
+.tick-flip-panel {
+  background-color: #3c3e3c;
+  color: #fff;
+}
+
+.tick-flip {
+  border-radius: 0.12em;
+}
+
+/* 右側ニュース */
 #right-panel {
   width: 50%;
-  height: 100%;
-
-  background-image: url('news-bg.png');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 80% 63%;   /* 背景画像もパネルと完全同期 */
-
+  background: url('news-bg.png') center / 80% 63% no-repeat;
   display: flex;
-  align-items: center;       /* 縦中央 */
-  justify-content: center;   /* 横中央 */
-
-  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
 }
 
-/* 黒透過ニュースパネル */
 #news-card {
   width: 80%;
-  height: 63%;               /* 背景画像と完全一致 */
-
-  background: rgba(0, 0, 0, 0.6);
+  height: 63%;
+  background: rgba(0,0,0,0.6);
   border-radius: 15px;
-
   position: relative;
   overflow: hidden;
-
   padding: 20px;
   box-sizing: border-box;
-
-  /* ▼ 横スワイプ必須設定 */
-  pointer-events: auto;
-  touch-action: pan-y;
 }
 
-/* =========================
-   ニュース表示
-   ========================= */
+/* ニュース */
 .news-item {
   position: absolute;
-  top: 20px;
-  left: 20px;
-  right: 20px;
-
+  inset: 20px;
   opacity: 0;
-  transition: opacity 0.8s ease-in-out;
-
-  font-size: 24px;
-  line-height: 1.4;
+  transition: opacity 1.5s ease;
 }
 
 .news-item.show {
   opacity: 1;
-  z-index: 1;
 }
 
-/* タイトル */
 .news-title {
-  display: block;
   font-size: 40px;
   font-weight: bold;
   color: white;
   text-decoration: none;
-  margin-bottom: 10px;
 }
 
-/* 日時 */
 .news-pubdate {
   font-size: 14px;
   color: #ccc;
   text-align: right;
-  margin-top: 5px;
 }
 
-/* 本文 */
 .news-description {
   font-size: 20px;
-  margin-top: 10px;
-}
-
-/* =========================
-   クリック・選択抑止（誤操作防止）
-   ========================= */
-#news-card * {
-  user-select: none;
+  margin-top: 5px;
 }
