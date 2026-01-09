@@ -62,9 +62,6 @@ html, body {
   border-radius: 0.12em;
 }
 
-.tick-flip-panel-text-wrapper {
-  line-height: 1.6;
-}
 
 /* 右側ニュース */
 #right-panel {
@@ -115,6 +112,7 @@ html, body {
   font-size: 20px;
   margin-top: 5px;
 }
+
 
 
 
