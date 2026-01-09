@@ -97,18 +97,16 @@ html, body {
    右パネル（ニュース）
 =========================== */
 #right-panel {
-  flex: 0 0 45%;
+  flex: 0 0 45%; /* 画面幅の45% */
   background: url('news-bg.png') center / cover no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px;
 }
 
 #news-card {
   width: 80%;
-  height: auto;       /* 高さ固定を解除 */
-  max-height: 90%;    /* パネル内で収まる */
+  height: 63%;
   background: rgba(0,0,0,0.6);
   border-radius: 15px;
   position: relative;
@@ -136,7 +134,7 @@ html, body {
 =========================== */
 @media screen and (max-width: 768px) {
   #container {
-    flex-direction: column; /* 左右→上下 */
+    flex-direction: column; /* 縦並びに変更 */
   }
 
   #left-panel, #right-panel {
@@ -150,11 +148,7 @@ html, body {
 
   .tick-flip, .tick-text-inline { font-size: 6vw; }
 
-  #news-card {
-    width: 95%;
-    height: auto; /* 高さ自動 */
-    padding: 3vw;
-  }
+  #news-card { width: 90%; height: auto; padding: 3vw; }
 
   .news-title { font-size: 5vw; }
   .news-description { font-size: 3.5vw; }
