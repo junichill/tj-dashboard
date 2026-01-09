@@ -59,6 +59,11 @@ html, body {
   font-feature-settings: "tnum";
 }
 
+/* 1桁の幅を固定（最終保険） */
+.tick-char {
+  width: 1.55em;
+}
+
 .tick-flip {
   font-size: 3.2em;
   font-weight: 700;
@@ -134,4 +139,5 @@ html, body {
   font-size: 20px;
   margin-top: 5px;
 }
+
 
