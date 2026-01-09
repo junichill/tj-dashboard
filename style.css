@@ -111,3 +111,15 @@ html, body {
   font-size: 20px;
   margin-top: 5px;
 }
+
+/* ===== 秒だけフリップ回転を完全に停止 ===== */
+.tick [data-key="seconds"] .tick-flip-panel {
+  transition: none !important;
+}
+
+.tick [data-key="seconds"] .tick-flip-panel-front,
+.tick [data-key="seconds"] .tick-flip-panel-back {
+  transition: none !important;
+  transform: none !important;
+}
+
