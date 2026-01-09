@@ -28,18 +28,24 @@ html, body {
   box-sizing: border-box;
 }
 
+.left-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
 
 /* 日付・天気 */
+#weather {
+  font-size: 26px;
+  text-align: left;
+}
+
 #date {
-  font-size: 28px;
-  margin-top: 10px;
+  font-size: 26px;
   text-align: right;
 }
 
-#weather {
-  font-size: 28px;
-  margin-top: 10px;
-}
 
 /* Tick 時計 */
 .tick {
@@ -122,6 +128,7 @@ html, body {
   font-size: 20px;
   margin-top: 5px;
 }
+
 
 
 
