@@ -2,31 +2,27 @@
 // CLOCK (Flip)
 // =========================
 const clockEl = document.getElementById('clock');
-const leftPanel = document.getElementById('left-panel');
 
 function initClock(tick) {
-  const update = () => {
+  function update() {
     const now = new Date();
-    const str = [
-      now.getHours(),
-      now.getMinutes(),
-      now.getSeconds()
-    ].map(v => String(v).padStart(2, '0')).join(':');
-
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    const s = String(now.getSeconds()).padStart(2, '0');
+    const str = `${h}:${m}:${s}`;
     tick.value = str;
     tick.root.setAttribute('aria-label', str);
-  };
-
+  }
   update();
   setInterval(update, 1000);
 }
 
 function resizeClock(tick) {
-  const updateSize = () => {
-    const size = Math.min(leftPanel.clientWidth / 6, leftPanel.clientHeight / 2);
-    tick.root.style.fontSize = Math.floor(size) + 'px';
-  };
-
+  function updateSize() {
+    const panel = document.getElementById('left-panel');
+    const fontSize = Math.min(panel.clientWidth / 6, panel.clientHeight / 2);
+    tick.root.style.fontSize = Math.floor(fontSize) + 'px';
+  }
   updateSize();
   window.addEventListener('resize', updateSize);
 }
@@ -41,15 +37,14 @@ document.addEventListener('DOMContentLoaded', () => {
 // DATE
 // =========================
 const dateEl = document.getElementById('date');
-const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const WEEKDAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
 function updateDate() {
   const now = new Date();
+  const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   dateEl.textContent =
-    `${WEEKDAYS[now.getDay()]}, ${MONTHS[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+    `${weekdays[now.getDay()]}, ${monthNames[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
 }
-
 updateDate();
 setInterval(updateDate, 60000);
 
@@ -78,12 +73,11 @@ async function fetchWeather() {
     weatherEl.textContent = 'Weather fetch failed';
   }
 }
-
 fetchWeather();
 setInterval(fetchWeather, 600000);
 
 // =========================
-// NEWS
+// NEWS + INDICATOR + AUTO
 // =========================
 const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
 const rss2jsonApi =
@@ -97,49 +91,40 @@ let newsIndex = 0;
 
 let autoTimer = null;
 let isInteracting = false;
-
-const SLIDE_DURATION = 0.8;
-const AUTO_INTERVAL = 8000;
-const SWIPE_THRESHOLD = 50;
+const SLIDE_DURATION = 0.8; // フェード速度（秒）
 
 // ---------- インジケータ ----------
 const indicator = document.createElement('div');
-Object.assign(indicator.style, {
-  position: 'absolute',
-  bottom: '10px',
-  left: '50%',
-  transform: 'translateX(-50%)',
-  display: 'flex',
-  gap: '8px'
-});
+indicator.style.position = 'absolute';
+indicator.style.bottom = '10px';
+indicator.style.left = '50%';
+indicator.style.transform = 'translateX(-50%)';
+indicator.style.display = 'flex';
+indicator.style.gap = '8px';
 newsCard.appendChild(indicator);
-
-function createDot(i) {
-  const dot = document.createElement('div');
-  Object.assign(dot.style, {
-    width: '10px',
-    height: '10px',
-    borderRadius: '50%',
-    background: i === newsIndex ? '#fff' : '#555',
-    cursor: 'pointer'
-  });
-
-  dot.addEventListener('click', e => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (i === newsIndex) return;
-
-    stopAuto();
-    showNews(i, 'right');
-    startAuto();
-  });
-
-  return dot;
-}
 
 function updateIndicator() {
   indicator.innerHTML = '';
-  newsItems.forEach((_, i) => indicator.appendChild(createDot(i)));
+  newsItems.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.style.width = '10px';
+    dot.style.height = '10px';
+    dot.style.borderRadius = '50%';
+    dot.style.background = i === newsIndex ? '#fff' : '#555';
+    dot.style.cursor = 'pointer';
+
+    dot.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (i === newsIndex) return;
+
+      stopAuto();
+      showNews(i, 'fade');
+      startAuto();
+    });
+
+    indicator.appendChild(dot);
+  });
 }
 
 // ---------- ニュース取得 ----------
@@ -149,6 +134,7 @@ async function fetchNews() {
 
   newsItems = data.items;
   createNewsElements();
+
   showNews(0, 'init');
   startAuto();
 }
@@ -170,18 +156,19 @@ function createNewsElements() {
   });
 }
 
-// ---------- 表示制御 ----------
+// ---------- 表示制御（フェード） ----------
 function showNews(nextIndex, direction) {
   const current = newsElements[newsIndex];
   const next = newsElements[nextIndex];
 
+  // 初期表示
   if (direction === 'init') {
     newsElements.forEach(el => {
       el.style.transition = 'none';
-      el.style.transform = 'translateX(0)';
       el.style.opacity = 0;
       el.classList.remove('show');
     });
+
     next.style.opacity = 1;
     next.classList.add('show');
     newsIndex = nextIndex;
@@ -189,24 +176,21 @@ function showNews(nextIndex, direction) {
     return;
   }
 
+  // フェードアウト
   if (current) {
-    current.style.transition =
-      `transform ${SLIDE_DURATION}s ease, opacity ${SLIDE_DURATION}s ease`;
-    current.style.transform =
-      direction === 'left' ? 'translateX(100%)' : 'translateX(-100%)';
+    current.style.transition = `opacity ${SLIDE_DURATION}s ease`;
     current.style.opacity = 0;
     current.classList.remove('show');
   }
 
+  // フェードイン準備
   next.style.transition = 'none';
-  next.style.transform =
-    direction === 'left' ? 'translateX(-100%)' : 'translateX(100%)';
-  next.style.opacity = 1;
+  next.style.opacity = 0;
   next.classList.add('show');
 
   requestAnimationFrame(() => {
-    next.style.transition = `transform ${SLIDE_DURATION}s ease`;
-    next.style.transform = 'translateX(0)';
+    next.style.transition = `opacity ${SLIDE_DURATION}s ease`;
+    next.style.opacity = 1;
   });
 
   newsIndex = nextIndex;
@@ -218,16 +202,16 @@ function startAuto() {
   stopAuto();
   autoTimer = setInterval(() => {
     if (!isInteracting) {
-      showNews((newsIndex + 1) % newsElements.length, 'right');
+      showNews((newsIndex + 1) % newsElements.length, 'fade');
     }
-  }, AUTO_INTERVAL);
+  }, 5000); // ← ニュース切替間隔
 }
 
 function stopAuto() {
   if (autoTimer) clearInterval(autoTimer);
 }
 
-// ---------- スワイプ ----------
+// ---------- スワイプ（左右どちらでもフェード） ----------
 let startX = 0;
 
 newsCard.addEventListener('pointerdown', e => {
@@ -239,12 +223,13 @@ newsCard.addEventListener('pointerup', e => {
   const dx = e.clientX - startX;
   isInteracting = false;
 
-  if (Math.abs(dx) > SWIPE_THRESHOLD) {
+  if (Math.abs(dx) > 50) {
     stopAuto();
-    showNews(
-      (newsIndex + (dx > 0 ? -1 : 1) + newsElements.length) % newsElements.length,
-      dx > 0 ? 'left' : 'right'
-    );
+    if (dx > 0) {
+      showNews((newsIndex - 1 + newsElements.length) % newsElements.length, 'fade');
+    } else {
+      showNews((newsIndex + 1) % newsElements.length, 'fade');
+    }
     startAuto();
   }
 });
