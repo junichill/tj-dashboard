@@ -6,43 +6,37 @@ html, body {
   background: black;
   font-family: Arial, sans-serif;
   color: white;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 /* 全体 */
 #container {
   display: flex;
+  flex-direction: row; /* 横並び */
   width: 100%;
   height: 100%;
 }
 
 /* 左側 */
 #left-panel {
-  width: 55%;
-  height: 100%;
+  flex: 0 0 55%; /* 画面幅の55% */
   display: flex;
   flex-direction: column;
-  padding: 40px 40px 30px 50px;
+  padding: 2vw 2vw 1.5vw 2.5vw;
   box-sizing: border-box;
 }
 
+/* 左下の日付・天気 */
 .left-bottom {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-
-  margin-top: auto;   /* ← A案の要 */
+  margin-top: auto;
 }
 
 /* 日付・天気 */
-#weather {
-  font-size: 26px;
-  text-align: left;
-}
-
-#date {
-  font-size: 26px;
-  text-align: right;
+#weather, #date {
+  font-size: 2vw; /* 画面幅に応じて自動調整 */
 }
 
 /* Tick 時計 */
@@ -51,55 +45,43 @@ html, body {
   white-space: nowrap;
 }
 
-/* 時計 全体フォント */
-.tick,
-.tick * {
+.tick, .tick * {
   font-family: 'Noto Sans JP', sans-serif;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
-/* 1桁の幅を固定（最重要） */
-.tick-char {
-  width: 2.55em;
-}
+.tick-char { width: 2.55em; }
 
-/* 表示サイズはここで一元管理 */
-.tick-flip,
-.tick-text-inline {
-  font-size: 3.2em;
-}
+.tick-flip, .tick-text-inline { font-size: 3vw; }
 
-/* 数字は太く */
 .tick-flip {
   font-weight: 700;
   color: #fff;
   border-radius: 0.12em;
 }
 
-/* コロンは控えめ */
 .tick-text-inline {
   opacity: 0.8;
   margin: 0 -0.05em;
 }
 
-/* フリップ背景 */
 .tick-flip-panel {
   background-color: #3c3e3c;
   color: #fff;
 }
 
-/* 縦方向をゆったり */
+/* 時計縦方向 */
 .clock-container {
-  margin-top: 60px;
-  transform: scaleY(1.7);
+  margin-top: 3vw;
+  transform: scaleY(1.4);
   transform-origin: left center;
 }
 
 /* 右側ニュース */
 #right-panel {
-  width: 45%;
-  background: url('news-bg.png') center / 80% 63% no-repeat;
+  flex: 0 0 45%; /* 画面幅の45% */
+  background: url('news-bg.png') center / cover no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -107,48 +89,51 @@ html, body {
 
 #news-card {
   width: 80%;
-  height: 63%;
+  height: 60%;
   background: rgba(0,0,0,0.6);
   border-radius: 15px;
   position: relative;
   overflow: hidden;
-  padding: 20px;
+  padding: 1.5vw;
   box-sizing: border-box;
 }
 
 /* ニュース */
 .news-item {
   position: absolute;
-  inset: 20px;
+  inset: 1.2vw;
   opacity: 0;
   transition: opacity 1.5s ease;
 }
 
-.news-item.show {
-  opacity: 1;
+.news-item.show { opacity: 1; }
+
+.news-title { font-size: 2vw; font-weight: bold; color: white; text-decoration: none; }
+.news-pubdate { font-size: 0.8vw; color: #ccc; text-align: right; }
+.news-description { font-size: 1.2vw; margin-top: 0.3vw; }
+
+/* ======================
+   メディアクエリ：スマホ用
+====================== */
+@media screen and (max-width: 768px) {
+  #container {
+    flex-direction: column;
+  }
+
+  #left-panel, #right-panel {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .left-bottom { flex-direction: column; align-items: flex-start; gap: 0.5vw; }
+
+  #weather, #date { font-size: 4vw; }
+
+  .tick-flip, .tick-text-inline { font-size: 6vw; }
+
+  #news-card { width: 90%; height: auto; padding: 3vw; }
+
+  .news-title { font-size: 5vw; }
+  .news-description { font-size: 3.5vw; }
+  .news-pubdate { font-size: 2.5vw; }
 }
-
-.news-title {
-  font-size: 40px;
-  font-weight: bold;
-  color: white;
-  text-decoration: none;
-}
-
-.news-pubdate {
-  font-size: 14px;
-  color: #ccc;
-  text-align: right;
-}
-
-.news-description {
-  font-size: 20px;
-  margin-top: 5px;
-}
-
-
-
-
-
-
-
