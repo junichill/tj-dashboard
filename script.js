@@ -77,7 +77,7 @@ fetchWeather();
 setInterval(fetchWeather, 600000);
 
 // =========================
-// NEWS + INDICATOR + AUTO
+// NEWS (Fade Switch)
 // =========================
 const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
 const rss2jsonApi =
@@ -91,7 +91,8 @@ let newsIndex = 0;
 
 let autoTimer = null;
 let isInteracting = false;
-const SLIDE_DURATION = 2.0; // フェード速度（秒）
+
+const FADE_DURATION = 1.5; // フェード秒数
 
 // ---------- インジケータ ----------
 const indicator = document.createElement('div');
@@ -113,13 +114,10 @@ function updateIndicator() {
     dot.style.background = i === newsIndex ? '#fff' : '#555';
     dot.style.cursor = 'pointer';
 
-    dot.addEventListener('click', e => {
-      e.preventDefault();
-      e.stopPropagation();
+    dot.addEventListener('click', () => {
       if (i === newsIndex) return;
-
       stopAuto();
-      showNews(i, 'fade');
+      showNews(i);
       startAuto();
     });
 
@@ -135,7 +133,7 @@ async function fetchNews() {
   newsItems = data.items;
   createNewsElements();
 
-  showNews(0, 'init');
+  showNews(0, true);
   startAuto();
 }
 
@@ -146,6 +144,7 @@ function createNewsElements() {
   newsElements = newsItems.map(item => {
     const div = document.createElement('div');
     div.className = 'news-item';
+    div.style.opacity = 0;
     div.innerHTML = `
       <a class="news-title" href="${item.link}" target="_blank">${item.title}</a>
       <div class="news-pubdate">${item.pubDate}</div>
@@ -156,19 +155,13 @@ function createNewsElements() {
   });
 }
 
-// ---------- 表示制御（フェード） ----------
-function showNews(nextIndex, direction) {
+// ---------- 表示制御（完全フェード） ----------
+function showNews(nextIndex, isInit = false) {
   const current = newsElements[newsIndex];
   const next = newsElements[nextIndex];
 
-  // 初期表示
-  if (direction === 'init') {
-    newsElements.forEach(el => {
-      el.style.transition = 'none';
-      el.style.opacity = 0;
-      el.classList.remove('show');
-    });
-
+  if (isInit) {
+    next.style.transition = 'none';
     next.style.opacity = 1;
     next.classList.add('show');
     newsIndex = nextIndex;
@@ -176,25 +169,25 @@ function showNews(nextIndex, direction) {
     return;
   }
 
-  // フェードアウト
   if (current) {
-    current.style.transition = `opacity ${SLIDE_DURATION}s ease`;
+    current.style.transition = `opacity ${FADE_DURATION}s ease`;
     current.style.opacity = 0;
     current.classList.remove('show');
   }
 
-  // フェードイン準備
-  next.style.transition = 'none';
-  next.style.opacity = 0;
-  next.classList.add('show');
+  setTimeout(() => {
+    next.style.transition = 'none';
+    next.style.opacity = 0;
+    next.classList.add('show');
 
-  requestAnimationFrame(() => {
-    next.style.transition = `opacity ${SLIDE_DURATION}s ease`;
-    next.style.opacity = 1;
-  });
+    requestAnimationFrame(() => {
+      next.style.transition = `opacity ${FADE_DURATION}s ease`;
+      next.style.opacity = 1;
+    });
 
-  newsIndex = nextIndex;
-  updateIndicator();
+    newsIndex = nextIndex;
+    updateIndicator();
+  }, FADE_DURATION * 1000);
 }
 
 // ---------- 自動切替 ----------
@@ -202,16 +195,16 @@ function startAuto() {
   stopAuto();
   autoTimer = setInterval(() => {
     if (!isInteracting) {
-      showNews((newsIndex + 1) % newsElements.length, 'fade');
+      showNews((newsIndex + 1) % newsElements.length);
     }
-  }, 5000); // ← ニュース切替間隔
+  }, 5000); // ← ここがニュース切替間隔
 }
 
 function stopAuto() {
   if (autoTimer) clearInterval(autoTimer);
 }
 
-// ---------- スワイプ（左右どちらでもフェード） ----------
+// ---------- スワイプ ----------
 let startX = 0;
 
 newsCard.addEventListener('pointerdown', e => {
@@ -226,9 +219,9 @@ newsCard.addEventListener('pointerup', e => {
   if (Math.abs(dx) > 50) {
     stopAuto();
     if (dx > 0) {
-      showNews((newsIndex - 1 + newsElements.length) % newsElements.length, 'fade');
+      showNews((newsIndex - 1 + newsElements.length) % newsElements.length);
     } else {
-      showNews((newsIndex + 1) % newsElements.length, 'fade');
+      showNews((newsIndex + 1) % newsElements.length);
     }
     startAuto();
   }
