@@ -61,7 +61,7 @@ html, body {
 
 /* 1桁の幅を固定（最重要） */
 .tick-char {
-  width: 1.55em;
+  width: 2.55em;
 }
 
 /* 表示サイズはここで一元管理 */
@@ -145,6 +145,7 @@ html, body {
   font-size: 20px;
   margin-top: 5px;
 }
+
 
 
 
