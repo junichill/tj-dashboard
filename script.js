@@ -28,39 +28,40 @@ updateDate();
 setInterval(updateDate, 60000);
 
 // =========================
-// WEATHER (完全版: アイコン＋説明＋気温)
+// WEATHER (Today & Tomorrow)
 // =========================
-const weatherIcon = document.getElementById('weather-icon');
-const weatherDesc = document.getElementById('weather-desc');
 const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
-const LAT = 35.5309;
-const LON = 139.7033;
+const LAT = 35.6895; // 東京
+const LON = 139.6917;
 
 async function fetchWeather() {
   try {
-    const res = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=ja`
+    const r = await fetch(
+      `https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=ja`
     );
-    const data = await res.json();
-    const iconCode = data.weather[0].icon;
-    const desc = data.weather[0].description;
-    const temp = Math.round(data.main.temp);
+    const d = await r.json();
 
-    if(weatherIcon) {
-      weatherIcon.src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
-      weatherIcon.alt = desc; // ← 追加
-    }
-    if(weatherDesc) {
-      weatherDesc.textContent = `${desc} ${temp}℃`;
+    // 今日の天気
+    const today = d.list[0];
+    document.getElementById('weather-icon-today').src = `https://openweathermap.org/img/wn/${today.weather[0].icon}@2x.png`;
+    document.getElementById('weather-temp-today').textContent = `${today.weather[0].description} ${today.main.temp.toFixed(1)}℃`;
+
+    // 明日の天気（24時間後に一番近い時間）
+    const tomorrow = d.list.find(v => v.dt > today.dt + 86400);
+    if (tomorrow) {
+      document.getElementById('weather-icon-tomorrow').src = `https://openweathermap.org/img/wn/${tomorrow.weather[0].icon}@2x.png`;
+      document.getElementById('weather-temp-tomorrow').textContent = `${tomorrow.weather[0].description} ${tomorrow.main.temp.toFixed(1)}℃`;
     }
 
   } catch (err) {
     console.error('天気情報取得失敗', err);
-    if(weatherDesc) weatherDesc.textContent = '天気情報取得失敗';
+    document.getElementById('weather-temp-today').textContent = '天気取得失敗';
+    document.getElementById('weather-temp-tomorrow').textContent = '';
   }
 }
+
 fetchWeather();
-setInterval(fetchWeather, 600000); // 10分ごとに更新
+setInterval(fetchWeather, 600000); // 10分ごと更新
 
 // =========================
 // NEWS (Fade)
