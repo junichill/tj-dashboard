@@ -33,44 +33,36 @@ html, body {
   box-sizing: border-box;
 }
 
-/* 左下の日付・天気 */
 .left-bottom {
   display: flex;
-  flex-direction: column; /* 縦方向 */
-  gap: 10px;
-  margin-top: auto;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: auto;  /* 時計の下に固定 */
+  padding: 0 10px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-/* 天気 */
+/* 天気を少し大きくして表示 */
 #weather {
   display: flex;
-  flex-direction: column; /* 今日・明日それぞれ1行 */
-  gap: 10px;
-}
-
-.weather-item {
-  display: flex;
   align-items: center;
+  font-size: 26px;
   gap: 10px;
-  font-family: 'Kosugi Maru', sans-serif;
 }
 
-.weather-item img {
-  width: 80px;   /* アイコン大きく */
-  height: 80px;
+#weather-icon {
+  width: 60px;   /* アイコンを大きく */
+  height: 60px;
 }
 
-.weather-item span {
-  font-size: 18px;
-}
-
-/* 日付 */
 #date {
   font-family: 'Kosugi Maru', sans-serif;
   font-weight: 700;
   font-size: 20px;
   text-align: right;
 }
+
 
 /* ===========================
    Flip時計
@@ -174,3 +166,4 @@ html, body {
   .news-description { font-size: 3.5vw; }
   .news-pubdate { font-size: 2.5vw; }
 }
+
