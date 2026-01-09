@@ -55,7 +55,7 @@ html, body {
 .tick-text-inline {
   font-size: 3.2em;
   font-family: 'Roboto Mono', monospace;
-
+  font-weight: 700;
 }
 
 .tick-text-inline {
@@ -125,6 +125,7 @@ html, body {
   font-size: 20px;
   margin-top: 5px;
 }
+
 
 
 
