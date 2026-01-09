@@ -28,31 +28,39 @@ updateDate();
 setInterval(updateDate, 60000);
 
 // =========================
-// WEATHER
+// WEATHER (完全版: アイコン＋説明＋気温)
 // =========================
-const weatherEl = document.getElementById('weather');
+const weatherIcon = document.getElementById('weather-icon');
+const weatherDesc = document.getElementById('weather-desc');
 const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
 const LAT = 35.5309;
 const LON = 139.7033;
 
 async function fetchWeather() {
   try {
-    const r = await fetch(
-      `https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=en`
+    const res = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=ja`
     );
-    const d = await r.json();
-    const today = d.list[0];
-    const tomorrow = d.list.find(v => v.dt > today.dt + 86400);
+    const data = await res.json();
+    const iconCode = data.weather[0].icon;
+    const desc = data.weather[0].description;
+    const temp = Math.round(data.main.temp);
 
-    weatherEl.innerHTML =
-      `Today: ${today.main.temp.toFixed(1)}℃ / ${today.weather[0].description}<br>` +
-      `Tomorrow: ${tomorrow.main.temp.toFixed(1)}℃ / ${tomorrow.weather[0].description}`;
-  } catch {
-    weatherEl.textContent = 'Weather fetch failed';
+    if(weatherIcon) {
+      weatherIcon.src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+      weatherIcon.alt = desc; // ← 追加
+    }
+    if(weatherDesc) {
+      weatherDesc.textContent = `${desc} ${temp}℃`;
+    }
+
+  } catch (err) {
+    console.error('天気情報取得失敗', err);
+    if(weatherDesc) weatherDesc.textContent = '天気情報取得失敗';
   }
 }
 fetchWeather();
-setInterval(fetchWeather, 600000);
+setInterval(fetchWeather, 600000); // 10分ごとに更新
 
 // =========================
 // NEWS (Fade)
