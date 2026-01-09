@@ -1,56 +1,62 @@
 html, body {
   margin: 0;
-  padding: 0;
-  width: 100%;
   height: 100%;
-  background: black;
   font-family: Arial, sans-serif;
-  color: white;
-  overflow: hidden;
 }
 
-/* 全体 */
 #container {
   display: flex;
-  width: 100%;
-  height: 100%;
+  height: 100vh;
 }
 
-/* 左側 */
 #left-panel {
-  width: 50%;
+  width: 40%;
+  background: #ffffff;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding-left: 50px;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 40px 20px;
   box-sizing: border-box;
+  gap: 24px; /* ← 時計・日付・天気の間隔 */
 }
 
-/* 日付・天気 */
+.clock-container {
+  flex-shrink: 0;
+}
+
 #date {
-  font-size: 28px;
-  margin-top: 10px;
-  text-align: right;
+  font-size: 1.4rem;
+  color: #555;
 }
 
 #weather {
-  font-size: 28px;
-  margin-top: 10px;
+  font-size: 1.2rem;
+  color: #555;
+  text-align: center;
 }
 
-/* Tick 時計 */
+#right-panel {
+  width: 60%;
+  background: #111;
+  position: relative;
+}
+
+/* Tick clock styles */
 .tick {
   font-size: 1rem;
-  white-space: nowrap;
 }
 
-.tick-flip,
-.tick-text-inline {
-  font-size: 3.2em;
+.tick-flip, .tick-text-inline {
+  font-size: 4.2em; /* ← 縦方向を大きく */
+}
+
+.tick-char {
+  width: 1.6em;
 }
 
 .tick-text-inline {
-  color: #fff;
+  color: #595d63;
 }
 
 .tick-flip-panel {
@@ -61,62 +67,24 @@ html, body {
 .tick-flip {
   border-radius: 0.12em;
 }
-.clock-container {
-  transform: scaleY(1.3);   /* 縦だけ大きく */
-  transform-origin: left center;
-}
 
-/* 右側ニュース */
-#right-panel {
-  width: 50%;
-  background: url('news-bg.png') center / 80% 63% no-repeat;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
+/* NEWS */
 #news-card {
-  width: 80%;
-  height: 63%;
-  background: rgba(0,0,0,0.6);
-  border-radius: 15px;
-  position: relative;
+  position: absolute;
+  inset: 0;
   overflow: hidden;
-  padding: 20px;
-  box-sizing: border-box;
 }
 
-/* ニュース */
 .news-item {
   position: absolute;
-  inset: 20px;
+  inset: 0;
+  padding: 40px;
+  box-sizing: border-box;
+  color: #fff;
   opacity: 0;
-  transition: opacity 1.5s ease;
+  transition: opacity 1.2s ease;
 }
 
 .news-item.show {
   opacity: 1;
 }
-
-.news-title {
-  font-size: 40px;
-  font-weight: bold;
-  color: white;
-  text-decoration: none;
-}
-
-.news-pubdate {
-  font-size: 14px;
-  color: #ccc;
-  text-align: right;
-}
-
-.news-description {
-  font-size: 20px;
-  margin-top: 5px;
-}
-
-
-
-
-
