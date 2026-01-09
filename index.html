@@ -15,40 +15,40 @@
 </head>
 
 <body>
+<div class="wrapper">
+  <div id="container">
 
-<div id="container">
-
-  <!-- 左：時計・日付・天気 -->
-  <div id="left-panel">
-
-    <div class="clock-container">
-      <div class="tick" data-did-init="handleTickInit">
-        <div data-layout="horizontal fit">
-          <span data-key="hours" data-transform="pad(00)" data-view="flip"></span>
-          <span data-view="text" data-key="sep" class="tick-text-inline"></span>
-          <span data-key="minutes" data-transform="pad(00)" data-view="flip"></span>
-          <span data-view="text" data-key="sep" class="tick-text-inline"></span>
-          <span data-key="seconds" data-transform="pad(00)" data-view="flip"></span>
-
+    <!-- 左：時計・日付・天気 -->
+    <div id="left-panel">
+      <div class="clock-container">
+        <div class="tick" data-did-init="handleTickInit">
+          <div data-layout="horizontal fit">
+            <span data-key="hours" data-transform="pad(00)" data-view="flip"></span>
+            <span data-view="text" data-key="sep" class="tick-text-inline"></span>
+            <span data-key="minutes" data-transform="pad(00)" data-view="flip"></span>
+            <span data-view="text" data-key="sep" class="tick-text-inline"></span>
+            <span data-key="seconds" data-transform="pad(00)" data-view="flip"></span>
+          </div>
         </div>
+      </div>
+
+      <div class="left-bottom">
+        <div id="weather"></div>
+        <div id="date"></div>
       </div>
     </div>
 
-<div class="left-bottom">
-  <div id="weather"></div>
-  <div id="date"></div>
-</div>
+    <!-- 右：ニュース -->
+    <div id="right-panel">
+      <div id="news-card"></div>
+    </div>
 
   </div>
-
-  <!-- 右：ニュース -->
-  <div id="right-panel">
-    <div id="news-card"></div>
-  </div>
-
 </div>
 
 <script src="flip.min.js"></script>
 <script src="script.js"></script>
 </body>
+
 </html>
+
