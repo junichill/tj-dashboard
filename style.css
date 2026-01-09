@@ -51,11 +51,12 @@ html, body {
   white-space: nowrap;
 }
 
-.tick-flip,
+.tick-flip{
   font-size: 3.2em;
   font-family: 'Inter', sans-serif;
   font-weight: 700;
   color: #fff;
+}
 .tick-text-inline {
   font-size: 3.2em;
   font-weight: 700;
@@ -124,6 +125,7 @@ html, body {
   font-size: 20px;
   margin-top: 5px;
 }
+
 
 
 
