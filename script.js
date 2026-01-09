@@ -5,7 +5,7 @@ function handleTickInit(tick) {
   Tick.helper.interval(() => {
     const d = Tick.helper.date();
     tick.value = {
-      sep: '.',
+      sep: ':',
       hours: d.getHours(),
       minutes: d.getMinutes(),
       seconds: d.getSeconds()
