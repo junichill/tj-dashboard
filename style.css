@@ -33,28 +33,38 @@ html, body {
   box-sizing: border-box;
 }
 
-/* 左下の日付・天気 */
+/* 左下：日付・天気 */
 .left-bottom {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-top: auto;   /* 時計の下に固定 */
+  flex-direction: column; /* 今日・明日を縦に並べる */
+  gap: 10px;
+  margin-top: auto;
 }
 
-/* 日付・天気 */
+/* 天気 */
 #weather {
-   display: flex;
-   align-items: center;
-   font-family: 'Noto Sans JP', sans-serif;
-   font-size: 26px;
+  display: flex;
+  flex-direction: column; /* 今日・明日それぞれ1行 */
+  gap: 10px;
 }
 
-#weather-icon {
-  width: 80px;
+.weather-item {
+  display: flex;
+  align-items: center;
+  font-family: 'Kosugi Maru', sans-serif;
+  gap: 10px;
+}
+
+.weather-item img {
+  width: 80px;   /* アイコンを大きく */
   height: 80px;
-  margin-right: 10px;
 }
 
+.weather-item span {
+  font-size: 18px;
+}
+
+/* 日付 */
 #date {
   font-family: 'Kosugi Maru', sans-serif;
   font-weight: 700;
@@ -164,6 +174,7 @@ html, body {
   .news-description { font-size: 3.5vw; }
   .news-pubdate { font-size: 2.5vw; }
 }
+
 
 
 
