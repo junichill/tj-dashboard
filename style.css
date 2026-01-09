@@ -26,7 +26,7 @@ html, body {
    左パネル（時計・日付・天気）
 =========================== */
 #left-panel {
-  flex: 0 0 55%; /* 画面幅の55% */
+  flex: 0 0 55%;
   display: flex;
   flex-direction: column;
   padding: 40px 40px 30px 50px;
@@ -36,25 +36,35 @@ html, body {
 /* 左下の日付・天気 */
 .left-bottom {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-top: auto;   /* 時計の下に固定 */
+  flex-direction: column; /* 縦方向 */
+  gap: 10px;
+  margin-top: auto;
 }
 
-/* 日付・天気 */
+/* 天気 */
 #weather {
-   display: flex;
-   align-items: center;
-   font-family: 'Noto Sans JP', sans-serif;
-   font-size: 26px;
+  display: flex;
+  flex-direction: column; /* 今日・明日それぞれ1行 */
+  gap: 10px;
 }
 
-#weather-icon {
-  width: 80px;
+.weather-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Kosugi Maru', sans-serif;
+}
+
+.weather-item img {
+  width: 80px;   /* アイコン大きく */
   height: 80px;
-  margin-right: 10px;
 }
 
+.weather-item span {
+  font-size: 18px;
+}
+
+/* 日付 */
 #date {
   font-family: 'Kosugi Maru', sans-serif;
   font-weight: 700;
@@ -107,7 +117,7 @@ html, body {
    右パネル（ニュース）
 =========================== */
 #right-panel {
-  flex: 0 0 45%; /* 画面幅の45% */
+  flex: 0 0 45%;
   background: url('news-bg.png') center / cover no-repeat;
   display: flex;
   align-items: center;
@@ -164,7 +174,3 @@ html, body {
   .news-description { font-size: 3.5vw; }
   .news-pubdate { font-size: 2.5vw; }
 }
-
-
-
-
