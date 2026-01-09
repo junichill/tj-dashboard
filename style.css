@@ -55,6 +55,8 @@ html, body {
 .tick,
 .tick * {
   font-family: 'Oswald', Arial, sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
 }
 
 .tick-flip {
@@ -132,3 +134,4 @@ html, body {
   font-size: 20px;
   margin-top: 5px;
 }
+
