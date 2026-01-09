@@ -71,14 +71,6 @@ html, body {
   border-radius: 0.12em;
 }
 
-.clock-container {
-  flex: 1;                 /* ← 上エリアを広く取る */
-  display: flex;
-  align-items: center;
-}
-.tick-flip-panel-text-wrapper {
-  line-height: 1.6;        /* ← 縦方向が大きく見える */
-}
 /* 右側ニュース */
 #right-panel {
   width: 50%;
@@ -128,6 +120,7 @@ html, body {
   font-size: 20px;
   margin-top: 5px;
 }
+
 
 
 
