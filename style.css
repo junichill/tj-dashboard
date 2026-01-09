@@ -17,7 +17,6 @@ html, body {
 =========================== */
 #container {
   display: flex;
-  flex-direction: row; /* 左右並び */
   width: 100%;
   height: 100%;
 }
@@ -26,35 +25,46 @@ html, body {
    左パネル（時計・日付・天気）
 =========================== */
 #left-panel {
-  flex: 0 0 55%; /* 画面幅の55% */
+  flex: 0 0 55%;
   display: flex;
   flex-direction: column;
   padding: 40px 40px 30px 50px;
   box-sizing: border-box;
 }
 
-/* 左下の日付・天気 */
+/* 左下：日付・天気 */
 .left-bottom {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-top: auto;   /* 時計の下に固定 */
+  margin-top: auto;
 }
 
-/* 日付・天気 */
+/* 天気 */
 #weather {
-   display: flex;
-   align-items: center;
-   font-family: 'Noto Sans JP', sans-serif;
-   font-size: 26px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
 }
 
-#weather-icon {
-  width: 80px;
-  height: 80px;
-  margin-right: 10px;
+.weather-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Kosugi Maru', sans-serif;
 }
 
+.weather-item img {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 5px;
+}
+
+.weather-item span {
+  font-size: 18px;
+}
+
+/* 日付 */
 #date {
   font-family: 'Kosugi Maru', sans-serif;
   font-weight: 700;
@@ -71,7 +81,7 @@ html, body {
 }
 
 .tick, .tick * {
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: 'Kosugi Maru', sans-serif;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
@@ -107,7 +117,7 @@ html, body {
    右パネル（ニュース）
 =========================== */
 #right-panel {
-  flex: 0 0 45%; /* 画面幅の45% */
+  flex: 0 0 45%;
   background: url('news-bg.png') center / cover no-repeat;
   display: flex;
   align-items: center;
@@ -144,7 +154,7 @@ html, body {
 =========================== */
 @media screen and (max-width: 768px) {
   #container {
-    flex-direction: column; /* 縦並びに変更 */
+    flex-direction: column;
   }
 
   #left-panel, #right-panel {
@@ -152,20 +162,37 @@ html, body {
     width: 100%;
   }
 
-  .left-bottom { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .left-bottom {
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
 
-  #weather, #date { font-size: 4vw; }
+  .weather-item img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .weather-item span {
+    font-size: 16px;
+  }
+
+  #date {
+    font-size: 4vw;
+    text-align: center;
+  }
 
   .tick-flip, .tick-text-inline { font-size: 6vw; }
 
-  #news-card { width: 90%; height: auto; padding: 3vw; }
+  #news-card {
+    width: 90%;
+    height: auto;
+    padding: 3vw;
+  }
 
   .news-title { font-size: 5vw; }
   .news-description { font-size: 3.5vw; }
   .news-pubdate { font-size: 2.5vw; }
 }
-
-
-
-
-
