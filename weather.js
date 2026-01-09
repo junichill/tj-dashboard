@@ -1,12 +1,18 @@
-const weatherPanel = document.getElementById("weather-panel");
-const weatherDiv = document.getElementById("weather");
+const apiKey = 'YOUR_API_KEY';  // OpenWeatherMap の API キー
+const lat = '35.6895';  // 東京
+const lon = '139.6917';
 
-function showWeather() {
-  document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-  weatherPanel.classList.add("active");
+fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=ja`)
+  .then(res => res.json())
+  .then(data => {
+    const iconCode = data.weather[0].icon;
+    const desc = data.weather[0].description;
+    const temp = Math.round(data.main.temp);
 
-  // 簡易サンプル。実際は気象庁APIやOpenWeatherMapのJSONをfetchする
-  weatherDiv.textContent = "東京: 晴れ 23℃ 湿度50%";
-}
-
-setInterval(showWeather, 15000); // 15秒ごと切替
+    document.getElementById('weather-icon').src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+    document.getElementById('weather-desc').textContent = `${desc} ${temp}℃`;
+  })
+  .catch(err => {
+    console.error('天気情報取得失敗', err);
+    document.getElementById('weather-desc').textContent = '天気情報取得失敗';
+  });
