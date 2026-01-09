@@ -18,7 +18,7 @@ html, body {
 
 /* 左側 */
 #left-panel {
-  width: 50%;
+  width: 60%;
   height: 100%;
 
   display: flex;
@@ -73,7 +73,7 @@ html, body {
 
 /* 右側ニュース */
 #right-panel {
-  width: 50%;
+  width: 40%;
   background: url('news-bg.png') center / 80% 63% no-repeat;
   display: flex;
   align-items: center;
@@ -120,6 +120,7 @@ html, body {
   font-size: 20px;
   margin-top: 5px;
 }
+
 
 
 
