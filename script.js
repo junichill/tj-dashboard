@@ -91,7 +91,7 @@ let newsIndex = 0;
 
 let autoTimer = null;
 let isInteracting = false;
-const SLIDE_DURATION = 1.5; // フェード速度（秒）
+const SLIDE_DURATION = 2.0; // フェード速度（秒）
 
 // ---------- インジケータ ----------
 const indicator = document.createElement('div');
