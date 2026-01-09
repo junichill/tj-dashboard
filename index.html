@@ -8,22 +8,15 @@
 <link rel="stylesheet" href="flip.min.css">
 <link rel="stylesheet" href="style.css">
 
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
 
 </head>
-
 <body>
 
 <div id="container">
 
   <!-- 左：時計・日付・天気 -->
   <div id="left-panel">
-
     <div class="clock-container">
       <div class="tick" data-did-init="handleTickInit">
         <div data-layout="horizontal fit">
@@ -32,16 +25,17 @@
           <span data-key="minutes" data-transform="pad(00)" data-view="flip"></span>
           <span data-view="text" data-key="sep" class="tick-text-inline"></span>
           <span data-key="seconds" data-transform="pad(00)" data-view="flip"></span>
-
         </div>
       </div>
     </div>
 
-<div class="left-bottom">
-  <div id="weather"></div>
-  <div id="date"></div>
-</div>
-
+    <div class="left-bottom">
+      <div id="weather">
+        <img id="weather-icon" src="" alt="天気">
+        <span id="weather-desc"></span>
+      </div>
+      <div id="date"></div>
+    </div>
   </div>
 
   <!-- 右：ニュース -->
@@ -53,10 +47,6 @@
 
 <script src="flip.min.js"></script>
 <script src="script.js"></script>
+<script src="weather.js"></script>
 </body>
 </html>
-
-
-
-
-
