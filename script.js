@@ -92,7 +92,7 @@ let newsIndex = 0;
 let autoTimer = null;
 let isInteracting = false;
 
-const FADE_DURATION = 1.5; // フェード秒数
+const FADE_DURATION = 2.0; // フェード秒数
 
 // ---------- インジケータ ----------
 const indicator = document.createElement('div');
