@@ -164,25 +164,26 @@ async function fetchNews() {
         }
 
         // Yahoo（AllOrigins）
-        if (src.type === 'allorigins') {
-          const r = await fetch(
-            'https://api.allorigins.win/raw?url=' + encodeURIComponent(src.url)
-          );
-          const text = await r.text();
-          const xml = new DOMParser().parseFromString(text, 'text/xml');
+if (src.type === 'allorigins') {
+  const r = await fetch(
+    'https://api.allorigins.win/raw?url=' + encodeURIComponent(src.url)
+  );
+  const text = await r.text();
+  const xml = new DOMParser().parseFromString(text, 'text/xml');
 
-          const items = [...xml.querySelectorAll('item')].map(item => ({
-            title: item.querySelector('title')?.textContent ?? '',
-            link: item.querySelector('link')?.textContent ?? '',
-            pubDate: item.querySelector('pubDate')?.textContent ?? '',
-            description: item.querySelector('description')?.textContent ?? ''
-          }));
+  const items = [...xml.getElementsByTagName('item')].map(item => ({
+    title: item.getElementsByTagName('title')[0]?.textContent ?? '',
+    link: item.getElementsByTagName('link')[0]?.textContent ?? '',
+    pubDate: item.getElementsByTagName('pubDate')[0]?.textContent ?? '',
+    description: item.getElementsByTagName('description')[0]?.textContent ?? ''
+  }));
 
-          return {
-            source: src,
-            items
-          };
-        }
+  return {
+    source: src,
+    items
+  };
+}
+
       })
     );
 
