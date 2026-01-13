@@ -140,6 +140,19 @@ html, body {
 .news-title { font-size: 40px; font-weight: bold; color: white; text-decoration: none; }
 .news-pubdate { font-size: 14px; color: #ccc; text-align: right; }
 .news-description { font-size: 20px; margin-top: 5px; }
+.news-refresh {
+  animation: refreshFlash 0.6s;
+}
+
+@keyframes refreshFlash {
+  0% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+.news-item.important .news-title {
+  color: #ff5252;
+  font-weight: 700;
+}
 
 /* ===========================
    メディアクエリ：スマホ用
@@ -166,4 +179,5 @@ html, body {
   .news-description { font-size: 3.5vw; }
   .news-pubdate { font-size: 2.5vw; }
 }
+
 
