@@ -74,7 +74,7 @@ let newsItems = [];
 let newsEls = [];
 let index = 0;
 let timer = null;
-const FADE = 1.5;
+const FADE = 1.8;
 
 // indicator
 const indicator = document.createElement('div');
