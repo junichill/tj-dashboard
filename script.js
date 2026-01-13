@@ -10,8 +10,16 @@ function handleTickInit(tick) {
       minutes: d.getMinutes(),
       seconds: d.getSeconds()
     };
+
+    // 秒要素に class="tick-seconds" を付与（毎回安全に付与）
+    // Flip時計では最後の .tick-flip が秒部分
+    const secEl = document.querySelector('.tick-flip:last-child');
+    if (secEl && !secEl.classList.contains('tick-seconds')) {
+      secEl.classList.add('tick-seconds');
+    }
   });
 }
+
 
 // =========================
 // DATE
