@@ -2,16 +2,26 @@
 // Tick CLOCK
 // =========================
 function handleTickInit(tick) {
+  const secondsEl = document.getElementById('seconds-static'); // 秒表示用
+
   Tick.helper.interval(() => {
     const d = Tick.helper.date();
+
+    // Flip表示には秒を含めない
     tick.value = {
       sep: ':',
       hours: d.getHours(),
       minutes: d.getMinutes(),
-      // seconds: d.getSeconds()
+      seconds: 0   // 秒はFlip表示しない
     };
+
+    // 静的テキストで秒を更新
+    if (secondsEl) {
+      secondsEl.textContent = d.getSeconds().toString().padStart(2, '0');
+    }
   });
 }
+
 
 // =========================
 // DATE
