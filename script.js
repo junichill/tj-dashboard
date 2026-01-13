@@ -209,7 +209,7 @@ function createNews() {
 
     div.innerHTML = `
       <a class="news-title" href="${n.link}" target="_blank">${n.title}</a>
-      <div class="news-pubdate">${formatJST(n.pubDate)}</div>
+      <div class="news-pubdate">${n.pubDate}</div>
       <div class="news-description">${n.description}</div>
     `;
 
