@@ -2,16 +2,28 @@
 // Tick CLOCK
 // =========================
 function handleTickInit(tick) {
+  const secondsEl = document.createElement('span');
+  secondsEl.id = 'seconds-static';
+  secondsEl.className = 'tick-seconds';
+
+  const container = document.querySelector('.clock-container');
+  container.appendChild(secondsEl);
+
   Tick.helper.interval(() => {
     const d = Tick.helper.date();
+
+    // 時・分のみ Flip に渡す
     tick.value = {
       sep: ':',
       hours: d.getHours(),
-      minutes: d.getMinutes(),
-      seconds: d.getSeconds()
+      minutes: d.getMinutes()
     };
+
+    // 秒は独立して表示
+    secondsEl.textContent = d.getSeconds().toString().padStart(2,'0');
   });
 }
+
 
 // =========================
 // DATE
