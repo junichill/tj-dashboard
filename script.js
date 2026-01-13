@@ -207,11 +207,11 @@ function createNews() {
     div.className = 'news-item';
     if (isImportant(n.title)) div.classList.add('important');
 
-    div.innerHTML = `
-      <a class="news-title" href="${n.link}" target="_blank">${n.title}</a>
-      <div class="news-pubdate">${n.pubDate}</div>
-      <div class="news-description">${n.description}</div>
-    `;
+  div.innerHTML = `
+    <a class="news-title" href="${n.link}" target="_blank">${n.title}</a>
+    <div class="news-pubdate">${n.pubDate}</div>
+    <div class="news-description">${n.description}</div>
+`;
 
     newsCard.appendChild(div);
     return div;
