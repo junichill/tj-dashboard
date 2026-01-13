@@ -72,12 +72,6 @@ const rssList = [
     key: 'nhk',
     type: 'rss2json',
     url: 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml'
-  },
-  {
-    name: '共同通信',
-    key: 'kyodo',
-    type: 'allorigins',
-    url: 'https://www.kyodo.co.jp/rss/news.xml'
   }
 ];
 
@@ -148,60 +142,14 @@ function updateIndicator() {
 
 async function fetchNews() {
   try {
-    const results = await Promise.all(
-      rssList.map(async src => {
+    const r = await fetch(RSS_API + encodeURIComponent(rssList[0].url));
+    const d = await r.json();
 
-        // --- NHK（rss2json） ---
-        if (src.type === 'rss2json') {
-          const r = await fetch(RSS_API + encodeURIComponent(src.url));
-          const d = await r.json();
-          return {
-            source: src,
-            items: d.items || []
-          };
-        }
+    newsItems = (d.items || []).map(item => ({
+      ...item,
+      source: rssList[0]
+    }));
 
-        // --- 共同通信（AllOrigins） ---
-        if (src.type === 'allorigins') {
-          const r = await fetch(
-            'https://api.allorigins.win/raw?url=' +
-            encodeURIComponent(src.url)
-          );
-          const text = await r.text();
-          const xml = new DOMParser().parseFromString(text, 'text/xml');
-
-          const items = [...xml.querySelectorAll('item')].map(item => ({
-            title: item.querySelector('title')?.textContent ?? '',
-            link: item.querySelector('link')?.textContent ?? '',
-            pubDate: item.querySelector('pubDate')?.textContent ?? '',
-            description:
-              item.querySelector('description')?.textContent ?? ''
-          }));
-
-          return {
-            source: src,
-            items
-          };
-        }
-      })
-    );
-
-    // --- 交互マージ ---
-    const merged = [];
-    const maxLen = Math.max(...results.map(r => r.items.length));
-
-    for (let i = 0; i < maxLen; i++) {
-      results.forEach(r => {
-        if (r.items[i]) {
-          merged.push({
-            ...r.items[i],
-            source: r.source
-          });
-        }
-      });
-    }
-
-    newsItems = merged;
     createNews();
     showNews(0, true);
     startAuto();
