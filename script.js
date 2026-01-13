@@ -30,7 +30,6 @@ setInterval(updateDate, 60000);
 // =========================
 // WEATHER (NHK風・自前SVG)
 // =========================
-// 省略（以前のままでもOK）
 const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
 const LAT = 35.6895;
 const LON = 139.6917;
@@ -162,14 +161,13 @@ function createNews() {
     div.className = 'news-item';
     if (isImportant(n.title)) div.classList.add('important');
 
-    // --- RSS XML の pubDate をそのまま使用 ---
-    const pubDateStr = n.pubDate; // "Tue, 13 Jan 2026 14:39:11 +0900" 形式
+    // --- RSS XML の title を表示 (例: NHKONEニュース)
+    const sourceTitle = n.sourceTitle || 'NHKONEニュース';
 
-    // --- RSS の <title> をソース名として表示 ---
-    const sourceTitle = n.sourceTitle || 'NHK'; // n.sourceTitle は後で取得
+    const pubDateStr = n.pubDate; // JST形式
 
     div.innerHTML = `
-      <div class="news-source">${sourceTitle}</div>
+      <div class="news-mark">${sourceTitle}</div>
       <a class="news-title" href="${n.link}" target="_blank">${n.title}</a>
       <div class="news-pubdate">${pubDateStr}</div>
       <div class="news-description">${n.description}</div>
@@ -182,24 +180,40 @@ function createNews() {
   updateIndicator();
 }
 
-
-// --- ニュース表示 ---
+// --- ニュース表示（フェードアウト・フェードイン復活版） ---
 function showNews(next, init = false) {
   if (!newsEls[next]) return;
 
   if (init) {
     newsEls[next].classList.add('show');
+    newsEls[next].style.opacity = '1';
+    newsEls[next].style.pointerEvents = 'auto';
     index = next;
     updateIndicator();
     return;
   }
 
-  newsEls[index].classList.remove('show');
+  const current = newsEls[index];
+  const nextEl = newsEls[next];
+
+  // フェードアウト
+  current.style.opacity = '0';
+  current.style.pointerEvents = 'none';
+
   setTimeout(() => {
-    newsEls[next].classList.add('show');
+    current.classList.remove('show');
+
+    // フェードイン
+    nextEl.classList.add('show');
+    nextEl.style.opacity = '0';
+    nextEl.style.pointerEvents = 'auto';
+    setTimeout(() => {
+      nextEl.style.opacity = '1';
+    }, 50);
+
     index = next;
     updateIndicator();
-  }, FADE*1000);
+  }, FADE * 1000);
 }
 
 // --- 自動切替 ---
@@ -225,7 +239,8 @@ async function fetchNews() {
       title: item.querySelector('title')?.textContent,
       link: item.querySelector('link')?.textContent,
       pubDate: item.querySelector('pubDate')?.textContent,
-      description: item.querySelector('description')?.textContent
+      description: item.querySelector('description')?.textContent,
+      sourceTitle: xml.querySelector('channel > title')?.textContent // NHKONEニュース
     }));
 
     createNews();
