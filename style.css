@@ -46,10 +46,10 @@ html, body {
 /* 天気を少し大きくして表示 */
 #weather {
   display: flex;
-  align-items: center;
-  font-size: 26px;
+  flex-direction: column;   /* ← 追加 */
   gap: 10px;
 }
+
 
 #date {
   font-family: 'Kosugi Maru', sans-serif;
@@ -61,12 +61,23 @@ html, body {
 /* ===========================
    NHK風 天気アイコン共通
 =========================== */
-.weather-item {
+.weather-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
+.weather-label {
+  font-size: 14px;
+  opacity: 0.8;
+  min-width: 32px; /* 今日／明日を揃える */
+}
+
+.weather-text {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
 .weather-icon {
   width: 60px;
   height: 60px;
@@ -101,7 +112,7 @@ html, body {
   color: #81d4fa;
 }
 
-#weather span {
+.weather-text {
   font-size: 22px;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -213,3 +224,4 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
