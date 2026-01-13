@@ -1,27 +1,24 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Digital Dashboard</title>
 
   <!-- Flip Clock -->
   <link rel="stylesheet" href="flip.min.css">
 
-  <!-- Main Style -->
+  <!-- メインCSS -->
   <link rel="stylesheet" href="style.css">
 
-  <!-- Google Font -->
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
 </head>
-
 <body>
 
 <div id="container">
 
-  <!-- =========================
-       左パネル：時計・日付・天気
-       ========================= -->
+  <!-- 左パネル：時計・日付・天気 -->
   <div id="left-panel">
 
     <!-- Flip Clock -->
@@ -37,47 +34,35 @@
       </div>
     </div>
 
-    <!-- Bottom: Weather & Date -->
-<div class="left-bottom">
+    <!-- 日付 -->
+    <div id="date"></div>
 
-  <!-- Weather -->
-  <div id="weather">
-
-    <div class="weather-row today">
-      <div class="weather-label">今日</div>
-      <div id="weather-icon-today" class="weather-icon"></div>
-      <div class="weather-text" id="weather-temp-today"></div>
-    </div>
-
-    <div class="weather-row tomorrow">
-      <div class="weather-label">明日</div>
-      <div id="weather-icon-tomorrow" class="weather-icon"></div>
-      <div class="weather-text" id="weather-temp-tomorrow"></div>
+    <!-- 天気 -->
+    <div id="weather">
+      <div class="weather-item">
+        <div class="weather-label">今日</div>
+        <div id="weather-icon-today" class="weather-icon"></div>
+        <div id="weather-temp-today" class="weather-temp"></div>
+      </div>
+      <div class="weather-item">
+        <div class="weather-label">明日</div>
+        <div id="weather-icon-tomorrow" class="weather-icon"></div>
+        <div id="weather-temp-tomorrow" class="weather-temp"></div>
+      </div>
     </div>
 
   </div>
 
-  <!-- Date -->
-  <div id="date"></div>
-
-</div>
-
-  </div>
-
-  <!-- =========================
-       右パネル：ニュース
-       ========================= -->
+  <!-- 右パネル：ニュース -->
   <div id="right-panel">
     <div id="news-card"></div>
   </div>
 
 </div>
 
-<!-- Scripts -->
+<!-- スクリプト -->
 <script src="flip.min.js"></script>
 <script src="script.js"></script>
 
 </body>
 </html>
-
-
