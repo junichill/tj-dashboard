@@ -163,13 +163,14 @@ html, body {
    秒用静的表示
 =========================== */
 .tick-seconds {
-  font-size: 2em;         /* 秒だけ小さく */
+  font-size: 2em;         /* 秒だけ少し小さめ */
   font-weight: 700;
   color: white;
   display: inline-block;
   vertical-align: top;
   margin-left: 4px;
 }
+
 
 /* ===========================
    右パネル（ニュース）
@@ -249,3 +250,4 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
