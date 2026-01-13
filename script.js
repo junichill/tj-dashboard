@@ -154,7 +154,9 @@ function updateIndicator() {
 }
 
 // --- ニュース作成（JST変換版） ---
+// --- ニュース作成 ---
 function createNews() {
+  // 既存のニュース要素を削除
   newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
 
   newsEls = newsItems.map(n => {
@@ -162,20 +164,28 @@ function createNews() {
     div.className = 'news-item';
     if (isImportant(n.title)) div.classList.add('important');
 
-    // JSON API の pubDate を Date オブジェクトに
-    const d = new Date(n.pubDate);
+    // --- JSON API の pubDate を正確に JST 表示 ---
+    const original = new Date(n.pubDate); // JSON API の pubDate
+    // UTC の値を取得
+    const utcYear  = original.getUTCFullYear();
+    const utcMonth = original.getUTCMonth();
+    const utcDate  = original.getUTCDate();
+    const utcHour  = original.getUTCHours();
+    const utcMin   = original.getUTCMinutes();
+    const utcSec   = original.getUTCSeconds();
 
-    // UTC → JST に変換
-    const jstTime = d.getTime() + 9*60*60*1000; // 9時間加算
-    const jst = new Date(jstTime);
+    // JST に変換 (UTC + 9h)
+    const jst = new Date(Date.UTC(utcYear, utcMonth, utcDate, utcHour + 9, utcMin, utcSec));
 
-    const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    // フォーマット
+    const days   = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
     const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const pubDateStr =
+      `${days[jst.getUTCDay()]}, ${String(jst.getUTCDate()).padStart(2,'0')} ${months[jst.getUTCMonth()]} `
+      + `${jst.getUTCFullYear()} `
+      + `${String(jst.getUTCHours()).padStart(2,'0')}:${String(jst.getUTCMinutes()).padStart(2,'0')}:${String(jst.getUTCSeconds()).padStart(2,'0')} +0900`;
 
-    const pubDateStr = `${days[jst.getUTCDay()]}, ${jst.getUTCDate().toString().padStart(2,'0')} `
-                      + `${months[jst.getUTCMonth()]} ${jst.getUTCFullYear()} `
-                      + `${jst.getUTCHours().toString().padStart(2,'0')}:${jst.getUTCMinutes().toString().padStart(2,'0')}:${jst.getUTCSeconds().toString().padStart(2,'0')} +0900`;
-
+    // HTML を作成
     div.innerHTML = `
       <a class="news-title" href="${n.link}" target="_blank">${n.title}</a>
       <div class="news-pubdate">${pubDateStr}</div>
@@ -186,10 +196,9 @@ function createNews() {
     return div;
   });
 
+  // ニュースインジケーターを更新
   updateIndicator();
 }
-
-
 
 // --- ニュース表示 ---
 function showNews(next, init = false) {
