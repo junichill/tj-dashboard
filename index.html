@@ -38,27 +38,30 @@
     </div>
 
     <!-- Bottom: Weather & Date -->
-    <div class="left-bottom">
+<div class="left-bottom">
 
-      <!-- Weather -->
-      <div id="weather">
+  <!-- Weather -->
+  <div id="weather">
 
-        <div class="weather-item">
-          <div id="weather-icon-today" class="weather-icon"></div>
-          <span id="weather-temp-today"></span>
-        </div>
-
-        <div class="weather-item">
-          <div id="weather-icon-tomorrow" class="weather-icon"></div>
-          <span id="weather-temp-tomorrow"></span>
-        </div>
-
-      </div>
-
-      <!-- Date -->
-      <div id="date"></div>
-
+    <div class="weather-row today">
+      <div class="weather-label">今日</div>
+      <div id="weather-icon-today" class="weather-icon"></div>
+      <div class="weather-text" id="weather-temp-today"></div>
     </div>
+
+    <div class="weather-row tomorrow">
+      <div class="weather-label">明日</div>
+      <div id="weather-icon-tomorrow" class="weather-icon"></div>
+      <div class="weather-text" id="weather-temp-tomorrow"></div>
+    </div>
+
+  </div>
+
+  <!-- Date -->
+  <div id="date"></div>
+
+</div>
+
   </div>
 
   <!-- =========================
@@ -76,4 +79,5 @@
 
 </body>
 </html>
+
 
