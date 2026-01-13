@@ -140,14 +140,12 @@ newsCard.appendChild(indicator);
 
 // --- JST 表示関数 ---
 function formatJST(pubDate) {
-  const d = new Date(pubDate); // 文字列からDate
-  const offset = 9 * 60; // JST +9時間
-  const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
-  const jst = new Date(utc + offset * 60000);
-  const day = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][jst.getDay()];
-  const mon = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][jst.getMonth()];
-  return `${day}, ${jst.getDate()} ${mon} ${jst.getFullYear()} ${jst.getHours()}:${String(jst.getMinutes()).padStart(2,'0')} JST`;
+  const d = new Date(pubDate); // すでに JST (+0900) が反映される
+  const day = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()];
+  const mon = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][d.getMonth()];
+  return `${day}, ${d.getDate()} ${mon} ${d.getFullYear()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')} JST`;
 }
+
 
 // --- 重要ニュース判定 ---
 function isImportant(title) {
