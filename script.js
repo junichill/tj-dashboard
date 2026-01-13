@@ -67,9 +67,16 @@ setInterval(fetchWeather, 600000); // 10分ごと更新
 // NEWS (Fade + Advanced)
 // =========================
 const rssList = [
-  'https://news.web.nhk/n-data/conf/na/rss/cat0.xml',
-  'https://news.yahoo.co.jp/rss/topics/top-picks.xml'
+  {
+    name: 'NHK',
+    url: 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml'
+  },
+  {
+    name: 'Yahoo',
+    url: 'https://news.yahoo.co.jp/rss/topics/top-picks.xml'
+  }
 ];
+
 const newsCard = document.getElementById('news-card');
 
 let newsItems = [];
@@ -141,11 +148,17 @@ async function fetchNews() {
     for (const rss of rssList) {
       const api =
         'https://api.rss2json.com/v1/api.json?rss_url=' +
-        encodeURIComponent(rss);
+        encodeURIComponent(rss.url);
 
       const r = await fetch(api);
       const d = await r.json();
-      if (d.items) allItems = allItems.concat(d.items);
+
+      if (d.items) {
+        d.items.forEach(item => {
+          item.source = rss.name; // ← ここで出どころを付与
+          allItems.push(item);
+        });
+      }
     }
 
     // タイトル重複排除
@@ -153,7 +166,7 @@ async function fetchNews() {
     allItems.forEach(n => map.set(n.title, n));
     newsItems = Array.from(map.values());
 
-    // ① 重要ニュースを最前面に
+    // 重要ニュースを最前面へ
     newsItems.sort((a, b) => {
       return isImportant(b.title) - isImportant(a.title);
     });
@@ -183,13 +196,12 @@ function createNews() {
   newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
 
   newsEls = newsItems.map(n => {
-    const important = isImportant(n.title);
-
     const div = document.createElement('div');
     div.className = 'news-item';
-    if (important) div.classList.add('important');
+    if (isImportant(n.title)) div.classList.add('important');
 
     div.innerHTML = `
+      <div class="news-source ${n.source.toLowerCase()}">${n.source}</div>
       <a class="news-title" href="${n.link}" target="_blank">${n.title}</a>
       <div class="news-pubdate">${formatJST(n.pubDate)}</div>
       <div class="news-description">${n.description}</div>
@@ -197,6 +209,8 @@ function createNews() {
     newsCard.appendChild(div);
     return div;
   });
+
+  updateIndicator();
 }
 
 function showNews(next, init = false) {
