@@ -25,17 +25,16 @@
   <div id="left-panel">
 
     <!-- Flip Clock -->
-    <div class="clock-container">
-      <div class="tick" data-did-init="handleTickInit">
-        <div data-layout="horizontal fit">
-          <span data-key="hours" data-transform="pad(00)" data-view="flip"></span>
-          <span data-view="text" data-key="sep" class="tick-text-inline">:</span>
-          <span data-key="minutes" data-transform="pad(00)" data-view="flip"></span>
-          <span class="tick-seconds" id="seconds-static">00</span>
-          <span id="seconds-static" class="tick-text-inline"></span>
-        </div>
+  <div class="clock-container">
+    <div class="tick" data-did-init="handleTickInit">
+      <div data-layout="horizontal fit">
+        <span data-key="hours" data-transform="pad(00)" data-view="flip"></span>
+        <span data-view="text" data-key="sep" class="tick-text-inline">:</span>
+        <span data-key="minutes" data-transform="pad(00)" data-view="flip"></span>
+        <span id="seconds-static" class="tick-text-inline">00</span> <!-- 秒表示 -->
       </div>
     </div>
+  </div>
 
     <!-- Bottom: Weather & Date -->
 <div class="left-bottom">
@@ -79,6 +78,7 @@
 
 </body>
 </html>
+
 
 
 
