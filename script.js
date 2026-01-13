@@ -8,7 +8,7 @@ function handleTickInit(tick) {
       sep: ':',
       hours: d.getHours(),
       minutes: d.getMinutes(),
-      seconds: d.getSeconds()
+      // seconds: d.getSeconds()
     };
   });
 }
