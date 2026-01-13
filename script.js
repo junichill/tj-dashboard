@@ -11,17 +11,19 @@ function handleTickInit(tick) {
 
   Tick.helper.interval(() => {
     const d = Tick.helper.date();
+    
+    // Flipには秒を渡さない
     tick.value = {
       sep: ':',
       hours: d.getHours(),
-      minutes: d.getMinutes(),
-      // seconds: d.getSeconds()  // Flipでは秒アニメは非表示
+      minutes: d.getMinutes()
     };
 
-    // 秒を静的表示に反映
+    // 秒は独立して更新
     secondsEl.textContent = d.getSeconds().toString().padStart(2,'0');
   });
 }
+
 
 // =========================
 // DATE
