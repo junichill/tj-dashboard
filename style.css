@@ -154,6 +154,13 @@ html, body {
   font-weight: 700;
 }
 
+.news-fullscreen {
+  position: fixed !important;
+  inset: 0;
+  z-index: 9999;
+  background: #000;
+}
+
 /* ===========================
    メディアクエリ：スマホ用
 =========================== */
@@ -179,5 +186,6 @@ html, body {
   .news-description { font-size: 3.5vw; }
   .news-pubdate { font-size: 2.5vw; }
 }
+
 
 
