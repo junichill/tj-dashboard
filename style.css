@@ -187,5 +187,23 @@ html, body {
   .news-pubdate { font-size: 2.5vw; }
 }
 
+.news-source {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  opacity: 0.85;
+}
 
+.news-source.nhk {
+  background: #c62828;
+  color: #fff;
+}
 
+.news-source.yahoo {
+  background: #5f6368;
+  color: #fff;
+}
