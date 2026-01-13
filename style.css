@@ -194,7 +194,19 @@ html, body {
   pointer-events: none;   /* ← 追加 */
 }
 
-
+/* --- NHKマーク用 --- */
+.news-mark {
+  display: inline-block;
+  background-color: red;
+  color: white;
+  font-weight: bold;
+  font-size: 10px;
+  padding: 2px 4px;
+  margin-right: 6px;
+  border-radius: 2px;
+  vertical-align: middle;
+  font-family: sans-serif;
+}
 
 .news-item.show {
   opacity: 1;
@@ -224,3 +236,4 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
