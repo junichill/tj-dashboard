@@ -76,7 +76,7 @@ const rssList = [
   {
     name: '共同通信',
     key: 'kyodo',
-    type: 'rss2json',
+    type: 'allorigins',
     url: 'https://www.kyodo.co.jp/rss/news.xml'
   }
 ];
@@ -150,12 +150,39 @@ async function fetchNews() {
   try {
     const results = await Promise.all(
       rssList.map(async src => {
-        const r = await fetch(RSS_API + encodeURIComponent(src.url));
-        const d = await r.json();
-        return {
-          source: src,
-          items: d.items || []
-        };
+
+        // --- NHK（rss2json） ---
+        if (src.type === 'rss2json') {
+          const r = await fetch(RSS_API + encodeURIComponent(src.url));
+          const d = await r.json();
+          return {
+            source: src,
+            items: d.items || []
+          };
+        }
+
+        // --- 共同通信（AllOrigins） ---
+        if (src.type === 'allorigins') {
+          const r = await fetch(
+            'https://api.allorigins.win/raw?url=' +
+            encodeURIComponent(src.url)
+          );
+          const text = await r.text();
+          const xml = new DOMParser().parseFromString(text, 'text/xml');
+
+          const items = [...xml.querySelectorAll('item')].map(item => ({
+            title: item.querySelector('title')?.textContent ?? '',
+            link: item.querySelector('link')?.textContent ?? '',
+            pubDate: item.querySelector('pubDate')?.textContent ?? '',
+            description:
+              item.querySelector('description')?.textContent ?? ''
+          }));
+
+          return {
+            source: src,
+            items
+          };
+        }
       })
     );
 
