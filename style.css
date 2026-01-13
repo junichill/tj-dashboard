@@ -137,6 +137,15 @@ html, body {
   color: #fff;
 }
 
+.tick-seconds {
+  font-size: 2.4em;   /* 分より少し小さめ */
+  font-weight: 700;
+  color: white;
+  display: inline-block;
+  vertical-align: top; /* 分と揃える */
+  margin-left: 6px;   /* 分との間隔 */
+}
+
 /* 時計縦方向調整（天気と重ならないように） */
 .clock-container {
   margin-top: 20px;      /* 天気と重ならない余白 */
@@ -229,5 +238,6 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
