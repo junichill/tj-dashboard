@@ -154,6 +154,7 @@ function updateIndicator() {
 }
 
 // --- ニュース作成 ---
+// --- ニュース作成 ---
 function createNews() {
   newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
 
@@ -162,10 +163,13 @@ function createNews() {
     div.className = 'news-item';
     if (isImportant(n.title)) div.classList.add('important');
 
-    // --- RSS XML の pubDate をそのまま使用 ---
-    const pubDateStr = n.pubDate; // "Tue, 13 Jan 2026 14:39:11 +0900" 形式
+    // NHKマークを追加
+    const mark = `<span class="news-mark">NHK</span>`; // CSSでアイコン風にスタイリング可能
+
+    const pubDateStr = n.pubDate; // RSS XML の pubDate をそのまま使用
 
     div.innerHTML = `
+      ${mark}
       <a class="news-title" href="${n.link}" target="_blank">${n.title}</a>
       <div class="news-pubdate">${pubDateStr}</div>
       <div class="news-description">${n.description}</div>
