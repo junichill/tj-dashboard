@@ -67,15 +67,12 @@ setInterval(fetchWeather, 600000); // 10分ごと更新
 // NEWS (Fade + Advanced)
 // =========================
 const rssList = [
-  {
-    name: 'NHK',
-    url: 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml'
-  },
-  {
-    name: 'Yahoo',
-    url: 'https://news.yahoo.co.jp/rss/topics/top-picks.xml'
-  }
+  { name: 'NHK',   key: 'nhk',   url: 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml' },
+  { name: 'Yahoo', key: 'yahoo', url: 'https://news.yahoo.co.jp/rss/topics/top-picks.xml' }
 ];
+
+const RSS_API = 'https://api.rss2json.com/v1/api.json?rss_url=';
+
 
 const newsCard = document.getElementById('news-card');
 
@@ -143,45 +140,41 @@ function updateIndicator() {
 
 async function fetchNews() {
   try {
-    let allItems = [];
+    const results = await Promise.all(
+      rssList.map(src =>
+        fetch(RSS_API + encodeURIComponent(src.url))
+          .then(r => r.json())
+          .then(d => ({
+            source: src,
+            items: d.items || []
+          }))
+      )
+    );
 
-    for (const rss of rssList) {
-      const api =
-        'https://api.rss2json.com/v1/api.json?rss_url=' +
-        encodeURIComponent(rss.url);
+    // NHK / Yahoo を交互に並べる
+    const merged = [];
+    const maxLen = Math.max(...results.map(r => r.items.length));
 
-      const r = await fetch(api);
-      const d = await r.json();
-
-      if (d.items) {
-        d.items.forEach(item => {
-          item.source = rss.name; // ← ここで出どころを付与
-          allItems.push(item);
-        });
-      }
+    for (let i = 0; i < maxLen; i++) {
+      results.forEach(r => {
+        if (r.items[i]) {
+          merged.push({
+            ...r.items[i],
+            source: r.source
+          });
+        }
+      });
     }
 
-    // タイトル重複排除
-    const map = new Map();
-    allItems.forEach(n => map.set(n.title, n));
-    newsItems = Array.from(map.values());
-
-    // 重要ニュースを最前面へ
-    newsItems.sort((a, b) => {
-      return isImportant(b.title) - isImportant(a.title);
-    });
-
+    newsItems = merged;
     createNews();
-
-    if (index >= newsEls.length) index = 0;
-
-    showNews(index, true);
+    showNews(0, true);
     startAuto();
 
     const now = new Date();
     updateEl.textContent =
-      `Last update: ${now.getHours().toString().padStart(2, '0')}:` +
-      `${now.getMinutes().toString().padStart(2, '0')}`;
+      `Last update: ${now.getHours().toString().padStart(2,'0')}:` +
+      `${now.getMinutes().toString().padStart(2,'0')}`;
 
   } catch (e) {
     console.error('News fetch failed', e);
@@ -196,21 +189,26 @@ function createNews() {
   newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
 
   newsEls = newsItems.map(n => {
+    const important = isImportant(n.title);
+
     const div = document.createElement('div');
     div.className = 'news-item';
-    if (isImportant(n.title)) div.classList.add('important');
+    if (important) div.classList.add('important');
+
+    const label = document.createElement('div');
+    label.className = `news-source ${n.source.key}`;
+    label.textContent = n.source.name;
 
     div.innerHTML = `
-      <div class="news-source ${n.source.toLowerCase()}">${n.source}</div>
       <a class="news-title" href="${n.link}" target="_blank">${n.title}</a>
       <div class="news-pubdate">${formatJST(n.pubDate)}</div>
       <div class="news-description">${n.description}</div>
     `;
+
+    div.appendChild(label);
     newsCard.appendChild(div);
     return div;
   });
-
-  updateIndicator();
 }
 
 function showNews(next, init = false) {
