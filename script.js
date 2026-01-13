@@ -28,11 +28,57 @@ updateDate();
 setInterval(updateDate, 60000);
 
 // =========================
-// WEATHER (Today & Tomorrow)
+// WEATHER (NHK風・自前SVG)
 // =========================
 const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
 const LAT = 35.6895; // 東京
 const LON = 139.6917;
+
+// --- SVG定義（currentColorで色制御） ---
+const WEATHER_ICONS = {
+  sunny: `
+    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4">
+      <circle cx="32" cy="32" r="12"/>
+      <line x1="32" y1="2" x2="32" y2="14"/>
+      <line x1="32" y1="50" x2="32" y2="62"/>
+      <line x1="2" y1="32" x2="14" y2="32"/>
+      <line x1="50" y1="32" x2="62" y2="32"/>
+      <line x1="10" y1="10" x2="18" y2="18"/>
+      <line x1="46" y1="46" x2="54" y2="54"/>
+      <line x1="46" y1="18" x2="54" y2="10"/>
+      <line x1="10" y1="54" x2="18" y2="46"/>
+    </svg>
+  `,
+  cloudy: `
+    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4">
+      <path d="M20 44h26a10 10 0 0 0 0-20 14 14 0 0 0-27-4A10 10 0 0 0 20 44z"/>
+    </svg>
+  `,
+  rainy: `
+    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4">
+      <path d="M20 36h26a10 10 0 0 0 0-20 14 14 0 0 0-27-4"/>
+      <line x1="22" y1="44" x2="18" y2="56"/>
+      <line x1="32" y1="44" x2="28" y2="56"/>
+      <line x1="42" y1="44" x2="38" y2="56"/>
+    </svg>
+  `,
+  snowy: `
+    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4">
+      <path d="M20 36h26a10 10 0 0 0 0-20 14 14 0 0 0-27-4"/>
+      <circle cx="24" cy="48" r="2"/>
+      <circle cx="32" cy="54" r="2"/>
+      <circle cx="40" cy="48" r="2"/>
+    </svg>
+  `
+};
+
+// --- OpenWeather → NHK風分類 ---
+function getWeatherType(id) {
+  if (id >= 200 && id < 600) return 'rainy';
+  if (id >= 600 && id < 700) return 'snowy';
+  if (id >= 801) return 'cloudy';
+  return 'sunny';
+}
 
 async function fetchWeather() {
   try {
@@ -41,36 +87,48 @@ async function fetchWeather() {
     );
     const d = await r.json();
 
-    // 今日の天気
     const today = d.list[0];
-    document.getElementById('weather-icon-today').src = `https://openweathermap.org/img/wn/${today.weather[0].icon}@2x.png`;
-    document.getElementById('weather-temp-today').textContent = `${today.weather[0].description} ${today.main.temp.toFixed(1)}℃`;
-
-    // 明日の天気（24時間後に一番近い時間）
     const tomorrow = d.list.find(v => v.dt > today.dt + 86400);
+
+    renderWeather(
+      today,
+      document.getElementById('weather-icon-today'),
+      document.getElementById('weather-temp-today')
+    );
+
     if (tomorrow) {
-      document.getElementById('weather-icon-tomorrow').src = `https://openweathermap.org/img/wn/${tomorrow.weather[0].icon}@2x.png`;
-      document.getElementById('weather-temp-tomorrow').textContent = `${tomorrow.weather[0].description} ${tomorrow.main.temp.toFixed(1)}℃`;
+      renderWeather(
+        tomorrow,
+        document.getElementById('weather-icon-tomorrow'),
+        document.getElementById('weather-temp-tomorrow')
+      );
     }
 
   } catch (err) {
     console.error('天気情報取得失敗', err);
-    document.getElementById('weather-temp-today').textContent = '天気取得失敗';
-    document.getElementById('weather-temp-tomorrow').textContent = '';
   }
 }
 
+function renderWeather(data, iconEl, textEl) {
+  const type = getWeatherType(data.weather[0].id);
+
+  iconEl.className = `weather-icon weather-${type}`;
+  iconEl.innerHTML = WEATHER_ICONS[type];
+
+  textEl.textContent =
+    `${data.weather[0].description} ${data.main.temp.toFixed(1)}℃`;
+}
+
 fetchWeather();
-setInterval(fetchWeather, 600000); // 10分ごと更新
+setInterval(fetchWeather, 600000);
 
 // =========================
-// NEWS (Fade + Advanced)
+// NEWS（NHK）
 // =========================
 const rssList = [
   {
     name: 'NHK',
     key: 'nhk',
-    type: 'rss2json',
     url: 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml'
   }
 ];
@@ -87,7 +145,7 @@ const FADE = 1.8;
 const AUTO_INTERVAL = 11000;
 const FETCH_INTERVAL = 10 * 60 * 1000;
 
-// --- 最終更新表示 ---
+// --- 更新時刻表示 ---
 const updateEl = document.createElement('div');
 updateEl.style.position = 'absolute';
 updateEl.style.top = '10px';
@@ -96,131 +154,62 @@ updateEl.style.fontSize = '12px';
 updateEl.style.opacity = '0.6';
 newsCard.appendChild(updateEl);
 
-// --- インジケータ ---
-const indicator = document.createElement('div');
-indicator.style.position = 'absolute';
-indicator.style.bottom = '10px';
-indicator.style.left = '50%';
-indicator.style.transform = 'translateX(-50%)';
-indicator.style.display = 'flex';
-indicator.style.gap = '8px';
-newsCard.appendChild(indicator);
-
-// --- JST変換 ---
-function formatJST(dateStr) {
-  const d = new Date(dateStr);
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  const h = String(d.getHours()).padStart(2, '0');
-  const min = String(d.getMinutes()).padStart(2, '0');
-  return `${y}/${m}/${day} ${h}:${min}`;
-}
-
-// --- 重要ニュース判定 ---
-function isImportant(title) {
-  return /(地震|津波|警報|注意報|台風|噴火|避難)/.test(title);
-}
-
-function updateIndicator() {
-  indicator.innerHTML = '';
-  newsItems.forEach((_, i) => {
-    const dot = document.createElement('div');
-    dot.style.width = dot.style.height = '10px';
-    dot.style.borderRadius = '50%';
-    dot.style.background = i === index ? '#fff' : '#555';
-    dot.style.cursor = 'pointer';
-    dot.onclick = () => {
-      if (i === index) return;
-      stopAuto();
-      showNews(i);
-      startAuto();
-    };
-    indicator.appendChild(dot);
-  });
-}
-
 async function fetchNews() {
   try {
     const r = await fetch(RSS_API + encodeURIComponent(rssList[0].url));
     const d = await r.json();
 
-    newsItems = (d.items || []).map(item => ({
-      ...item,
-      source: rssList[0]
-    }));
-
+    newsItems = d.items || [];
     createNews();
     showNews(0, true);
     startAuto();
 
     const now = new Date();
     updateEl.textContent =
-  `Last update ${now.getHours().toString().padStart(2,'0')}:` +
-  `${now.getMinutes().toString().padStart(2,'0')} JST`;
+      `Last update ${now.getHours().toString().padStart(2,'0')}:` +
+      `${now.getMinutes().toString().padStart(2,'0')} JST`;
 
   } catch (e) {
     console.error('News fetch failed', e);
   }
 }
 
-function isEarthquakeFlash(title) {
-  return /地震/.test(title) && /速報/.test(title);
+function isImportant(title) {
+  return /(地震|津波|警報|注意報|台風|噴火|避難)/.test(title);
 }
 
 function createNews() {
   newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
 
   newsEls = newsItems.map(n => {
-    const important = isImportant(n.title);
-
     const div = document.createElement('div');
     div.className = 'news-item';
-    if (important) div.classList.add('important');
-
-    const label = document.createElement('div');
-    label.className = `news-source ${n.source.key}`;
-    label.textContent = n.source.name;
+    if (isImportant(n.title)) div.classList.add('important');
 
     div.innerHTML = `
       <a class="news-title" href="${n.link}" target="_blank">${n.title}</a>
-      <div class="news-pubdate">${formatJST(n.pubDate)}</div>
+      <div class="news-pubdate">${n.pubDate}</div>
       <div class="news-description">${n.description}</div>
     `;
 
-    div.appendChild(label);
     newsCard.appendChild(div);
     return div;
   });
 }
 
 function showNews(next, init = false) {
-  const cur = newsEls[index];
-  const nxt = newsEls[next];
-  if (!nxt) return;
-
-  const title = nxt.querySelector('.news-title').textContent;
-
-  // 地震速報時のみ全画面
-  if (isEarthquakeFlash(title)) {
-    newsCard.classList.add('news-fullscreen');
-  } else {
-    newsCard.classList.remove('news-fullscreen');
-  }
+  if (!newsEls[next]) return;
 
   if (init) {
-    nxt.classList.add('show');
+    newsEls[next].classList.add('show');
     index = next;
-    updateIndicator();
     return;
   }
 
-  if (cur) cur.classList.remove('show');
-
+  newsEls[index].classList.remove('show');
   setTimeout(() => {
-    nxt.classList.add('show');
+    newsEls[next].classList.add('show');
     index = next;
-    updateIndicator();
   }, FADE * 1000);
 }
 
