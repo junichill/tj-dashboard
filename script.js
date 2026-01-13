@@ -74,17 +74,14 @@ const rssList = [
     url: 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml'
   },
   {
-    name: 'Yahoo',
-    key: 'yahoo',
+    name: '共同通信',
+    key: 'kyodo',
     type: 'rss2json',
-    url: 'https://news.yahoo.co.jp/rss/topics/top-picks.xml'
+    url: 'https://www.kyodo.co.jp/rss/news.xml'
   }
 ];
 
-
 const RSS_API = 'https://api.rss2json.com/v1/api.json?rss_url=';
-
-
 const newsCard = document.getElementById('news-card');
 
 let newsItems = [];
