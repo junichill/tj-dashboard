@@ -133,7 +133,11 @@ html, body {
   inset: 20px;
   opacity: 0;
   transition: opacity 1.5s ease;
+
+  padding-top: 26px; /* ← ラベル分の余白を追加 */
+  box-sizing: border-box;
 }
+
 
 .news-item.show { opacity: 1; }
 
@@ -207,3 +211,4 @@ html, body {
   background: #5f6368;
   color: #fff;
 }
+
