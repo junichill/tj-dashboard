@@ -136,24 +136,31 @@ function updateIndicator() {
 
 async function fetchNews() {
   try {
-    const r = await fetch(api);
-    const d = await r.json();
-    if (!d.items?.length) return;
+    let allItems = [];
 
-    const oldTitles = newsItems.map(n => n.title);
-    newsItems = d.items;
+    for (const rss of rssList) {
+      const api =
+        'https://api.rss2json.com/v1/api.json?rss_url=' +
+        encodeURIComponent(rss);
 
-    const changed = newsItems.some((n, i) => n.title !== oldTitles[i]);
+      const r = await fetch(api);
+      const d = await r.json();
+      if (d.items) allItems = allItems.concat(d.items);
+    }
+
+    // タイトル重複排除
+    const map = new Map();
+    allItems.forEach(n => map.set(n.title, n));
+    newsItems = Array.from(map.values());
+
+    // ① 重要ニュースを最前面に
+    newsItems.sort((a, b) => {
+      return isImportant(b.title) - isImportant(a.title);
+    });
 
     createNews();
 
     if (index >= newsEls.length) index = 0;
-
-    // 更新があった時だけフェード
-    if (changed) {
-      newsCard.classList.add('news-refresh');
-      setTimeout(() => newsCard.classList.remove('news-refresh'), 600);
-    }
 
     showNews(index, true);
     startAuto();
