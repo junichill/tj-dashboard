@@ -2,26 +2,14 @@
 // Tick CLOCK
 // =========================
 function handleTickInit(tick) {
-  // 秒表示用の静的要素を作成
-  const secondsEl = document.createElement('span');
-  secondsEl.id = 'seconds-static';
-  secondsEl.className = 'tick-seconds';
-
-  const container = document.querySelector('.clock-container');
-  container.appendChild(secondsEl);
-
   Tick.helper.interval(() => {
     const d = Tick.helper.date();
-
-    // 時・分のみ Flip に渡す
     tick.value = {
       sep: ':',
       hours: d.getHours(),
-      minutes: d.getMinutes()
+      minutes: d.getMinutes(),
+      seconds: d.getSeconds()
     };
-
-    // 秒は独立して静的表示
-    secondsEl.textContent = d.getSeconds().toString().padStart(2,'0');
   });
 }
 
@@ -175,6 +163,7 @@ function createNews() {
 
     const pubDateStr = n.pubDate;
 
+    // --- NHKONEニュースマーク追加 ---
     div.innerHTML = `
       <div class="news-mark">NHKONEニュース</div>
       <a class="news-title" href="${n.link}" target="_blank">${n.title}</a>
