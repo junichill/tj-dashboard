@@ -162,17 +162,18 @@ function createNews() {
     div.className = 'news-item';
     if (isImportant(n.title)) div.classList.add('important');
 
-    // JSON API の pubDate は UTC を想定
-    const d = new Date(n.pubDate); 
+    // JSON API の pubDate を Date オブジェクトに
+    const d = new Date(n.pubDate);
+
+    // UTC → JST に変換
+    const jstTime = d.getTime() + 9*60*60*1000; // 9時間加算
+    const jst = new Date(jstTime);
 
     const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
     const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
-    // JST で取得（getHours() 等はローカルタイムを返すのでブラウザが JST ならOK）
-    // もしPCが UTC環境なら強制的に+9時間
-    const jst = new Date(d.getTime() + 9*60*60*1000);
-
-    const pubDateStr = `${days[jst.getUTCDay()]}, ${jst.getUTCDate().toString().padStart(2,'0')} ${months[jst.getUTCMonth()]} ${jst.getUTCFullYear()} `
+    const pubDateStr = `${days[jst.getUTCDay()]}, ${jst.getUTCDate().toString().padStart(2,'0')} `
+                      + `${months[jst.getUTCMonth()]} ${jst.getUTCFullYear()} `
                       + `${jst.getUTCHours().toString().padStart(2,'0')}:${jst.getUTCMinutes().toString().padStart(2,'0')}:${jst.getUTCSeconds().toString().padStart(2,'0')} +0900`;
 
     div.innerHTML = `
@@ -187,6 +188,7 @@ function createNews() {
 
   updateIndicator();
 }
+
 
 
 // --- ニュース表示 ---
