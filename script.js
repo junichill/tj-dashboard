@@ -30,8 +30,9 @@ setInterval(updateDate, 60000);
 // =========================
 // WEATHER (NHK風・自前SVG)
 // =========================
+// 省略（以前のままでもOK）
 const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
-const LAT = 35.6895; // 東京
+const LAT = 35.6895;
 const LON = 139.6917;
 
 const WEATHER_ICONS = {
@@ -101,10 +102,9 @@ fetchWeather();
 setInterval(fetchWeather, 600000);
 
 // =========================
-// NEWS (NHK + JST表示 + インジケーター)
+// NEWS (NHK RSS直接取得 + JST表示 + インジケーター)
 // =========================
-const rssList = [{ name: 'NHK', key: 'nhk', url: 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml' }];
-const RSS_API = 'https://api.rss2json.com/v1/api.json?rss_url=';
+const RSS_URL = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
 const newsCard = document.getElementById('news-card');
 
 let newsItems = [], newsEls = [], index = 0, timer = null;
@@ -153,10 +153,8 @@ function updateIndicator() {
   });
 }
 
-// --- ニュース作成（JST変換版） ---
 // --- ニュース作成 ---
 function createNews() {
-  // 既存のニュース要素を削除
   newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
 
   newsEls = newsItems.map(n => {
@@ -164,28 +162,9 @@ function createNews() {
     div.className = 'news-item';
     if (isImportant(n.title)) div.classList.add('important');
 
-    // --- JSON API の pubDate を正確に JST 表示 ---
-    const original = new Date(n.pubDate); // JSON API の pubDate
-    // UTC の値を取得
-    const utcYear  = original.getUTCFullYear();
-    const utcMonth = original.getUTCMonth();
-    const utcDate  = original.getUTCDate();
-    const utcHour  = original.getUTCHours();
-    const utcMin   = original.getUTCMinutes();
-    const utcSec   = original.getUTCSeconds();
+    // --- RSS XML の pubDate をそのまま使用 ---
+    const pubDateStr = n.pubDate; // "Tue, 13 Jan 2026 14:39:11 +0900" 形式
 
-    // JST に変換 (UTC + 9h)
-    const jst = new Date(Date.UTC(utcYear, utcMonth, utcDate, utcHour + 9, utcMin, utcSec));
-
-    // フォーマット
-    const days   = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    const pubDateStr =
-      `${days[jst.getUTCDay()]}, ${String(jst.getUTCDate()).padStart(2,'0')} ${months[jst.getUTCMonth()]} `
-      + `${jst.getUTCFullYear()} `
-      + `${String(jst.getUTCHours()).padStart(2,'0')}:${String(jst.getUTCMinutes()).padStart(2,'0')}:${String(jst.getUTCSeconds()).padStart(2,'0')} +0900`;
-
-    // HTML を作成
     div.innerHTML = `
       <a class="news-title" href="${n.link}" target="_blank">${n.title}</a>
       <div class="news-pubdate">${pubDateStr}</div>
@@ -196,7 +175,6 @@ function createNews() {
     return div;
   });
 
-  // ニュースインジケーターを更新
   updateIndicator();
 }
 
@@ -232,10 +210,19 @@ function stopAuto() {
 // --- ニュース取得 ---
 async function fetchNews() {
   try {
-    const r = await fetch(RSS_API + encodeURIComponent(rssList[0].url));
-    const d = await r.json();
+    const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
+    const data = await r.json();
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(data.contents, "application/xml");
+    const items = xml.querySelectorAll('item');
 
-    newsItems = d.items || [];
+    newsItems = Array.from(items).map(item => ({
+      title: item.querySelector('title')?.textContent,
+      link: item.querySelector('link')?.textContent,
+      pubDate: item.querySelector('pubDate')?.textContent,
+      description: item.querySelector('description')?.textContent
+    }));
+
     createNews();
     showNews(0, true);
     startAuto();
