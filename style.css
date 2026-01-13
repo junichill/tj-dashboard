@@ -118,7 +118,7 @@ html, body {
   letter-spacing: 0.5px;
 }
 
-/* ===========================
+/* =========================
    Flip時計
 =========================== */
 .tick {
@@ -157,6 +157,18 @@ html, body {
   margin-top: 60px;
   transform: scaleY(1.7);
   transform-origin: left center;
+}
+
+/* =========================
+   秒用静的表示
+=========================== */
+.tick-seconds {
+  font-size: 2em;         /* 秒だけ小さく */
+  font-weight: 700;
+  color: white;
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 4px;
 }
 
 /* ===========================
@@ -237,3 +249,4 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
