@@ -111,19 +111,17 @@ async function fetchWeather() {
 
 function renderWeather(data, iconEl, textEl) {
   const type = getWeatherType(data.weather[0].id);
-
   iconEl.className = `weather-icon weather-${type}`;
   iconEl.innerHTML = WEATHER_ICONS[type];
 
-  // 温度のみ表示（説明文なし）
-  textEl.textContent = `${data.main.temp.toFixed(1)}℃`;
+  textEl.textContent = `${data.main.temp.toFixed(1)}℃`; // ← 説明文は消して温度だけ
 }
 
 fetchWeather();
 setInterval(fetchWeather, 600000);
 
 // =========================
-// NEWS（NHK）
+// NEWS（NHK + JST化 + インジケーター復活）
 // =========================
 const rssList = [
   {
@@ -154,6 +152,106 @@ updateEl.style.fontSize = '12px';
 updateEl.style.opacity = '0.6';
 newsCard.appendChild(updateEl);
 
+// --- ニュースインジケーター ---
+const indicator = document.createElement('div');
+indicator.style.position = 'absolute';
+indicator.style.bottom = '10px';
+indicator.style.left = '50%';
+indicator.style.transform = 'translateX(-50%)';
+indicator.style.display = 'flex';
+indicator.style.gap = '8px';
+newsCard.appendChild(indicator);
+
+// --- JST変換 ---
+function formatJST(dateStr) {
+  const d = new Date(dateStr);
+  d.setHours(d.getHours() + 9); // UTC → JST
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  const h = String(d.getHours()).padStart(2,'0');
+  const min = String(d.getMinutes()).padStart(2,'0');
+  return `${y}/${m}/${day} ${h}:${min}`;
+}
+
+// --- 重要ニュース判定 ---
+function isImportant(title) {
+  return /(地震|津波|警報|注意報|台風|噴火|避難)/.test(title);
+}
+
+// --- インジケータ更新 ---
+function updateIndicator() {
+  indicator.innerHTML = '';
+  newsItems.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.style.width = dot.style.height = '10px';
+    dot.style.borderRadius = '50%';
+    dot.style.background = i === index ? '#fff' : '#555';
+    dot.style.cursor = 'pointer';
+    dot.onclick = () => {
+      if (i === index) return;
+      stopAuto();
+      showNews(i);
+      startAuto();
+    };
+    indicator.appendChild(dot);
+  });
+}
+
+// --- ニュース作成 ---
+function createNews() {
+  newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
+
+  newsEls = newsItems.map(n => {
+    const div = document.createElement('div');
+    div.className = 'news-item';
+    if (isImportant(n.title)) div.classList.add('important');
+
+    div.innerHTML = `
+      <a class="news-title" href="${n.link}" target="_blank">${n.title}</a>
+      <div class="news-pubdate">${formatJST(n.pubDate)}</div>
+      <div class="news-description">${n.description}</div>
+    `;
+
+    newsCard.appendChild(div);
+    return div;
+  });
+
+  updateIndicator();
+}
+
+// --- ニュース表示 ---
+function showNews(next, init = false) {
+  if (!newsEls[next]) return;
+
+  if (init) {
+    newsEls[next].classList.add('show');
+    index = next;
+    updateIndicator();
+    return;
+  }
+
+  newsEls[index].classList.remove('show');
+  setTimeout(() => {
+    newsEls[next].classList.add('show');
+    index = next;
+    updateIndicator();
+  }, FADE * 1000);
+}
+
+// --- 自動切替 ---
+function startAuto() {
+  stopAuto();
+  timer = setInterval(() => {
+    showNews((index + 1) % newsEls.length);
+  }, AUTO_INTERVAL);
+}
+
+function stopAuto() {
+  if (timer) clearInterval(timer);
+}
+
+// --- ニュース取得 ---
 async function fetchNews() {
   try {
     const r = await fetch(RSS_API + encodeURIComponent(rssList[0].url));
@@ -172,63 +270,6 @@ async function fetchNews() {
   } catch (e) {
     console.error('News fetch failed', e);
   }
-}
-
-function isImportant(title) {
-  return /(地震|津波|警報|注意報|台風|噴火|避難)/.test(title);
-}
-
-function createNews() {
-  newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
-
-  newsEls = newsItems.map(n => {
-    const div = document.createElement('div');
-    div.className = 'news-item';
-    if (isImportant(n.title)) div.classList.add('important');
-
-// UTC → JST 変換関数
-function formatJST(dateStr) {
-  const d = new Date(dateStr);
-  return d.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
-}
-
-// ニュース生成時
-div.innerHTML = `
-  <a class="news-title" href="${n.link}" target="_blank">${n.title}</a>
-  <div class="news-pubdate">${formatJST(n.pubDate)}</div>
-  <div class="news-description">${n.description}</div>
-`;
-
-    newsCard.appendChild(div);
-    return div;
-  });
-}
-
-function showNews(next, init = false) {
-  if (!newsEls[next]) return;
-
-  if (init) {
-    newsEls[next].classList.add('show');
-    index = next;
-    return;
-  }
-
-  newsEls[index].classList.remove('show');
-  setTimeout(() => {
-    newsEls[next].classList.add('show');
-    index = next;
-  }, FADE * 1000);
-}
-
-function startAuto() {
-  stopAuto();
-  timer = setInterval(() => {
-    showNews((index + 1) % newsEls.length);
-  }, AUTO_INTERVAL);
-}
-
-function stopAuto() {
-  if (timer) clearInterval(timer);
 }
 
 fetchNews();
