@@ -67,8 +67,18 @@ setInterval(fetchWeather, 600000); // 10分ごと更新
 // NEWS (Fade + Advanced)
 // =========================
 const rssList = [
-  { name: 'NHK',   key: 'nhk',   url: 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml' },
-  { name: 'Yahoo', key: 'yahoo', url: 'https://news.yahoo.co.jp/rss/topics/top-picks.xml' }
+  {
+    name: 'NHK',
+    key: 'nhk',
+    type: 'rss2json',
+    url: 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml'
+  },
+  {
+    name: 'Yahoo',
+    key: 'yahoo',
+    type: 'allorigins',
+    url: 'https://news.yahoo.co.jp/rss/topics/top-picks.xml'
+  }
 ];
 
 const RSS_API = 'https://api.rss2json.com/v1/api.json?rss_url=';
@@ -141,17 +151,42 @@ function updateIndicator() {
 async function fetchNews() {
   try {
     const results = await Promise.all(
-      rssList.map(src =>
-        fetch(RSS_API + encodeURIComponent(src.url))
-          .then(r => r.json())
-          .then(d => ({
+      rssList.map(async src => {
+
+        // NHK（rss2json）
+        if (src.type === 'rss2json') {
+          const r = await fetch(RSS_API + encodeURIComponent(src.url));
+          const d = await r.json();
+          return {
             source: src,
             items: d.items || []
-          }))
-      )
+          };
+        }
+
+        // Yahoo（AllOrigins）
+        if (src.type === 'allorigins') {
+          const r = await fetch(
+            'https://api.allorigins.win/raw?url=' + encodeURIComponent(src.url)
+          );
+          const text = await r.text();
+          const xml = new DOMParser().parseFromString(text, 'text/xml');
+
+          const items = [...xml.querySelectorAll('item')].map(item => ({
+            title: item.querySelector('title')?.textContent ?? '',
+            link: item.querySelector('link')?.textContent ?? '',
+            pubDate: item.querySelector('pubDate')?.textContent ?? '',
+            description: item.querySelector('description')?.textContent ?? ''
+          }));
+
+          return {
+            source: src,
+            items
+          };
+        }
+      })
     );
 
-    // NHK / Yahoo を交互に並べる
+    // --- 交互マージ ---
     const merged = [];
     const maxLen = Math.max(...results.map(r => r.items.length));
 
