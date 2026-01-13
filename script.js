@@ -115,8 +115,8 @@ function renderWeather(data, iconEl, textEl) {
   iconEl.className = `weather-icon weather-${type}`;
   iconEl.innerHTML = WEATHER_ICONS[type];
 
-  textEl.textContent =
-    `${data.weather[0].description} ${data.main.temp.toFixed(1)}℃`;
+  // 温度のみ表示（説明文なし）
+  textEl.textContent = `${data.main.temp.toFixed(1)}℃`;
 }
 
 fetchWeather();
