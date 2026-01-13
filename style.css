@@ -182,9 +182,15 @@ html, body {
 }
 
 .news-item {
-  display: flex;
-  flex-direction: column; /* 子要素を縦に並べる */
-  gap: 4px;               /* 子要素間の間隔 */
+  display: none;      /* ← これで初期状態は非表示 */
+  flex-direction: column;
+  gap: 4px;
+}
+
+.news-item.show {
+  display: flex;      /* ← show クラスがついたときだけ表示 */
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .news-source {
@@ -213,11 +219,6 @@ html, body {
   font-family: sans-serif;
 }
 
-.news-item.show {
-  opacity: 1;
-  pointer-events: auto;   /* ← 追加 */
-}
-
 .news-title { font-size: 40px; font-weight: bold; color: white; text-decoration: none; }
 .news-pubdate { font-size: 14px; color: #ccc; text-align: right; }
 .news-description { font-size: 20px; margin-top: 5px; }
@@ -241,6 +242,3 @@ html, body {
   z-index: 9999;
   background: #000;
 }
-
-
-
