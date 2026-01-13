@@ -137,32 +137,22 @@ html, body {
   color: #fff;
 }
 
-.tick-seconds {
-  font-size: 2.4em;   /* 分より少し小さめ */
-  font-weight: 700;
-  color: white;
-  display: inline-block;
-  vertical-align: top; /* 分と揃える */
-  margin-left: 6px;   /* 分との間隔 */
-}
-
 /* 時計縦方向調整（天気と重ならないように） */
 .clock-container {
   margin-top: 20px;      /* 天気と重ならない余白 */
-  transform: scaleY(1.5); /* できるだけ大きく */
+  transform: scaleY(1.6); /* できるだけ大きく */
   transform-origin: top left;
 }
 
-/* =========================
-   秒用静的表示
-=========================== */
-.tick-seconds {
-  font-size: 2em;         /* 秒だけ少し小さめ */
+/* 秒表示（分より少し小さく、Flipと揃える） */
+#seconds-static {
+  font-size: 1.8em;
   font-weight: 700;
   color: white;
-  display: inline-block;
+  opacity: 0.8;
+  margin-left: 4px;   
   vertical-align: top;
-  margin-left: 4px;
+  display: inline-block;
 }
 
 /* ===========================
@@ -238,6 +228,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
