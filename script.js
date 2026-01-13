@@ -80,44 +80,35 @@ async function fetchWeather() {
     const today = d.list[0];
     const tomorrow = d.list.find(v => v.dt > today.dt + 86400);
 
-    renderWeather(today, "weather-icon-today", "weather-temp-today");
-    if (tomorrow) renderWeather(tomorrow, "weather-icon-tomorrow", "weather-temp-tomorrow");
+    renderWeather(today, document.getElementById('weather-icon-today'), document.getElementById('weather-temp-today'));
+    if (tomorrow) {
+      renderWeather(tomorrow, document.getElementById('weather-icon-tomorrow'), document.getElementById('weather-temp-tomorrow'));
+    }
 
   } catch (err) {
     console.error('天気情報取得失敗', err);
   }
 }
 
-function renderWeather(data, iconId, tempId) {
+function renderWeather(data, iconEl, textEl) {
   const type = getWeatherType(data.weather[0].id);
-  const iconEl = document.getElementById(iconId);
-  const tempEl = document.getElementById(tempId);
   iconEl.className = `weather-icon weather-${type}`;
   iconEl.innerHTML = WEATHER_ICONS[type];
-  tempEl.textContent = `${data.main.temp.toFixed(1)}℃`;
+  textEl.textContent = `${data.main.temp.toFixed(1)}℃`;
 }
 
 fetchWeather();
 setInterval(fetchWeather, 600000);
 
 // =========================
-// NEWS（NHK JSON API + JST + インジケーター）
+// NEWS (NHK + JST表示 + インジケーター)
 // =========================
-const rssList = [
-  { name: 'NHK', key: 'nhk', url: 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml' }
-];
-
+const rssList = [{ name: 'NHK', key: 'nhk', url: 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml' }];
 const RSS_API = 'https://api.rss2json.com/v1/api.json?rss_url=';
 const newsCard = document.getElementById('news-card');
 
-let newsItems = [];
-let newsEls = [];
-let index = 0;
-let timer = null;
-
-const FADE = 1.8;
-const AUTO_INTERVAL = 11000;
-const FETCH_INTERVAL = 10 * 60 * 1000;
+let newsItems = [], newsEls = [], index = 0, timer = null;
+const FADE = 1.8, AUTO_INTERVAL = 11000, FETCH_INTERVAL = 10*60*1000;
 
 // --- 更新時刻表示 ---
 const updateEl = document.createElement('div');
@@ -138,21 +129,12 @@ indicator.style.display = 'flex';
 indicator.style.gap = '8px';
 newsCard.appendChild(indicator);
 
-// --- JST 表示関数 ---
-function formatJST(pubDate) {
-  const d = new Date(pubDate); // すでに JST (+0900) が反映される
-  const day = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()];
-  const mon = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][d.getMonth()];
-  return `${day}, ${d.getDate()} ${mon} ${d.getFullYear()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')} JST`;
-}
-
-
 // --- 重要ニュース判定 ---
 function isImportant(title) {
   return /(地震|津波|警報|注意報|台風|噴火|避難)/.test(title);
 }
 
-// --- インジケーター更新 ---
+// --- インジケータ更新 ---
 function updateIndicator() {
   indicator.innerHTML = '';
   newsItems.forEach((_, i) => {
@@ -180,11 +162,15 @@ function createNews() {
     div.className = 'news-item';
     if (isImportant(n.title)) div.classList.add('important');
 
+    // --- JST表示（RSS JSONは pubDate をそのまま文字列で取得） ---
+    const pubDateStr = n.pubDate; // 例: "Tue, 13 Jan 2026 12:48:26 +0900"
+
     div.innerHTML = `
       <a class="news-title" href="${n.link}" target="_blank">${n.title}</a>
-      <div class="news-pubdate">${formatJST(n.pubDate)}</div>
+      <div class="news-pubdate">${pubDateStr}</div>
       <div class="news-description">${n.description}</div>
     `;
+
     newsCard.appendChild(div);
     return div;
   });
@@ -193,7 +179,7 @@ function createNews() {
 }
 
 // --- ニュース表示 ---
-function showNews(next, init=false) {
+function showNews(next, init = false) {
   if (!newsEls[next]) return;
 
   if (init) {
@@ -208,15 +194,13 @@ function showNews(next, init=false) {
     newsEls[next].classList.add('show');
     index = next;
     updateIndicator();
-  }, FADE * 1000);
+  }, FADE*1000);
 }
 
 // --- 自動切替 ---
 function startAuto() {
   stopAuto();
-  timer = setInterval(() => {
-    showNews((index + 1) % newsEls.length);
-  }, AUTO_INTERVAL);
+  timer = setInterval(() => showNews((index+1)%newsEls.length), AUTO_INTERVAL);
 }
 
 function stopAuto() {
