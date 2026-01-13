@@ -30,6 +30,7 @@ setInterval(updateDate, 60000);
 // =========================
 // WEATHER (NHK風・自前SVG)
 // =========================
+// 省略（以前のままでもOK）
 const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
 const LAT = 35.6895;
 const LON = 139.6917;
@@ -161,13 +162,10 @@ function createNews() {
     div.className = 'news-item';
     if (isImportant(n.title)) div.classList.add('important');
 
-    // --- RSS XML の title を表示 (例: NHKONEニュース)
-    const sourceTitle = n.sourceTitle || 'NHKONEニュース';
-
-    const pubDateStr = n.pubDate; // JST形式
+    // --- RSS XML の pubDate をそのまま使用 ---
+    const pubDateStr = n.pubDate; // "Tue, 13 Jan 2026 14:39:11 +0900" 形式
 
     div.innerHTML = `
-      <div class="news-mark">${sourceTitle}</div>
       <a class="news-title" href="${n.link}" target="_blank">${n.title}</a>
       <div class="news-pubdate">${pubDateStr}</div>
       <div class="news-description">${n.description}</div>
@@ -180,40 +178,23 @@ function createNews() {
   updateIndicator();
 }
 
-// --- ニュース表示（フェードアウト・フェードイン復活版） ---
+// --- ニュース表示 ---
 function showNews(next, init = false) {
   if (!newsEls[next]) return;
 
   if (init) {
     newsEls[next].classList.add('show');
-    newsEls[next].style.opacity = '1';
-    newsEls[next].style.pointerEvents = 'auto';
     index = next;
     updateIndicator();
     return;
   }
 
-  const current = newsEls[index];
-  const nextEl = newsEls[next];
-
-  // フェードアウト
-  current.style.opacity = '0';
-  current.style.pointerEvents = 'none';
-
+  newsEls[index].classList.remove('show');
   setTimeout(() => {
-    current.classList.remove('show');
-
-    // フェードイン
-    nextEl.classList.add('show');
-    nextEl.style.opacity = '0';
-    nextEl.style.pointerEvents = 'auto';
-    setTimeout(() => {
-      nextEl.style.opacity = '1';
-    }, 50);
-
+    newsEls[next].classList.add('show');
     index = next;
     updateIndicator();
-  }, FADE * 1000);
+  }, FADE*1000);
 }
 
 // --- 自動切替 ---
@@ -239,8 +220,7 @@ async function fetchNews() {
       title: item.querySelector('title')?.textContent,
       link: item.querySelector('link')?.textContent,
       pubDate: item.querySelector('pubDate')?.textContent,
-      description: item.querySelector('description')?.textContent,
-      sourceTitle: xml.querySelector('channel > title')?.textContent // NHKONEニュース
+      description: item.querySelector('description')?.textContent
     }));
 
     createNews();
