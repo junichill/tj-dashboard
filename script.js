@@ -76,10 +76,11 @@ const rssList = [
   {
     name: 'Yahoo',
     key: 'yahoo',
-    type: 'allorigins',
+    type: 'rss2json',
     url: 'https://news.yahoo.co.jp/rss/topics/top-picks.xml'
   }
 ];
+
 
 const RSS_API = 'https://api.rss2json.com/v1/api.json?rss_url=';
 
@@ -152,38 +153,12 @@ async function fetchNews() {
   try {
     const results = await Promise.all(
       rssList.map(async src => {
-
-        // NHK（rss2json）
-        if (src.type === 'rss2json') {
-          const r = await fetch(RSS_API + encodeURIComponent(src.url));
-          const d = await r.json();
-          return {
-            source: src,
-            items: d.items || []
-          };
-        }
-
-        // Yahoo（AllOrigins）
-if (src.type === 'allorigins') {
-  const r = await fetch(
-    'https://api.allorigins.win/raw?url=' + encodeURIComponent(src.url)
-  );
-  const text = await r.text();
-  const xml = new DOMParser().parseFromString(text, 'text/xml');
-
-  const items = [...xml.getElementsByTagName('item')].map(item => ({
-    title: item.getElementsByTagName('title')[0]?.textContent ?? '',
-    link: item.getElementsByTagName('link')[0]?.textContent ?? '',
-    pubDate: item.getElementsByTagName('pubDate')[0]?.textContent ?? '',
-    description: item.getElementsByTagName('description')[0]?.textContent ?? ''
-  }));
-
-  return {
-    source: src,
-    items
-  };
-}
-
+        const r = await fetch(RSS_API + encodeURIComponent(src.url));
+        const d = await r.json();
+        return {
+          source: src,
+          items: d.items || []
+        };
       })
     );
 
