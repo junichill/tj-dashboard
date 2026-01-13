@@ -51,11 +51,6 @@ html, body {
   gap: 10px;
 }
 
-#weather-icon {
-  width: 60px;   /* アイコンを大きく */
-  height: 60px;
-}
-
 #date {
   font-family: 'Kosugi Maru', sans-serif;
   font-weight: 700;
@@ -63,6 +58,54 @@ html, body {
   text-align: right;
 }
 
+/* ===========================
+   NHK風 天気アイコン共通
+=========================== */
+.weather-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.weather-icon {
+  width: 60px;
+  height: 60px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* SVGを差し込む前提 */
+.weather-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* 晴れ（赤） */
+.weather-sunny {
+  color: #e53935;
+}
+
+/* 曇り（グレー） */
+.weather-cloudy {
+  color: #9e9e9e;
+}
+
+/* 雨（青） */
+.weather-rainy {
+  color: #1e88e5;
+}
+
+/* 雪（水色） */
+.weather-snowy {
+  color: #81d4fa;
+}
+
+#weather span {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
 
 /* ===========================
    Flip時計
@@ -222,6 +265,7 @@ html, body {
   background: #1565c0;
   color: #fff;
 }
+
 
 
 
