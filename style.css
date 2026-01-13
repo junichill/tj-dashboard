@@ -196,17 +196,18 @@ html, body {
 
 /* --- NHKマーク用 --- */
 .news-mark {
-  display: inline-block;
+  display: block;          /* ← ブロック化でタイトルの上に改行 */
   background-color: red;
   color: white;
   font-weight: bold;
-  font-size: 10px;
-  padding: 2px 4px;
-  margin-right: 6px;
+  font-size: 14px;         /* 少し大きめに調整 */
+  padding: 2px 6px;        /* 上下左右の余白 */
   border-radius: 2px;
-  vertical-align: middle;
+  margin-bottom: 6px;      /* タイトルとの間隔 */
+  width: fit-content;      /* 文字幅だけ赤背景 */
   font-family: sans-serif;
 }
+
 
 .news-item.show {
   opacity: 1;
@@ -236,3 +237,4 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
