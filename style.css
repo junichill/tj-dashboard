@@ -140,7 +140,7 @@ html, body {
 /* 時計縦方向調整（天気と重ならないように） */
 .clock-container {
   margin-top: 20px;      /* 天気と重ならない余白 */
-  transform: scaleY(1.3); /* できるだけ大きく */
+  transform: scaleY(1.5); /* できるだけ大きく */
   transform-origin: top left;
 }
 
@@ -229,4 +229,5 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
