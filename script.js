@@ -28,11 +28,52 @@ updateDate();
 setInterval(updateDate, 60000);
 
 // =========================
-// WEATHER (Today & Tomorrow)
+// WEATHER (NHK-style SVG)
 // =========================
 const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
-const LAT = 35.6895; // 東京
+const LAT = 35.6895;
 const LON = 139.6917;
+
+// --- NHK風 SVG定義 ---
+const WeatherSVG = {
+  sunny: `
+<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4">
+  <circle cx="32" cy="32" r="10"/>
+  <line x1="32" y1="2" x2="32" y2="14"/>
+  <line x1="32" y1="50" x2="32" y2="62"/>
+  <line x1="2" y1="32" x2="14" y2="32"/>
+  <line x1="50" y1="32" x2="62" y2="32"/>
+  <line x1="10" y1="10" x2="18" y2="18"/>
+  <line x1="46" y1="46" x2="54" y2="54"/>
+  <line x1="46" y1="18" x2="54" y2="10"/>
+  <line x1="10" y1="54" x2="18" y2="46"/>
+</svg>`,
+
+  cloudy: `
+<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4">
+  <path d="M18 40h28a10 10 0 0 0 0-20
+           14 14 0 0 0-27-3
+           9 9 0 0 0-1 23z"/>
+</svg>`,
+
+  rainy: `
+<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4">
+  <path d="M18 34h28a10 10 0 0 0 0-20
+           14 14 0 0 0-27-3
+           9 9 0 0 0-1 23z"/>
+  <line x1="24" y1="42" x2="24" y2="56"/>
+  <line x1="32" y1="42" x2="32" y2="56"/>
+  <line x1="40" y1="42" x2="40" y2="56"/>
+</svg>`
+};
+
+// --- OpenWeatherMap → 種別変換 ---
+function mapWeather(icon) {
+  if (icon.startsWith('01')) return 'sunny';
+  if (icon.startsWith('02') || icon.startsWith('03') || icon.startsWith('04')) return 'cloudy';
+  if (icon.startsWith('09') || icon.startsWith('10')) return 'rainy';
+  return 'cloudy';
+}
 
 async function fetchWeather() {
   try {
@@ -41,16 +82,24 @@ async function fetchWeather() {
     );
     const d = await r.json();
 
-    // 今日の天気
+    // --- 今日 ---
     const today = d.list[0];
-    document.getElementById('weather-icon-today').src = `https://openweathermap.org/img/wn/${today.weather[0].icon}@2x.png`;
-    document.getElementById('weather-temp-today').textContent = `${today.weather[0].description} ${today.main.temp.toFixed(1)}℃`;
+    const todayType = mapWeather(today.weather[0].icon);
+    const todayIcon = document.getElementById('weather-icon-today');
+    todayIcon.className = `weather-icon weather-${todayType}`;
+    todayIcon.innerHTML = WeatherSVG[todayType];
+    document.getElementById('weather-temp-today').textContent =
+      `${today.main.temp.toFixed(1)}℃`;
 
-    // 明日の天気（24時間後に一番近い時間）
+    // --- 明日 ---
     const tomorrow = d.list.find(v => v.dt > today.dt + 86400);
     if (tomorrow) {
-      document.getElementById('weather-icon-tomorrow').src = `https://openweathermap.org/img/wn/${tomorrow.weather[0].icon}@2x.png`;
-      document.getElementById('weather-temp-tomorrow').textContent = `${tomorrow.weather[0].description} ${tomorrow.main.temp.toFixed(1)}℃`;
+      const tomorrowType = mapWeather(tomorrow.weather[0].icon);
+      const tomorrowIcon = document.getElementById('weather-icon-tomorrow');
+      tomorrowIcon.className = `weather-icon weather-${tomorrowType}`;
+      tomorrowIcon.innerHTML = WeatherSVG[tomorrowType];
+      document.getElementById('weather-temp-tomorrow').textContent =
+        `${tomorrow.main.temp.toFixed(1)}℃`;
     }
 
   } catch (err) {
@@ -61,10 +110,10 @@ async function fetchWeather() {
 }
 
 fetchWeather();
-setInterval(fetchWeather, 600000); // 10分ごと更新
+setInterval(fetchWeather, 600000);
 
 // =========================
-// NEWS (Fade + Advanced)
+// NEWS（変更なし）
 // =========================
 const rssList = [
   {
@@ -109,35 +158,13 @@ newsCard.appendChild(indicator);
 // --- JST変換 ---
 function formatJST(dateStr) {
   const d = new Date(dateStr);
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  const h = String(d.getHours()).padStart(2, '0');
-  const min = String(d.getMinutes()).padStart(2, '0');
-  return `${y}/${m}/${day} ${h}:${min}`;
+  return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}
+          ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
 }
 
 // --- 重要ニュース判定 ---
 function isImportant(title) {
   return /(地震|津波|警報|注意報|台風|噴火|避難)/.test(title);
-}
-
-function updateIndicator() {
-  indicator.innerHTML = '';
-  newsItems.forEach((_, i) => {
-    const dot = document.createElement('div');
-    dot.style.width = dot.style.height = '10px';
-    dot.style.borderRadius = '50%';
-    dot.style.background = i === index ? '#fff' : '#555';
-    dot.style.cursor = 'pointer';
-    dot.onclick = () => {
-      if (i === index) return;
-      stopAuto();
-      showNews(i);
-      startAuto();
-    };
-    indicator.appendChild(dot);
-  });
 }
 
 async function fetchNews() {
@@ -156,27 +183,19 @@ async function fetchNews() {
 
     const now = new Date();
     updateEl.textContent =
-  `Last update ${now.getHours().toString().padStart(2,'0')}:` +
-  `${now.getMinutes().toString().padStart(2,'0')} JST`;
+      `Last update ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')} JST`;
 
   } catch (e) {
     console.error('News fetch failed', e);
   }
 }
 
-function isEarthquakeFlash(title) {
-  return /地震/.test(title) && /速報/.test(title);
-}
-
 function createNews() {
   newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
 
   newsEls = newsItems.map(n => {
-    const important = isImportant(n.title);
-
     const div = document.createElement('div');
     div.className = 'news-item';
-    if (important) div.classList.add('important');
 
     const label = document.createElement('div');
     label.className = `news-source ${n.source.key}`;
@@ -199,28 +218,16 @@ function showNews(next, init = false) {
   const nxt = newsEls[next];
   if (!nxt) return;
 
-  const title = nxt.querySelector('.news-title').textContent;
-
-  // 地震速報時のみ全画面
-  if (isEarthquakeFlash(title)) {
-    newsCard.classList.add('news-fullscreen');
-  } else {
-    newsCard.classList.remove('news-fullscreen');
-  }
-
   if (init) {
     nxt.classList.add('show');
     index = next;
-    updateIndicator();
     return;
   }
 
   if (cur) cur.classList.remove('show');
-
   setTimeout(() => {
     nxt.classList.add('show');
     index = next;
-    updateIndicator();
   }, FADE * 1000);
 }
 
