@@ -15,7 +15,7 @@ function handleTickInit(tick) {
       sep: ':',
       hours: d.getHours(),
       minutes: d.getMinutes(),
-      seconds: d.getSeconds()  // Flipでは秒アニメは非表示
+      // seconds: d.getSeconds()  // Flipでは秒アニメは非表示
     };
 
     // 秒を静的表示に反映
