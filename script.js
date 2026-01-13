@@ -64,7 +64,7 @@ fetchWeather();
 setInterval(fetchWeather, 600000); // 10分ごと更新
 
 // =========================
-// NEWS (Fade)
+// NEWS (Fade + Advanced)
 // =========================
 const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
 const api = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
@@ -74,9 +74,21 @@ let newsItems = [];
 let newsEls = [];
 let index = 0;
 let timer = null;
-const FADE = 1.8;
 
-// indicator
+const FADE = 1.8;
+const AUTO_INTERVAL = 11000;
+const FETCH_INTERVAL = 10 * 60 * 1000;
+
+// --- 最終更新表示 ---
+const updateEl = document.createElement('div');
+updateEl.style.position = 'absolute';
+updateEl.style.top = '10px';
+updateEl.style.right = '15px';
+updateEl.style.fontSize = '12px';
+updateEl.style.opacity = '0.6';
+newsCard.appendChild(updateEl);
+
+// --- インジケータ ---
 const indicator = document.createElement('div');
 indicator.style.position = 'absolute';
 indicator.style.bottom = '10px';
@@ -85,6 +97,22 @@ indicator.style.transform = 'translateX(-50%)';
 indicator.style.display = 'flex';
 indicator.style.gap = '8px';
 newsCard.appendChild(indicator);
+
+// --- JST変換 ---
+function formatJST(dateStr) {
+  const d = new Date(dateStr);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const h = String(d.getHours()).padStart(2, '0');
+  const min = String(d.getMinutes()).padStart(2, '0');
+  return `${y}/${m}/${day} ${h}:${min}`;
+}
+
+// --- 重要ニュース判定 ---
+function isImportant(title) {
+  return /(地震|津波|警報|注意報|台風|噴火|避難)/.test(title);
+}
 
 function updateIndicator() {
   indicator.innerHTML = '';
@@ -105,22 +133,52 @@ function updateIndicator() {
 }
 
 async function fetchNews() {
-  const r = await fetch(api);
-  const d = await r.json();
-  newsItems = d.items;
-  createNews();
-  showNews(0, true);
-  startAuto();
+  try {
+    const r = await fetch(api);
+    const d = await r.json();
+    if (!d.items?.length) return;
+
+    const oldTitles = newsItems.map(n => n.title);
+    newsItems = d.items;
+
+    const changed = newsItems.some((n, i) => n.title !== oldTitles[i]);
+
+    createNews();
+
+    if (index >= newsEls.length) index = 0;
+
+    // 更新があった時だけフェード
+    if (changed) {
+      newsCard.classList.add('news-refresh');
+      setTimeout(() => newsCard.classList.remove('news-refresh'), 600);
+    }
+
+    showNews(index, true);
+    startAuto();
+
+    const now = new Date();
+    updateEl.textContent =
+      `Last update: ${now.getHours().toString().padStart(2, '0')}:` +
+      `${now.getMinutes().toString().padStart(2, '0')}`;
+
+  } catch (e) {
+    console.error('News fetch failed', e);
+  }
 }
 
 function createNews() {
   newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
+
   newsEls = newsItems.map(n => {
+    const important = isImportant(n.title);
+
     const div = document.createElement('div');
     div.className = 'news-item';
+    if (important) div.classList.add('important');
+
     div.innerHTML = `
       <a class="news-title" href="${n.link}" target="_blank">${n.title}</a>
-      <div class="news-pubdate">${n.pubDate}</div>
+      <div class="news-pubdate">${formatJST(n.pubDate)}</div>
       <div class="news-description">${n.description}</div>
     `;
     newsCard.appendChild(div);
@@ -131,6 +189,7 @@ function createNews() {
 function showNews(next, init = false) {
   const cur = newsEls[index];
   const nxt = newsEls[next];
+  if (!nxt) return;
 
   if (init) {
     nxt.classList.add('show');
@@ -152,7 +211,7 @@ function startAuto() {
   stopAuto();
   timer = setInterval(() => {
     showNews((index + 1) % newsEls.length);
-  }, 11000);
+  }, AUTO_INTERVAL);
 }
 
 function stopAuto() {
@@ -160,5 +219,4 @@ function stopAuto() {
 }
 
 fetchNews();
-fetchNews();
-setInterval(fetchNews, 10 * 60 * 1000); // 10分ごとに再取得
+setInterval(fetchNews, FETCH_INTERVAL);
