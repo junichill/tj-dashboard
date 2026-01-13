@@ -144,16 +144,17 @@ html, body {
   transform-origin: top left;
 }
 
-/* 秒表示（分より少し小さく、Flipと揃える） */
+/* 秒表示（分パネルの下に揃える） */
 #seconds-static {
-  font-size: 1.8em;
+  font-size: 1.6em;       /* 分より少し小さめ */
   font-weight: 700;
   color: white;
   opacity: 0.8;
-  margin-left: 4px;   
-  vertical-align: top;
+  margin-left: 6px;       /* 分との間隔 */
+  vertical-align: bottom;  /* 下に揃える */
   display: inline-block;
 }
+
 
 /* ===========================
    右パネル（ニュース）
@@ -228,6 +229,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
