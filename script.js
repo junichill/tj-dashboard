@@ -153,18 +153,35 @@ function updateIndicator() {
   });
 }
 
+// --- JST表示（JSON API の pubDate → Tue, 13 Jan 2026 14:39:11 +0900 形式） ---
+function formatPubDate(pubDateStr) {
+  const d = new Date(pubDateStr + ' UTC'); // JSON API は UTC 相当
+  d.setHours(d.getHours() + 9); // JST
+  const w = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const m = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const dayName = w[d.getDay()];
+  const monthName = m[d.getMonth()];
+  const day = String(d.getDate()).padStart(2,'0');
+  const year = d.getFullYear();
+  const h = String(d.getHours()).padStart(2,'0');
+  const min = String(d.getMinutes()).padStart(2,'0');
+  const sec = String(d.getSeconds()).padStart(2,'0');
+  return `${dayName}, ${day} ${monthName} ${year} ${h}:${min}:${sec} +0900`;
+}
+
 // --- ニュース作成 ---
 function createNews() {
+  // 古いニュース要素を削除
   newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
 
+  // 新しいニュース要素を作成
   newsEls = newsItems.map(n => {
     const div = document.createElement('div');
     div.className = 'news-item';
     if (isImportant(n.title)) div.classList.add('important');
 
-    // --- 修正箇所 ---
-    // JSON API の pubDate を文字列のまま表示
-    const pubDateStr = n.pubDate; // 例: "Tue, 13 Jan 2026 14:39:11 +0900"
+    // JSON API の pubDate を RSS 形式に変換して表示
+    const pubDateStr = formatPubDate(n.pubDate);
 
     div.innerHTML = `
       <a class="news-title" href="${n.link}" target="_blank">${n.title}</a>
@@ -176,9 +193,9 @@ function createNews() {
     return div;
   });
 
+  // インジケータ更新
   updateIndicator();
 }
-
 
 // --- ニュース表示 ---
 function showNews(next, init = false) {
