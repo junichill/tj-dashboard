@@ -194,6 +194,19 @@ html, body {
   pointer-events: none;   /* ← 追加 */
 }
 
+/* --- NHKラベル（タイトル上表示用） --- */
+.news-source {
+  display: inline-block;
+  background-color: red;
+  color: white;
+  font-weight: bold;
+  font-size: 11px;
+  padding: 2px 6px;
+  margin-bottom: 4px;
+  border-radius: 3px;
+  font-family: sans-serif;
+}
+
 /* --- NHKマーク用 --- */
 .news-mark {
   display: inline-block;
@@ -236,4 +249,5 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
