@@ -160,3 +160,5 @@ function stopAuto() {
 }
 
 fetchNews();
+fetchNews();
+setInterval(fetchNews, 10 * 60 * 1000); // 10分ごとに再取得
