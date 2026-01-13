@@ -162,13 +162,14 @@ function createNews() {
     div.className = 'news-item';
     if (isImportant(n.title)) div.classList.add('important');
 
-    // NHKマークを追加
-    const mark = `<span class="news-mark">NHK</span>`; // CSSでアイコン風にスタイリング可能
+    // --- RSS XML の pubDate をそのまま使用 ---
+    const pubDateStr = n.pubDate; // "Tue, 13 Jan 2026 14:39:11 +0900" 形式
 
-    const pubDateStr = n.pubDate; // RSS XML の pubDate をそのまま使用
+    // --- RSS の <title> をソース名として表示 ---
+    const sourceTitle = n.sourceTitle || 'NHK'; // n.sourceTitle は後で取得
 
     div.innerHTML = `
-      ${mark}
+      <div class="news-source">${sourceTitle}</div>
       <a class="news-title" href="${n.link}" target="_blank">${n.title}</a>
       <div class="news-pubdate">${pubDateStr}</div>
       <div class="news-description">${n.description}</div>
@@ -180,6 +181,7 @@ function createNews() {
 
   updateIndicator();
 }
+
 
 // --- ニュース表示 ---
 function showNews(next, init = false) {
