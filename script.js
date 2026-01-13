@@ -175,6 +175,10 @@ async function fetchNews() {
   }
 }
 
+function isEarthquakeFlash(title) {
+  return /地震/.test(title) && /速報/.test(title);
+}
+
 function createNews() {
   newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
 
@@ -199,6 +203,15 @@ function showNews(next, init = false) {
   const cur = newsEls[index];
   const nxt = newsEls[next];
   if (!nxt) return;
+
+  const title = nxt.querySelector('.news-title').textContent;
+
+  // 地震速報時のみ全画面
+  if (isEarthquakeFlash(title)) {
+    newsCard.classList.add('news-fullscreen');
+  } else {
+    newsCard.classList.remove('news-fullscreen');
+  }
 
   if (init) {
     nxt.classList.add('show');
