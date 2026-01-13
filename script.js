@@ -168,11 +168,11 @@ function createNews() {
     // "Tue, 13 Jan 2026 14:39:11 +0900" 形式に変換
     const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
     const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    // const pubDateStr = `${days[d.getDay()]}, ${d.getDate().toString().padStart(2,'0')} ${months[d.getMonth()]} ${d.getFullYear()} `
-    //                + `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}:${d.getSeconds().toString().padStart(2,'0')} +0900`;
+    const pubDateStr = `${days[d.getDay()]}, ${d.getDate().toString().padStart(2,'0')} ${months[d.getMonth()]} ${d.getFullYear()} `
+                     + `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}:${d.getSeconds().toString().padStart(2,'0')} +0900`;
 
     // --- JSON API の pubDate をそのまま表示 ---
-    const pubDateStr = n.pubDate; // ISO形式のまま
+    //const pubDateStr = n.pubDate; // ISO形式のまま
 
     div.innerHTML = `
       <a class="news-title" href="${n.link}" target="_blank">${n.title}</a>
