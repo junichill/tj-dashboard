@@ -1,23 +1,15 @@
 // =========================
-// Tick CLOCK（時分Flip + 秒静的表示）
+// Tick CLOCK
 // =========================
 function handleTickInit(tick) {
-  const secondsEl = document.getElementById('seconds-static');
-
   Tick.helper.interval(() => {
     const d = Tick.helper.date();
-
-    // 時分は Flip 表示
     tick.value = {
       sep: ':',
       hours: d.getHours(),
-      minutes: d.getMinutes()
+      minutes: d.getMinutes(),
+      seconds: d.getSeconds()
     };
-
-    // 秒を右端に静的表示
-    if (secondsEl) {
-      secondsEl.textContent = d.getSeconds().toString().padStart(2, '0');
-    }
   });
 }
 
