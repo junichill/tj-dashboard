@@ -152,7 +152,7 @@ function startAuto() {
   stopAuto();
   timer = setInterval(() => {
     showNews((index + 1) % newsEls.length);
-  }, 5000);
+  }, 11000);
 }
 
 function stopAuto() {
