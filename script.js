@@ -162,8 +162,9 @@ function createNews() {
     div.className = 'news-item';
     if (isImportant(n.title)) div.classList.add('important');
 
-    // --- JST表示（RSS JSONは pubDate をそのまま文字列で取得） ---
-    const pubDateStr = n.pubDate; // 例: "Tue, 13 Jan 2026 12:48:26 +0900"
+    // --- 修正箇所 ---
+    // JSON API の pubDate を文字列のまま表示
+    const pubDateStr = n.pubDate; // 例: "Tue, 13 Jan 2026 14:39:11 +0900"
 
     div.innerHTML = `
       <a class="news-title" href="${n.link}" target="_blank">${n.title}</a>
@@ -177,6 +178,7 @@ function createNews() {
 
   updateIndicator();
 }
+
 
 // --- ニュース表示 ---
 function showNews(next, init = false) {
