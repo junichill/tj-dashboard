@@ -154,7 +154,6 @@ function updateIndicator() {
 }
 
 // --- ニュース作成 ---
-// --- ニュース作成 ---
 function createNews() {
   newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
 
