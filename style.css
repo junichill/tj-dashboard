@@ -171,6 +171,13 @@ html, body {
   margin-left: 4px;
 }
 
+/* =========================
+   Flip秒パネル非表示
+=========================== */
+.tick-flip[data-unit="seconds"] {
+  display: none !important;
+}
+
 /* ===========================
    右パネル（ニュース）
 =========================== */
@@ -249,4 +256,5 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
