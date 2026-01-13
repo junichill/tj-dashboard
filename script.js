@@ -2,14 +2,24 @@
 // Tick CLOCK
 // =========================
 function handleTickInit(tick) {
+  // 静的秒表示用の要素取得
+  const secondsEl = document.getElementById('seconds-static');
+
   Tick.helper.interval(() => {
     const d = Tick.helper.date();
+
+    // 時分は Flip 時計で更新
     tick.value = {
       sep: ':',
       hours: d.getHours(),
       minutes: d.getMinutes(),
-      seconds: d.getSeconds()
+      seconds: 0 // Flip 側の秒はダミー（非表示）
     };
+
+    // 秒を静的表示に反映
+    if (secondsEl) {
+      secondsEl.textContent = d.getSeconds().toString().padStart(2, '0');
+    }
   });
 }
 
