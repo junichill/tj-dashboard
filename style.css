@@ -159,6 +159,11 @@ html, body {
   transform-origin: left center;
 }
 
+/* 秒だけ縮小 */
+.tick-flip.tick-seconds {
+  font-size: 2em; /* 秒だけ小さく */
+}
+
 /* ===========================
    右パネル（ニュース）
 =========================== */
@@ -237,4 +242,5 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
