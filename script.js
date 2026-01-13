@@ -66,8 +66,10 @@ setInterval(fetchWeather, 600000); // 10分ごと更新
 // =========================
 // NEWS (Fade + Advanced)
 // =========================
-const rssUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
-const api = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
+const rssList = [
+  'https://news.web.nhk/n-data/conf/na/rss/cat0.xml',
+  'https://news.yahoo.co.jp/rss/topics/top-picks.xml'
+];
 const newsCard = document.getElementById('news-card');
 
 let newsItems = [];
