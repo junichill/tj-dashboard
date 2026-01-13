@@ -254,19 +254,10 @@ function stopAuto() {
 // --- ニュース取得 ---
 async function fetchNews() {
   try {
-    const r = await fetch(rssList[0].url);
-    const xmlText = await r.text();
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(xmlText, "application/xml");
-    const items = [...xmlDoc.querySelectorAll("item")];
+    const r = await fetch(RSS_API + encodeURIComponent(rssList[0].url));
+    const d = await r.json();
 
-    newsItems = items.map(item => ({
-      title: item.querySelector("title")?.textContent || "",
-      link: item.querySelector("link")?.textContent || "#",
-      description: item.querySelector("description")?.textContent || "",
-      pubDate: item.querySelector("pubDate")?.textContent || ""
-    }));
-
+    newsItems = d.items || [];
     createNews();
     showNews(0, true);
     startAuto();
