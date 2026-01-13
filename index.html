@@ -22,24 +22,25 @@
   <!-- 左パネル：時計・日付・天気 -->
   <div id="left-panel">
 
-    <!-- Flip Clock（時分のみ） -->
+    <!-- Flip Clock -->
     <div class="clock-container">
       <div class="tick" data-did-init="handleTickInit">
         <div data-layout="horizontal fit">
           <span data-key="hours" data-transform="pad(00)" data-view="flip"></span>
           <span data-view="text" data-key="sep" class="tick-text-inline">:</span>
           <span data-key="minutes" data-transform="pad(00)" data-view="flip"></span>
+          <span data-view="text" data-key="sep" class="tick-text-inline">:</span>
+          <span data-key="seconds" data-transform="pad(00)" data-view="flip"></span>
         </div>
-        <!-- 秒用静的表示 -->
-        <span id="seconds-static" class="tick-seconds">00</span>
       </div>
     </div>
 
-    <!-- Bottom: Weather & Date -->
+    <!-- 左下：天気 & 日付 -->
     <div class="left-bottom">
 
       <!-- Weather -->
       <div id="weather">
+
         <div class="weather-row today">
           <div class="weather-label">今日</div>
           <div id="weather-icon-today" class="weather-icon"></div>
@@ -51,6 +52,7 @@
           <div id="weather-icon-tomorrow" class="weather-icon"></div>
           <div class="weather-text" id="weather-temp-tomorrow"></div>
         </div>
+
       </div>
 
       <!-- Date -->
