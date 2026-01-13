@@ -1,22 +1,30 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Digital Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Dashboard</title>
 
-<link rel="stylesheet" href="flip.min.css">
-<link rel="stylesheet" href="style.css">
+  <!-- Flip Clock -->
+  <link rel="stylesheet" href="flip.min.css">
 
-<link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
+  <!-- Main Style -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
 <div id="container">
 
-  <!-- 左：時計・日付・天気 -->
+  <!-- =========================
+       左パネル：時計・日付・天気
+       ========================= -->
   <div id="left-panel">
+
+    <!-- Flip Clock -->
     <div class="clock-container">
       <div class="tick" data-did-init="handleTickInit">
         <div data-layout="horizontal fit">
@@ -29,29 +37,42 @@
       </div>
     </div>
 
+    <!-- Bottom: Weather & Date -->
     <div class="left-bottom">
+
+      <!-- Weather -->
       <div id="weather">
+
         <div class="weather-item">
-          <img id="weather-icon-today" src="" alt="今日の天気">
+          <div id="weather-icon-today" class="weather-icon"></div>
           <span id="weather-temp-today"></span>
         </div>
+
         <div class="weather-item">
-          <img id="weather-icon-tomorrow" src="" alt="明日の天気">
+          <div id="weather-icon-tomorrow" class="weather-icon"></div>
           <span id="weather-temp-tomorrow"></span>
         </div>
+
       </div>
+
+      <!-- Date -->
       <div id="date"></div>
+
     </div>
   </div>
 
-  <!-- 右：ニュース -->
+  <!-- =========================
+       右パネル：ニュース
+       ========================= -->
   <div id="right-panel">
     <div id="news-card"></div>
   </div>
 
 </div>
 
+<!-- Scripts -->
 <script src="flip.min.js"></script>
 <script src="script.js"></script>
+
 </body>
 </html>
