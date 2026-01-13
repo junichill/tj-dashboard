@@ -27,19 +27,18 @@
     <!-- Flip Clock -->
 <div class="clock-container">
   <div class="tick" data-did-init="handleTickInit">
-    <div data-layout="horizontal fit">
+    <div data-layout="horizontal fit" class="tick-main">
       <span data-key="hours" data-transform="pad(00)" data-view="flip"></span>
       <span data-view="text" data-key="sep" class="tick-text-inline">:</span>
       <span data-key="minutes" data-transform="pad(00)" data-view="flip"></span>
       <span data-view="text" data-key="sep" class="tick-text-inline">:</span>
-      <!-- 秒の Flip 表示は非表示にする -->
       <span data-key="seconds" data-transform="pad(00)" data-view="flip" style="display:none;"></span>
     </div>
+    <!-- 静的秒表示を右端に配置 -->
+    <span id="seconds-static" class="tick-seconds">00</span>
   </div>
-
-  <!-- 静的秒表示 -->
-  <span id="seconds-static" class="tick-seconds">00</span>
 </div>
+
 
 
     <!-- Bottom: Weather & Date -->
@@ -84,6 +83,7 @@
 
 </body>
 </html>
+
 
 
 
