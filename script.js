@@ -156,8 +156,8 @@ async function fetchNews() {
 
     const now = new Date();
     updateEl.textContent =
-      `Last update: ${now.getHours().toString().padStart(2,'0')}:` +
-      `${now.getMinutes().toString().padStart(2,'0')}`;
+  `Last update ${now.getHours().toString().padStart(2,'0')}:` +
+  `${now.getMinutes().toString().padStart(2,'0')} JST`;
 
   } catch (e) {
     console.error('News fetch failed', e);
