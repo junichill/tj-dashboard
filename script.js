@@ -153,8 +153,9 @@ function updateIndicator() {
   });
 }
 
-// --- ニュース作成 ---
+// --- ニュース作成（JST変換版） ---
 function createNews() {
+  // 既存のニュース要素を削除
   newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
 
   newsEls = newsItems.map(n => {
@@ -162,17 +163,14 @@ function createNews() {
     div.className = 'news-item';
     if (isImportant(n.title)) div.classList.add('important');
 
-    // --- JSON API の pubDate を RSS 形式に変換 ---
-    // JSON API は ISO 形式が多いので、Dateオブジェクトで JSTに変換して出力
-    const d = new Date(n.pubDate); // 例: ISO文字列
-    // "Tue, 13 Jan 2026 14:39:11 +0900" 形式に変換
+    // --- JSON API の pubDate を JST に変換 ---
+    const d = new Date(n.pubDate);        // JSON API の日付文字列 → Date (UTCとして解釈)
+    const jst = new Date(d.getTime() + 9*60*60*1000); // UTC → JST (+9時間)
+
     const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
     const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    const pubDateStr = `${days[d.getDay()]}, ${d.getDate().toString().padStart(2,'0')} ${months[d.getMonth()]} ${d.getFullYear()} `
-                     + `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}:${d.getSeconds().toString().padStart(2,'0')} +0900`;
-
-    // --- JSON API の pubDate をそのまま表示 ---
-    //const pubDateStr = n.pubDate; // ISO形式のまま
+    const pubDateStr = `${days[jst.getUTCDay()]}, ${jst.getUTCDate().toString().padStart(2,'0')} ${months[jst.getUTCMonth()]} ${jst.getUTCFullYear()} `
+                      + `${jst.getUTCHours().toString().padStart(2,'0')}:${jst.getUTCMinutes().toString().padStart(2,'0')}:${jst.getUTCSeconds().toString().padStart(2,'0')} +0900`;
 
     div.innerHTML = `
       <a class="news-title" href="${n.link}" target="_blank">${n.title}</a>
@@ -186,7 +184,6 @@ function createNews() {
 
   updateIndicator();
 }
-
 
 // --- ニュース表示 ---
 function showNews(next, init = false) {
