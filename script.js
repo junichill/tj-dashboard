@@ -30,7 +30,6 @@ setInterval(updateDate, 60000);
 // =========================
 // WEATHER (NHK風・自前SVG)
 // =========================
-// 省略（以前のままでもOK）
 const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
 const LAT = 35.6895;
 const LON = 139.6917;
@@ -162,10 +161,11 @@ function createNews() {
     div.className = 'news-item';
     if (isImportant(n.title)) div.classList.add('important');
 
-    // --- RSS XML の pubDate をそのまま使用 ---
-    const pubDateStr = n.pubDate; // "Tue, 13 Jan 2026 14:39:11 +0900" 形式
+    const pubDateStr = n.pubDate;
 
+    // --- NHKONEニュースマーク追加 ---
     div.innerHTML = `
+      <div class="news-mark">NHKONEニュース</div>
       <a class="news-title" href="${n.link}" target="_blank">${n.title}</a>
       <div class="news-pubdate">${pubDateStr}</div>
       <div class="news-description">${n.description}</div>
