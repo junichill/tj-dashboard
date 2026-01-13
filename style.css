@@ -46,10 +46,9 @@ html, body {
 /* 天気を少し大きくして表示 */
 #weather {
   display: flex;
-  flex-direction: column;   /* ← 追加 */
+  flex-direction: column;  
   gap: 10px;
 }
-
 
 #date {
   font-family: 'Kosugi Maru', sans-serif;
@@ -78,6 +77,7 @@ html, body {
   font-weight: 600;
   letter-spacing: 0.5px;
 }
+
 .weather-icon {
   width: 60px;
   height: 60px;
@@ -93,30 +93,13 @@ html, body {
 }
 
 /* 晴れ（赤） */
-.weather-sunny {
-  color: #e53935;
-}
-
+.weather-sunny { color: #e53935; }
 /* 曇り（グレー） */
-.weather-cloudy {
-  color: #9e9e9e;
-}
-
+.weather-cloudy { color: #9e9e9e; }
 /* 雨（青） */
-.weather-rainy {
-  color: #1e88e5;
-}
-
+.weather-rainy { color: #1e88e5; }
 /* 雪（水色） */
-.weather-snowy {
-  color: #81d4fa;
-}
-
-.weather-text {
-  font-size: 22px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
+.weather-snowy { color: #81d4fa; }
 
 /* =========================
    Flip時計
@@ -134,7 +117,9 @@ html, body {
 
 .tick-char { width: 2.55em; }
 
-.tick-flip, .tick-text-inline { font-size: 3.2em; }
+.tick-flip, .tick-text-inline {
+  font-size: 3em; /* 最大表示に調整 */
+}
 
 .tick-flip {
   font-weight: 700;
@@ -152,11 +137,11 @@ html, body {
   color: #fff;
 }
 
-/* 時計縦方向調整 */
+/* 時計縦方向調整（天気と重ならないように） */
 .clock-container {
-  margin-top: 60px;
-  transform: scaleY(1.7);
-  transform-origin: left center;
+  margin-top: 20px;      /* 天気と重ならない余白 */
+  transform: scaleY(1.5); /* できるだけ大きく */
+  transform-origin: top left;
 }
 
 /* =========================
@@ -170,7 +155,6 @@ html, body {
   vertical-align: top;
   margin-left: 4px;
 }
-
 
 /* ===========================
    右パネル（ニュース）
@@ -200,39 +184,34 @@ html, body {
   inset: 20px;
   opacity: 0;
   transition: opacity 1.5s ease;
-
   padding-top: 26px;
   box-sizing: border-box;
-
-  pointer-events: none;   /* ← 追加 */
+  pointer-events: none; 
 }
 
 /* --- NHKマーク用 --- */
 .news-mark {
-  display: block;          /* ← ブロック化でタイトルの上に改行 */
+  display: block; 
   background-color: red;
   color: white;
   font-weight: bold;
-  font-size: 14px;         /* 少し大きめに調整 */
-  padding: 2px 6px;        /* 上下左右の余白 */
+  font-size: 14px;
+  padding: 2px 6px;
   border-radius: 2px;
-  margin-bottom: 6px;      /* タイトルとの間隔 */
-  width: fit-content;      /* 文字幅だけ赤背景 */
+  margin-bottom: 6px;
+  width: fit-content;
   font-family: sans-serif;
 }
 
-
 .news-item.show {
   opacity: 1;
-  pointer-events: auto;   /* ← 追加 */
+  pointer-events: auto;
 }
 
 .news-title { font-size: 40px; font-weight: bold; color: white; text-decoration: none; }
 .news-pubdate { font-size: 14px; color: #ccc; text-align: right; }
 .news-description { font-size: 20px; margin-top: 5px; }
-.news-refresh {
-  animation: refreshFlash 0.6s;
-}
+.news-refresh { animation: refreshFlash 0.6s; }
 
 @keyframes refreshFlash {
   0% { opacity: 0.6; }
