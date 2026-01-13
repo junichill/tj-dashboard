@@ -152,25 +152,29 @@ html, body {
   color: #fff;
 }
 
-/* 時計縦方向調整 */
+/* 時計全体 */
 .clock-container {
   margin-top: 60px;
-  transform: scaleY(1.7);
-  transform-origin: left center;
+  display: flex;
+  align-items: flex-start; /* 秒と揃える */
 }
 
-/* =========================
-   秒用静的表示
-=========================== */
+/* Flip 時計と秒のラップ */
+.tick {
+  display: flex;
+  align-items: center;
+}
+
+/* 秒表示 */
 .tick-seconds {
   font-size: 2em;         /* 秒だけ少し小さめ */
   font-weight: 700;
   color: white;
   display: inline-block;
-  vertical-align: top;
-  margin-left: 4px;
+  margin-left: 8px;       /* 時分からの余白 */
+  min-width: 2.2em;       /* Flip 時計の数字幅と揃える */
+  text-align: left;
 }
-
 
 /* ===========================
    右パネル（ニュース）
@@ -250,4 +254,5 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
