@@ -154,23 +154,33 @@ html, body {
 
 /* 時計縦方向調整 */
 .clock-container {
-  margin-top: 60px;
-  transform: scaleY(1.7);
-  transform-origin: left center;
+  margin-top: 40px;           /* 上余白を少し減らしてバランス */
+  transform: scaleY(1.55);    /* 縦方向を大きく、天気と重ならない最大値 */
+  transform-origin: left top;  /* 左上基準で拡大 */
+  max-height: 55%;             /* 左パネル内で天気と重ならない */
+  overflow: hidden;            /* はみ出し防止 */
 }
 
-/* =========================
-   秒用静的表示
-=========================== */
+/* 秒用静的表示 */
 .tick-seconds {
-  font-size: 2em;         /* 秒だけ少し小さめ */
+  font-size: 1.8em;            /* 秒は少し小さめ */
   font-weight: 700;
   color: white;
   display: inline-block;
   vertical-align: top;
-  margin-left: 4px;
+  margin-left: 6px;
 }
 
+/* 左下の天気・日付との余白確保 */
+.left-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: auto;            /* 時計の下に固定 */
+  padding: 20px 10px 0 10px;   /* 上余白を少し増やして天気と離す */
+  width: 100%;
+  box-sizing: border-box;
+}
 
 /* ===========================
    右パネル（ニュース）
@@ -250,3 +260,4 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
