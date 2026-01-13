@@ -137,24 +137,24 @@ html, body {
   color: #fff;
 }
 
+/* 時計縦方向調整（天気と重ならないように） */
 .clock-container {
-  position: relative;      /* 秒を絶対位置にするための基準 */
-  margin-top: 20px;
-  transform: scaleY(1.6);
+  margin-top: 20px;      /* 天気と重ならない余白 */
+  transform: scaleY(1.6); /* できるだけ大きく */
   transform-origin: top left;
 }
 
-/* 秒表示 */
+/* 秒表示（分より少し小さく、Flipと揃える） */
 #seconds-static {
-  position: absolute;      /* 絶対配置 */
-  left: 100%;              /* 分パネルの右端に配置 */
-  bottom: 0;               /* 分パネルの下端に揃える */
-  transform: translateX(6px); /* 分との間隔を微調整 */
   font-size: 1.8em;
   font-weight: 700;
   color: white;
   opacity: 0.8;
+  margin-left: 4px;   
+  vertical-align: top;
+  display: inline-block;
 }
+
 
 /* ===========================
    右パネル（ニュース）
@@ -229,10 +229,3 @@ html, body {
   z-index: 9999;
   background: #000;
 }
-
-
-
-
-
-
-
