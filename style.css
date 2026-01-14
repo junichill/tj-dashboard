@@ -105,7 +105,7 @@ html, body {
    Flip時計
 =========================== */
 .tick {
-  font-size: 1rem;
+  font-size: 4.2rem;   /* ← 修正点①：時計全体サイズ */
   white-space: nowrap;
 }
 
@@ -145,8 +145,7 @@ html, body {
 .clock-scale {
   display: flex;
   align-items: flex-end;
-  transform: scaleY(1.6);
-  transform-origin: bottom left;
+  /* ← 修正点②：scaleY / transform-origin を完全削除 */
 }
 
 #seconds-static {
@@ -231,12 +230,3 @@ html, body {
   z-index: 9999;
   background: #000;
 }
-
-
-
-
-
-
-
-
-
