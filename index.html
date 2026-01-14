@@ -24,17 +24,23 @@
        ========================= -->
   <div id="left-panel">
 
-    <!-- Flip Clock -->
+  <!-- Flip Clock -->
   <div class="clock-container">
+   <div class="clock-scale">
+    <!-- パタパタ（時・分） -->
     <div class="tick" data-did-init="handleTickInit">
       <div data-layout="horizontal fit">
         <span data-key="hours" data-transform="pad(00)" data-view="flip"></span>
         <span data-view="text" data-key="sep" class="tick-text-inline">:</span>
         <span data-key="minutes" data-transform="pad(00)" data-view="flip"></span>
-        <span id="seconds-static" class="tick-text-inline">00</span> <!-- 秒表示 -->
       </div>
     </div>
+
+    <!-- 秒（Tickの外） -->
+    <span id="seconds-static">00</span>
+
   </div>
+</div>
 
     <!-- Bottom: Weather & Date -->
 <div class="left-bottom">
@@ -78,6 +84,7 @@
 
 </body>
 </html>
+
 
 
 
