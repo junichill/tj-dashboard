@@ -22,53 +22,6 @@ function handleTickInit(tick) {
   });
 }
 
-/* ===== SVG Clock ===== */
-
-#clock-svg {
-  overflow: visible;
-}
-
-.panel {
-  fill: #3c3e3c;
-}
-
-.digit {
-  fill: white;
-  font-family: 'Noto Sans JP', sans-serif;
-  font-weight: 700;
-  font-size: 115px;          /* ← 数字だけ大きい */
-  text-anchor: middle;
-}
-
-#colon {
-  font-size: 90px;
-  fill: white;
-  opacity: 0.8;
-  dominant-baseline: middle;
-  text-anchor: middle;
-}
-
-#seconds {
-  font-size: 42px;           /* 秒だけ小さい */
-  fill: white;
-  opacity: 0.8;
-  text-anchor: middle;
-}
-
-/* パタパタ用 */
-.flip-top,
-.flip-bottom {
-  transform-origin: center;
-}
-
-.flip-top {
-  transform-origin: center bottom;
-}
-
-.flip-bottom {
-  transform-origin: center top;
-}
-
 
 // =========================
 // DATE
