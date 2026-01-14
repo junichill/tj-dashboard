@@ -139,20 +139,23 @@ html, body {
 
 /* 時計縦方向調整（天気と重ならないように） */
 .clock-container {
-  margin-top: 20px;      /* 天気と重ならない余白 */
-  transform: scaleY(1.6); /* できるだけ大きく */
-  transform-origin: top left;
+  margin-top: 20px;
 }
 
-/* 秒表示（分より少し小さく、Flipと揃える） */
+.clock-scale {
+  display: flex;
+  align-items: flex-end;
+  transform: scaleY(1.6);
+  transform-origin: bottom left;
+}
+
 #seconds-static {
   font-size: 1.8em;
   font-weight: 700;
   color: white;
   opacity: 0.8;
-  margin-left: 4px;   
-  vertical-align: top;
-  display: inline-block;
+  margin-left: 6px;
+  line-height: 1;
 }
 
 /* ===========================
@@ -228,6 +231,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
