@@ -208,7 +208,7 @@ html, body {
   pointer-events: auto;
 }
 
-.news-title { font-size: 40px; font-weight: bold; color: white; text-decoration: none; }
+.news-title { font-size: 40px; font-weight: inherit; color: white; text-decoration: none; }
 .news-pubdate { font-size: 14px; color: #ccc; text-align: right; }
 .news-description { font-size: 20px; margin-top: 5px; }
 .news-refresh { animation: refreshFlash 0.6s; }
@@ -229,4 +229,5 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
