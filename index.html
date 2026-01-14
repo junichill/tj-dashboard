@@ -1,93 +1,172 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Digital Dashboard</title>
+<meta charset="UTF-8">
+<title>Real Flip Clock</title>
+<style>
+html, body {
+  margin: 0;
+  height: 100%;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  <!-- Flip Clock -->
-  <link rel="stylesheet" href="flip.min.css">
+/* ===== Clock Layout ===== */
 
-  <!-- Main Style -->
-  <link rel="stylesheet" href="style.css">
+.clock {
+  display: flex;
+  align-items: flex-end;
+  perspective: 1200px; /* ★超重要 */
+}
 
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
+.digit {
+  position: relative;
+  width: 120px;
+  height: 180px;
+  margin-right: 10px;
+}
+
+.card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+/* 上下パネル */
+.half {
+  position: absolute;
+  width: 100%;
+  height: 50%;
+  overflow: hidden;
+  background: #3c3e3c;
+  display: flex;
+  justify-content: center;
+}
+
+.top {
+  top: 0;
+  border-radius: 6px 6px 0 0;
+}
+.bottom {
+  bottom: 0;
+  border-radius: 0 0 6px 6px;
+}
+
+/* 数字 */
+.half span {
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: 115px;
+  font-weight: 700;
+  color: white;
+  line-height: 180px;
+}
+
+/* 回転用 */
+.flip-top {
+  transform-origin: bottom;
+}
+.flip-bottom {
+  transform-origin: top;
+  transform: rotateX(90deg);
+}
+
+/* アニメーション */
+.flip .flip-top {
+  animation: flipTop 0.35s ease-in forwards;
+}
+.flip .flip-bottom {
+  animation: flipBottom 0.35s ease-out forwards;
+}
+
+@keyframes flipTop {
+  to { transform: rotateX(-90deg); }
+}
+@keyframes flipBottom {
+  to { transform: rotateX(0deg); }
+}
+
+/* 秒 */
+.seconds {
+  font-size: 42px;
+  margin-left: 15px;
+  opacity: 0.8;
+  color: white;
+}
+.colon {
+  font-size: 90px;
+  margin: 0 10px;
+  color: white;
+}
+</style>
 </head>
 
 <body>
 
-<div id="container">
+<div class="clock">
+  <div class="digit" id="h1"></div>
+  <div class="digit" id="h2"></div>
 
-  <!-- =========================
-       左パネル：時計・日付・天気
-       ========================= -->
-  <div id="left-panel">
+  <div class="colon">:</div>
 
-  <!-- Flip Clock -->
-  <div class="clock-container">
-   <div class="clock-scale">
-    <!-- パタパタ（時・分） -->
-    <div class="tick" data-did-init="handleTickInit">
-      <div data-layout="horizontal fit">
-        <span data-key="hours" data-transform="pad(00)" data-view="flip"></span>
-        <span data-view="text" data-key="sep" class="tick-text-inline">:</span>
-        <span data-key="minutes" data-transform="pad(00)" data-view="flip"></span>
-      </div>
-    </div>
+  <div class="digit" id="m1"></div>
+  <div class="digit" id="m2"></div>
 
-    <!-- 秒（Tickの外） -->
-    <span id="seconds-static">00</span>
-
-  </div>
+  <div class="seconds" id="sec">00</div>
 </div>
 
-    <!-- Bottom: Weather & Date -->
-<div class="left-bottom">
-
-  <!-- Weather -->
-  <div id="weather">
-
-    <div class="weather-row today">
-      <div class="weather-label">今日</div>
-      <div id="weather-icon-today" class="weather-icon"></div>
-      <div class="weather-text" id="weather-temp-today"></div>
+<script>
+function createDigit(el, val) {
+  el.innerHTML = `
+    <div class="card">
+      <div class="half top"><span>${val}</span></div>
+      <div class="half bottom"><span>${val}</span></div>
     </div>
+  `;
+}
 
-    <div class="weather-row tomorrow">
-      <div class="weather-label">明日</div>
-      <div id="weather-icon-tomorrow" class="weather-icon"></div>
-      <div class="weather-text" id="weather-temp-tomorrow"></div>
+function flip(el, from, to) {
+  if (from === to) return;
+
+  el.innerHTML = `
+    <div class="card flip">
+      <div class="half top flip-top"><span>${from}</span></div>
+      <div class="half bottom"><span>${from}</span></div>
+
+      <div class="half top"><span>${to}</span></div>
+      <div class="half bottom flip-bottom"><span>${to}</span></div>
     </div>
+  `;
+}
 
-  </div>
+["h1","h2","m1","m2"].forEach(id => createDigit(document.getElementById(id), "0"));
 
-  <!-- Date -->
-  <div id="date"></div>
+let prev = "";
 
-</div>
+function update() {
+  const d = new Date();
+  const h = String(d.getHours()).padStart(2,"0");
+  const m = String(d.getMinutes()).padStart(2,"0");
+  const s = String(d.getSeconds()).padStart(2,"0");
 
-  </div>
+  const now = h + m;
 
-  <!-- =========================
-       右パネル：ニュース
-       ========================= -->
-  <div id="right-panel">
-    <div id="news-card"></div>
-  </div>
+  if (prev) {
+    flip(h1, prev[0], h[0]);
+    flip(h2, prev[1], h[1]);
+    flip(m1, prev[2], m[0]);
+    flip(m2, prev[3], m[1]);
+  }
 
-</div>
+  sec.textContent = s;
+  prev = now;
+}
 
-<!-- Scripts -->
-<script src="flip.min.js"></script>
-<script src="script.js"></script>
+update();
+setInterval(update, 1000);
+</script>
 
 </body>
 </html>
-
-
-
-
-
-
-
