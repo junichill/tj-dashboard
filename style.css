@@ -141,9 +141,10 @@ html, body {
   color: #fff;
 }
 
-.tick-flip-panel-text {
-  transform: scaleY(1.15);      /* ← 数字だけ縦に拡大 */
+.tick-flip-panel-text > span {
+  transform: scaleY(1.15);
   transform-origin: center bottom;
+  display: inline-block;
 }
 
 /* 時計縦方向調整（天気と重ならないように） */
@@ -239,6 +240,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
