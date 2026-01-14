@@ -1,105 +1,93 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>Tick Flip Clock Only</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Dashboard</title>
 
-<!-- Tick.js（公式CDN） -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@pqina/flip/dist/flip.min.css">
-<script src="https://cdn.jsdelivr.net/npm/@pqina/flip/dist/flip.min.js"></script>
+  <!-- Flip Clock -->
+  <link rel="stylesheet" href="flip.min.css">
 
-<style>
-.tick {
-  font-size:1rem;
-  white-space:nowrap;
-  font-family:arial,sans-serif;
-}
+  <!-- Main Style -->
+  <link rel="stylesheet" href="style.css">
 
-.tick-flip,.tick-text-inline {
-  font-size:2.5em;
-}
-
-.tick-label {
-  margin-top:1em;
-  font-size:1em;
-}
-
-.tick-char {
-  width:1.5em;
-}
-
-.tick-text-inline {
-  display:inline-block;
-  text-align:center;
-  min-width:1em;
-}
-
-.tick-text-inline+.tick-text-inline {
-  margin-left:-.325em;
-}
-
-.tick-group {
-  margin:0 .5em;
-  text-align:center;
-}
-
-body {
-  margin: 0;
-  height: 100vh;
-  background-color: rgb(255, 255, 255);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.tick-text-inline {
-  color: rgb(90, 93, 99) !important;
-}
-
-.tick-label {
-  color: rgb(90, 93, 99) !important;
-}
-
-.tick-flip-panel {
-  color: rgb(255, 255, 255) !important;
-  background-color: rgb(59, 61, 59) !important;
-}
-
-.tick-flip-panel-text-wrapper {
-  line-height: 1.45 !important;
-}
-
-.tick-flip {
-  border-radius:0.12em !important;
-}
-</style>
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
-<div class="tick" data-did-init="handleTickInit">
-  <div data-layout="horizontal fit">
-    <span data-key="hours" data-transform="pad(00)" data-view="flip"></span>
-    <span data-view="text" data-key="sep" class="tick-text-inline"></span>
-    <span data-key="minutes" data-transform="pad(00)" data-view="flip"></span>
-    <span data-view="text" data-key="sep" class="tick-text-inline"></span>
-    <span data-key="seconds" data-transform="pad(00)" data-view="flip"></span>
+<div id="container">
+
+  <!-- =========================
+       左パネル：時計・日付・天気
+       ========================= -->
+  <div id="left-panel">
+
+  <!-- Flip Clock -->
+  <div class="clock-container">
+   <div class="clock-scale">
+    <!-- パタパタ（時・分） -->
+    <div class="tick" data-did-init="handleTickInit">
+      <div data-layout="horizontal fit">
+        <span data-key="hours" data-transform="pad(00)" data-view="flip"></span>
+        <span data-view="text" data-key="sep" class="tick-text-inline">:</span>
+        <span data-key="minutes" data-transform="pad(00)" data-view="flip"></span>
+      </div>
+    </div>
+
+    <!-- 秒（Tickの外） -->
+    <span id="seconds-static">00</span>
+
   </div>
 </div>
 
-<script>
-function handleTickInit(tick) {
-  Tick.helper.interval(function(){
-    var d = Tick.helper.date();
-    tick.value = {
-      sep: '.',
-      hours: d.getHours(),
-      minutes: d.getMinutes(),
-      seconds: d.getSeconds()
-    };
-  });
-}
-</script>
+    <!-- Bottom: Weather & Date -->
+<div class="left-bottom">
+
+  <!-- Weather -->
+  <div id="weather">
+
+    <div class="weather-row today">
+      <div class="weather-label">今日</div>
+      <div id="weather-icon-today" class="weather-icon"></div>
+      <div class="weather-text" id="weather-temp-today"></div>
+    </div>
+
+    <div class="weather-row tomorrow">
+      <div class="weather-label">明日</div>
+      <div id="weather-icon-tomorrow" class="weather-icon"></div>
+      <div class="weather-text" id="weather-temp-tomorrow"></div>
+    </div>
+
+  </div>
+
+  <!-- Date -->
+  <div id="date"></div>
+
+</div>
+
+  </div>
+
+  <!-- =========================
+       右パネル：ニュース
+       ========================= -->
+  <div id="right-panel">
+    <div id="news-card"></div>
+  </div>
+
+</div>
+
+<!-- Scripts -->
+<script src="flip.min.js"></script>
+<script src="script.js"></script>
 
 </body>
 </html>
+
+
+
+
+
+
+
