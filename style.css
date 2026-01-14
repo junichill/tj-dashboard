@@ -152,12 +152,15 @@ html, body {
   margin-top: 20px;
 }
 
+/* ★ ここがメイン：時・分（Flip）を縦に大きく */
 .clock-scale {
   display: flex;
   align-items: flex-end;
-  /* ← 修正点②：scaleY / transform-origin を完全削除 */
+  transform: scaleY(1.25);          /* ← 縦だけ拡大 */
+  transform-origin: bottom left;
 }
 
+/* ★ 秒は今の高さを維持 */
 #seconds-static {
   font-size: 1.8em;
   font-weight: 700;
@@ -165,6 +168,8 @@ html, body {
   opacity: 0.8;
   margin-left: 6px;
   line-height: 1;
+  transform: scaleY(0.8);           /* ← 1 / 1.25 */
+  transform-origin: bottom;
 }
 
 /* ===========================
@@ -240,6 +245,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
