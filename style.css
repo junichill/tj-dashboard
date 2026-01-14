@@ -126,6 +126,8 @@ html, body {
   color: #fff;
   border-radius: 0.12em;
   line-height: 2.25; /* パネルの縦の大きさ */
+  transform: scaleY(1.15);      /* ← 縦だけ拡大 */
+  transform-origin: bottom;     /* ← 下端基準で拡大 */
 }
 
 .tick-text-inline {
@@ -232,6 +234,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
