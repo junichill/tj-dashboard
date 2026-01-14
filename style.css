@@ -125,7 +125,7 @@ html, body {
   font-weight: 700;
   color: #fff;
   border-radius: 0.12em;
-  line-height: 1.75; /* ← これを追加 */
+  line-height: 3.00; /* ← これを追加 */
 }
 
 .tick-text-inline {
@@ -231,5 +231,6 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
