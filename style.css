@@ -150,9 +150,9 @@ html, body {
   font-weight: 700;
   color: white;
   opacity: 0.8;
-  margin-left: 4px;   
+  margin-left: 4px;
   // vertical-align: top;
-  align-items: flex-end;   /* ← 下端合わせ */
+  vertical-align: bottom;
   display: inline-block;
 }
 
@@ -230,6 +230,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
