@@ -156,7 +156,7 @@ html, body {
 .clock-scale {
   display: flex;
   align-items: flex-end;
-  transform: scaleY(1.25);          /* ← 縦だけ拡大 */
+  transform: scaleY(1.00);          /* ← 縦だけ拡大 */
   transform-origin: bottom left;
 }
 
@@ -245,6 +245,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
