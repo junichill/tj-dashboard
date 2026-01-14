@@ -142,6 +142,8 @@ html, body {
   margin-top: 20px;      /* 天気と重ならない余白 */
   transform: scaleY(1.6); /* できるだけ大きく */
   transform-origin: top left;
+  display: flex;              /* ← 追加 */
+  align-items: flex-end;      /* ← 追加 */
 }
 
 /* 秒表示（分より少し小さく、Flipと揃える） */
@@ -151,9 +153,11 @@ html, body {
   color: white;
   opacity: 0.8;
   margin-left: 4px;
+  line-height: 1;
+
   // vertical-align: top;
-  vertical-align: bottom;
-  display: inline-block;
+  // vertical-align: bottom;
+  // display: inline-block;
 }
 
 
@@ -230,6 +234,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
