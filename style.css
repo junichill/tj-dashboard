@@ -151,7 +151,8 @@ html, body {
   color: white;
   opacity: 0.8;
   margin-left: 4px;   
-  vertical-align: top;
+  // vertical-align: top;
+  align-items: flex-end;   /* ← 下端合わせ */
   display: inline-block;
 }
 
@@ -229,5 +230,6 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
