@@ -219,8 +219,8 @@ html, body {
 }
 
 .news-item.important .news-title {
-  color: #ff5252;
-  font-weight: 700;
+  color: white;
+  font-weight: inherit;
 }
 
 .news-fullscreen {
@@ -229,3 +229,4 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
