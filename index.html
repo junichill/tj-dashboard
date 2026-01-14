@@ -26,21 +26,25 @@
 
   <!-- Flip Clock -->
   <div class="clock-container">
-   <div class="clock-scale">
-    <!-- パタパタ（時・分） -->
-    <div class="tick" data-did-init="handleTickInit">
-      <div data-layout="horizontal fit">
-        <span data-key="hours" data-transform="pad(00)" data-view="flip"></span>
-        <span data-view="text" data-key="sep" class="tick-text-inline">:</span>
-        <span data-key="minutes" data-transform="pad(00)" data-view="flip"></span>
-      </div>
-    </div>
+  <svg id="clock-svg" viewBox="0 0 820 260" width="100%" height="260">
+    <!-- 時 tens -->
+    <g class="digit-group" id="h1" transform="translate(0,0)"></g>
+    <!-- 時 ones -->
+    <g class="digit-group" id="h2" transform="translate(140,0)"></g>
 
-    <!-- 秒（Tickの外） -->
-    <span id="seconds-static">00</span>
+    <!-- コロン -->
+    <text id="colon" x="300" y="135">:</text>
 
-  </div>
+    <!-- 分 tens -->
+    <g class="digit-group" id="m1" transform="translate(360,0)"></g>
+    <!-- 分 ones -->
+    <g class="digit-group" id="m2" transform="translate(500,0)"></g>
+
+    <!-- 秒 -->
+    <text id="seconds" x="690" y="190">00</text>
+  </svg>
 </div>
+
 
     <!-- Bottom: Weather & Date -->
 <div class="left-bottom">
@@ -84,6 +88,7 @@
 
 </body>
 </html>
+
 
 
 
