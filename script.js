@@ -117,6 +117,7 @@ const RSS_URL = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
 const newsCard = document.getElementById('news-card');
 
 let newsItems = [], newsEls = [], index = 0, timer = null;
+let lastGoodNews = null;
 const FADE = 1.8, AUTO_INTERVAL = 11000, FETCH_INTERVAL = 10*60*1000;
 
 // --- 更新時刻表示 ---
