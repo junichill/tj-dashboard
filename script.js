@@ -220,25 +220,47 @@ function stopAuto() {
 // --- ニュース取得 ---
 async function fetchNews() {
   try {
-    const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
+    const r = await fetch(
+      'https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL)
+    );
     const data = await r.json();
+
     const parser = new DOMParser();
     const xml = parser.parseFromString(data.contents, "application/xml");
     const items = xml.querySelectorAll('item');
 
-    newsItems = Array.from(items).map(item => ({
+    let fetchedItems = Array.from(items).map(item => ({
       title: item.querySelector('title')?.textContent,
       link: item.querySelector('link')?.textContent,
       pubDate: item.querySelector('pubDate')?.textContent,
       description: item.querySelector('description')?.textContent
     }));
 
+    // --- 0件取得時のフォールバック（F5対策） ---
+    if (fetchedItems.length === 0) {
+      if (lastGoodNews) {
+        newsItems = lastGoodNews;
+      } else {
+        console.warn('ニュース取得失敗（初回）');
+        return;
+      }
+    } else {
+      newsItems = fetchedItems;
+      lastGoodNews = fetchedItems;
+    }
+
     createNews();
     showNews(0, true);
-    startAuto();
+
+    // 1件以下なら自動切替しない
+    if (newsItems.length > 1) {
+      startAuto();
+    }
 
     const now = new Date();
-    updateEl.textContent = `Last update ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')} JST`;
+    updateEl.textContent =
+      `Last update ${now.getHours().toString().padStart(2,'0')}:` +
+      `${now.getMinutes().toString().padStart(2,'0')} JST`;
 
   } catch (e) {
     console.error('News fetch failed', e);
