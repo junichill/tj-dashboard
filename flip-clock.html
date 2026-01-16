@@ -56,31 +56,26 @@ body {
   height: 50%;
   overflow: hidden;
   background: #3c3e3c;
-  display: flex;
-  justify-content: center;
+  border-radius: 0.08em;
 }
 
 .panel span {
   font-size: 4.5em;
   line-height: 1;
+  display: block;
 }
 
 /* 上パネル：下寄せのみ（transform禁止） */
 .top {
   top: 0;
-  align-items: flex-end;
-  border-bottom: 1px solid #222;
 }
 
 /* 下パネル：上寄せ＋半分だけ見せる */
 .bottom {
   bottom: 0;
-  align-items: flex-start;
 }
 
-.bottom span {
-  transform: translateY(-50%);
-}
+.bottom span
 
 /* =========================
    ANIMATION
