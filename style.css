@@ -133,6 +133,16 @@ html, body {
   /* transform-origin: bottom; */    /* ← 下端基準で拡大 */
 }
 
+.tick-flip-panel-text-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tick-flip-panel-back .tick-flip-panel-text {
+  visibility: hidden;
+}
+
 .tick-text-inline {
   opacity: 0.8;
   margin: 0 -0.05em;
@@ -249,6 +259,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
