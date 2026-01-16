@@ -34,7 +34,6 @@ function flip(el, nextValue) {
 const ids = ["h1","h2","m1","m2","s1","s2"];
 const digits = ids.map(id => document.getElementById(id));
 
-// 初期化
 digits.forEach(d => createDigit(d, 0));
 
 function updateClock() {
