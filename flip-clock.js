@@ -1,35 +1,41 @@
-const digit = document.getElementById("digit");
-const upper = digit.querySelector(".upper span");
-const lower = digit.querySelector(".lower span");
-
-let current = 0;
-
-function flipTo(next) {
-  const upperDiv = digit.querySelector(".upper");
-  const lowerDiv = digit.querySelector(".lower");
-
-  // ãƒpƒlƒ‹FŒ»Ý’l
-  upper.textContent = current;
-  upperDiv.classList.add("flip-upper");
-
-  // ‰ºƒpƒlƒ‹FŽŸ‚Ì’l
-  setTimeout(() => {
-    lower.textContent = next;
-    lowerDiv.classList.add("flip-lower");
-  }, 150);
-
-  // ƒAƒjƒ[ƒVƒ‡ƒ“I—¹Œã‚ÉŠm’è
-  setTimeout(() => {
-    upper.textContent = next;
-    lower.textContent = next;
-    upperDiv.classList.remove("flip-upper");
-    lowerDiv.classList.remove("flip-lower");
-    current = next;
-  }, 350);
+function createDigit(el, value) {
+  el.innerHTML = `
+    <div class="card current">
+      <div class="upper"><span>${value}</span></div>
+      <div class="lower"><span>${value}</span></div>
+    </div>
+    <div class="card next">
+      <div class="upper"><span></span></div>
+      <div class="lower"><span></span></div>
+    </div>
+  `;
 }
 
-// ƒfƒ‚—pi1•b‚²‚Æ‚É‰ÁŽZj
+function flip(el, nextValue) {
+  const current = el.querySelector(".card.current");
+  const next = el.querySelector(".card.next");
+
+  next.querySelector(".upper span").textContent = nextValue;
+  next.querySelector(".lower span").textContent = nextValue;
+
+  current.querySelector(".upper").classList.add("flip-upper");
+  next.querySelector(".lower").classList.add("flip-lower");
+
+  setTimeout(() => {
+    createDigit(el, nextValue);
+  }, 400);
+}
+
+const digits = document.querySelectorAll(".digit");
+
+// åˆæœŸåŒ–
+digits.forEach(d => createDigit(d, 0));
+
 setInterval(() => {
-  const next = (current + 1) % 10;
-  flipTo(next);
+  const sec = new Date().getSeconds();
+  const tens = Math.floor(sec / 10);
+  const ones = sec % 10;
+
+  flip(digits[0], tens);
+  flip(digits[1], ones);
 }, 1000);
