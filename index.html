@@ -3,11 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Custom Flip Clock</title>
+<title>Custom Flip Clock (Fixed)</title>
 <style>
-/* =========================
-   基本レイアウト
-========================= */
 body {
   margin: 0;
   background: black;
@@ -21,25 +18,19 @@ body {
 
 .clock {
   display: flex;
-  gap: 0.4em; /* ← ここで全体の横密度を調整 */
+  gap: 0.4em;
 }
 
-/* =========================
-   Flip ユニット
-========================= */
 .flip {
   perspective: 1000px;
 }
 
 .card {
   position: relative;
-  width: 1.15em;   /* ← 横幅はここだけ */
+  width: 1.1em;   /* 横幅調整はここ */
   height: 1.6em;
 }
 
-/* =========================
-   共通パネル
-========================= */
 .panel {
   position: absolute;
   left: 0;
@@ -54,7 +45,7 @@ body {
 }
 
 .panel span {
-  font-size: 1.4em; /* ← 数字サイズ */
+  font-size: 1.4em;
   line-height: 1;
 }
 
@@ -67,14 +58,11 @@ body {
   bottom: 0;
 }
 
-/* 下段は上半分だけ見せる（2重防止の核心） */
+/* 下段は下半分だけ表示（2重防止） */
 .bottom span {
   transform: translateY(-50%);
 }
 
-/* =========================
-   アニメーション用
-========================= */
 .flip .top.animate {
   transform-origin: bottom;
   animation: flipTop 0.35s ease-in forwards;
@@ -86,18 +74,15 @@ body {
 }
 
 @keyframes flipTop {
-  0% { transform: rotateX(0deg); }
-  100% { transform: rotateX(-90deg); }
+  from { transform: rotateX(0deg); }
+  to   { transform: rotateX(-90deg); }
 }
 
 @keyframes flipBottom {
-  0% { transform: rotateX(90deg); }
-  100% { transform: rotateX(0deg); }
+  from { transform: rotateX(90deg); }
+  to   { transform: rotateX(0deg); }
 }
 
-/* =========================
-   セパレータ
-========================= */
 .sep {
   font-size: 1.4em;
   margin: 0 0.15em;
@@ -109,9 +94,6 @@ body {
 <div class="clock" id="clock"></div>
 
 <script>
-/* =========================
-   Flip生成
-========================= */
 function createFlip(initial) {
   const flip = document.createElement('div');
   flip.className = 'flip';
@@ -149,35 +131,12 @@ function updateFlip(unit, newVal) {
     unit.top.classList.remove('animate');
     unit.bottom.classList.remove('animate');
 
-    // 静止時は top のみ表示
     unit.top.innerHTML = `<span>${newVal}</span>`;
     unit.bottom.innerHTML = `<span>${newVal}</span>`;
   }, 350);
 }
-(unit, newVal) {
-  if (unit.value === newVal) return;
 
-  const oldVal = unit.value;
-  unit.value = newVal;
-
-  unit.top.innerHTML = `<span>${oldVal}</span>`;
-  unit.bottom.innerHTML = `<span>${newVal}</span>`;
-
-  unit.top.classList.add('animate');
-  unit.bottom.classList.add('animate');
-
-  setTimeout(() => {
-    unit.top.classList.remove('animate');
-    unit.bottom.classList.remove('animate');
-    unit.top.innerHTML = `<span>${newVal}</span>`;
-  }, 350);
-}
-
-/* =========================
-   時計初期化
-========================= */
 const clockEl = document.getElementById('clock');
-
 const units = [];
 
 function addUnit(val) {
@@ -202,9 +161,6 @@ addSep();
 addUnit('0');
 addUnit('0');
 
-/* =========================
-   時刻更新
-========================= */
 function tick() {
   const d = new Date();
   const t = [
