@@ -9,17 +9,27 @@ body {
 
 .clock {
   display: flex;
-  gap: 20px;
+  align-items: center;
+  gap: 18px;
   font-family: "Arial Black", Arial, sans-serif;
 }
 
+/* ===== コロン ===== */
+.colon {
+  font-size: 180px;
+  color: #aaa;
+  line-height: 1;
+}
+
+/* ===== 1桁 ===== */
 .digit {
   position: relative;
-  width: 220px;
-  height: 320px;
+  width: 200px;
+  height: 300px;
   perspective: 1000px;
 }
 
+/* ===== カード ===== */
 .card {
   position: absolute;
   width: 100%;
@@ -47,12 +57,15 @@ body {
   align-items: flex-start;
 }
 
-.upper span, .lower span {
-  font-size: 240px;
+.upper span,
+.lower span {
+  font-size: 220px;
   line-height: 1;
   color: white;
+  user-select: none;
 }
 
+/* ===== flip animation ===== */
 .flip-upper {
   animation: flipUpper 0.4s ease-in forwards;
   transform-origin: bottom;
