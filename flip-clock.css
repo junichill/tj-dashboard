@@ -1,0 +1,73 @@
+/* ===== 基本レイアウト ===== */
+body {
+  margin: 0;
+  background: black;
+  height: 720px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.clock {
+  font-family: "Arial Black", Arial, sans-serif;
+}
+
+/* ===== 1桁 ===== */
+.digit {
+  position: relative;
+  width: 260px;
+  height: 360px;
+}
+
+/* ===== 上下パネル ===== */
+.upper,
+.lower {
+  position: absolute;
+  width: 100%;
+  height: 50%;
+  overflow: hidden;
+  background: #3c3e3c;
+  display: flex;
+  justify-content: center;
+}
+
+.upper {
+  top: 0;
+  align-items: flex-end;
+  border-bottom: 2px solid #111;
+}
+
+.lower {
+  bottom: 0;
+  align-items: flex-start;
+}
+
+/* ===== 数字 ===== */
+.upper span,
+.lower span {
+  font-size: 280px;
+  line-height: 1;
+  color: #fff;
+  user-select: none;
+}
+
+/* ===== flip animation ===== */
+.flip-upper {
+  animation: flipUpper 0.35s ease-in forwards;
+  transform-origin: bottom;
+}
+
+.flip-lower {
+  animation: flipLower 0.35s ease-out forwards;
+  transform-origin: top;
+}
+
+@keyframes flipUpper {
+  0%   { transform: rotateX(0deg); }
+  100% { transform: rotateX(-90deg); }
+}
+
+@keyframes flipLower {
+  0%   { transform: rotateX(90deg); }
+  100% { transform: rotateX(0deg); }
+}

@@ -1,195 +1,23 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Flip Clock – Stable Final</title>
-<style>
-/* =========================
-   CANVAS (1920×720)
-========================= */
-html, body {
-  margin: 0;
-  background: black;
-}
-body {
-  width: 1920px;
-  height: 720px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  font-family: Arial, sans-serif;
-}
-
-/* =========================
-   CLOCK LAYOUT
-========================= */
-.clock {
-  display: flex;
-  align-items: center;
-}
-
-.sep {
-  font-size: 4.5em;
-  margin: 0 0.35em;
-}
-
-/* =========================
-   FLIP UNIT
-========================= */
-.flip {
-  perspective: 1200px;
-}
-
-.card {
-  position: relative;
-  width: 3.6em;
-  height: 5.4em;
-}
-
-/* 共通パネル */
-.panel {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  height: 50%;
-  overflow: hidden;
-  background: #3c3e3c;
-  border-radius: 0.08em;
-}
-
-.panel span {
-  font-size: 4.5em;
-  line-height: 1;
-  display: block;
-}
-
-/* 上パネル：下寄せのみ（transform禁止） */
-.top {
-  top: 0;
-}
-
-/* 下パネル：上寄せ＋半分だけ見せる */
-.bottom {
-  bottom: 0;
-}
-
-.bottom span
-
-/* =========================
-   ANIMATION
-========================= */
-.top.animate {
-  transform-origin: bottom;
-  animation: flipTop 0.45s ease-in forwards;
-}
-
-.bottom.animate {
-  transform-origin: top;
-  animation: flipBottom 0.45s ease-out forwards;
-}
-
-@keyframes flipTop {
-  from { transform: rotateX(0deg); }
-  to   { transform: rotateX(-90deg); }
-}
-
-@keyframes flipBottom {
-  from { transform: rotateX(90deg); }
-  to   { transform: rotateX(0deg); }
-}
-</style>
+  <meta charset="UTF-8">
+  <title>Flip Clock</title>
+  <link rel="stylesheet" href="flip-clock.css">
 </head>
 <body>
 
-<div class="clock" id="clock"></div>
+<div class="clock">
+  <div class="digit" id="digit">
+    <div class="upper">
+      <span>0</span>
+    </div>
+    <div class="lower">
+      <span>0</span>
+    </div>
+  </div>
+</div>
 
-<script>
-/* =========================
-   FLIP ENGINE (NO OVERLAP)
-========================= */
-function createUnit(initial) {
-  const flip = document.createElement('div');
-  flip.className = 'flip';
-
-  const card = document.createElement('div');
-  card.className = 'card';
-
-  const top = document.createElement('div');
-  top.className = 'panel top';
-  top.innerHTML = `<span>${initial}</span>`;
-
-  const bottom = document.createElement('div');
-  bottom.className = 'panel bottom';
-  bottom.innerHTML = `<span>${initial}</span>`;
-
-  card.append(top, bottom);
-  flip.append(card);
-
-  return { flip, top, bottom, value: initial };
-}
-
-function update(unit, next) {
-  if (unit.value === next) return;
-
-  const prev = unit.value;
-  unit.value = next;
-
-  unit.top.innerHTML = `<span>${prev}</span>`;
-  unit.bottom.innerHTML = `<span>${next}</span>`;
-
-  unit.top.classList.add('animate');
-  unit.bottom.classList.add('animate');
-
-  setTimeout(() => {
-    unit.top.classList.remove('animate');
-    unit.bottom.classList.remove('animate');
-    unit.top.innerHTML = `<span>${next}</span>`;
-    unit.bottom.innerHTML = `<span>${next}</span>`;
-  }, 450);
-}
-
-/* =========================
-   BUILD CLOCK
-========================= */
-const clock = document.getElementById('clock');
-const units = [];
-
-function addDigit(d) {
-  const u = createUnit(d);
-  units.push(u);
-  clock.appendChild(u.flip);
-}
-
-function addSep() {
-  const s = document.createElement('div');
-  s.className = 'sep';
-  s.textContent = ':';
-  clock.appendChild(s);
-}
-
-addDigit('0'); addDigit('0');
-addSep();
-addDigit('0'); addDigit('0');
-addSep();
-addDigit('0'); addDigit('0');
-
-/* =========================
-   TICK
-========================= */
-function tick() {
-  const d = new Date();
-  const str = [
-    ...String(d.getHours()).padStart(2, '0'),
-    ...String(d.getMinutes()).padStart(2, '0'),
-    ...String(d.getSeconds()).padStart(2, '0')
-  ];
-  units.forEach((u, i) => update(u, str[i]));
-}
-
-tick();
-setInterval(tick, 1000);
-</script>
+<script src="flip-clock.js"></script>
 </body>
 </html>
