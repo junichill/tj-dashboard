@@ -67,6 +67,11 @@ body {
   bottom: 0;
 }
 
+/* 下段は上半分だけ見せる（2重防止の核心） */
+.bottom span {
+  transform: translateY(-50%);
+}
+
 /* =========================
    アニメーション用
 ========================= */
@@ -129,6 +134,27 @@ function createFlip(initial) {
 }
 
 function updateFlip(unit, newVal) {
+  if (unit.value === newVal) return;
+
+  const oldVal = unit.value;
+  unit.value = newVal;
+
+  unit.top.innerHTML = `<span>${oldVal}</span>`;
+  unit.bottom.innerHTML = `<span>${newVal}</span>`;
+
+  unit.top.classList.add('animate');
+  unit.bottom.classList.add('animate');
+
+  setTimeout(() => {
+    unit.top.classList.remove('animate');
+    unit.bottom.classList.remove('animate');
+
+    // 静止時は top のみ表示
+    unit.top.innerHTML = `<span>${newVal}</span>`;
+    unit.bottom.innerHTML = `<span>${newVal}</span>`;
+  }, 350);
+}
+(unit, newVal) {
   if (unit.value === newVal) return;
 
   const oldVal = unit.value;
