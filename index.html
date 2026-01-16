@@ -1,94 +1,198 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Digital Dashboard</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Custom Flip Clock</title>
+<style>
+/* =========================
+   基本レイアウト
+========================= */
+body {
+  margin: 0;
+  background: black;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: 'Arial Black', Arial, sans-serif;
+}
 
-  <!-- Flip Clock -->
-  <link rel="stylesheet" href="flip.min.css">
+.clock {
+  display: flex;
+  gap: 0.4em; /* ← ここで全体の横密度を調整 */
+}
 
-  <!-- Main Style -->
-  <link rel="stylesheet" href="style.css">
+/* =========================
+   Flip ユニット
+========================= */
+.flip {
+  perspective: 1000px;
+}
 
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
+.card {
+  position: relative;
+  width: 1.15em;   /* ← 横幅はここだけ */
+  height: 1.6em;
+}
+
+/* =========================
+   共通パネル
+========================= */
+.panel {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  overflow: hidden;
+  background: #3c3e3c;
+  border-radius: 0.08em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.panel span {
+  font-size: 1.4em; /* ← 数字サイズ */
+  line-height: 1;
+}
+
+.top {
+  top: 0;
+  border-bottom: 1px solid #222;
+}
+
+.bottom {
+  bottom: 0;
+}
+
+/* =========================
+   アニメーション用
+========================= */
+.flip .top.animate {
+  transform-origin: bottom;
+  animation: flipTop 0.35s ease-in forwards;
+}
+
+.flip .bottom.animate {
+  transform-origin: top;
+  animation: flipBottom 0.35s ease-out forwards;
+}
+
+@keyframes flipTop {
+  0% { transform: rotateX(0deg); }
+  100% { transform: rotateX(-90deg); }
+}
+
+@keyframes flipBottom {
+  0% { transform: rotateX(90deg); }
+  100% { transform: rotateX(0deg); }
+}
+
+/* =========================
+   セパレータ
+========================= */
+.sep {
+  font-size: 1.4em;
+  margin: 0 0.15em;
+}
+</style>
 </head>
-
 <body>
 
-<div id="container">
+<div class="clock" id="clock"></div>
 
-  <!-- =========================
-       左パネル：時計・日付・天気
-       ========================= -->
-  <div id="left-panel">
+<script>
+/* =========================
+   Flip生成
+========================= */
+function createFlip(initial) {
+  const flip = document.createElement('div');
+  flip.className = 'flip';
 
-  <!-- Flip Clock -->
-  <div class="clock-container">
-   <div class="clock-scale">
-    <!-- パタパタ（時・分） -->
-    <div class="tick" data-did-init="handleTickInit">
-      <div data-layout="horizontal">
-        <span data-key="hours" data-transform="pad(00)" data-view="flip"></span>
-        <span data-view="text" data-key="sep" class="tick-text-inline">:</span>
-        <span data-key="minutes" data-transform="pad(00)" data-view="flip"></span>
-      </div>
-    </div>
+  const card = document.createElement('div');
+  card.className = 'card';
 
-    <!-- 秒（Tickの外） -->
-    <span id="seconds-static">00</span>
+  const top = document.createElement('div');
+  top.className = 'panel top';
+  top.innerHTML = `<span>${initial}</span>`;
 
-  </div>
-</div>
+  const bottom = document.createElement('div');
+  bottom.className = 'panel bottom';
+  bottom.innerHTML = `<span>${initial}</span>`;
 
-    <!-- Bottom: Weather & Date -->
-<div class="left-bottom">
+  card.append(top, bottom);
+  flip.append(card);
 
-  <!-- Weather -->
-  <div id="weather">
+  return { flip, top, bottom, value: initial };
+}
 
-    <div class="weather-row today">
-      <div class="weather-label">今日</div>
-      <div id="weather-icon-today" class="weather-icon"></div>
-      <div class="weather-text" id="weather-temp-today"></div>
-    </div>
+function updateFlip(unit, newVal) {
+  if (unit.value === newVal) return;
 
-    <div class="weather-row tomorrow">
-      <div class="weather-label">明日</div>
-      <div id="weather-icon-tomorrow" class="weather-icon"></div>
-      <div class="weather-text" id="weather-temp-tomorrow"></div>
-    </div>
+  const oldVal = unit.value;
+  unit.value = newVal;
 
-  </div>
+  unit.top.innerHTML = `<span>${oldVal}</span>`;
+  unit.bottom.innerHTML = `<span>${newVal}</span>`;
 
-  <!-- Date -->
-  <div id="date"></div>
+  unit.top.classList.add('animate');
+  unit.bottom.classList.add('animate');
 
-</div>
+  setTimeout(() => {
+    unit.top.classList.remove('animate');
+    unit.bottom.classList.remove('animate');
+    unit.top.innerHTML = `<span>${newVal}</span>`;
+  }, 350);
+}
 
-  </div>
+/* =========================
+   時計初期化
+========================= */
+const clockEl = document.getElementById('clock');
 
-  <!-- =========================
-       右パネル：ニュース
-       ========================= -->
-  <div id="right-panel">
-    <div id="news-card"></div>
-  </div>
+const units = [];
 
-</div>
+function addUnit(val) {
+  const u = createFlip(val);
+  units.push(u);
+  clockEl.appendChild(u.flip);
+}
 
-<!-- Scripts -->
-<script src="flip.min.js"></script>
-<script src="script.js"></script>
+function addSep() {
+  const s = document.createElement('div');
+  s.className = 'sep';
+  s.textContent = ':';
+  clockEl.appendChild(s);
+}
 
+addUnit('0');
+addUnit('0');
+addSep();
+addUnit('0');
+addUnit('0');
+addSep();
+addUnit('0');
+addUnit('0');
+
+/* =========================
+   時刻更新
+========================= */
+function tick() {
+  const d = new Date();
+  const t = [
+    ...String(d.getHours()).padStart(2, '0'),
+    ...String(d.getMinutes()).padStart(2, '0'),
+    ...String(d.getSeconds()).padStart(2, '0')
+  ];
+
+  let i = 0;
+  units.forEach(u => updateFlip(u, t[i++]));
+}
+
+setInterval(tick, 1000);
+tick();
+</script>
 </body>
 </html>
-
-
-
-
-
-
-
-
