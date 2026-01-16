@@ -1,82 +1,82 @@
 body {
-  margin: 0;
-  background: black;
-  height: 720px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+margin: 0;
+background: black;
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
 }
+
 
 .clock {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  font-family: "Arial Black", Arial, sans-serif;
+display: flex;
+align-items: center;
 }
+
 
 .colon {
-  font-size: 180px;
-  color: #aaa;
-  line-height: 1;
+font-size: 200px;
+color: white;
+margin: 0 20px;
 }
+
 
 .digit {
-  position: relative;
-  width: 200px;
-  height: 300px;
-  perspective: 1000px;
+position: relative;
+width: 180px;
+height: 260px;
+perspective: 1000px;
 }
 
-.card {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-}
 
 .upper, .lower {
-  position: absolute;
-  width: 100%;
-  height: 50%;
-  overflow: hidden;
-  background: #3c3e3c;
-  display: flex;
-  justify-content: center;
+position: absolute;
+width: 100%;
+height: 50%;
+overflow: hidden;
+background: #3c3e3c;
+display: flex;
+justify-content: center;
 }
+
 
 .upper {
-  top: 0;
-  align-items: flex-end;
-  border-bottom: 2px solid #111;
+top: 0;
+align-items: flex-end;
+border-bottom: 1px solid #000;
 }
 
+
 .lower {
-  bottom: 0;
-  align-items: flex-start;
+bottom: 0;
+align-items: flex-start;
 }
+
 
 .upper span,
 .lower span {
-  font-size: 220px;
-  line-height: 1;
-  color: white;
-  user-select: none;
+font-size: 220px;
+line-height: 1;
+color: white;
 }
 
-.flip-upper {
-  animation: flipUpper 0.4s ease-in forwards;
-  transform-origin: bottom;
+
+.digit.flip .upper {
+animation: flipUp 0.4s ease-in forwards;
 }
 
-.flip-lower {
-  animation: flipLower 0.4s ease-out forwards;
-  transform-origin: top;
+
+.digit.flip .lower {
+animation: flipDown 0.4s ease-out forwards;
 }
 
-@keyframes flipUpper {
-  to { transform: rotateX(-90deg); }
+
+@keyframes flipUp {
+to { transform: rotateX(-90deg); }
 }
 
-@keyframes flipLower {
-  from { transform: rotateX(90deg); }
-  to   { transform: rotateX(0deg); }
+
+@keyframes flipDown {
+from { transform: rotateX(90deg); }
+to { transform: rotateX(0deg); }
 }
