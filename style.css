@@ -151,7 +151,11 @@ html, body {
   transform: scaleY(1.15);
   transform-origin: center bottom;
   display: inline-block;
+
+  padding-left: 0.05em;   /* ← 追加 */
+  padding-right: 0.05em;  /* ← 追加 */
 }
+
 
 /* 時計縦方向調整（天気と重ならないように） */
 .clock-container {
@@ -251,6 +255,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
