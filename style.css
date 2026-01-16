@@ -148,8 +148,6 @@ html, body {
   transform: scaleY(1.15);
   transform-origin: center bottom;
   display: inline-block;
-  margin-left: -0.12em;
-  margin-right: -0.12em;
 }
 
 
@@ -251,6 +249,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
