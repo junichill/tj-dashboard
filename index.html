@@ -46,8 +46,10 @@ body {
 }
 
 .panel span {
-  font-size: 4.5em; /* ★ 放送用サイズ感 */
+  font-size: 4.5em;
   line-height: 1;
+  display: block;
+  transform: translateY(25%); /* ★ 上下中央補正 */
 }
 
 .top {
@@ -61,7 +63,7 @@ body {
 
 /* 下段は下半分だけ表示（2重防止） */
 .bottom span {
-  transform: translateY(-50%);
+  transform: translateY(-25%);
 }
 
 .flip .top.animate {
