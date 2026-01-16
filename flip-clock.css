@@ -1,4 +1,3 @@
-/* ===== 基本レイアウト ===== */
 body {
   margin: 0;
   background: black;
@@ -9,19 +8,25 @@ body {
 }
 
 .clock {
+  display: flex;
+  gap: 20px;
   font-family: "Arial Black", Arial, sans-serif;
 }
 
-/* ===== 1桁 ===== */
 .digit {
   position: relative;
-  width: 260px;
-  height: 360px;
+  width: 220px;
+  height: 320px;
+  perspective: 1000px;
 }
 
-/* ===== 上下パネル ===== */
-.upper,
-.lower {
+.card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.upper, .lower {
   position: absolute;
   width: 100%;
   height: 50%;
@@ -42,32 +47,27 @@ body {
   align-items: flex-start;
 }
 
-/* ===== 数字 ===== */
-.upper span,
-.lower span {
-  font-size: 280px;
+.upper span, .lower span {
+  font-size: 240px;
   line-height: 1;
-  color: #fff;
-  user-select: none;
+  color: white;
 }
 
-/* ===== flip animation ===== */
 .flip-upper {
-  animation: flipUpper 0.35s ease-in forwards;
+  animation: flipUpper 0.4s ease-in forwards;
   transform-origin: bottom;
 }
 
 .flip-lower {
-  animation: flipLower 0.35s ease-out forwards;
+  animation: flipLower 0.4s ease-out forwards;
   transform-origin: top;
 }
 
 @keyframes flipUpper {
-  0%   { transform: rotateX(0deg); }
-  100% { transform: rotateX(-90deg); }
+  to { transform: rotateX(-90deg); }
 }
 
 @keyframes flipLower {
-  0%   { transform: rotateX(90deg); }
-  100% { transform: rotateX(0deg); }
+  from { transform: rotateX(90deg); }
+  to   { transform: rotateX(0deg); }
 }
