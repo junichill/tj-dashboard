@@ -41,15 +41,22 @@ body {
   background: #3c3e3c;
   border-radius: 0.08em;
   display: flex;
-  justify-content: center;
-  align-items: center;
+}
+
+.top {
+  top: 0;
+  align-items: flex-end; /* 上段は下寄せ */
+}
+
+.bottom {
+  bottom: 0;
+  align-items: flex-start; /* 下段は上寄せ */
 }
 
 .panel span {
   font-size: 4.5em;
-  line-height: 1;
+  line-height: 1.1; /* ★ 行高を持たせて重なり防止 */
   display: block;
-  transform: translateY(25%); /* ★ 上下中央補正 */
 }
 
 .top {
@@ -63,7 +70,7 @@ body {
 
 /* 下段は下半分だけ表示（2重防止） */
 .bottom span {
-  transform: translateY(-25%);
+  transform: translateY(-50%); /* 下半分だけ表示 */
 }
 
 .flip .top.animate {
