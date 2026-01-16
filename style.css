@@ -128,7 +128,7 @@ html, body {
   color: #fff;
   border-radius: 0.12em;
   line-height: 2.00;            /* パネルの縦の大きさ */
-  width: 2.2em !important;
+  width: 1.8em !important;
   /* transform: scaleY(1.15); */      /* ← 縦だけ拡大 */
   /* transform-origin: bottom; */    /* ← 下端基準で拡大 */
 }
@@ -249,6 +249,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
