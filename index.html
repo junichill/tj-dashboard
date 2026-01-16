@@ -1,190 +1,86 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Custom Flip Clock (Fixed)</title>
-<style>
-body {
-  margin: 0;
-  background: black;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 1920px;
-  height: 720px;
-  font-family: 'Arial Black', Arial, sans-serif;
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Dashboard</title>
 
-.clock {
-  display: flex;
-  gap: 0.4em;
-}
+  <!-- Flip Clock -->
+  <link rel="stylesheet" href="flip.min.css">
 
-.flip {
-  perspective: 1000px;
-}
+  <!-- Main Style -->
+  <link rel="stylesheet" href="style.css">
 
-.card {
-  position: relative;
-  width: 3.6em;   /* ★ 1920×720最適：横幅 */
-  height: 5.4em;  /* ★ 縦は1.5倍比率 */
-}
-
-.panel {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  height: 50%;
-  overflow: hidden;
-  background: #3c3e3c;
-  border-radius: 0.08em;
-  display: flex;
-}
-
-.top {
-  top: 0;
-  align-items: flex-end; /* 上段は下寄せ */
-}
-
-.bottom {
-  bottom: 0;
-  align-items: flex-start; /* 下段は上寄せ */
-}
-
-.panel span {
-  font-size: 4.5em;
-  line-height: 1.1; /* ★ 行高を持たせて重なり防止 */
-  display: block;
-}
-
-.top {
-  top: 0;
-  border-bottom: 1px solid #222;
-}
-
-.bottom {
-  bottom: 0;
-}
-
-/* 下段は下半分だけ表示（2重防止） */
-.bottom span {
-  transform: translateY(-50%); /* 下半分だけ表示 */
-}
-
-.flip .top.animate {
-  transform-origin: bottom;
-  animation: flipTop 0.35s ease-in forwards;
-}
-
-.flip .bottom.animate {
-  transform-origin: top;
-  animation: flipBottom 0.35s ease-out forwards;
-}
-
-@keyframes flipTop {
-  from { transform: rotateX(0deg); }
-  to   { transform: rotateX(-90deg); }
-}
-
-@keyframes flipBottom {
-  from { transform: rotateX(90deg); }
-  to   { transform: rotateX(0deg); }
-}
-
-.sep {
-  font-size: 4.5em;
-  margin: 0 0.35em;
-}
-</style>
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
-<div class="clock" id="clock"></div>
+<div id="container">
 
-<script>
-function createFlip(initial) {
-  const flip = document.createElement('div');
-  flip.className = 'flip';
+  <!-- =========================
+       左パネル：時計・日付・天気
+       ========================= -->
+  <div id="left-panel">
 
-  const card = document.createElement('div');
-  card.className = 'card';
+  <!-- Flip Clock -->
+  <div class="clock-container">
+   <div class="clock-scale">
+    <!-- パタパタ（時・分） -->
+    <div class="tick" data-did-init="handleTickInit">
+      <div data-layout="horizontal">
+        <span data-key="hours" data-transform="pad(00)" data-view="flip"></span>
+        <span data-view="text" data-key="sep" class="tick-text-inline">:</span>
+        <span data-key="minutes" data-transform="pad(00)" data-view="flip"></span>
+      </div>
+    </div>
 
-  const top = document.createElement('div');
-  top.className = 'panel top';
-  top.innerHTML = `<span>${initial}</span>`;
+    <!-- 秒（Tickの外） -->
+    <span id="seconds-static">00</span>
 
-  const bottom = document.createElement('div');
-  bottom.className = 'panel bottom';
-  bottom.innerHTML = `<span>${initial}</span>`;
+  </div>
+</div>
 
-  card.append(top, bottom);
-  flip.append(card);
+    <!-- Bottom: Weather & Date -->
+<div class="left-bottom">
 
-  return { flip, top, bottom, value: initial };
-}
+  <!-- Weather -->
+  <div id="weather">
 
-function updateFlip(unit, newVal) {
-  if (unit.value === newVal) return;
+    <div class="weather-row today">
+      <div class="weather-label">今日</div>
+      <div id="weather-icon-today" class="weather-icon"></div>
+      <div class="weather-text" id="weather-temp-today"></div>
+    </div>
 
-  const oldVal = unit.value;
-  unit.value = newVal;
+    <div class="weather-row tomorrow">
+      <div class="weather-label">明日</div>
+      <div id="weather-icon-tomorrow" class="weather-icon"></div>
+      <div class="weather-text" id="weather-temp-tomorrow"></div>
+    </div>
 
-  unit.top.innerHTML = `<span>${oldVal}</span>`;
-  unit.bottom.innerHTML = `<span>${newVal}</span>`;
+  </div>
 
-  unit.top.classList.add('animate');
-  unit.bottom.classList.add('animate');
+  <!-- Date -->
+  <div id="date"></div>
 
-  setTimeout(() => {
-    unit.top.classList.remove('animate');
-    unit.bottom.classList.remove('animate');
+</div>
 
-    unit.top.innerHTML = `<span>${newVal}</span>`;
-    unit.bottom.innerHTML = `<span>${newVal}</span>`;
-  }, 350);
-}
+  </div>
 
-const clockEl = document.getElementById('clock');
-const units = [];
+  <!-- =========================
+       右パネル：ニュース
+       ========================= -->
+  <div id="right-panel">
+    <div id="news-card"></div>
+  </div>
 
-function addUnit(val) {
-  const u = createFlip(val);
-  units.push(u);
-  clockEl.appendChild(u.flip);
-}
+</div>
 
-function addSep() {
-  const s = document.createElement('div');
-  s.className = 'sep';
-  s.textContent = ':';
-  clockEl.appendChild(s);
-}
+<!-- Scripts -->
+<script src="flip.min.js"></script>
+<script src="script.js"></script>
 
-addUnit('0');
-addUnit('0');
-addSep();
-addUnit('0');
-addUnit('0');
-addSep();
-addUnit('0');
-addUnit('0');
-
-function tick() {
-  const d = new Date();
-  const t = [
-    ...String(d.getHours()).padStart(2, '0'),
-    ...String(d.getMinutes()).padStart(2, '0'),
-    ...String(d.getSeconds()).padStart(2, '0')
-  ];
-
-  let i = 0;
-  units.forEach(u => updateFlip(u, t[i++]));
-}
-
-setInterval(tick, 1000);
-tick();
-</script>
 </body>
 </html>
