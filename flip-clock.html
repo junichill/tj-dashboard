@@ -3,35 +3,52 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Custom Flip Clock (Fixed)</title>
+<title>Flip Clock – Stable Final</title>
 <style>
-body {
+/* =========================
+   CANVAS (1920×720)
+========================= */
+html, body {
   margin: 0;
   background: black;
-  color: white;
+}
+body {
+  width: 1920px;
+  height: 720px;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 1920px;
-  height: 720px;
-  font-family: 'Arial Black', Arial, sans-serif;
+  color: white;
+  font-family: Arial, sans-serif;
 }
 
+/* =========================
+   CLOCK LAYOUT
+========================= */
 .clock {
   display: flex;
-  gap: 0.4em;
+  align-items: center;
 }
 
+.sep {
+  font-size: 4.5em;
+  margin: 0 0.35em;
+}
+
+/* =========================
+   FLIP UNIT
+========================= */
 .flip {
-  perspective: 1000px;
+  perspective: 1200px;
 }
 
 .card {
   position: relative;
-  width: 3.6em;   /* ★ 1920×720最適：横幅 */
-  height: 5.4em;  /* ★ 縦は1.5倍比率 */
+  width: 3.6em;
+  height: 5.4em;
 }
 
+/* 共通パネル */
 .panel {
   position: absolute;
   left: 0;
@@ -39,48 +56,43 @@ body {
   height: 50%;
   overflow: hidden;
   background: #3c3e3c;
-  border-radius: 0.08em;
   display: flex;
-}
-
-.top {
-  top: 0;
-  align-items: flex-end; /* 上段は下寄せ */
-}
-
-.bottom {
-  bottom: 0;
-  align-items: flex-start; /* 下段は上寄せ */
+  justify-content: center;
 }
 
 .panel span {
   font-size: 4.5em;
-  line-height: 1.1; /* ★ 行高を持たせて重なり防止 */
-  display: block;
+  line-height: 1;
 }
 
+/* 上パネル：下寄せのみ（transform禁止） */
 .top {
   top: 0;
+  align-items: flex-end;
   border-bottom: 1px solid #222;
 }
 
+/* 下パネル：上寄せ＋半分だけ見せる */
 .bottom {
   bottom: 0;
+  align-items: flex-start;
 }
 
-/* 下段は下半分だけ表示（2重防止） */
 .bottom span {
-  transform: translateY(-50%); /* 下半分だけ表示 */
+  transform: translateY(-50%);
 }
 
-.flip .top.animate {
+/* =========================
+   ANIMATION
+========================= */
+.top.animate {
   transform-origin: bottom;
-  animation: flipTop 0.35s ease-in forwards;
+  animation: flipTop 0.45s ease-in forwards;
 }
 
-.flip .bottom.animate {
+.bottom.animate {
   transform-origin: top;
-  animation: flipBottom 0.35s ease-out forwards;
+  animation: flipBottom 0.45s ease-out forwards;
 }
 
 @keyframes flipTop {
@@ -92,11 +104,6 @@ body {
   from { transform: rotateX(90deg); }
   to   { transform: rotateX(0deg); }
 }
-
-.sep {
-  font-size: 4.5em;
-  margin: 0 0.35em;
-}
 </style>
 </head>
 <body>
@@ -104,7 +111,10 @@ body {
 <div class="clock" id="clock"></div>
 
 <script>
-function createFlip(initial) {
+/* =========================
+   FLIP ENGINE (NO OVERLAP)
+========================= */
+function createUnit(initial) {
   const flip = document.createElement('div');
   flip.className = 'flip';
 
@@ -125,14 +135,14 @@ function createFlip(initial) {
   return { flip, top, bottom, value: initial };
 }
 
-function updateFlip(unit, newVal) {
-  if (unit.value === newVal) return;
+function update(unit, next) {
+  if (unit.value === next) return;
 
-  const oldVal = unit.value;
-  unit.value = newVal;
+  const prev = unit.value;
+  unit.value = next;
 
-  unit.top.innerHTML = `<span>${oldVal}</span>`;
-  unit.bottom.innerHTML = `<span>${newVal}</span>`;
+  unit.top.innerHTML = `<span>${prev}</span>`;
+  unit.bottom.innerHTML = `<span>${next}</span>`;
 
   unit.top.classList.add('animate');
   unit.bottom.classList.add('animate');
@@ -140,51 +150,51 @@ function updateFlip(unit, newVal) {
   setTimeout(() => {
     unit.top.classList.remove('animate');
     unit.bottom.classList.remove('animate');
-
-    unit.top.innerHTML = `<span>${newVal}</span>`;
-    unit.bottom.innerHTML = `<span>${newVal}</span>`;
-  }, 350);
+    unit.top.innerHTML = `<span>${next}</span>`;
+    unit.bottom.innerHTML = `<span>${next}</span>`;
+  }, 450);
 }
 
-const clockEl = document.getElementById('clock');
+/* =========================
+   BUILD CLOCK
+========================= */
+const clock = document.getElementById('clock');
 const units = [];
 
-function addUnit(val) {
-  const u = createFlip(val);
+function addDigit(d) {
+  const u = createUnit(d);
   units.push(u);
-  clockEl.appendChild(u.flip);
+  clock.appendChild(u.flip);
 }
 
 function addSep() {
   const s = document.createElement('div');
   s.className = 'sep';
   s.textContent = ':';
-  clockEl.appendChild(s);
+  clock.appendChild(s);
 }
 
-addUnit('0');
-addUnit('0');
+addDigit('0'); addDigit('0');
 addSep();
-addUnit('0');
-addUnit('0');
+addDigit('0'); addDigit('0');
 addSep();
-addUnit('0');
-addUnit('0');
+addDigit('0'); addDigit('0');
 
+/* =========================
+   TICK
+========================= */
 function tick() {
   const d = new Date();
-  const t = [
+  const str = [
     ...String(d.getHours()).padStart(2, '0'),
     ...String(d.getMinutes()).padStart(2, '0'),
     ...String(d.getSeconds()).padStart(2, '0')
   ];
-
-  let i = 0;
-  units.forEach(u => updateFlip(u, t[i++]));
+  units.forEach((u, i) => update(u, str[i]));
 }
 
-setInterval(tick, 1000);
 tick();
+setInterval(tick, 1000);
 </script>
 </body>
 </html>
