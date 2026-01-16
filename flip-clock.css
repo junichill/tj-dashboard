@@ -14,14 +14,12 @@ body {
   font-family: "Arial Black", Arial, sans-serif;
 }
 
-/* ===== コロン ===== */
 .colon {
   font-size: 180px;
   color: #aaa;
   line-height: 1;
 }
 
-/* ===== 1桁 ===== */
 .digit {
   position: relative;
   width: 200px;
@@ -29,7 +27,6 @@ body {
   perspective: 1000px;
 }
 
-/* ===== カード ===== */
 .card {
   position: absolute;
   width: 100%;
@@ -65,7 +62,6 @@ body {
   user-select: none;
 }
 
-/* ===== flip animation ===== */
 .flip-upper {
   animation: flipUpper 0.4s ease-in forwards;
   transform-origin: bottom;
