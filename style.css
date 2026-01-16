@@ -141,19 +141,12 @@ html, body {
 .tick-flip-panel {
   background-color: #3c3e3c;
   color: #fff;
-
-  padding-left: 0.18em;   /* ← 追加 */
-  padding-right: 0.18em;  /* ← 追加 */
 }
-
 
 .tick-flip-panel-text > span {
   transform: scaleY(1.15);
   transform-origin: center bottom;
   display: inline-block;
-
-  padding-left: 0.05em;   /* ← 追加 */
-  padding-right: 0.05em;  /* ← 追加 */
 }
 
 
@@ -255,6 +248,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
