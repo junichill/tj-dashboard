@@ -15,6 +15,11 @@ function flip(el, nextValue) {
   const current = el.querySelector(".card.current");
   const next = el.querySelector(".card.next");
 
+  const currentValue =
+    current.querySelector(".upper span").textContent;
+
+  if (currentValue === String(nextValue)) return;
+
   next.querySelector(".upper span").textContent = nextValue;
   next.querySelector(".lower span").textContent = nextValue;
 
@@ -26,16 +31,22 @@ function flip(el, nextValue) {
   }, 400);
 }
 
-const digits = document.querySelectorAll(".digit");
+const ids = ["h1","h2","m1","m2","s1","s2"];
+const digits = ids.map(id => document.getElementById(id));
 
 // 初期化
 digits.forEach(d => createDigit(d, 0));
 
-setInterval(() => {
-  const sec = new Date().getSeconds();
-  const tens = Math.floor(sec / 10);
-  const ones = sec % 10;
+function updateClock() {
+  const now = new Date();
+  const h = now.getHours().toString().padStart(2,"0");
+  const m = now.getMinutes().toString().padStart(2,"0");
+  const s = now.getSeconds().toString().padStart(2,"0");
 
-  flip(digits[0], tens);
-  flip(digits[1], ones);
-}, 1000);
+  const values = [...h, ...m, ...s];
+
+  values.forEach((v, i) => flip(digits[i], v));
+}
+
+updateClock();
+setInterval(updateClock, 1000);
