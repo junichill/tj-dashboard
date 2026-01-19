@@ -248,7 +248,7 @@ html, body {
 }
 
 .news-description {
-   font-size: 26px;
+   font-size: 24px;
    margin-top: 5px;
    line-height: 1.45;
 }
@@ -273,16 +273,3 @@ html, body {
   z-index: 9999;
   background: #000;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
