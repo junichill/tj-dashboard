@@ -243,6 +243,7 @@ html, body {
    color: #ccc;
    text-align: right;
    line-height: 1.4;
+   margin-top: 0.8em;
    margin-bottom: 0.8em;
 }
 
@@ -272,6 +273,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
