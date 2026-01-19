@@ -231,7 +231,7 @@ html, body {
 }
 
 .news-title {
-   font-size: 40px;
+   font-size: 46px;
    font-weight: inherit;
    color: white;
    text-decoration: none;
@@ -239,14 +239,14 @@ html, body {
 }
 
 .news-pubdate {
-   font-size: 14px;
+   font-size: 16px;
    color: #ccc;
    text-align: right;
    line-height: 1.4;
 }
 
 .news-description {
-   font-size: 20px;
+   font-size: 26px;
    margin-top: 5px;
    line-height: 1.45;
 }
@@ -271,6 +271,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
