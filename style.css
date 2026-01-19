@@ -101,14 +101,12 @@ html, body {
 
 .weather-icon {
   flex: 0 0 60px;
+  min-width: 60px;          /* ★ 追加 */
   width: 60px;
   height: 60px;
-  min-width: 60px;          /* ★ 追加 */
-  display: flex;               /* inline-flex をやめる */
+  display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;          /* absolute化されないための保険 */
-  overflow: hidden;            /* ← ★重なり防止の決定打 */
 }
 
 /* SVGを差し込む前提 */
@@ -294,6 +292,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
