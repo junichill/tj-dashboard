@@ -69,6 +69,7 @@ html, body {
    NHK風 天気アイコン共通
 =========================== */
 .weather-row {
+  flex-wrap: nowrap;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -84,9 +85,12 @@ html, body {
   font-size: 22px;
   font-weight: 600;
   letter-spacing: 0.5px;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .weather-icon {
+  flex: 0 0 60px;
   width: 60px;
   height: 60px;
   display: inline-flex;
@@ -283,3 +287,4 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
