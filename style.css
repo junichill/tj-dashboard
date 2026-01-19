@@ -42,11 +42,11 @@ html, body {
 }
 
 .left-bottom {
-  display: flex;
-  justify-content: flex-start;
-  gap: 32px;
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: flex-end;
-  margin-top: auto;  /* 時計の下に固定 */
+  gap: 24px;
+  margin-top: auto;
   padding: 0 10px;
   width: 100%;
   box-sizing: border-box;
@@ -55,13 +55,14 @@ html, body {
 /* 天気を少し大きくして表示 */
 #weather {
   display: flex;
-  flex-direction: column;  
+  flex-direction: column;
   gap: 10px;
-  flex: 0 0 auto;
-  max-width: 55%;
+  min-width: 0;   /* ← これがないと切れる */
 }
 
 #date {
+  margin-left: auto;
+  text-align: right;
   font-family: 'Kosugi Maru', sans-serif;
   font-weight: 700;
   font-size: 20px;
@@ -72,10 +73,10 @@ html, body {
    NHK風 天気アイコン共通
 =========================== */
 .weather-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 32px 1fr 60px;
   align-items: center;
   gap: 10px;
-  flex-wrap: nowrap;
   width: 100%;
 }
 
@@ -292,3 +293,4 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
