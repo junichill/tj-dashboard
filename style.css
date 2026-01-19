@@ -57,24 +57,23 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  min-width: 0;   /* ← これがないと切れる */
+  min-width: 0;
 }
 
 #date {
-  margin-left: auto;
   text-align: right;
   font-family: 'Kosugi Maru', sans-serif;
   font-weight: 700;
   font-size: 20px;
-  text-align: right;
 }
 
 /* ===========================
    NHK風 天気アイコン共通
 =========================== */
+
+/* ★ 修正：grid → flex */
 .weather-row {
-  display: grid;
-  grid-template-columns: 32px 1fr 60px;
+  display: flex;
   align-items: center;
   gap: 10px;
   width: 100%;
@@ -83,21 +82,27 @@ html, body {
 .weather-label {
   font-size: 14px;
   opacity: 0.8;
-  min-width: 32px; /* 今日／明日を揃える */
+  min-width: 32px;
 }
 
+/* ★ 修正：侵食防止 */
 .weather-text {
   font-size: 22px;
   font-weight: 600;
   letter-spacing: 0.5px;
   flex: 1 1 auto;
   min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* ★ 修正：右端固定 */
 .weather-icon {
   flex: 0 0 60px;
   width: 60px;
   height: 60px;
+  margin-left: auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -122,7 +127,7 @@ html, body {
    Flip時計
 =========================== */
 .tick {
-  font-size: 4.2rem;   /* ← 修正点①：時計全体サイズ */
+  font-size: 4.2rem;
   white-space: nowrap;
 }
 
@@ -137,23 +142,21 @@ html, body {
 }
 
 .tick-flip, .tick-text-inline {
-  font-size: 2.8em; /* 最大表示に調整 */
+  font-size: 2.8em;
 }
 
 .tick-flip {
   font-weight: 700;
   color: #fff;
   border-radius: 0.12em;
-  line-height: 1.80;            /* パネルの縦の大きさ */
+  line-height: 1.80;
   width: 1.8em !important;
-  /* transform: scaleY(1.15); */      /* ← 縦だけ拡大 */
-  /* transform-origin: bottom; */    /* ← 下端基準で拡大 */
 }
 
 .tick-text-inline {
   opacity: 0.8;
   margin: 0 -0.05em;
-  align-self: center; /* ← コロンを中央ぞろえ */
+  align-self: center;
 }
 
 .tick-flip-panel {
@@ -167,24 +170,21 @@ html, body {
   display: inline-block;
 }
 
-
-/* 時計縦方向調整（天気と重ならないように） */
+/* 時計縦方向調整 */
 .clock-container {
   margin-top: 20px;
   display: flex;
-  justify-content: center;   /* ← 左右センター */
+  justify-content: center;
   flex: 1 1 auto;
 }
 
-/* ★ ここがメイン：時・分（Flip）を縦に大きく */
 .clock-scale {
   display: flex;
   align-items: flex-end;
-  transform: scaleY(1.00);          /* ← 縦だけ拡大 */
+  transform: scaleY(1.00);
   transform-origin: bottom left;
 }
 
-/* ★ 秒は今の高さを維持 */
 #seconds-static {
   font-size: 3.2em;
   font-weight: 700;
@@ -192,7 +192,7 @@ html, body {
   opacity: 0.8;
   margin-left: 6px;
   line-height: 1;
-  transform: scaleY(0.8);           /* ← 1 / 1.25 */
+  transform: scaleY(0.8);
   transform-origin: bottom;
 }
 
@@ -220,21 +220,18 @@ html, body {
   box-sizing: border-box;
 }
 
-/* ニュース */
 .news-item {
   position: absolute;
   inset: 20px;
   opacity: 0;
   transition: opacity 1.5s ease;
-  padding-top: 26px;
-  box-sizing: border-box;
-  pointer-events: none; 
   padding-top: 46px;
+  box-sizing: border-box;
+  pointer-events: none;
 }
 
-/* --- NHKマーク用 --- */
 .news-mark {
-  display: block; 
+  display: block;
   background-color: red;
   color: white;
   font-weight: bold;
@@ -251,30 +248,30 @@ html, body {
 }
 
 .news-title {
-   font-size: 48px;
-   font-weight: inherit;
-   color: white;
-   text-decoration: none;
-   line-height: 1.25;
+  font-size: 48px;
+  font-weight: inherit;
+  color: white;
+  text-decoration: none;
+  line-height: 1.25;
 }
 
 .news-pubdate {
-   font-size: 16px;
-   color: #ccc;
-   text-align: right;
-   line-height: 1.4;
-   margin-top: 0.8em;
-   margin-bottom: 0.8em;
+  font-size: 16px;
+  color: #ccc;
+  text-align: right;
+  line-height: 1.4;
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
 }
 
 .news-description {
-   font-size: 24px;
-   margin-top: 5px;
-   line-height: 1.45;
+  font-size: 24px;
+  margin-top: 5px;
+  line-height: 1.45;
 }
 
 .news-refresh {
-   animation: refreshFlash 0.6s;
+  animation: refreshFlash 0.6s;
 }
 
 @keyframes refreshFlash {
@@ -293,4 +290,3 @@ html, body {
   z-index: 9999;
   background: #000;
 }
-
