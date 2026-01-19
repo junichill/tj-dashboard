@@ -26,7 +26,8 @@ html, body {
    左パネル（時計・日付・天気）
 =========================== */
 #left-panel {
-  flex: 0 0 55%;
+  flex: 55%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   padding: 40px 40px 30px 50px;
@@ -182,7 +183,8 @@ html, body {
    右パネル（ニュース）
 =========================== */
 #right-panel {
-  flex: 0 0 45%;
+  flex: 45%;
+  min-width: 0;
   background: url('news-bg.png') center / cover no-repeat;
   display: flex;
   align-items: center;
@@ -274,3 +276,4 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
