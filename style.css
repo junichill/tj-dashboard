@@ -56,7 +56,7 @@ html, body {
 #weather {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
   min-width: 260px;   /* ← ★これを追加 */
   display: flex;
 }
@@ -291,6 +291,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
