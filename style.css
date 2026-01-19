@@ -236,6 +236,7 @@ html, body {
    color: white;
    text-decoration: none;
    line-height: 1.25;
+   margin-top: 0.8em;
 }
 
 .news-pubdate {
@@ -273,4 +274,5 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
