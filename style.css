@@ -101,10 +101,10 @@ html, body {
 }
 
 .weather-icon {
-  flex: 0 0 60px;
-  min-width: 60px;          /* ★ 追加 */
+  flex: 0 0 60px;       /* 幅固定 */
   width: 60px;
   height: 60px;
+  min-width: 60px;      /* 安全 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -293,6 +293,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
