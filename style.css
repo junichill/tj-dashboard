@@ -43,7 +43,7 @@ html, body {
 
 .left-bottom {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(260px, 1fr) auto;
   align-items: flex-end;
   gap: 24px;
   margin-top: auto;
@@ -290,4 +290,5 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
