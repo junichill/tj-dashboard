@@ -187,6 +187,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: "BIZ UDPGothic", "Hiragino Sans", sans-serif;
 }
 
 #news-card {
@@ -251,3 +252,4 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
