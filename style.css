@@ -199,9 +199,6 @@ html, body {
   overflow: hidden;
   padding: 20px;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
 }
 
 /* ニュース */
@@ -274,5 +271,3 @@ html, body {
   z-index: 9999;
   background: #000;
 }
-
-
