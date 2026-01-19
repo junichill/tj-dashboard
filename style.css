@@ -236,6 +236,7 @@ html, body {
    color: white;
    text-decoration: none;
    line-height: 1.25;
+   margin-bottom: 0.6em;
 }
 
 .news-pubdate {
@@ -243,12 +244,14 @@ html, body {
    color: #ccc;
    text-align: right;
    line-height: 1.4;
+   margin-bottom: 0.8em;
 }
 
 .news-description {
    font-size: 26px;
    margin-top: 5px;
    line-height: 1.45;
+   margin-top: 0;
 }
 
 .news-refresh {
@@ -271,6 +274,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
