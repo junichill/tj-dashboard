@@ -103,6 +103,7 @@ html, body {
   flex: 0 0 60px;
   width: 60px;
   height: 60px;
+  min-width: 60px;          /* ★ 追加 */
   display: flex;               /* inline-flex をやめる */
   align-items: center;
   justify-content: center;
@@ -293,6 +294,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
