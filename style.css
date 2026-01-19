@@ -223,7 +223,7 @@ html, body {
   border-radius: 2px;
   margin-bottom: 6px;
   width: fit-content;
-  font-family: sans-serif;
+  font-family: "BIZ UDPGothic", "Hiragino Sans", sans-serif;
 }
 
 .news-item.show {
@@ -252,4 +252,5 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
