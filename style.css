@@ -203,8 +203,6 @@ html, body {
 
 /* ニュース */
 .news-item {
-  position: absolute;
-  inset: 20px;
   opacity: 0;
   transition: opacity 1.5s ease;
   padding-top: 26px;
@@ -273,3 +271,4 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
