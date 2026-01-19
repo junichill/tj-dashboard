@@ -72,12 +72,12 @@ html, body {
    NHK風 天気アイコン共通
 =========================== */
 
-/* ★ 修正：grid → flex */
 .weather-row {
   display: flex;
   align-items: center;
   gap: 10px;
   width: 100%;
+  min-height: 60px;
 }
 
 .weather-label {
@@ -291,6 +291,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
