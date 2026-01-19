@@ -44,7 +44,7 @@ html, body {
 .left-bottom {
   display: grid;
   grid-template-columns: minmax(260px, 1fr) auto;
-  align-items: flex-end;
+  align-items: start;
   gap: 24px;
   margin-top: auto;
   padding: 0 10px;
@@ -56,8 +56,9 @@ html, body {
 #weather {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
   min-width: 260px;   /* ← ★これを追加 */
+  display: flex;
 }
 
 #date {
@@ -290,5 +291,6 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
