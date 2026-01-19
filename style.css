@@ -57,7 +57,7 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  min-width: 0;
+  min-width: 260px;   /* ← ★これを追加 */
 }
 
 #date {
@@ -290,3 +290,4 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
