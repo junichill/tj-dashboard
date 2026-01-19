@@ -154,6 +154,8 @@ html, body {
 /* 時計縦方向調整（天気と重ならないように） */
 .clock-container {
   margin-top: 20px;
+  display: flex;
+  justify-content: center;   /* ← 左右センター */
 }
 
 /* ★ ここがメイン：時・分（Flip）を縦に大きく */
@@ -249,6 +251,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
