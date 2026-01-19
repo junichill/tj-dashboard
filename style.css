@@ -194,8 +194,8 @@ html, body {
 }
 
 #news-card {
-  width: 88%;
-  height: 75%;
+  width: min(80%, 900px);
+  height: min(63%, 600px);
   background: rgba(0,0,0,0.6);
   border-radius: 15px;
   position: relative;
@@ -277,5 +277,6 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
