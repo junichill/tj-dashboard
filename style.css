@@ -231,7 +231,7 @@ html, body {
 }
 
 .news-title {
-   font-size: 46px;
+   font-size: 48px;
    font-weight: inherit;
    color: white;
    text-decoration: none;
@@ -271,6 +271,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
