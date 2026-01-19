@@ -56,8 +56,6 @@ html, body {
   display: flex;
   flex-direction: column;  
   gap: 10px;
-  width: 100%;
-
 }
 
 #date {
@@ -74,8 +72,6 @@ html, body {
   display: flex;
   align-items: center;
   gap: 10px;
-  width: 100%;
-  max-width: 100%;
 }
 
 .weather-label {
@@ -88,8 +84,6 @@ html, body {
   font-size: 22px;
   font-weight: 600;
   letter-spacing: 0.5px;
-  flex: 1 1 0%;
-  min-width: 0;
 }
 
 .weather-icon {
@@ -289,5 +283,4 @@ html, body {
   z-index: 9999;
   background: #000;
 }
-
 
