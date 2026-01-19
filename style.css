@@ -44,7 +44,7 @@ html, body {
 .left-bottom {
   display: grid;
   grid-template-columns: minmax(260px, 1fr) auto;
-  align-items: start;
+  align-items: flex-end;
   gap: 24px;
   margin-top: auto;
   padding: 0 10px;
@@ -291,6 +291,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
