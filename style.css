@@ -210,6 +210,7 @@ html, body {
   padding-top: 26px;
   box-sizing: border-box;
   pointer-events: none; 
+  padding-top: 46px;
 }
 
 /* --- NHKマーク用 --- */
@@ -236,7 +237,6 @@ html, body {
    color: white;
    text-decoration: none;
    line-height: 1.25;
-   margin-top: 1.8em;
 }
 
 .news-pubdate {
@@ -274,6 +274,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
