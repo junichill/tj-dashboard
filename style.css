@@ -2,6 +2,7 @@
    リセット & 基本設定
 =========================== */
 html, body {
+  font-size: clamp(14px, 1.2vw, 20px);
   margin: 0;
   padding: 0;
   width: 100%;
@@ -276,4 +277,5 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
