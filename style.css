@@ -88,13 +88,9 @@ html, body {
   min-width: 32px;
 }
 
-/* ★ 修正：侵食防止 */
 .weather-text {
-  font-size: 22px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  flex: 1 1 auto;
-  min-width: 0;
+  flex: 1 1 auto;       /* 残り幅を取る */
+  min-width: 0;         /* flex shrink の制御 */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -293,6 +289,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
