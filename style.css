@@ -166,21 +166,23 @@ html, body {
 /* =========================
    時計縦方向調整（完全固定版）
 =========================== */
+/* 時計縦方向調整（根本解決版） */
 .clock-container {
-  margin-top: 40px;       /* 上余白調整 */
-  margin-bottom: 20px;    /* 下余白調整 */
-  display: flex;
-  justify-content: center;
-  flex: 0 0 auto;         /* 高さを固定 */
-  height: 220px;          /* パタパタ時計全体の高さ */
+  display: block;          /* flex ではなく普通のブロック */
+  width: 100%;
+  height: 220px;           /* 時計パネル高さ固定 */
+  margin-top: 40px;        /* 上余白で位置調整 */
+  margin-bottom: 20px;     /* 下余白 */
+  text-align: center;      /* 水平方向中央揃え */
 }
 
 .clock-scale {
-  display: flex;
+  display: inline-flex;    /* 横並びを維持 */
   align-items: flex-end;
   transform: scaleY(1.00);
   transform-origin: bottom left;
 }
+
 
 #seconds-static {
   font-size: 3.2em;
@@ -288,4 +290,5 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
