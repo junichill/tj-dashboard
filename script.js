@@ -109,7 +109,7 @@ async function fetchWeather() {
     container.innerHTML = ''; // 一旦クリア
 
     // 直近の4つ（12時間分）を取得して表示
-    const forecastList = d.list.slice(0, 4);
+    const forecastList = d.list.slice(0, 8);
 
     forecastList.forEach(item => {
       const date = new Date(item.dt * 1000);
