@@ -138,14 +138,13 @@ html, body {
 }
 
 /* =========================
-   Flip時計 - 最終調整版
+   Flip時計 - はみ出し解消・極限スリム版
 =========================== */
 
 .tick-char {
-  /* 1. 器の幅をパネル幅(2.0em)より大幅に小さく設定 */
-  width: 1.2em !important;     
-  /* 2. マイナスマージンを大きくして、パネルの左右の余白を「隣と重ねて」隠す */
-  margin: 0 -0.35em !important; 
+  /* 器の幅もパネルに合わせてさらに狭く */
+  width: 1.1em !important;     
+  margin: 0 -0.05em !important; 
 }
 
 .tick-flip {
@@ -153,22 +152,22 @@ html, body {
   color: #fff;
   border-radius: 0.12em;
   line-height: 1.80;
-  /* 3. 安全な幅（2.00em）を維持してはみ出しを防止 */
+  /* パネル幅 1.35em を維持 */
   width: 2.00em !important;    
   margin: 0 !important;
 }
 
 .tick-flip-panel-text > span {
-  /* 4. scaleXは 0.8 くらいにすると「つぶれ感」が減り、かつ収まりが良くなります */
-  transform: scaleY(1.15) scaleX(0.8) !important; 
+  /* ★ここが最重要！ scaleX を 0.7 まで下げます */
+  /* これで文字が「縦長」になり、1.35em の幅の中にスッポリ収まります */
+  transform: scaleY(1.15) scaleX(0.7) !important; 
   transform-origin: center bottom;
   display: inline-block;
 }
 
 .tick-text-inline {
   opacity: 0.8;
-  /* コロン周りもマイナスで詰めて、全体の横幅をコンパクトに */
-  margin: 0 -0.4em !important;
+  margin: 0 0em !important;
   align-self: center;
 }
 
@@ -297,22 +296,3 @@ html, body {
   z-index: 9999;
   background: #000;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
