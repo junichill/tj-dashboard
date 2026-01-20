@@ -160,7 +160,8 @@ html, body {
 }
 
 .tick-flip-panel-text > span {
-  transform: scaleY(1.15);
+  /* scaleX を 1.2 〜 1.4 程度に上げると、数字が太くなり隙間が埋まります */
+  transform: scaleY(1.15) scaleX(1.3) !important; 
   transform-origin: center bottom;
   display: inline-block;
 }
@@ -285,4 +286,5 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
