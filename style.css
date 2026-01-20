@@ -149,7 +149,7 @@ html, body {
   color: #fff;
   border-radius: 0.12em;
   line-height: 1.80;
-  width: 1.35em !important;    /* はみ出さないサイズを維持 */
+  width: 2.10em !important;    /* はみ出さないサイズを維持 */
   margin: 0 !important;        /* ここは0で固定 */
 }
 
@@ -293,6 +293,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
