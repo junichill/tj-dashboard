@@ -63,11 +63,32 @@ html, body {
   min-width: 300px; /* 横幅に合わせて調整 */
 }
 
-/* アイコンが小さくなっても線が細くならないように調整 */
+/* 天気アイコン全体のコンテナ */
+.weather-icon {
+  width: 44px;  /* 少しサイズを調整 */
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 重要な設定：線の端が枠外にはみ出しても表示させる */
+  overflow: visible !important; 
+}
+
+/* SVGそのものの設定 */
 .weather-icon svg {
-  width: 100%;
-  height: 100%;
-  stroke-width: 5; /* 少し太めにすると視認性が上がります */
+  width: 90%;  /* 100%から少し下げることで、内側に余白を作る */
+  height: 90%;
+  stroke-width: 4; /* 太すぎると端が切れるので4〜5程度に */
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* 予報アイテムの間隔を調整 */
+#forecast-container {
+  display: flex;
+  gap: 25px; /* アイコン同士がぶつからないよう間隔を広げる */
+  margin-top: 10px;
+  padding-left: 5px; /* 左端のアイコンが壁にぶつからないよう少し余白 */
 }
 
 .weather-row {
@@ -91,16 +112,6 @@ html, body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.weather-icon {
-  flex: 0 0 60px;       /* 幅固定 */
-  min-width: 60px;
-  width: 60px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .weather-sunny { color: #e53935; }
@@ -308,6 +319,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
