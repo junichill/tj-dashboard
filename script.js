@@ -64,17 +64,18 @@ const WEATHER_ICONS = {
   cloudy: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4">
     <path d="M20 44h26a10 10 0 0 0 0-20 14 14 0 0 0-27-4A10 10 0 0 0 20 44z"/>
   </svg>`,
-  rainy: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4">
-    <path d="M20 36h26a10 10 0 0 0 0-20 14 14 0 0 0-27-4"/>
-    <line x1="22" y1="44" x2="18" y2="56"/>
-    <line x1="32" y1="44" x2="28" y2="56"/>
-    <line x1="42" y1="44" x2="38" y2="56"/>
+  // JSのWEATHER_ICONS内を以下に差し替え
+rainy: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round">
+    <path d="M20 36c-5 0-8-4-8-8a10 10 0 0 1 20-2 12 12 0 0 1 22 10"/>
+    <line x1="24" y1="44" x2="20" y2="56"/>
+    <line x1="34" y1="48" x2="30" y2="60"/>
+    <line x1="44" y1="44" x2="40" y2="56"/>
   </svg>`,
-  snowy: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4">
-    <path d="M20 36h26a10 10 0 0 0 0-20 14 14 0 0 0-27-4"/>
-    <circle cx="24" cy="48" r="2"/>
-    <circle cx="32" cy="54" r="2"/>
-    <circle cx="40" cy="48" r="2"/>
+snowy: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round">
+    <path d="M20 36c-5 0-8-4-8-8a10 10 0 0 1 20-2 12 12 0 0 1 22 10"/>
+    <circle cx="24" cy="50" r="1" fill="currentColor"/>
+    <circle cx="34" cy="56" r="1" fill="currentColor"/>
+    <circle cx="44" cy="50" r="1" fill="currentColor"/>
   </svg>`
 };
 
