@@ -41,13 +41,10 @@ html, body {
   box-sizing: border-box;
 }
 
-/* ===========================
-   左パネル（天気・日付）
-=========================== */
 .left-bottom {
   display: flex;
   flex-direction: row;
-  justify-content: space-between; /* 左に天気、右に日付を配置 */
+  justify-content: space-between;
   align-items: flex-end;
   gap: 24px;
   margin-top: auto;
@@ -56,63 +53,41 @@ html, body {
   box-sizing: border-box;
 }
 
+/* ===========================
+   天気予報（3時間ごと）
+=========================== */
 #weather {
   display: flex;
   flex-direction: column;
   gap: 5px;
-  min-width: 300px; /* 横幅に合わせて調整 */
-}
-
-/* 天気アイコン全体のコンテナ */
-.weather-icon {
-  width: 44px;  /* 少しサイズを調整 */
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* 重要な設定：線の端が枠外にはみ出しても表示させる */
-  overflow: visible !important; 
-}
-
-/* SVGそのものの設定 */
-.weather-icon svg {
-  width: 90%;  /* 100%から少し下げることで、内側に余白を作る */
-  height: 90%;
-  stroke-width: 4; /* 太すぎると端が切れるので4〜5程度に */
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  min-width: 300px;
 }
 
 #forecast-container {
   display: flex;
   gap: 25px; 
   margin-top: 10px;
-  padding-left: 15px; /* 5pxから15pxに増量 */
+  padding-left: 15px; /* アイコンの左端が切れないよう余白を確保 */
 }
 
-.weather-row {
+.weather-icon {
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  width: 100%;
-  min-height: 60px;
-  overflow: visible; /* アイコンが切れないように */
+  justify-content: center;
+  overflow: visible !important; /* 線のハミ出しを許容 */
 }
 
-.weather-label {
-  font-size: 14px;
-  opacity: 0.8;
-  min-width: 32px;
+.weather-icon svg {
+  width: 90%;
+  height: 90%;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.weather-text {
-  flex: 1 1 auto;       /* 残り幅を取る */
-  min-width: 0;         /* flex-shrink を効かせる */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
+/* 天気別カラー */
 .weather-sunny { color: #e53935; }
 .weather-cloudy { color: #9e9e9e; }
 .weather-rainy { color: #1e88e5; }
@@ -124,12 +99,11 @@ html, body {
   font-weight: 700;
   font-size: 20px;
   min-width: 120px;
-  /* 追加 */
-  align-self: flex-end;  /* 下寄せ固定 */
+  align-self: flex-end;
 }
 
 /* =========================
-   Flip時計
+   Flip時計（スリム＆縦長）
 =========================== */
 .tick {
   font-size: 3.8rem;
@@ -156,31 +130,34 @@ html, body {
   display: inline-block !important;
   vertical-align: bottom;
   margin: 0 !important;
+  /* 横幅をガチガチに固定 */
   width: 1.00em !important; 
   min-width: 1.00em !important;
   max-width: 1.00em !important;
+  /* 縦幅を固定 */
   height: 1.80em !important;
   line-height: 1.80em !important;
 }
 
-.tick-flip-panel-text > span {
-  transform-origin: center center;
-  display: inline-block;
+/* 文字の縦伸ばし：詳細度を上げてJSの上書きをブロック */
+.tick.tick .tick-flip-panel-text > span {
+  transform-origin: center center !important;
+  display: inline-block !important;
+  transform: scaleY(2.2) scaleX(0.55) !important; /* ここで縦の長さを調整 */
 }
 
 .tick-text-inline {
   display: inline-block !important;
   text-align: center;
-  margin: 0 -0.10em !important; /* 数値維持 */
+  margin: 0 -0.10em !important;
 }
 
 .tick-flip-panel {
-  height: 50% !important; /* 上下のパネルが正確に半分ずつになるように固定 */
+  height: 50% !important;
   background-color: #3c3e3c;
   color: #fff;
 }
 
-/* --- レイアウト配置 --- */
 .clock-container {
   margin-top: 40px;
   display: flex;
@@ -218,36 +195,31 @@ html, body {
 
 #news-card {
   width: min(80%, 900px);
-  height: min(75%, 750px);
+  height: min(85%, 850px); /* 縦幅を大きく調整 */
   background: rgba(0,0,0,0.6);
   border-radius: 15px;
   position: relative;
   overflow: hidden;
-  padding: 20px;
+  padding: 30px;
   box-sizing: border-box;
 }
 
 .news-item {
   position: absolute;
   inset: 20px;
-  
-  /* 透明度を0にし、少しだけ下に配置しておく */
   opacity: 0;
-  transform: translateY(10px); 
-  
-  /* 2秒かけて変化。イージング（cubic-bezier）で高級感を演出 */
+  transform: translateY(15px);
+  /* 2秒かけてゆっくりフェード＆アップ */
   transition: opacity 2.0s cubic-bezier(0.22, 1, 0.36, 1), 
               transform 2.0s cubic-bezier(0.22, 1, 0.36, 1);
-  
   padding-top: 46px;
   box-sizing: border-box;
   pointer-events: none;
 }
 
 .news-item.show {
-  /* 表示時は透明度1、元の位置に戻る */
   opacity: 1;
-  transform: translateY(0); 
+  transform: translateY(0);
   pointer-events: auto;
 }
 
@@ -264,83 +236,28 @@ html, body {
 }
 
 .news-title {
-  /* パネルサイズ拡大に合わせてフォントサイズを微調整 */
-  font-size: 48px; 
+  font-size: 48px;
   font-weight: 700;
   color: white;
   text-decoration: none;
-  
-  /* 行間の設定：1.2〜1.3が2行になった時に最も美しく見えます */
-  line-height: 1.25; 
-  
-  /* 2行を超える場合に備えて、最大表示を制御（必要に応じて） */
+  line-height: 1.25; /* 2行時に重ならないよう調整 */
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* 最大2行まで表示 */
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-/* タイトルと日付の間の余白を最適化 */
 .news-pubdate {
   font-size: 16px;
   color: #ccc;
   text-align: right;
-  line-height: 1.4;
-  margin-top: 1.2em;    /* タイトルとの距離を少し広げる */
+  margin-top: 1.2em;
   margin-bottom: 0.8em;
 }
 
-/* 説明文（概要）の調整 */
 .news-description {
   font-size: 24px;
   margin-top: 10px;
-  line-height: 1.5;     /* 説明文も少し行間を広げて読みやすく */
+  line-height: 1.5;
   opacity: 0.9;
 }
-
-.news-refresh {
-  animation: refreshFlash 0.6s;
-}
-
-@keyframes refreshFlash {
-  0% { opacity: 0.6; }
-  100% { opacity: 1; }
-}
-
-.news-item.important .news-title {
-  color: white;
-  font-weight: inherit;
-}
-
-.news-fullscreen {
-  position: fixed !important;
-  inset: 0;
-  z-index: 9999;
-  background: #000;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
