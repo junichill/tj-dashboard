@@ -165,7 +165,7 @@ html, body {
 .tick-text-inline {
     display: inline-block !important;
     text-align: center;
-    margin: 0 -0.05em !important;
+    margin: 0 -0.25em !important;
 }
 .tick-flip-panel {
   background-color: #3c3e3c;
@@ -292,6 +292,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
