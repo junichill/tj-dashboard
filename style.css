@@ -151,7 +151,7 @@ html, body {
 .tick-flip {
     display: inline-block !important;
     vertical-align: bottom;
-    width: 0.25em !important; /* Clockhub風のスリム幅 */
+    width: 0.1em !important; /* Clockhub風のスリム幅 */
     margin: 0 0.00em !important; /* パネル同士のわずかな隙間 */
 }
 
@@ -292,6 +292,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
