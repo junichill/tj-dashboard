@@ -118,7 +118,7 @@ html, body {
 }
 
 /* =========================
-   Flip時計 - 安定・スリム版
+   Flip時計
 =========================== */
 .tick {
   font-size: 3.8rem;
@@ -126,54 +126,76 @@ html, body {
 }
 
 .tick, .tick * {
+  /* フォントを太く設定 */
   font-family: 'Roboto', 'M PLUS Rounded 1c', sans-serif;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
-/* 文字自体の大きさ */
 .tick-flip, .tick-text-inline {
   font-size: 2.8em;
 }
 
-/* 1文字ずつの器（ここで「1」と「3」の間隔を詰める） */
+/* =========================
+   Flip時計 - 自然な形を維持しつつスリム化
+=========================== */
+
 .tick-char {
-  display: inline-flex !important;
-  justify-content: center !important;
-  /* 0.5emだと重なりすぎるため、1.0em〜1.1emがサイズを維持しつつ密着するベストな値です */
-  width: 1.1em !important;     
-  margin: 0 -0.05em !important; 
+  /* 1. 器の幅を狭くして、隣のパネルを無理やり引き寄せる */
+  width: 0.5em !important;     
+  margin: 0 -0.4em !important; /* マイナス値を大きくしてパネル同士を重ねる */
 }
 
-/* パネル本体：高さを維持し、横幅だけをスリム化 */
+/* パネルを独立させた際の間隔を調整 */
 .tick-flip {
-  display: inline-block !important;
-  vertical-align: bottom;
-  /* 0.1emを修正。1.4em前後にすることで、大きな表示のままスリムな板になります */
-  width: 1.4em !important;    
-  margin: 0 !important;
+    display: inline-block !important;
+    vertical-align: bottom;
+    width: 0.1em !important; /* Clockhub風のスリム幅 */
+    margin: 0 0.00em !important; /* パネル同士のわずかな隙間 */
 }
 
-/* 文字の縦長加工（ご提示の数値を採用しつつ微調整） */
+/* 文字の縦長スリム加工（再設定） */
 .tick-flip-panel-text > span {
-  /* scaleXを少し戻すことで、パネルの中央に綺麗に収まり、文字が小さく見えるのを防ぎます */
-  transform: scaleY(1.75) scaleX(0.65) !important;
-  transform-origin: center center;
-  display: inline-block;
+    transform: scaleY(1.75) scaleX(0.55) !important;
+    transform-origin: center center;
 }
 
-/* コロンの調整 */
+/* コロンの幅を狭くして数字に寄せる */
 .tick-text-inline {
-  display: inline-block !important;
-  width: 0.3em !important;
-  text-align: center;
-  margin: 0 0.1em !important; /* 数字に寄り添わせる */
+    display: inline-block !important;
+    text-align: center;
+    margin: 0 -0.10em !important;
 }
-
 .tick-flip-panel {
   background-color: #3c3e3c;
   color: #fff;
+}
+
+/* --- 以下、位置調整などは変更なし --- */
+.clock-container {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  flex: 0;
+}
+
+.clock-scale {
+  display: flex;
+  align-items: flex-end;
+  transform: scaleY(1.00);
+  transform-origin: bottom left;
+}
+
+#seconds-static {
+  font-size: 3.2em;
+  font-weight: 700;
+  color: white;
+  opacity: 0.8;
+  margin-left: 6px;
+  line-height: 1;
+  transform: scaleY(0.8);
+  transform-origin: bottom;
 }
 
 /* ===========================
@@ -270,4 +292,3 @@ html, body {
   z-index: 9999;
   background: #000;
 }
-
