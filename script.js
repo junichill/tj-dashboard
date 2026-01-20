@@ -46,10 +46,11 @@ function updateDate() {
 
     const dateEl = document.getElementById('date');
     if (dateEl) {
-        // 1行で表示：Tue, Jan 20, 2026(R8)
-        dateEl.textContent = `${dayName}, ${monthName} ${date}, ${year}(R${reiwa})`;
+        // スタイリッシュに見せるため、和暦部分に span を適用
+        dateEl.innerHTML = `${dayName}, ${monthName} ${date}, ${year}<span class="era-label"> (R${reiwa})</span>`;
     }
 }
+
 updateDate();
 setInterval(updateDate, 60000);
 
