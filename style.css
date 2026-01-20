@@ -159,7 +159,7 @@ html, body {
 }
 
 .tick-flip-panel-text > span {
-  transform: scaleY(1.10);
+  transform: scaleY(0.80);
   transform-origin: center bottom;
   display: inline-block;
 }
@@ -285,6 +285,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
