@@ -145,7 +145,10 @@ html, body {
   /* 1. 器の幅を狭くして、隣のパネルを無理やり引き寄せる */
   width: 1.2em !important;     
   margin: 0 -0.4em !important; /* マイナス値を大きくしてパネル同士を重ねる */
-}
+  
+  /* はみ出しを隠しつつ、要素を中央に保つ */
+  display: inline-flex !important;
+  justify-content: center !important;}
 
 .tick-flip {
   font-weight: 900;
@@ -295,6 +298,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
