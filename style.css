@@ -191,16 +191,16 @@ html, body {
     padding-top: 3.5rem; 
 }
 
-
+/* 秒表示（この真上に日付が来ます） */
 #seconds-static {
-  font-size: 3.2em;
-  font-weight: 700;
-  color: white;
-  opacity: 0.8;
-  margin-left: 6px;
-  line-height: 1;
-  transform: scaleY(0.8);
-  transform-origin: bottom;
+    font-size: 3.2em;
+    font-weight: 700;
+    color: white;
+    opacity: 0.8;
+    margin-left: 6px;
+    line-height: 1;
+    transform: scaleY(0.8);
+    transform-origin: bottom;
 }
 
 /* ===========================
@@ -284,6 +284,7 @@ html, body {
   line-height: 1.5;
   opacity: 0.9;
 }
+
 
 
 
