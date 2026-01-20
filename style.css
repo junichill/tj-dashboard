@@ -126,45 +126,45 @@ html, body {
 }
 
 .tick, .tick * {
-  /* 太いフォントに変更。RobotoかM PLUS Rounded 1cを選択 */
+  /* フォントを太く設定 */
   font-family: 'Roboto', 'M PLUS Rounded 1c', sans-serif;
-  font-weight: 900; /* 極太 */
+  font-weight: 900;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
-/* 数字1文字ずつの器をさらに追い込む */
+/* 1. 器の幅を少し広げて、はみ出しを防ぐ */
 .tick-char {
-  width: 0.95em !important;    /* さらに狭く */
-  margin: 0 -0.1em !important; 
+  width: 1.15em !important;    /* 0.95から少し拡大 */
+  margin: 0 -0.05em !important; /* 重なりを微調整 */
 }
-
-.tick-flip {
-  font-weight: 900; /* パネル内の文字も極太に */
-  color: #fff;
-  border-radius: 0.12em;
-  line-height: 1.80;
-  width: 1.2em !important;      /* パネルもよりスリムに */
-  margin: 0 !important;
-}
-
-/* 文字の横幅を調整して隙間を埋める */
-.tick-flip-panel-text > span {
-  /* フォント自体が太いので scaleX は 1.1〜1.2 程度で十分隙間が埋まります */
-  transform: scaleY(1.15) scaleX(1.1) !important; 
-  transform-origin: center bottom;
-  display: inline-block;
-}
-
-/* 以下、他の設定はそのまま */
 
 .tick-flip, .tick-text-inline {
   font-size: 2.8em;
 }
 
+/* 2. パネルの幅を文字が収まるサイズに微調整 */
+.tick-flip {
+  font-weight: 900;
+  color: #fff;
+  border-radius: 0.12em;
+  line-height: 1.80;
+  width: 1.35em !important;    /* 1.2から1.35へ。これで「はみ出し」を解消 */
+  margin: 0 !important;
+}
+
+/* 3. 文字がパネルを突き破らないよう倍率を調整 */
+.tick-flip-panel-text > span {
+  /* scaleXを1.0（等倍）に戻すか、ごくわずかに抑える */
+  transform: scaleY(1.15) scaleX(1.0) !important; 
+  transform-origin: center bottom;
+  display: inline-block;
+}
+
+/* 4. コロンの隙間もバランス調整 */
 .tick-text-inline {
   opacity: 0.8;
-  margin: 0 -0.05em;
+  margin: 0 -0.1em !important;
   align-self: center;
 }
 
@@ -173,9 +173,7 @@ html, body {
   color: #fff;
 }
 
-
-
-/* 時計縦方向調整 */
+/* --- 以下、位置調整などは変更なし --- */
 .clock-container {
   margin-top: 40px;
   display: flex;
@@ -295,6 +293,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
