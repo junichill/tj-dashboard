@@ -135,7 +135,7 @@ html, body {
 
 /* 1. 器の幅を少し広げて、はみ出しを防ぐ */
 .tick-char {
-  width: 1.15em !important;    /* 0.95から少し拡大 */
+  width: 1.25em !important;    /* 0.95から少し拡大 */
   margin: 0 -0.05em !important; /* 重なりを微調整 */
 }
 
@@ -293,6 +293,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
