@@ -183,7 +183,7 @@ html, body {
 }
 
 .clock-container {
-  margin-top: 40px;
+  margin-top: 20px;
   display: flex;
   justify-content: center;
 }
@@ -290,4 +290,5 @@ html, body {
   line-height: 1.5;
   opacity: 0.9;
 }
+
 
