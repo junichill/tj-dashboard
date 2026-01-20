@@ -169,7 +169,7 @@ html, body {
   margin-top: 10px;
   display: flex;
   justify-content: center;
-  flex: 1 1 auto;
+  flex: 0;
 }
 
 .clock-scale {
@@ -284,6 +284,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
