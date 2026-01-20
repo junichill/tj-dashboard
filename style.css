@@ -102,23 +102,22 @@ html, body {
 .weather-rainy { color: #1e88e5; }
 .weather-snowy { color: #81d4fa; }
 
+/* 日付の配置を「秒」の真上＆「分」の上端に固定 */
 #date {
+    position: absolute;
+    /* 秒の左端と揃える場合は left: 0、右端と揃える場合は right: 0 */
+    /* 分の1桁目（一番右のパネル）の上端に合わせるため、bottomではなくtopで調整 */
+    top: 0; 
+    left: 0;
+    
+    text-align: left;
     font-family: 'Roboto', sans-serif;
-    font-weight: 300;         /* 細めのウェイトでモダンに */
-    font-size: 1.1rem;        /* ほどよいサイズ */
-    color: #ffffff;
-    letter-spacing: 0.08em;   /* 文字間隔を広げて「ゆとり」を出す */
-    text-transform: uppercase; /* すべて大文字にするとさらにスタイリッシュ */
-    white-space: nowrap;
-    opacity: 0.9;             /* わずかに透過させて背景に馴染ませる */
-}
-
-/* 和暦（R8）の部分だけスタイルを変える */
-.era-label {
-    font-size: 0.85em;        /* 少し小さく */
-    color: #aaaaaa;           /* 少しグレーにしてコントラストをつける */
-    margin-left: 4px;
-    font-weight: 400;         /* 視認性のために少しだけ太く */
+    font-weight: 700;
+    font-size: 20px; 
+    line-height: 1.1;
+    color: white;
+    /* 秒表示との重なりを防ぐためのマージン */
+    margin-bottom: 10px; 
 }
 
 /* =========================
@@ -285,13 +284,3 @@ html, body {
   line-height: 1.5;
   opacity: 0.9;
 }
-
-
-
-
-
-
-
-
-
-
