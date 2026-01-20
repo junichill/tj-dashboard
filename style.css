@@ -102,13 +102,20 @@ html, body {
 .weather-rainy { color: #1e88e5; }
 .weather-snowy { color: #81d4fa; }
 
+/* 日付のスタイルを上書き */
 #date {
-  text-align: right;
-  font-family: 'Kosugi Maru', sans-serif;
-  font-weight: 700;
-  font-size: 20px;
-  min-width: 120px;
-  align-self: flex-end;
+    position: absolute;
+    /* 秒（#seconds-static）の位置に合わせて調整 */
+    bottom: 5.5em; /* 秒表示より少し上に配置 */
+    right: 50px;   /* パネルの右端からの距離 */
+    
+    text-align: right;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    font-size: 22px; /* 少し大きめに調整 */
+    line-height: 1.2;
+    color: white;
+    min-width: 200px;
 }
 
 /* =========================
@@ -173,10 +180,13 @@ html, body {
   justify-content: center;
 }
 
+/* 時計と日付をセットにする親要素の調整（もしまだなら） */
 .clock-scale {
-  display: flex;
-  align-items: flex-end;
+    position: relative; /* 日付を絶対配置するための基準 */
+    display: flex;
+    align-items: flex-end;
 }
+
 
 #seconds-static {
   font-size: 3.2em;
@@ -270,6 +280,7 @@ html, body {
   line-height: 1.5;
   opacity: 0.9;
 }
+
 
 
 
