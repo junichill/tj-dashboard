@@ -132,7 +132,7 @@ html, body {
 }
 
 .tick-char {
-  width: 2.0em;
+  width: 1.10em;
 }
 
 .tick-flip, .tick-text-inline {
@@ -284,6 +284,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
