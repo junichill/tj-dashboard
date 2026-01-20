@@ -131,10 +131,9 @@ html, body {
   font-feature-settings: "tnum";
 }
 
-/* 1. ここが重要：数字1文字ずつの器を狭くし、左右をマイナスで詰める */
 .tick-char {
-  width: 1.2em !important;    /* 2.5emから大幅縮小 */
-  margin: 0 -0.15em !important; /* マイナス値で隣の数字に近づける */
+  width: 2.0em;
+  width: 1.10em;
 }
 
 .tick-flip, .tick-text-inline {
@@ -146,14 +145,12 @@ html, body {
   color: #fff;
   border-radius: 0.12em;
   line-height: 1.80;
-  width: 1.3em !important;      /* パネル自体も少しスリムに */
-  margin: 0 !important;         /* 余計な余白をカット */
+  width: 1.5em !important;
 }
 
-/* 「：」の左右もさらに詰めたい場合はここを調整 */
 .tick-text-inline {
   opacity: 0.8;
-  margin: 0 -0.2em !important;  /* 隙間をさらにマイナスで詰める */
+  margin: 0 -0.05em;
   align-self: center;
 }
 
@@ -162,22 +159,15 @@ html, body {
   color: #fff;
 }
 
-/* 2. グループ（時・分）ごとの隙間を消す */
-.tick-group {
-  margin: 0 !important;
-  padding: 0 !important;
-  display: flex !important;    /* flexにして隙間を制御しやすくする */
-}
-
 .tick-flip-panel-text > span {
-  transform: scaleY(1.15) scaleX(0.9); /* 文字を少しスリムにするとパネルに収まりやすい */
+  transform: scaleY(1.15);
   transform-origin: center bottom;
   display: inline-block;
 }
 
 /* 時計縦方向調整 */
 .clock-container {
-  margin-top: 0px; /* 位置を上げたい場合はここを0やマイナスに */
+  margin-top: 40px;
   display: flex;
   justify-content: center;
   flex: 0;
@@ -295,13 +285,3 @@ html, body {
   z-index: 9999;
   background: #000;
 }
-
-
-
-
-
-
-
-
-
-
