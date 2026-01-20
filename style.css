@@ -260,19 +260,22 @@ html, body {
   overflow: hidden;
 }
 
+/* タイトルと日付の間の余白を最適化 */
 .news-pubdate {
   font-size: 16px;
   color: #ccc;
   text-align: right;
   line-height: 1.4;
-  margin-top: 0.8em;
+  margin-top: 1.2em;    /* タイトルとの距離を少し広げる */
   margin-bottom: 0.8em;
 }
 
+/* 説明文（概要）の調整 */
 .news-description {
   font-size: 24px;
-  margin-top: 5px;
-  line-height: 1.45;
+  margin-top: 10px;
+  line-height: 1.5;     /* 説明文も少し行間を広げて読みやすく */
+  opacity: 0.9;
 }
 
 .news-refresh {
@@ -295,6 +298,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
