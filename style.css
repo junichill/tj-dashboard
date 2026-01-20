@@ -167,7 +167,7 @@ html, body {
 .tick-text-inline {
   opacity: 0.8;
   /* コロン周りの余白もカット */
-  margin: 0 -0.4em !important;
+  margin: 0 0em !important;
   align-self: center;
 }
 .tick-flip-panel {
@@ -295,4 +295,5 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
