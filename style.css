@@ -152,9 +152,14 @@ html, body {
   line-height: 1.80em !important;
 }
 
-.tick-flip-panel-text > span {
+/* 文字を縦に引き伸ばす */
+.tick.tick .tick-flip-panel-text > span {
+  /* scaleY を 2.2 や 2.5 など大きくすると、縦にだけ伸びます */
+  /* scaleX は 1.00em のパネル幅からはみ出さない程度（0.5〜0.6）に固定 */
+  transform: scaleY(2.2) scaleX(0.55) !important;
+  
   transform-origin: center center;
-  display: inline-block;
+  display: inline-block !important;
 }
 
 .tick-text-inline {
@@ -286,6 +291,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
