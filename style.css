@@ -121,7 +121,7 @@ html, body {
    Flip時計
 =========================== */
 .tick {
-  font-size: 4.2rem;
+  font-size: 3.8rem;
   white-space: nowrap;
 }
 
@@ -284,3 +284,4 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
