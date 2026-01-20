@@ -30,46 +30,80 @@ html, body {
 }
 
 /* ===========================
-   左パネル（時計・日付・天気）
+   左パネル（時計・天気・日付）
 =========================== */
 #left-panel {
   flex: 55%;
-  min-width: 0;
   display: flex;
   flex-direction: column;
+  justify-content: space-between; /* 上: 時計, 下: 天気+日付 */
   padding: 40px 40px 30px 50px;
   box-sizing: border-box;
 }
 
-/* ===========================
-   左パネル（天気・日付）
-=========================== */
+/* ---------- 時計 ---------- */
+#clock-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 220px;       /* 高さ固定で安定 */
+  margin-top: 20px;    /* 上余白 */
+}
+
+.clock-scale {
+  display: inline-flex;
+  align-items: flex-end;
+  transform: scaleY(1);
+  transform-origin: bottom center;
+}
+
+.tick-flip-panel {
+  background-color: #3c3e3c;
+  color: #fff;
+  border-radius: 0.12em;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+}
+
+.tick-flip-panel-text > span {
+  transform: scaleY(1.15);
+  transform-origin: center bottom;
+  display: inline-block;
+}
+
+/* 秒表示 */
+#seconds-static {
+  font-size: 3.2em;
+  font-weight: 700;
+  color: white;
+  opacity: 0.8;
+  margin-left: 6px;
+  line-height: 1;
+  transform: scaleY(0.8);
+  transform-origin: bottom;
+}
+
+/* ---------- 下部（天気 + 日付） ---------- */
 .left-bottom {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between; /* 左に天気、右に日付を配置 */
+  justify-content: space-between; /* 左: 天気, 右: 日付 */
   align-items: flex-end;
-  gap: 24px;
-  margin-top: auto;
-  width: 100%;
-  padding: 0;
-  box-sizing: border-box;
+  margin-top: 20px;
+  gap: 20px;
 }
 
 #weather {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  min-width: 260px;
+  gap: 8px;
+  min-width: 240px;
 }
 
 .weather-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  width: 100%;
+  gap: 8px;
   min-height: 60px;
-  overflow: visible; /* アイコンが切れないように */
+  overflow: visible;
 }
 
 .weather-label {
@@ -79,21 +113,20 @@ html, body {
 }
 
 .weather-text {
-  flex: 1 1 auto;       /* 残り幅を取る */
-  min-width: 0;         /* flex-shrink を効かせる */
+  flex: 1 1 auto;
+  min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .weather-icon {
-  flex: 0 0 60px;       /* 幅固定 */
-  min-width: 60px;
+  flex: 0 0 60px;
   width: 60px;
   height: 60px;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
 }
 
 .weather-icon svg {
@@ -113,85 +146,12 @@ html, body {
   font-weight: 700;
   font-size: 20px;
   min-width: 120px;
-  /* 追加 */
-  align-self: flex-end;  /* 下寄せ固定 */
-}
-
-/* =========================
-   Flip時計
-=========================== */
-.tick {
-  font-size: 4.2rem;
-  white-space: nowrap;
-}
-
-.tick, .tick * {
-  font-family: 'Noto Sans JP', sans-serif;
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
-}
-
-.tick-char {
-  width: 2.5em;
-}
-
-.tick-flip, .tick-text-inline {
-  font-size: 2.8em;
-}
-
-.tick-flip {
-  font-weight: 700;
-  color: #fff;
-  border-radius: 0.12em;
-  line-height: 1.80;
-  width: 1.8em !important;
-}
-
-.tick-text-inline {
-  opacity: 0.8;
-  margin: 0 -0.05em;
-  align-self: center;
-}
-
-.tick-flip-panel {
-  background-color: #3c3e3c;
-  color: #fff;
-}
-
-.tick-flip-panel-text > span {
-  transform: scaleY(1.15);
-  transform-origin: center bottom;
-  display: inline-block;
-}
-
-/* 時計縦方向調整 */
-.clock-container {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-  flex: 1 1 auto;
-}
-
-.clock-scale {
-  display: flex;
-  align-items: flex-end;
-  transform: scaleY(1.00);
-  transform-origin: bottom left;
-}
-
-#seconds-static {
-  font-size: 3.2em;
-  font-weight: 700;
-  color: white;
-  opacity: 0.8;
-  margin-left: 6px;
-  line-height: 1;
-  transform: scaleY(0.8);
-  transform-origin: bottom;
+  align-self: flex-end;
+  opacity: 0.9;
 }
 
 /* ===========================
-   右パネル（ニュース）
+   右パネル（ニュースカード）
 =========================== */
 #right-panel {
   flex: 45%;
@@ -206,12 +166,13 @@ html, body {
 #news-card {
   width: min(80%, 900px);
   height: min(63%, 600px);
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.7);
   border-radius: 15px;
   position: relative;
   overflow: hidden;
   padding: 20px;
   box-sizing: border-box;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
 }
 
 .news-item {
@@ -247,6 +208,7 @@ html, body {
   color: white;
   text-decoration: none;
   line-height: 1.25;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
 }
 
 .news-pubdate {
