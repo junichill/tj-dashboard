@@ -102,20 +102,22 @@ html, body {
 .weather-rainy { color: #1e88e5; }
 .weather-snowy { color: #81d4fa; }
 
-/* 日付のスタイルを上書き */
+/* 日付の配置を「秒」の真上＆「分」の上端に固定 */
 #date {
     position: absolute;
-    /* 秒（#seconds-static）の位置に合わせて調整 */
-    bottom: 5.5em; /* 秒表示より少し上に配置 */
-    right: 50px;   /* パネルの右端からの距離 */
+    /* 秒の左端と揃える場合は left: 0、右端と揃える場合は right: 0 */
+    /* 分の1桁目（一番右のパネル）の上端に合わせるため、bottomではなくtopで調整 */
+    top: 0; 
+    right: 0;
     
     text-align: right;
     font-family: 'Roboto', sans-serif;
     font-weight: 700;
-    font-size: 22px; /* 少し大きめに調整 */
-    line-height: 1.2;
+    font-size: 20px; 
+    line-height: 1.1;
     color: white;
-    min-width: 200px;
+    /* 秒表示との重なりを防ぐためのマージン */
+    margin-bottom: 10px; 
 }
 
 /* =========================
@@ -180,11 +182,13 @@ html, body {
   justify-content: center;
 }
 
-/* 時計と日付をセットにする親要素の調整（もしまだなら） */
+/* 親要素である .clock-scale の中で日付を浮かせる */
 .clock-scale {
-    position: relative; /* 日付を絶対配置するための基準 */
+    position: relative; 
     display: flex;
     align-items: flex-end;
+    /* 日付が表示されるスペースを確保 */
+    padding-top: 3.5rem; 
 }
 
 
@@ -280,6 +284,7 @@ html, body {
   line-height: 1.5;
   opacity: 0.9;
 }
+
 
 
 
