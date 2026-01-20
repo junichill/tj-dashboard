@@ -138,8 +138,8 @@ html, body {
 
 /* --- 自然な形を維持しつつスリム化 --- */
 .tick-char {
-  width: 0.1em !important;      /* 数値維持 */
-  margin: 0 -0.4em !important;  /* 数値維持 */
+  /* width: 0.1em !important;      数値維持 */
+  margin: 0 -0.9em !important;  /* 数値維持 */
   display: inline-flex !important;
   justify-content: center !important;
 }
@@ -285,6 +285,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
