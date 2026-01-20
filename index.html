@@ -3,16 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Digital Dashboard</title>
 
-  <!-- Flip Clock -->
   <link rel="stylesheet" href="flip.min.css">
-
-  <!-- Main Style -->
   <link rel="stylesheet" href="style.css">
-
-  <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=M+PLUS+Rounded+1c:wght@900&family=Roboto:wght@900&display=swap" rel="stylesheet">
 </head>
 
@@ -20,74 +14,49 @@
 
 <div id="container">
 
-  <!-- =========================
-       左パネル：時計・日付・天気
-       ========================= -->
   <div id="left-panel">
 
-  <!-- Flip Clock -->
-  <div class="clock-container">
-   <div class="clock-scale">
-    <!-- パタパタ（時・分） -->
-    <div class="tick" data-did-init="handleTickInit">
-      <div data-layout="horizontal">
-        <span data-key="hours" data-transform="pad(00)" data-view="flip"></span>
-        <span data-view="text" data-key="sep" class="tick-text-inline">:</span>
-        <span data-key="minutes" data-transform="pad(00)" data-view="flip"></span>
+    <div class="clock-container">
+      <div class="clock-scale">
+        <div class="tick" data-did-init="handleTickInit">
+          <span data-view="flip" data-key="hours1" class="tick-flip"></span>
+          <span data-view="flip" data-key="hours2" class="tick-flip"></span>
+          
+          <span class="tick-text-inline">:</span>
+          
+          <span data-view="flip" data-key="minutes1" class="tick-flip"></span>
+          <span data-view="flip" data-key="minutes2" class="tick-flip"></span>
+        </div>
+        <span id="seconds-static">00</span>
       </div>
     </div>
 
-    <!-- 秒（Tickの外） -->
-    <span id="seconds-static">00</span>
-
-  </div>
-</div>
-
-    <!-- Bottom: Weather & Date -->
-<div class="left-bottom">
-
-  <!-- Weather -->
-  <div id="weather">
-
-    <div class="weather-row today">
-      <div class="weather-label">今日</div>
-      <div id="weather-icon-today" class="weather-icon"></div>
-      <div class="weather-text" id="weather-temp-today"></div>
-    </div>
-
-    <div class="weather-row tomorrow">
-      <div class="weather-label">明日</div>
-      <div id="weather-icon-tomorrow" class="weather-icon"></div>
-      <div class="weather-text" id="weather-temp-tomorrow"></div>
+    <div class="left-bottom">
+      <div id="weather">
+        <div class="weather-row today">
+          <div class="weather-label">今日</div>
+          <div id="weather-icon-today" class="weather-icon"></div>
+          <div class="weather-text" id="weather-temp-today"></div>
+        </div>
+        <div class="weather-row tomorrow">
+          <div class="weather-label">明日</div>
+          <div id="weather-icon-tomorrow" class="weather-icon"></div>
+          <div class="weather-text" id="weather-temp-tomorrow"></div>
+        </div>
+      </div>
+      <div id="date"></div>
     </div>
 
   </div>
 
-  <!-- Date -->
-  <div id="date"></div>
-
-</div>
-
-  </div>
-
-  <!-- =========================
-       右パネル：ニュース
-       ========================= -->
   <div id="right-panel">
     <div id="news-card"></div>
   </div>
 
 </div>
 
-<!-- Scripts -->
 <script src="flip.min.js"></script>
 <script src="script.js"></script>
 
 </body>
 </html>
-
-
-
-
-
-
