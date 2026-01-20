@@ -143,7 +143,7 @@ html, body {
 
 .tick-char {
   /* 1. 器の幅を狭くして、隣のパネルを無理やり引き寄せる */
-  width: 1.2em !important;     
+  width: 1.0em !important;     
   margin: 0 -0.4em !important; /* マイナス値を大きくしてパネル同士を重ねる */
 }
 
@@ -292,6 +292,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
