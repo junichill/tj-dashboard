@@ -71,29 +71,20 @@ html, body {
 }
 
 .weather-icon {
-  width: 48px;  /* 44pxから少し拡大 */
-  height: 48px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px; /* ここで物理的な隙間を作る */
-  box-sizing: border-box;
-  overflow: visible !important;
+  overflow: visible !important; /* 線のハミ出しを許容 */
 }
 
-/* style.css の該当箇所を書き換え */
 .weather-icon svg {
-  /* 90%ではなく、もっと余裕を持って 80% に */
-  width: 80% !important;
-  height: 80% !important;
-  /* はみ出しを許容するお守り */
-  overflow: visible !important; 
-  /* 線の端が切れないようにする */
+  width: 90%;
+  height: 90%;
+  stroke-width: 4;
   stroke-linecap: round;
   stroke-linejoin: round;
-  /* 中心を基準に少し小さくして、枠との距離を作る */
-  transform: scale(0.9);
-  transform-origin: center;
 }
 
 /* 天気別カラー */
@@ -270,5 +261,3 @@ html, body {
   line-height: 1.5;
   opacity: 0.9;
 }
-
-
