@@ -59,8 +59,15 @@ html, body {
 #weather {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  min-width: 260px;
+  gap: 5px;
+  min-width: 300px; /* 横幅に合わせて調整 */
+}
+
+/* アイコンが小さくなっても線が細くならないように調整 */
+.weather-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke-width: 5; /* 少し太めにすると視認性が上がります */
 }
 
 .weather-row {
@@ -94,12 +101,6 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.weather-icon svg {
-  width: 100%;
-  height: 100%;
-  position: static;
 }
 
 .weather-sunny { color: #e53935; }
@@ -307,6 +308,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
