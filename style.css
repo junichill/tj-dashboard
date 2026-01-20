@@ -147,28 +147,26 @@ html, body {
   margin: 0 -0.4em !important; /* マイナス値を大きくしてパネル同士を重ねる */
 }
 
+/* パネルを独立させた際の間隔を調整 */
 .tick-flip {
-  font-weight: 900;
-  color: #fff;
-  border-radius: 0.12em;
-  line-height: 1.80;
-  /* 2. パネル幅は文字が「潰れない・はみ出さない」安全な広さを維持 */
-  width: 1.75em !important;    
-  margin: 0 !important;
+    display: inline-block !important;
+    vertical-align: bottom;
+    width: 1.35em !important; /* Clockhub風のスリム幅 */
+    margin: 0 0.05em !important; /* パネル同士のわずかな隙間 */
 }
 
+/* 文字の縦長スリム加工（再設定） */
 .tick-flip-panel-text > span {
-  /* 3. scaleXを1.0(等倍)に戻して「潰れ」を解消！ */
-  transform: scaleY(1.50) scaleX(0.10) !important; 
-  transform-origin: center bottom;
-  display: inline-block;
+    transform: scaleY(1.45) scaleX(0.75) !important;
+    transform-origin: center center;
 }
 
+/* コロンの幅を狭くして数字に寄せる */
 .tick-text-inline {
-  opacity: 0.8;
-  /* コロン周りの余白もカット */
-  margin: 0 0em !important;
-  align-self: center;
+    display: inline-block !important;
+    width: 0.4em !important;
+    text-align: center;
+    margin: 0 0.1em !important;
 }
 .tick-flip-panel {
   background-color: #3c3e3c;
@@ -295,6 +293,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
