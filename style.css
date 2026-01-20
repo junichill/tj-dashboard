@@ -219,11 +219,25 @@ html, body {
 .news-item {
   position: absolute;
   inset: 20px;
+  
+  /* 透明度を0にし、少しだけ下に配置しておく */
   opacity: 0;
-  transition: opacity 1.5s ease;
+  transform: translateY(10px); 
+  
+  /* 2秒かけて変化。イージング（cubic-bezier）で高級感を演出 */
+  transition: opacity 2.0s cubic-bezier(0.22, 1, 0.36, 1), 
+              transform 2.0s cubic-bezier(0.22, 1, 0.36, 1);
+  
   padding-top: 46px;
   box-sizing: border-box;
   pointer-events: none;
+}
+
+.news-item.show {
+  /* 表示時は透明度1、元の位置に戻る */
+  opacity: 1;
+  transform: translateY(0); 
+  pointer-events: auto;
 }
 
 .news-mark {
@@ -236,11 +250,6 @@ html, body {
   border-radius: 2px;
   margin-bottom: 6px;
   width: fit-content;
-}
-
-.news-item.show {
-  opacity: 1;
-  pointer-events: auto;
 }
 
 .news-title {
@@ -298,6 +307,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
