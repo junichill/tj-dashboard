@@ -156,7 +156,7 @@ html, body {
 /* 3. 文字がパネルを突き破らないよう倍率を調整 */
 .tick-flip-panel-text > span {
   /* scaleXを1.0（等倍）に戻すか、ごくわずかに抑える */
-  transform: scaleY(1.15) scaleX(1.0) !important; 
+  transform: scaleY(1.15) scaleX(0.5) !important; 
   transform-origin: center bottom;
   display: inline-block;
 }
@@ -293,6 +293,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
