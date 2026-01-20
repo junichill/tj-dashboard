@@ -73,12 +73,19 @@ rainy: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width=
     /* 傘の持ち手（J字型） */
     <path d="M32 36v12c0 4-3 7-7 7s-7-3-7-7" />
   </svg>`,
-snowy: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round">
-    <path d="M20 36c-5 0-8-4-8-8a10 10 0 0 1 20-2 12 12 0 0 1 22 10"/>
-    <circle cx="24" cy="50" r="1" fill="currentColor"/>
-    <circle cx="34" cy="56" r="1" fill="currentColor"/>
-    <circle cx="44" cy="50" r="1" fill="currentColor"/>
-  </svg>`
+// WEATHER_ICONS の snowy 部分を差し替え
+snowy: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    /* 体（下の大きな丸） */
+    <circle cx="32" cy="46" r="14" />
+    /* 頭（上の小さな丸） */
+    <circle cx="32" cy="22" r="10" />
+    /* 目 */
+    <circle cx="28" cy="20" r="0.5" fill="currentColor" stroke="none" />
+    <circle cx="36" cy="20" r="0.5" fill="currentColor" stroke="none" />
+    /* 手（枝） */
+    <line x1="20" y1="40" x2="12" y2="32" />
+    <line x1="44" y1="40" x2="52" y2="32" />
+  </svg>`,
 };
 
 function getWeatherType(id) {
