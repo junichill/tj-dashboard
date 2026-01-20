@@ -85,6 +85,9 @@ function getWeatherType(id) {
   return 'sunny';
 }
 
+// =========================
+// WEATHER (3時間ごとの予報)
+// =========================
 async function fetchWeather() {
   try {
     const r = await fetch(
@@ -92,24 +95,33 @@ async function fetchWeather() {
     );
     const d = await r.json();
 
-    const today = d.list[0];
-    const tomorrow = d.list.find(v => v.dt > today.dt + 86400);
+    const container = document.getElementById('forecast-container');
+    container.innerHTML = ''; // 一旦クリア
 
-    renderWeather(today, document.getElementById('weather-icon-today'), document.getElementById('weather-temp-today'));
-    if (tomorrow) {
-      renderWeather(tomorrow, document.getElementById('weather-icon-tomorrow'), document.getElementById('weather-temp-tomorrow'));
-    }
+    // 直近の4つ（12時間分）を取得して表示
+    const forecastList = d.list.slice(0, 4);
+
+    forecastList.forEach(item => {
+      const date = new Date(item.dt * 1000);
+      const hour = date.getHours().toString().padStart(2, '0') + ":00";
+      const temp = Math.round(item.main.temp);
+      const type = getWeatherType(item.weather[0].id);
+
+      const forecastHtml = `
+        <div class="forecast-item" style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+          <div style="font-size: 14px; opacity: 0.8;">${hour}</div>
+          <div class="weather-icon weather-${type}" style="width: 40px; height: 40px;">
+            ${WEATHER_ICONS[type]}
+          </div>
+          <div style="font-size: 18px; font-weight: 700;">${temp}℃</div>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', forecastHtml);
+    });
 
   } catch (err) {
     console.error('天気情報取得失敗', err);
   }
-}
-
-function renderWeather(data, iconEl, textEl) {
-  const type = getWeatherType(data.weather[0].id);
-  iconEl.className = `weather-icon weather-${type}`;
-  iconEl.innerHTML = WEATHER_ICONS[type];
-  textEl.textContent = `${data.main.temp.toFixed(1)}℃`;
 }
 
 fetchWeather();
