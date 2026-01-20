@@ -157,24 +157,11 @@ html, body {
   margin: 0 !important;
 }
 
-tick-flip-panel-text {
-  left: 0 !important;
-  width: 100% !important;
-  display: flex !important;
-  justify-content: center !important; /* 横方向の自動中央揃え */
-  align-items: center !important;     /* 縦方向の自動中央揃え */
-}
-
 .tick-flip-panel-text > span {
-  /* 潰れない程度の倍率に固定 */
-  transform: scaleY(1.15) scaleX(0.9) !important; 
+  /* 3. scaleXを1.0(等倍)に戻して「潰れ」を解消！ */
+  transform: scaleY(1.50) scaleX(0.10) !important; 
   transform-origin: center bottom;
-  
-  /* 固有の余白をリセットしてFlexboxに従わせる */
-  display: inline-block !important;
-  margin: 0 !important; 
-  padding: 0 !important;
-  text-align: center !important;
+  display: inline-block;
 }
 
 .tick-text-inline {
@@ -308,4 +295,9 @@ tick-flip-panel-text {
   z-index: 9999;
   background: #000;
 }
+
+
+
+
+
 
