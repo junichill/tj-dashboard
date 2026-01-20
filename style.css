@@ -135,22 +135,22 @@ html, body {
 
 /* 1. 器の幅を少し広げて、はみ出しを防ぐ */
 .tick-char {
-  width: 1.25em !important;    /* 0.95から少し拡大 */
-  margin: 0 -0.05em !important; /* 重なりを微調整 */
+  width: 1.5em !important;     /* 1.25から変更。数字同士の「中心距離」が決まります */
+  margin: 0 -0.4em !important;  /* マイナス値を大きくして、左右のパネルを引き寄せます */
 }
 
 .tick-flip, .tick-text-inline {
   font-size: 2.8em;
 }
 
-/* 2. パネルの幅を文字が収まるサイズに微調整 */
+/* 2. パネル自体の設定 */
 .tick-flip {
   font-weight: 900;
   color: #fff;
   border-radius: 0.12em;
   line-height: 1.80;
-  width: 2.20em !important;    /* 1.2から1.35へ。これで「はみ出し」を解消 */
-  margin: 0 !important;
+  width: 2.20em !important;    /* はみ出さないサイズを維持 */
+  margin: 0 !important;        /* ここは0で固定 */
 }
 
 /* 3. 文字がパネルを突き破らないよう倍率を調整 */
@@ -164,7 +164,7 @@ html, body {
 /* 4. コロンの隙間もバランス調整 */
 .tick-text-inline {
   opacity: 0.8;
-  margin: 0 -0.1em !important;
+  margin: 0 0.1em !important;
   align-self: center;
 }
 
@@ -293,6 +293,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
