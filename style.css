@@ -71,12 +71,14 @@ html, body {
 }
 
 .weather-icon {
-  width: 44px;
-  height: 44px;
+  width: 48px;  /* 44pxから少し拡大 */
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: visible !important; /* 線のハミ出しを許容 */
+  padding: 4px; /* ここで物理的な隙間を作る */
+  box-sizing: border-box;
+  overflow: visible !important;
 }
 
 /* style.css の該当箇所を書き換え */
@@ -268,4 +270,5 @@ html, body {
   line-height: 1.5;
   opacity: 0.9;
 }
+
 
