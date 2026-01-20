@@ -108,7 +108,7 @@ html, body {
     /* 秒の左端と揃える場合は left: 0、右端と揃える場合は right: 0 */
     /* 分の1桁目（一番右のパネル）の上端に合わせるため、bottomではなくtopで調整 */
     top: 0; 
-    right: 0;
+    left: 0;
     
     text-align: left;
     font-family: 'Roboto', sans-serif;
@@ -284,6 +284,7 @@ html, body {
   line-height: 1.5;
   opacity: 0.9;
 }
+
 
 
 
