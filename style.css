@@ -164,7 +164,6 @@ html, body {
 /* コロンの幅を狭くして数字に寄せる */
 .tick-text-inline {
     display: inline-block !important;
-    width: 0.4em !important;
     text-align: center;
     margin: 0 0em !important;
 }
@@ -293,6 +292,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
