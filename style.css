@@ -118,23 +118,72 @@ html, body {
 }
 
 /* =========================
-   Flip時計
+   Flip時計 - 構造整理 & スリム化
 =========================== */
-.tick {
-  font-size: 3.8rem;
-  white-space: nowrap;
+
+/* 1. 数字1文字を包む器の設定（独立パネル化したのでシンプルに） */
+.tick-char {
+  display: inline-flex !important;
+  justify-content: center !important;
+  width: 1.1em !important;      /* 隣のパネルとの距離を決めるメインの幅 */
+  margin: 0 !important;         /* 独立パネルでは大きなマイナスは不要 */
 }
 
-.tick, .tick * {
-  /* フォントを太く設定 */
-  font-family: 'Roboto', 'M PLUS Rounded 1c', sans-serif;
+/* 2. パネル自体の設定 */
+.tick-flip {
+  display: inline-block !important;
+  vertical-align: bottom;
+  /* 0.1emは狭すぎるため、スリムに見える限界値の 1.25em 前後を推奨 */
+  width: 1.25em !important;    
+  margin: 0 !important;
+  border-radius: 0.12em;
+}
+
+/* 3. パネル内の文字（スリム加工） */
+.tick-flip-panel-text > span {
+  /* 縦長・横圧縮の比率を維持 */
+  transform: scaleY(1.75) scaleX(0.55) !important;
+  transform-origin: center center;
+  display: inline-block;
+}
+
+/* 4. パネルの色と質感 */
+.tick-flip-panel {
+  background-color: #3c3e3c;
+  color: #fff;
+}
+
+/* 5. コロン（:）の調整 */
+.tick-text-inline {
+  display: inline-block !important;
+  width: 0.4em !important;      /* コロンの占有幅 */
+  text-align: center;
+  margin: 0 -0.05em !important; /* 左右の数字に寄せる */
+}
+
+/* =========================
+   配置・レイアウト（重複整理）
+=========================== */
+.clock-container {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.clock-scale {
+  display: flex;
+  align-items: flex-end;
+}
+
+#seconds-static {
+  font-size: 3.2em;
   font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
-}
-
-.tick-flip, .tick-text-inline {
-  font-size: 2.8em;
+  color: white;
+  opacity: 0.8;
+  margin-left: 6px;
+  line-height: 1;
+  transform: scaleY(0.8);
+  transform-origin: bottom;
 }
 
 /* ===========================
@@ -231,99 +280,3 @@ html, body {
   z-index: 9999;
   background: #000;
 }
-
-/* ===========================
-   右パネル（ニュース）
-=========================== */
-#right-panel {
-  flex: 45%;
-  min-width: 0;
-  background: url('news-bg.png') center / cover no-repeat;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: "BIZ UDPGothic", "Hiragino Sans", sans-serif;
-}
-
-#news-card {
-  width: min(80%, 900px);
-  height: min(63%, 600px);
-  background: rgba(0,0,0,0.6);
-  border-radius: 15px;
-  position: relative;
-  overflow: hidden;
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-.news-item {
-  position: absolute;
-  inset: 20px;
-  opacity: 0;
-  transition: opacity 1.5s ease;
-  padding-top: 46px;
-  box-sizing: border-box;
-  pointer-events: none;
-}
-
-.news-mark {
-  display: block;
-  background-color: red;
-  color: white;
-  font-weight: bold;
-  font-size: 14px;
-  padding: 2px 6px;
-  border-radius: 2px;
-  margin-bottom: 6px;
-  width: fit-content;
-}
-
-.news-item.show {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.news-title {
-  font-size: 48px;
-  font-weight: inherit;
-  color: white;
-  text-decoration: none;
-  line-height: 1.25;
-}
-
-.news-pubdate {
-  font-size: 16px;
-  color: #ccc;
-  text-align: right;
-  line-height: 1.4;
-  margin-top: 0.8em;
-  margin-bottom: 0.8em;
-}
-
-.news-description {
-  font-size: 24px;
-  margin-top: 5px;
-  line-height: 1.45;
-}
-
-.news-refresh {
-  animation: refreshFlash 0.6s;
-}
-
-@keyframes refreshFlash {
-  0% { opacity: 0.6; }
-  100% { opacity: 1; }
-}
-
-.news-item.important .news-title {
-  color: white;
-  font-weight: inherit;
-}
-
-.news-fullscreen {
-  position: fixed !important;
-  inset: 0;
-  z-index: 9999;
-  background: #000;
-}
-
