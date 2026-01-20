@@ -152,7 +152,7 @@ html, body {
 }
 
 .tick-flip-panel-text > span {
-  transform: scaleY(1.75) scaleX(0.55) !important; /* 数値維持 */
+  transform: scaleY(2.25) scaleX(0.50) !important; /* 数値維持 */
   transform-origin: center center;
   display: inline-block;
 }
@@ -285,4 +285,5 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
