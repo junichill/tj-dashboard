@@ -2,24 +2,29 @@
 // Tick CLOCK
 // =========================
 function handleTickInit(tick) {
-  const secondsEl = document.getElementById('seconds-static'); // 秒表示用
+  const secondsEl = document.getElementById('seconds-static');
 
   Tick.helper.interval(() => {
-    const d = Tick.helper.date();
+    const d = new Date(); // 標準のDateオブジェクトを使用
+    
+    // 時・分をそれぞれ2桁の文字列にする（例: 9時5分 -> "09", "05"）
+    const h = d.getHours().toString().padStart(2, '0');
+    const m = d.getMinutes().toString().padStart(2, '0');
+    const s = d.getSeconds().toString().padStart(2, '0');
 
-    // Flip表示には秒を含めない
+    // HTMLの data-key="hours1" などに対応させて値をセット
     tick.value = {
-      sep: ':',
-      hours: d.getHours(),
-      minutes: d.getMinutes(),
-      seconds: 0   // 秒はFlip表示しない
+      hours1: h[0],   // 時の10の位
+      hours2: h[1],   // 時の1の位
+      minutes1: m[0], // 分の10の位
+      minutes2: m[1]  // 分の1の位
     };
 
     // 静的テキストで秒を更新
     if (secondsEl) {
-      secondsEl.textContent = d.getSeconds().toString().padStart(2, '0');
+      secondsEl.textContent = s;
     }
-  });
+  }, 1000);
 }
 
 
