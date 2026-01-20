@@ -147,7 +147,7 @@ html, body {
 .tick-flip {
   display: inline-block !important;
   vertical-align: bottom;
-  width: 0.1em !important;      /* 数値維持 */
+  width: 0.5em !important;      /* 数値維持 */
   margin: 0 !important;
 }
 
@@ -285,5 +285,6 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
