@@ -166,7 +166,7 @@ html, body {
 
 /* 時計縦方向調整 */
 .clock-container {
-  margin-top: 10px;
+  margin-top: 40px;
   display: flex;
   justify-content: center;
   flex: 0;
@@ -284,6 +284,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
