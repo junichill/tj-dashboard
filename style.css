@@ -65,9 +65,18 @@ html, body {
 
 #forecast-container {
   display: flex;
-  gap: 25px; 
-  margin-top: 10px;
-  padding-left: 15px; /* アイコンの左端が切れないよう余白を確保 */
+  gap: 25px;
+  margin-top: 15px;
+  padding-bottom: 10px;
+  /* 横に並びきらない場合はスクロールさせる */
+  overflow-x: auto; 
+  white-space: nowrap;
+  width: 100%;
+}
+
+/* スクロールバーを隠す（デザイン優先） */
+#forecast-container::-webkit-scrollbar {
+  display: none;
 }
 
 .weather-icon {
@@ -261,6 +270,7 @@ html, body {
   line-height: 1.5;
   opacity: 0.9;
 }
+
 
 
 
