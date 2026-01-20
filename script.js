@@ -46,8 +46,8 @@ function updateDate() {
 
     const dateEl = document.getElementById('date');
     if (dateEl) {
-        // 1行で表示：Tue, Jan 20, 2026(R8)
-        dateEl.textContent = `${dayName}, ${monthName} ${date}, ${year}(R${reiwa})`;
+        // 改行なしの1行。和暦部分にspanを挿入して個別に色を変えられるようにします
+        dateEl.innerHTML = `${dayName}, ${monthName} ${date}, ${year} <span class="era-label">(R${reiwa})</span>`;
     }
 }
 updateDate();
