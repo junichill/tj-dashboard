@@ -153,7 +153,7 @@ html, body {
   border-radius: 0.12em;
   line-height: 1.80;
   /* 2. パネル幅は文字が「潰れない・はみ出さない」安全な広さを維持 */
-  width: 1.90em !important;    
+  width: 1.70em !important;    
   margin: 0 !important;
 }
 
@@ -295,6 +295,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
