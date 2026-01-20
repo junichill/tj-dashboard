@@ -83,12 +83,11 @@ html, body {
   stroke-linejoin: round;
 }
 
-/* 予報アイテムの間隔を調整 */
 #forecast-container {
   display: flex;
-  gap: 25px; /* アイコン同士がぶつからないよう間隔を広げる */
+  gap: 25px; 
   margin-top: 10px;
-  padding-left: 5px; /* 左端のアイコンが壁にぶつからないよう少し余白 */
+  padding-left: 15px; /* 5pxから15pxに増量 */
 }
 
 .weather-row {
@@ -319,6 +318,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
