@@ -152,7 +152,7 @@ html, body {
     display: inline-block !important;
     vertical-align: bottom;
     width: 0.55em !important; /* Clockhub風のスリム幅 */
-    margin: 0 0.01em !important; /* パネル同士のわずかな隙間 */
+    margin: 0 0.00em !important; /* パネル同士のわずかな隙間 */
 }
 
 /* 文字の縦長スリム加工（再設定） */
@@ -292,6 +292,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
