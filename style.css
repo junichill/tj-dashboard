@@ -30,7 +30,7 @@ html, body {
 }
 
 /* ===========================
-   左パネル（時計・日付・天気）
+   左パネル（天気・日付・時計）
 =========================== */
 #left-panel {
   flex: 55%;
@@ -47,7 +47,7 @@ html, body {
 .left-bottom {
   display: flex;
   flex-direction: row;
-  justify-content: space-between; /* 左に天気、右に日付 */
+  justify-content: space-between; /* 左に天気、右に日付を配置 */
   align-items: flex-end;
   gap: 24px;
   margin-top: auto;
@@ -79,15 +79,15 @@ html, body {
 }
 
 .weather-text {
-  flex: 1 1 auto;
-  min-width: 0;
+  flex: 1 1 auto;       /* 残り幅を取る */
+  min-width: 0;         /* flex-shrink を効かせる */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .weather-icon {
-  flex: 0 0 60px;
+  flex: 0 0 60px;       /* 幅固定 */
   min-width: 60px;
   width: 60px;
   height: 60px;
@@ -158,24 +158,26 @@ html, body {
 }
 
 .tick-flip-panel-text > span {
-  transform: scaleY(1.05);  /* 数字を縦に少し伸ばす */
+  transform: scaleY(1.15);
   transform-origin: center bottom;
   display: inline-block;
 }
 
-/* 時計縦方向調整 */
+/* =========================
+   時計縦方向調整（完全固定版）
+=========================== */
 .clock-container {
-  margin-top: 10px;       /* 上スペース */
-  margin-bottom: 10px;    /* 下スペース */
+  margin-top: 40px;       /* 上余白調整 */
+  margin-bottom: 20px;    /* 下余白調整 */
   display: flex;
   justify-content: center;
-  flex: 0 0 auto;         /* 高さ固定 */
-  height: 180px;           /* 時計パネル縦幅 */
+  flex: 0 0 auto;         /* 高さを固定 */
+  height: 220px;          /* パタパタ時計全体の高さ */
 }
 
 .clock-scale {
   display: flex;
-  align-items: flex-end;   /* 数字を下寄せ */
+  align-items: flex-end;
   transform: scaleY(1.00);
   transform-origin: bottom left;
 }
@@ -187,9 +189,10 @@ html, body {
   opacity: 0.8;
   margin-left: 6px;
   line-height: 1;
-  transform: scaleY(0.9);  /* 微調整 */
+  transform: scaleY(0.8);
   transform-origin: bottom;
 }
+
 
 /* ===========================
    右パネル（ニュース）
@@ -285,3 +288,4 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
