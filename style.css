@@ -145,7 +145,7 @@ html, body {
   color: #fff;
   border-radius: 0.12em;
   line-height: 1.80;
-  width: 1.5em !important;
+  width: 1.8em !important;
 }
 
 .tick-text-inline {
@@ -285,3 +285,4 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
