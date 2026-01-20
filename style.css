@@ -149,7 +149,7 @@ html, body {
   color: #fff;
   border-radius: 0.12em;
   line-height: 1.80;
-  width: 1.55em !important;    /* 1.2から1.35へ。これで「はみ出し」を解消 */
+  width: 1.75em !important;    /* 1.2から1.35へ。これで「はみ出し」を解消 */
   margin: 0 !important;
 }
 
@@ -293,6 +293,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
