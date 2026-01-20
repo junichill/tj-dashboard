@@ -71,12 +71,12 @@ html, body {
 }
 
 .weather-icon {
-  width: 80px;
-  height: 80px;
-  display: flex;
+  width: 80px !important;  /* !important を追加 */
+  height: 80px !important; /* !important を追加 */
+  display: flex !important;
   align-items: center;
   justify-content: center;
-  overflow: visible !important; /* 線のハミ出しを許容 */
+  overflow: visible !important;
 }
 
 .weather-icon svg {
@@ -261,5 +261,6 @@ html, body {
   line-height: 1.5;
   opacity: 0.9;
 }
+
 
 
