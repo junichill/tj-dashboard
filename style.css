@@ -159,7 +159,7 @@ html, body {
 
 .tick-flip-panel-text > span {
   /* 3. scaleXを1.0(等倍)に戻して「潰れ」を解消！ */
-  transform: scaleY(1.15) scaleX(1.0) !important; 
+  transform: scaleY(1.50) scaleX(0.10) !important; 
   transform-origin: center bottom;
   display: inline-block;
 }
@@ -295,5 +295,6 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
