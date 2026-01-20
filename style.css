@@ -118,61 +118,73 @@ html, body {
 }
 
 /* =========================
-   Flip時計 - 構造整理 & スリム化
+   Flip時計
+=========================== */
+.tick {
+  font-size: 3.8rem;
+  white-space: nowrap;
+}
+
+.tick, .tick * {
+  /* フォントを太く設定 */
+  font-family: 'Roboto', 'M PLUS Rounded 1c', sans-serif;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.tick-flip, .tick-text-inline {
+  font-size: 2.8em;
+}
+
+/* =========================
+   Flip時計 - 自然な形を維持しつつスリム化
 =========================== */
 
-/* 1. 数字1文字を包む器の設定（独立パネル化したのでシンプルに） */
 .tick-char {
-  display: inline-flex !important;
-  justify-content: center !important;
-  width: 1.1em !important;      /* 隣のパネルとの距離を決めるメインの幅 */
-  margin: 0 !important;         /* 独立パネルでは大きなマイナスは不要 */
+  /* 1. 器の幅を狭くして、隣のパネルを無理やり引き寄せる */
+  width: 0.5em !important;     
+  margin: 0 -0.4em !important; /* マイナス値を大きくしてパネル同士を重ねる */
 }
 
-/* 2. パネル自体の設定 */
+/* パネルを独立させた際の間隔を調整 */
 .tick-flip {
-  display: inline-block !important;
-  vertical-align: bottom;
-  /* 0.1emは狭すぎるため、スリムに見える限界値の 1.25em 前後を推奨 */
-  width: 1.25em !important;    
-  margin: 0 !important;
-  border-radius: 0.12em;
+    display: inline-block !important;
+    vertical-align: bottom;
+    width: 0.1em !important; /* Clockhub風のスリム幅 */
+    margin: 0 0.00em !important; /* パネル同士のわずかな隙間 */
 }
 
-/* 3. パネル内の文字（スリム加工） */
+/* 文字の縦長スリム加工（再設定） */
 .tick-flip-panel-text > span {
-  /* 縦長・横圧縮の比率を維持 */
-  transform: scaleY(1.75) scaleX(0.55) !important;
-  transform-origin: center center;
-  display: inline-block;
+    transform: scaleY(1.75) scaleX(0.55) !important;
+    transform-origin: center center;
 }
 
-/* 4. パネルの色と質感 */
+/* コロンの幅を狭くして数字に寄せる */
+.tick-text-inline {
+    display: inline-block !important;
+    text-align: center;
+    margin: 0 -0.10em !important;
+}
 .tick-flip-panel {
   background-color: #3c3e3c;
   color: #fff;
 }
 
-/* 5. コロン（:）の調整 */
-.tick-text-inline {
-  display: inline-block !important;
-  width: 0.4em !important;      /* コロンの占有幅 */
-  text-align: center;
-  margin: 0 -0.05em !important; /* 左右の数字に寄せる */
-}
-
-/* =========================
-   配置・レイアウト（重複整理）
-=========================== */
+/* --- 以下、位置調整などは変更なし --- */
 .clock-container {
   margin-top: 40px;
   display: flex;
   justify-content: center;
+  flex: 0;
 }
 
 .clock-scale {
   display: flex;
   align-items: flex-end;
+  transform: scaleY(1.00);
+  transform-origin: bottom left;
 }
 
 #seconds-static {
@@ -280,4 +292,3 @@ html, body {
   z-index: 9999;
   background: #000;
 }
-
