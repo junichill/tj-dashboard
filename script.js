@@ -33,11 +33,23 @@ function handleTickInit(tick) {
 // =========================
 const dateEl = document.getElementById('date');
 
+// 日付更新関数の中でこのように書き換えてください
 function updateDate() {
-  const d = new Date();
-  const m = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  const w = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-  dateEl.textContent = `${w[d.getDay()]}, ${m[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+    const now = new Date();
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    const dayName = days[now.getDay()];
+    const monthName = months[now.getMonth()];
+    const date = now.getDate();
+    const year = now.getFullYear();
+    const reiwa = year - 2018; // 令和の計算
+
+    // 2段に分けたHTML構造にする
+    document.getElementById('date').innerHTML = `
+        <div>${dayName}, ${monthName} ${date},</div>
+        <div>${year}(R${reiwa})</div>
+    `;
 }
 updateDate();
 setInterval(updateDate, 60000);
