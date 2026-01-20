@@ -244,11 +244,20 @@ html, body {
 }
 
 .news-title {
-  font-size: 48px;
-  font-weight: inherit;
+  /* パネルサイズ拡大に合わせてフォントサイズを微調整 */
+  font-size: 48px; 
+  font-weight: 700;
   color: white;
   text-decoration: none;
-  line-height: 1.25;
+  
+  /* 行間の設定：1.2〜1.3が2行になった時に最も美しく見えます */
+  line-height: 1.25; 
+  
+  /* 2行を超える場合に備えて、最大表示を制御（必要に応じて） */
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 最大2行まで表示 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .news-pubdate {
@@ -286,6 +295,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
