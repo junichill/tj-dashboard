@@ -167,7 +167,7 @@ html, body {
 
 .tick-text-inline {
   opacity: 0.8;
-  margin: 0 -0.3em !important;
+  margin: 0 0em !important;
   align-self: center;
 }
 
@@ -296,6 +296,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
