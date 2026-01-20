@@ -132,7 +132,7 @@ html, body {
 }
 
 .tick-char {
-  width: 1.10em;
+  width: 2.5em;
 }
 
 .tick-flip, .tick-text-inline {
@@ -145,6 +145,7 @@ html, body {
   border-radius: 0.12em;
   line-height: 1.80;
   width: 1.5em !important;
+  margin: 0 0.02em !important;
 }
 
 .tick-text-inline {
@@ -156,6 +157,12 @@ html, body {
 .tick-flip-panel {
   background-color: #3c3e3c;
   color: #fff;
+}
+
+/* 以下の設定を style.css の最後の方に追記してください */
+.tick-group {
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 .tick-flip-panel-text > span {
@@ -284,6 +291,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
