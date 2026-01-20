@@ -135,7 +135,7 @@ html, body {
 
 /* 1. 器の幅を少し広げて、はみ出しを防ぐ */
 .tick-char {
-  width: 1.5em !important;     /* 1.25から変更。数字同士の「中心距離」が決まります */
+  width: 1.1em !important;     /* 1.25から変更。数字同士の「中心距離」が決まります */
   margin: 0 -0.4em !important;  /* マイナス値を大きくして、左右のパネルを引き寄せます */
 }
 
@@ -293,6 +293,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
