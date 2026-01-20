@@ -157,7 +157,7 @@ html, body {
 
 /* 文字の縦長スリム加工（再設定） */
 .tick-flip-panel-text > span {
-    transform: scaleY(1.45) scaleX(0.55) !important;
+    transform: scaleY(1.75) scaleX(0.55) !important;
     transform-origin: center center;
 }
 
@@ -292,6 +292,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
