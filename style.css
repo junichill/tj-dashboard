@@ -148,8 +148,8 @@ html, body {
   width: 1.00em !important; 
   min-width: 1.00em !important;
   max-width: 1.00em !important;
-  height: 2.50em !important;
-  line-height: 2.50em !important;
+  height: 1.80em !important;
+  line-height: 1.80em !important;
 }
 
 .tick-flip-panel-text > span {
@@ -286,6 +286,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
