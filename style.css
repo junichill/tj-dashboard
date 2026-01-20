@@ -164,6 +164,7 @@ html, body {
 }
 
 .tick-flip-panel {
+  height: 50% !important; /* 上下のパネルが正確に半分ずつになるように固定 */
   background-color: #3c3e3c;
   color: #fff;
 }
@@ -285,6 +286,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
