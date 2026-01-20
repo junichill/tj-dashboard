@@ -30,7 +30,7 @@ html, body {
 }
 
 /* ===========================
-   左パネル（時計・天気・日付）
+   左パネル（時計・天気・日付）完全版
 =========================== */
 #left-panel {
   flex: 55%;
@@ -39,22 +39,58 @@ html, body {
   justify-content: space-between; /* 上: 時計, 下: 天気+日付 */
   padding: 40px 40px 30px 50px;
   box-sizing: border-box;
+  min-width: 0;
 }
 
 /* ---------- 時計 ---------- */
 #clock-area {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 220px;       /* 高さ固定で安定 */
-  margin-top: 20px;    /* 上余白 */
+  justify-content: center;      /* 水平方向中央 */
+  align-items: center;          /* 垂直方向中央 */
+  height: 280px;                /* 高さ固定で上下余白確保 */
+  margin-top: 20px;
+  margin-bottom: 20px;
+  flex-shrink: 0;
 }
 
 .clock-scale {
-  display: inline-flex;
+  display: inline-flex;         /* 横並び維持 */
   align-items: flex-end;
   transform: scaleY(1);
   transform-origin: bottom center;
+}
+
+.tick {
+  font-size: 5rem;              /* 大きめ */
+  white-space: nowrap;
+}
+
+.tick, .tick * {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.tick-char {
+  width: 2.5em;
+}
+
+.tick-flip, .tick-text-inline {
+  font-size: 3.5em;             /* Flipパネル文字大きめ */
+}
+
+.tick-flip {
+  font-weight: 700;
+  color: #fff;
+  border-radius: 0.12em;
+  line-height: 1.8;
+  width: 2.0em !important;
+}
+
+.tick-text-inline {
+  opacity: 0.8;
+  margin: 0 -0.05em;
+  align-self: center;
 }
 
 .tick-flip-panel {
@@ -72,23 +108,24 @@ html, body {
 
 /* 秒表示 */
 #seconds-static {
-  font-size: 3.2em;
+  font-size: 3.5em;
   font-weight: 700;
   color: white;
-  opacity: 0.8;
-  margin-left: 6px;
+  opacity: 0.85;
+  margin-left: 8px;
   line-height: 1;
-  transform: scaleY(0.8);
+  transform: scaleY(0.85);
   transform-origin: bottom;
 }
 
 /* ---------- 下部（天気 + 日付） ---------- */
 .left-bottom {
   display: flex;
-  justify-content: space-between; /* 左: 天気, 右: 日付 */
+  justify-content: space-between;  /* 左: 天気, 右: 日付 */
   align-items: flex-end;
   margin-top: 20px;
   gap: 20px;
+  flex-shrink: 0;
 }
 
 #weather {
@@ -103,7 +140,7 @@ html, body {
   align-items: center;
   gap: 8px;
   min-height: 60px;
-  overflow: visible;
+  overflow: visible;            /* アイコン切れ防止 */
 }
 
 .weather-label {
@@ -246,3 +283,4 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
