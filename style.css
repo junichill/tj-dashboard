@@ -146,9 +146,9 @@ html, body {
   vertical-align: bottom;
   margin: 0 !important;
  /* width: 0.1emなど極端な値ではなく、スリムに見える1.2em前後を「!important」で固定 */
-  width: 0.75em !important; 
-  min-width: 0.75em !important;
-  max-width: 0.75em !important;
+  width: 1.00em !important; 
+  min-width: 1.00em !important;
+  max-width: 1.00em !important;
 }
 
 .tick-flip-panel-text > span {
@@ -284,6 +284,7 @@ html, body {
   z-index: 9999;
   background: #000;
 }
+
 
 
 
