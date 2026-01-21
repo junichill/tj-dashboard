@@ -210,42 +210,45 @@ function startWeatherCycle() {
     const groups = wrapper.querySelectorAll('.day-group');
     if (groups.length === 0) return;
 
-    // 次のインデックスを計算
     const nextIndex = (weatherSlideIndex + 1) % groups.length;
 
     if (nextIndex === 0) {
-      // --- 週間天気から今日に戻る時の「高級フェード」演出 ---
-      wrapper.style.transition = 'opacity 0.8s ease, filter 0.8s ease';
+      // --- 週間から今日に戻る：極上のフェード演出 ---
+      // 1. ゆっくりと奥へ消えていく
+      wrapper.style.transition = 'opacity 1.5s ease-in, filter 1.5s ease-in, transform 1.5s ease-in';
       wrapper.style.opacity = '0';
-      wrapper.style.filter = 'blur(10px)';
+      wrapper.style.filter = 'blur(15px)';
+      wrapper.style.transform = `translateY(${weatherSlideIndex * -180}px) scale(0.92)`;
 
       setTimeout(() => {
+        // 2. 見えない間に位置をリセット
         weatherSlideIndex = 0;
-        wrapper.style.transition = 'none'; // 位置移動は一瞬で行う
-        wrapper.style.transform = `translateY(0px)`;
+        wrapper.style.transition = 'none';
+        wrapper.style.transform = `translateY(0px) scale(0.92)`;
         
-        // クラス更新（今日をactiveにする）
         groups.forEach((g, i) => g.classList.toggle('inactive', i !== 0));
 
-        // 描画を強制確定させてからフェードイン
+        // 描画を確定
         wrapper.offsetHeight; 
-        
-        wrapper.style.transition = 'opacity 1.2s ease, filter 1.2s ease';
+
+        // 3. 手前にゆっくりと浮かび上がる
+        wrapper.style.transition = 'opacity 1.8s ease-out, filter 1.8s ease-out, transform 1.8s ease-out';
         wrapper.style.opacity = '1';
         wrapper.style.filter = 'blur(0)';
-      }, 800);
+        wrapper.style.transform = `translateY(0px) scale(1)`;
+      }, 1500);
 
     } else {
-      // --- 通常のスライド（今日→明日、明日→週間） ---
+      // --- 通常のスライド（1.2秒かけて優雅に移動） ---
       weatherSlideIndex = nextIndex;
-      wrapper.style.transition = 'transform 1.2s cubic-bezier(0.65, 0, 0.35, 1)';
-      wrapper.style.transform = `translateY(${weatherSlideIndex * -180}px)`;
+      wrapper.style.transition = 'transform 1.2s cubic-bezier(0.65, 0, 0.35, 1), opacity 1.2s ease';
+      wrapper.style.transform = `translateY(${weatherSlideIndex * -180}px) scale(1)`;
 
       groups.forEach((group, index) => {
         group.classList.toggle('inactive', index !== weatherSlideIndex);
       });
     }
-  }, 8000); 
+  }, 9000); // 演出が長くなったので、切り替え間隔を少しだけ(8s->9s)伸ばすと余裕が出ます
 }
 
 fetchWeather();
