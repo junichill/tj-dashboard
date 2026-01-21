@@ -121,11 +121,9 @@ body {
 
 /* 天気エリア全体 */
 #forecast-viewport {
-    height: 180px; 
+    height: 180px; /* 全ての要素が収まる高さに固定 */
     overflow: hidden;
     position: relative;
-    width: 100%;
-    margin-top: 10px;
 }
 
 #forecast-wrapper {
@@ -162,13 +160,11 @@ body {
     color: #448aff;
 }
 
-.weekly-temp .separator {
-    font-size: 22px;             /* 数字(24px)に近い大きさにアップ */
-    margin: 0 6px;               /* 左右に少し余裕を持たせる */
-    color: rgba(255, 255, 255, 0.5); /* 視認性を上げるために少し明るく */
-    font-weight: 300;            /* スラッシュは細めにして数字を際立たせる */
-    transform: rotate(10deg);    /* わずかに傾けてデザイン性を出す */
-    display: inline-block;       /* transformを有効にするため */
+.weekly-temp {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    margin-top: 5px;
 }
 
 /* 数字（max/min）の調整 */
@@ -186,16 +182,13 @@ body {
 .forecast-temp .max { color: #ff5252; }
 .forecast-temp .min { color: #448aff; }
 
-/* スライドの重なりを防ぐ */
 .day-group {
-    height: 180px; /* viewportの高さと完全に一致させる */
+    height: 180px; /* スライドの1単位をviewportと完全に一致させる */
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* 中央に戻して、上下のハミ出しを防ぐ */
+    justify-content: center; /* 上下中央に配置して見切れを防ぐ */
     flex-shrink: 0;
-    box-sizing: border-box;
-    padding: 10px 0;
 }
 
 .day-label {
@@ -410,17 +403,3 @@ body {
   line-height: 1.5;
   opacity: 0.9;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
