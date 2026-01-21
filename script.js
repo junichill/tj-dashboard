@@ -210,7 +210,9 @@ function startWeatherCycle() {
     if (groups.length === 0) return;
 
     weatherSlideIndex = (weatherSlideIndex + 1) % groups.length; 
-    const y = weatherSlideIndex * -160; 
+    
+    // 移動距離を180pxに固定（CSSの.day-groupの高さと一致）
+    const y = weatherSlideIndex * -180; 
     wrapper.style.transform = `translateY(${y}px)`;
 
     groups.forEach((group, index) => {
