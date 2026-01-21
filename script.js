@@ -203,26 +203,31 @@ async function fetchWeather() {
 }
 
 function startWeatherCycle() {
-  if (weatherTimer) clearInterval(weatherTimer);
-  const wrapper = document.getElementById('forecast-wrapper');
-  
-  weatherTimer = setInterval(() => {
-    const groups = wrapper.querySelectorAll('.day-group');
-    if (groups.length === 0) return;
-
-    // 0 -> 1 -> 2 -> 0 ... の順でループ
-    weatherSlideIndex = (weatherSlideIndex + 1) % groups.length; 
+    if (weatherTimer) clearInterval(weatherTimer);
+    const wrapper = document.getElementById('forecast-wrapper');
     
-    // CSSの高さ 180px に合わせた正確な移動
-    const y = weatherSlideIndex * -180; 
-    wrapper.style.transform = `translateY(${y}px)`;
+    weatherTimer = setInterval(() => {
+        const groups = wrapper.querySelectorAll('.day-group');
+        if (groups.length === 0) return;
 
-    // 表示されているグループ以外を薄くする（スライドの邪魔をしない最小限の処理）
-    groups.forEach((group, index) => {
-      group.classList.toggle('inactive', index !== weatherSlideIndex);
-    });
-  }, 8000); 
+        // 3つのパネルをループ (0:今日, 1:明日, 2:週間)
+        weatherSlideIndex = (weatherSlideIndex + 1) % groups.length; 
+        
+        // 180pxずつ正確にスライド
+        const y = weatherSlideIndex * -180; 
+        wrapper.style.transform = `translateY(${y}px)`;
+
+        // フォーカス効果の切り替え
+        groups.forEach((group, index) => {
+            if (index === weatherSlideIndex) {
+                group.classList.remove('inactive');
+            } else {
+                group.classList.add('inactive');
+            }
+        });
+    }, 8000); 
 }
+
 fetchWeather();
 setInterval(fetchWeather, 600000);
 
