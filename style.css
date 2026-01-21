@@ -136,9 +136,45 @@ body {
     transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
-/* 週間天気用の特別なスタイル */
+/* 週間予報専用のスタイル */
 .weekly-item {
-    width: 85px !important; /* 日付が入るので少し広めに */
+    width: 100px !important; /* 英語表記と大きい文字のために幅を広げる */
+}
+
+.weekly-item .forecast-time {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 5px;
+}
+
+/* 気温表示を大きく強調 */
+.weekly-temp {
+    font-size: 24px !important; /* 通常の18pxから24pxへアップ */
+    font-weight: 800 !important;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+}
+
+.weekly-temp .max {
+    color: #ff5252;
+}
+
+.weekly-temp .min {
+    color: #448aff;
+}
+
+.weekly-temp .separator {
+    font-size: 16px;
+    margin: 0 2px;
+    color: rgba(255, 255, 255, 0.3);
+    font-weight: 400;
+}
+
+/* アイコンサイズも週間予報では少し存在感を出す */
+.weekly-item .weather-icon {
+    transform: scale(1.1);
+    margin: 5px 0;
 }
 
 .forecast-temp .max { color: #ff5252; }
@@ -360,6 +396,7 @@ body {
   line-height: 1.5;
   opacity: 0.9;
 }
+
 
 
 
