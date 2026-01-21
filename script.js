@@ -171,14 +171,27 @@ function createForecastGroupHtml(list, label) {
 }
 
 function startWeatherCycle() {
-  if (weatherTimer) clearInterval(weatherTimer);
-  const wrapper = document.getElementById('forecast-wrapper');
-  
-  weatherTimer = setInterval(() => {
-    weatherSlideIndex = (weatherSlideIndex + 1) % 2; // TodayとTomorrowの2つ
-    const y = weatherSlideIndex * -140; // 高さ140px分ずらす
-    wrapper.style.transform = `translateY(${y}px)`;
-  }, 8000); // 8秒ごとに切り替え
+    if (weatherTimer) clearInterval(weatherTimer);
+    const wrapper = document.getElementById('forecast-wrapper');
+    
+    weatherTimer = setInterval(() => {
+        weatherSlideIndex = (weatherSlideIndex + 1) % 2; 
+        
+        // 1. 移動距離をCSSの高さ「160」にピッタリ合わせる
+        const y = weatherSlideIndex * -160; 
+        wrapper.style.transform = `translateY(${y}px)`;
+
+        // 2. スタイリッシュなフェード演出の切り替え
+        const groups = wrapper.querySelectorAll('.day-group');
+        groups.forEach((group, index) => {
+            if (index === weatherSlideIndex) {
+                group.classList.remove('inactive');
+            } else {
+                group.classList.add('inactive');
+            }
+        });
+        
+    }, 8000); // 8秒間隔
 }
 
 fetchWeather();
