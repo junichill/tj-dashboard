@@ -112,53 +112,40 @@ function getWeatherType(id) {
 let weatherSlideIndex = 0;
 let weatherTimer = null;
 
-async function fetchWeather() {
-  try {
-    const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=ja`);
-    const d = await r.json();
+// 天気グループのHTMLを作る共通関数（これがないとエラーになります）
+function createForecastGroupHtml(list, label) {
+  const itemsHtml = list.map(item => {
+    const date = new Date(item.dt * 1000);
+    const hour = date.getHours().toString().padStart(2, '0') + ":00";
+    const temp = Math.round(item.main.temp);
+    const type = getWeatherType(item.weather[0].id);
+    return `
+      <div class="forecast-item">
+        <div class="forecast-time">${hour}</div>
+        <div class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</div>
+        <div class="forecast-temp">${temp}℃</div>
+      </div>`;
+  }).join('');
 
-    const wrapper = document.getElementById('forecast-wrapper');
-    wrapper.innerHTML = ''; 
-
-    // --- 1. Today ---
-    const todayHtml = createForecastGroupHtml(d.list.slice(0, 8), "Today's Forecast");
-
-    // --- 2. Tomorrow ---
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowStr = tomorrow.toLocaleDateString();
-    const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr).slice(0, 8);
-    const tomorrowHtml = createForecastGroupHtml(tomorrowList, "Tomorrow's Plan");
-
-    // --- 3. Weekly (5日間) ---
-    const weeklyHtml = createWeeklyForecastHtml(d.list);
-
-    wrapper.insertAdjacentHTML('beforeend', todayHtml + tomorrowHtml + weeklyHtml);
-    startWeatherCycle();
-
-  } catch (err) {
-    console.error('天気情報取得失敗', err);
-  }
+  return `<div class="day-group"><div class="day-label">— ${label} —</div><div class="day-items">${itemsHtml}</div></div>`;
 }
 
-// 週間天気のHTML生成
+// 週間天気のHTMLを作る関数
 function createWeeklyForecastHtml(list) {
   const dailyData = {};
   list.forEach(item => {
     const date = new Date(item.dt * 1000).toLocaleDateString('ja-JP', {weekday:'short', day:'numeric'});
-    if (!dailyData[date]) {
-      dailyData[date] = { temps: [], ids: [] };
-    }
+    if (!dailyData[date]) dailyData[date] = { temps: [], ids: [] };
     dailyData[date].temps.push(item.main.temp);
     dailyData[date].ids.push(item.weather[0].id);
   });
 
   let itemsHtml = '';
-  Object.keys(dailyData).slice(1, 6).forEach(date => { // 明日以降の5日間
+  // 明日以降の5日間を抽出
+  Object.keys(dailyData).slice(1, 6).forEach(date => {
     const day = dailyData[date];
     const maxTemp = Math.round(Math.max(...day.temps));
     const minTemp = Math.round(Math.min(...day.temps));
-    // その日の代表的な天気（配列の真ん中の時間を採用）
     const midId = day.ids[Math.floor(day.ids.length / 2)];
     const type = getWeatherType(midId);
     
@@ -166,11 +153,45 @@ function createWeeklyForecastHtml(list) {
       <div class="forecast-item weekly-item">
         <div class="forecast-time">${date}</div>
         <div class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</div>
-        <div class="forecast-temp"><span class="max">${maxTemp}</span> / <span class="min">${minTemp}</span></div>
+        <div class="forecast-temp"><span class="max">${maxTemp}</span>/<span class="min">${minTemp}</span></div>
       </div>`;
   });
 
   return `<div class="day-group"><div class="day-label">— Weekly Outlook —</div><div class="day-items">${itemsHtml}</div></div>`;
+}
+
+async function fetchWeather() {
+  try {
+    const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=ja`);
+    const d = await r.json();
+    if (!d.list) return;
+
+    const wrapper = document.getElementById('forecast-wrapper');
+    wrapper.innerHTML = ''; 
+
+    // 1. Today
+    const todayHtml = createForecastGroupHtml(d.list.slice(0, 8), "Today's Forecast");
+
+    // 2. Tomorrow
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toLocaleDateString();
+    const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr).slice(0, 8);
+    const tomorrowHtml = createForecastGroupHtml(tomorrowList, "Tomorrow's Plan");
+
+    // 3. Weekly
+    const weeklyHtml = createWeeklyForecastHtml(d.list);
+
+    wrapper.insertAdjacentHTML('beforeend', todayHtml + tomorrowHtml + weeklyHtml);
+    
+    // スライドの初期状態をセット
+    weatherSlideIndex = 0;
+    wrapper.style.transform = `translateY(0px)`;
+    startWeatherCycle();
+
+  } catch (err) {
+    console.error('天気情報取得失敗', err);
+  }
 }
 
 function startWeatherCycle() {
