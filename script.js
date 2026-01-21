@@ -203,29 +203,49 @@ async function fetchWeather() {
 }
 
 function startWeatherCycle() {
-    if (weatherTimer) clearInterval(weatherTimer);
-    const wrapper = document.getElementById('forecast-wrapper');
-    
-    weatherTimer = setInterval(() => {
-        const groups = wrapper.querySelectorAll('.day-group');
-        if (groups.length === 0) return;
+  if (weatherTimer) clearInterval(weatherTimer);
+  const wrapper = document.getElementById('forecast-wrapper');
+  
+  weatherTimer = setInterval(() => {
+    const groups = wrapper.querySelectorAll('.day-group');
+    if (groups.length === 0) return;
 
-        // 3つのパネルをループ (0:今日, 1:明日, 2:週間)
-        weatherSlideIndex = (weatherSlideIndex + 1) % groups.length; 
+    // 次のインデックスを計算
+    const nextIndex = (weatherSlideIndex + 1) % groups.length;
+
+    if (nextIndex === 0) {
+      // --- 週間天気から今日に戻る時の「高級フェード」演出 ---
+      wrapper.style.transition = 'opacity 0.8s ease, filter 0.8s ease';
+      wrapper.style.opacity = '0';
+      wrapper.style.filter = 'blur(10px)';
+
+      setTimeout(() => {
+        weatherSlideIndex = 0;
+        wrapper.style.transition = 'none'; // 位置移動は一瞬で行う
+        wrapper.style.transform = `translateY(0px)`;
         
-        // 180pxずつ正確にスライド
-        const y = weatherSlideIndex * -180; 
-        wrapper.style.transform = `translateY(${y}px)`;
+        // クラス更新（今日をactiveにする）
+        groups.forEach((g, i) => g.classList.toggle('inactive', i !== 0));
 
-        // フォーカス効果の切り替え
-        groups.forEach((group, index) => {
-            if (index === weatherSlideIndex) {
-                group.classList.remove('inactive');
-            } else {
-                group.classList.add('inactive');
-            }
-        });
-    }, 8000); 
+        // 描画を強制確定させてからフェードイン
+        wrapper.offsetHeight; 
+        
+        wrapper.style.transition = 'opacity 1.2s ease, filter 1.2s ease';
+        wrapper.style.opacity = '1';
+        wrapper.style.filter = 'blur(0)';
+      }, 800);
+
+    } else {
+      // --- 通常のスライド（今日→明日、明日→週間） ---
+      weatherSlideIndex = nextIndex;
+      wrapper.style.transition = 'transform 1.2s cubic-bezier(0.65, 0, 0.35, 1)';
+      wrapper.style.transform = `translateY(${weatherSlideIndex * -180}px)`;
+
+      groups.forEach((group, index) => {
+        group.classList.toggle('inactive', index !== weatherSlideIndex);
+      });
+    }
+  }, 8000); 
 }
 
 fetchWeather();
