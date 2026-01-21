@@ -15,21 +15,19 @@
 <div id="container">
 
   <div id="left-panel">
-
-    <div class="clock-container">
-      <div class="clock-scale">
-        <div class="tick" data-did-init="handleTickInit">
-          <span data-view="flip" data-key="hours1" class="tick-flip"></span>
-          <span data-view="flip" data-key="hours2" class="tick-flip"></span>
-          
-          <span class="tick-text-inline">:</span>
-          
-          <span data-view="flip" data-key="minutes1" class="tick-flip"></span>
-          <span data-view="flip" data-key="minutes2" class="tick-flip"></span>
+    <div class="left-bottom">
+        <div id="date"></div>
+        
+        <div id="weather">
+            <div id="forecast-container"></div>
         </div>
-        <span id="seconds-static">00</span>
-      </div>
+        
+        <div class="clock-scale">
+            <div class="tick">...時分...</div>
+            <div id="seconds-static">00</div>
+        </div>
     </div>
+</div>
 
     <div class="left-bottom">
       <div id="weather">
@@ -53,5 +51,6 @@
 
 </body>
 </html>
+
 
 
