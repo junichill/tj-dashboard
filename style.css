@@ -121,17 +121,16 @@ body {
 
 /* 天気エリア全体 */
 #forecast-viewport {
-    height: 160px; /* ここの高さを固定 */
+    height: 180px; 
     overflow: hidden;
     position: relative;
     width: 100%;
-    margin-top: 15px;
+    margin-top: 10px;
 }
 
 #forecast-wrapper {
     display: flex;
     flex-direction: column;
-    /* transitionを滑らかに。transformとopacityを同時に動かす */
     transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
@@ -189,16 +188,14 @@ body {
 
 /* スライドの重なりを防ぐ */
 .day-group {
-    height: 160px;
+    height: 180px; /* viewportの高さと完全に一致させる */
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* justify-content: center; を一旦やめて、上からの余白で制御します */
-    justify-content: flex-start; 
-    padding-top: 20px; /* 上に20pxの余裕を作る */
-    box-sizing: border-box;
+    justify-content: center; /* 中央に戻して、上下のハミ出しを防ぐ */
     flex-shrink: 0;
-    transition: opacity 1.2s, filter 1.2s;
+    box-sizing: border-box;
+    padding: 10px 0;
 }
 
 .day-label {
@@ -207,8 +204,7 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.2em;
     color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 20px; /* タイトルとアイコンの間隔を広げる */
-    line-height: 1.5;    /* 文字が切れないように行高を確保 */
+    margin-bottom: 15px; /* アイコンとの距離を最適化 */
 }
 
 .day-group.inactive {
@@ -220,7 +216,13 @@ body {
     display: flex;
     gap: 15px;
     justify-content: center;
-    width: 100%;
+    align-items: flex-end; /* アイコンと温度のラインを揃える */
+}
+
+/* 温度の文字サイズ再確認 */
+.forecast-temp {
+    font-size: 18px;
+    font-weight: 700;
 }
 
 .weather-icon svg {
@@ -408,6 +410,7 @@ body {
   line-height: 1.5;
   opacity: 0.9;
 }
+
 
 
 
