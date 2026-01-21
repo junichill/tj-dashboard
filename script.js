@@ -114,50 +114,60 @@ let weatherTimer = null;
 
 async function fetchWeather() {
   try {
-    const r = await fetch(
-      `https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=ja`
-    );
+    const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=ja`);
     const d = await r.json();
 
     const wrapper = document.getElementById('forecast-wrapper');
     wrapper.innerHTML = ''; 
 
-    const now = new Date();
-    const todayStr = now.toLocaleDateString();
+    // --- 1. Today (今から24時間分 = 8個) ---
+    const todayList = d.list.slice(0, 8);
+    const todayHtml = createForecastGroupHtml(todayList, "Today's Forecast");
+
+    // --- 2. Tomorrow (明日の0:00〜21:00 = 8個) ---
     const tomorrow = new Date();
-    tomorrow.setDate(now.getDate() + 1);
+    tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowStr = tomorrow.toLocaleDateString();
 
-    const todayForecasts = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === todayStr);
-    const tomorrowForecasts = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr);
+    const tomorrowList = d.list.filter(item => {
+      const dt = new Date(item.dt * 1000);
+      return dt.toLocaleDateString() === tomorrowStr;
+    }).slice(0, 8); // 念のため8個に絞る
 
-    const createItemsHtml = (list) => {
-      return list.map(item => {
-        const date = new Date(item.dt * 1000);
-        const hour = date.getHours().toString().padStart(2, '0') + ":00";
-        const temp = Math.round(item.main.temp);
-        const type = getWeatherType(item.weather[0].id);
-        return `
-          <div class="forecast-item">
-            <div class="forecast-time">${hour}</div>
-            <div class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</div>
-            <div class="forecast-temp">${temp}℃</div>
-          </div>`;
-      }).join('');
-    };
+    const tomorrowHtml = createForecastGroupHtml(tomorrowList, "Tomorrow's Plan");
 
-    // TodayとTomorrowを追加
-    wrapper.insertAdjacentHTML('beforeend', `
-      <div class="day-group"><div class="day-label">— Today —</div><div class="day-items">${createItemsHtml(todayForecasts)}</div></div>
-      <div class="day-group"><div class="day-label">— Tomorrow —</div><div class="day-items">${createItemsHtml(tomorrowForecasts.slice(0, 8))}</div></div>
-    `);
+    // HTMLをセット
+    wrapper.insertAdjacentHTML('beforeend', todayHtml);
+    wrapper.insertAdjacentHTML('beforeend', tomorrowHtml);
 
-    // スライド開始
+    // スライドサイクル開始
     startWeatherCycle();
 
   } catch (err) {
     console.error('天気情報取得失敗', err);
   }
+}
+
+// 予報グループのHTMLを生成する共通関数
+function createForecastGroupHtml(list, label) {
+  const itemsHtml = list.map(item => {
+    const date = new Date(item.dt * 1000);
+    const hour = date.getHours().toString().padStart(2, '0') + ":00";
+    const temp = Math.round(item.main.temp);
+    const type = getWeatherType(item.weather[0].id);
+    return `
+      <div class="forecast-item">
+        <div class="forecast-time">${hour}</div>
+        <div class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</div>
+        <div class="forecast-temp">${temp}℃</div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="day-group">
+      <div class="day-label">— ${label} —</div>
+      <div class="day-items">${itemsHtml}</div>
+    </div>`;
 }
 
 function startWeatherCycle() {
