@@ -186,20 +186,19 @@ async function fetchWeather() {
 
     const weeklyHtml = createWeeklyForecastHtml(d.list);
 
-    // --- 4枚目: FX (為替) ダミーデータ ---
-    const fxData = [
-      { name: 'USD/JPY', value: '148.22', change: '+0.12', dir: 'up' },
-      { name: 'EUR/JPY', value: '161.45', change: '-0.05', dir: 'down' },
-      { name: 'EUR/USD', value: '1.0890', change: '+0.002', dir: 'up' }
-    ];
-    const fxHtml = createMarketGroupHtml(fxData, "Market: FX");
+    // 4枚目: FX (スッキリした数値表現)
+const fxData = [
+  { name: 'USD/JPY', value: '148.22', change: '+0.12', dir: 'up' },
+  { name: 'EUR/JPY', value: '161.45', change: '-0.05', dir: 'down' },
+  { name: 'EUR/USD', value: '1.0890', change: '+0.002', dir: 'up' }
+];
 
-    // --- 5枚目: Futures (先物) ダミーデータ ---
-    const futuresData = [
-      { name: 'NK225', value: '38,520', change: '+450', dir: 'up' },
-      { name: 'NASDAQ', value: '17,850', change: '-20', dir: 'down' },
-      { name: 'S&P 500', value: '5,022', change: '+12', dir: 'up' }
-    ];
+// 5枚目: Futures
+const futuresData = [
+  { name: 'NK225', value: '38,520', change: '+450', dir: 'up' },
+  { name: 'NASDAQ', value: '17,850', change: '-20', dir: 'down' },
+  { name: 'S&P 500', value: '5,022', change: '+12', dir: 'up' }
+];
     const futuresHtml = createMarketGroupHtml(futuresData, "Market: Futures");
 
     // 全5枚を統合
