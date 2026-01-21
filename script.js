@@ -310,21 +310,23 @@ fetchNews();
 setInterval(fetchNews, FETCH_INTERVAL);
 
 function adjustScale() {
-  const container = document.getElementById('container');
-  const screenWidth = window.innerWidth;
-  const baseWidth = 1600; // デザインの基準となる横幅
+    const container = document.getElementById('container');
+    if (!container) return;
 
-  if (screenWidth < baseWidth) {
-    const scale = screenWidth / baseWidth;
+    const baseWidth = 1920;
+    const baseHeight = 720;
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+
+    // 画面に収まるための倍率を計算（横・縦の小さい方に合わせる）
+    const scale = Math.min(screenWidth / baseWidth, screenHeight / baseHeight);
+
+    // スケールを適用。iPhoneでぼやけないように調整
     container.style.transform = `scale(${scale})`;
-    container.style.width = `${baseWidth}px`;
-    container.style.height = `${100 / scale}vh`; // 高さを補正
-  } else {
-    container.style.transform = 'none';
-    container.style.width = '100%';
-    container.style.height = '100vh';
-  }
 }
 
+// イベント登録
 window.addEventListener('resize', adjustScale);
 window.addEventListener('load', adjustScale);
+// 初回実行
+adjustScale();
