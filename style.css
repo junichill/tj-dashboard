@@ -56,36 +56,41 @@ body {
 }
 
 .left-bottom {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 24px;
-  margin-top: auto;
-  width: 100%;
-  padding: 0;
-  box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    /* 天気を中央にするため、space-betweenから変更 */
+    justify-content: center; 
+    align-items: flex-end;
+    gap: 40px; /* 時計との間隔を適宜調整 */
+    margin-top: auto;
+    width: 100%;
+    padding: 0;
+    box-sizing: border-box;
+    position: relative; /* 子要素の配置基準のため */
 }
 
 /* ===========================
    天気予報（3時間ごと）
 =========================== */
 #weather {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* アイコンやテキストを中央揃え */
+    gap: 5px;
+    min-width: 300px;
+    /* 左パネル全体に対して中央に寄せたい場合は以下を追加 */
+    margin: 0 auto; 
 }
 
 #forecast-container {
-  display: flex;
-  gap: 25px;
-  margin-top: 15px;
-  padding-bottom: 10px;
-  /* 横に並びきらない場合はスクロールさせる */
-  overflow-x: auto; 
-  white-space: nowrap;
-  width: 100%;
+    display: flex;
+    justify-content: center; /* 予報アイテム自体を中央に並べる */
+    gap: 25px;
+    margin-top: 15px;
+    padding-bottom: 10px;
+    overflow-x: auto;
+    white-space: nowrap;
+    width: 100%;
 }
 
 /* スクロールバーを隠す（デザイン優先） */
@@ -304,6 +309,7 @@ body {
   line-height: 1.5;
   opacity: 0.9;
 }
+
 
 
 
