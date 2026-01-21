@@ -308,3 +308,23 @@ async function fetchNews() {
 
 fetchNews();
 setInterval(fetchNews, FETCH_INTERVAL);
+
+function adjustScale() {
+  const container = document.getElementById('container');
+  const screenWidth = window.innerWidth;
+  const baseWidth = 1600; // デザインの基準となる横幅
+
+  if (screenWidth < baseWidth) {
+    const scale = screenWidth / baseWidth;
+    container.style.transform = `scale(${scale})`;
+    container.style.width = `${baseWidth}px`;
+    container.style.height = `${100 / scale}vh`; // 高さを補正
+  } else {
+    container.style.transform = 'none';
+    container.style.width = '100%';
+    container.style.height = '100vh';
+  }
+}
+
+window.addEventListener('resize', adjustScale);
+window.addEventListener('load', adjustScale);
