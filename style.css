@@ -165,10 +165,18 @@ body {
 }
 
 .weekly-temp .separator {
-    font-size: 16px;
-    margin: 0 2px;
-    color: rgba(255, 255, 255, 0.3);
-    font-weight: 400;
+    font-size: 22px;             /* 数字(24px)に近い大きさにアップ */
+    margin: 0 6px;               /* 左右に少し余裕を持たせる */
+    color: rgba(255, 255, 255, 0.5); /* 視認性を上げるために少し明るく */
+    font-weight: 300;            /* スラッシュは細めにして数字を際立たせる */
+    transform: rotate(10deg);    /* わずかに傾けてデザイン性を出す */
+    display: inline-block;       /* transformを有効にするため */
+}
+
+/* 数字（max/min）の調整 */
+.weekly-temp .max, .weekly-temp .min {
+    font-size: 26px;             /* 数字をさらに少し大きくしてインパクトを出す */
+    letter-spacing: -0.02em;     /* 文字間を少し詰めるとよりスタイリッシュに */
 }
 
 /* アイコンサイズも週間予報では少し存在感を出す */
@@ -396,6 +404,7 @@ body {
   line-height: 1.5;
   opacity: 0.9;
 }
+
 
 
 
