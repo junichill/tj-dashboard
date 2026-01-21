@@ -171,29 +171,30 @@ async function fetchWeather() {
   try {
     const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=ja`);
     const d = await r.json();
-    if (!d.list) return;
+    if (!d || !d.list) return;
 
     const wrapper = document.getElementById('forecast-wrapper');
-    wrapper.innerHTML = ''; 
-
-    // 1. Today
+    
+    // 1. 今日 (今から8枠)
     const todayHtml = createForecastGroupHtml(d.list.slice(0, 8), "Today's Forecast");
 
-    // 2. Tomorrow
+    // 2. 明日 (明日0時〜の8枠)
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowStr = tomorrow.toLocaleDateString();
     const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr).slice(0, 8);
     const tomorrowHtml = createForecastGroupHtml(tomorrowList, "Tomorrow's Plan");
 
-    // 3. Weekly
+    // 3. 週間
     const weeklyHtml = createWeeklyForecastHtml(d.list);
 
-    wrapper.insertAdjacentHTML('beforeend', todayHtml + tomorrowHtml + weeklyHtml);
-    
-    // スライドの初期状態をセット
+    // 3つ全てを結合して代入（順番を固定）
+    wrapper.innerHTML = todayHtml + tomorrowHtml + weeklyHtml;
+
+    // スライドの初期化
     weatherSlideIndex = 0;
     wrapper.style.transform = `translateY(0px)`;
+    
     startWeatherCycle();
 
   } catch (err) {
@@ -209,18 +210,19 @@ function startWeatherCycle() {
     const groups = wrapper.querySelectorAll('.day-group');
     if (groups.length === 0) return;
 
+    // 0 -> 1 -> 2 -> 0 ... の順でループ
     weatherSlideIndex = (weatherSlideIndex + 1) % groups.length; 
     
-    // 移動距離を180pxに固定（CSSの.day-groupの高さと一致）
+    // CSSの高さ 180px に合わせた正確な移動
     const y = weatherSlideIndex * -180; 
     wrapper.style.transform = `translateY(${y}px)`;
 
+    // 表示されているグループ以外を薄くする（スライドの邪魔をしない最小限の処理）
     groups.forEach((group, index) => {
       group.classList.toggle('inactive', index !== weatherSlideIndex);
     });
   }, 8000); 
 }
-
 fetchWeather();
 setInterval(fetchWeather, 600000);
 
