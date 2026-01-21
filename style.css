@@ -136,20 +136,28 @@ body {
     transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
+/* 週間天気用の特別なスタイル */
+.weekly-item {
+    width: 85px !important; /* 日付が入るので少し広めに */
+}
+
+.forecast-temp .max { color: #ff5252; }
+.forecast-temp .min { color: #448aff; }
+
+/* スライドの重なりを防ぐ */
 .day-group {
-    height: 160px; /* viewportの高さと完全に一致させる */
+    height: 160px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    transition: opacity 1.2s; /* フェード効果も追加 */
+    transition: opacity 1.2s, filter 1.2s;
 }
 
-/* 表示されていない方のグループを少し薄くする（JSで制御） */
 .day-group.inactive {
-    opacity: 0.2;
-    filter: blur(2px); /* 少しぼかすとさらにスタイリッシュ */
+    opacity: 0; /* 完全に消すことで重なりを防ぐ */
+    filter: blur(5px);
 }
 
 .day-label {
@@ -352,6 +360,7 @@ body {
   line-height: 1.5;
   opacity: 0.9;
 }
+
 
 
 
