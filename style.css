@@ -250,35 +250,37 @@ body {
 
 /* 経済情報専用スタイル */
 .market-item {
-    width: 100px !important;
+    width: 110px !important;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 .market-name {
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.5);
-    margin-bottom: 4px;
-    font-weight: bold;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5); /* 少し薄くして品を出す */
+    margin-bottom: 5px;
+    font-weight: 400; /* 通常の太さに */
+    letter-spacing: 0.1em;
 }
 
 .market-value {
-    font-size: 20px; /* 天気より少し小さくしてシャープに */
-    font-weight: 800;
+    font-size: 28px; /* さらに少し大きく */
+    font-weight: 300; /* あえて細身にすることでスマートな印象に */
     color: #ffffff;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
+    line-height: 1.0;
 }
 
 .market-change {
-    font-size: 13px;
-    font-weight: bold;
-    margin-top: 2px;
+    font-size: 15px;
+    font-weight: 400; /* 細身に */
+    margin-top: 6px;
 }
 
-/* 上昇・下落の色分け */
-.market-change.up { color: #00ff88; }   /* ネオン気味のグリーン */
-.market-change.down { color: #ff4d4d; } /* 鮮やかなレッド */
+/* 上昇・下落の色（細い文字でも見えるよう、少し彩度を調整） */
+.market-change.up { color: #52ffb8; } 
+.market-change.down { color: #ff6b6b; }
 
 /* 週間天気のセパレーターも念のため確認 */
 .weekly-temp .separator {
@@ -454,6 +456,7 @@ body {
   line-height: 1.5;
   opacity: 0.9;
 }
+
 
 
 
