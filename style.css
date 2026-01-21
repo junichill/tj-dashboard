@@ -129,8 +129,10 @@ body {
 #forecast-wrapper {
     display: flex;
     flex-direction: column;
-    /* 高級感のあるイージング設定 */
-    transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1);
+    /* transitionはJS側でコントロールするため、ここでは最小限に */
+    opacity: 1;
+    filter: blur(0);
+    will-change: transform, opacity, filter;
 }
 
 /* 週間予報専用のスタイル */
@@ -409,4 +411,5 @@ body {
   line-height: 1.5;
   opacity: 0.9;
 }
+
 
