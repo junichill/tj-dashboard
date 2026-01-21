@@ -314,19 +314,23 @@ function adjustScale() {
     if (!container) return;
 
     const baseWidth = 1920;
-    const baseHeight = 720;
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
 
-    // 画面に収まるための倍率を計算（横・縦の小さい方に合わせる）
-    const scale = Math.min(screenWidth / baseWidth, screenHeight / baseHeight);
+    // 画面の横幅に合わせて倍率を決定
+    let scale = screenWidth / baseWidth;
 
-    // スケールを適用。iPhoneでぼやけないように調整
+    // もし横向き（Landscape）で、高さがはみ出してしまう場合は高さ基準に切り替える
+    const baseHeight = 720;
+    if (baseHeight * scale > screenHeight) {
+        scale = screenHeight / baseHeight;
+    }
+
+    // スケールを適用
     container.style.transform = `scale(${scale})`;
 }
 
-// イベント登録
+// 初期化とリサイズ時のイベント
 window.addEventListener('resize', adjustScale);
 window.addEventListener('load', adjustScale);
-// 初回実行
 adjustScale();
