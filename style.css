@@ -58,39 +58,36 @@ body {
 .left-bottom {
     display: flex;
     flex-direction: row;
-    /* 天気を中央にするため、space-betweenから変更 */
+    /* justify-contentをcenterにすることで、天気を中央へ */
     justify-content: center; 
     align-items: flex-end;
-    gap: 40px; /* 時計との間隔を適宜調整 */
     margin-top: auto;
     width: 100%;
-    padding: 0;
-    box-sizing: border-box;
-    position: relative; /* 子要素の配置基準のため */
+    position: relative; /* 日付のabsoluteの基準になります */
 }
 
-/* ===========================
-   天気予報（3時間ごと）
-=========================== */
+/* 天気：パネル内で中央揃え */
 #weather {
     display: flex;
     flex-direction: column;
-    align-items: center; /* アイコンやテキストを中央揃え */
+    align-items: center; /* アイコンと文字を中央に */
     gap: 5px;
-    min-width: 300px;
-    /* 左パネル全体に対して中央に寄せたい場合は以下を追加 */
-    margin: 0 auto; 
 }
 
 #forecast-container {
     display: flex;
-    justify-content: center; /* 予報アイテム自体を中央に並べる */
+    justify-content: center; /* 3時間ごとの予報を中央から並べる */
     gap: 25px;
     margin-top: 15px;
-    padding-bottom: 10px;
-    overflow-x: auto;
-    white-space: nowrap;
     width: 100%;
+}
+
+/* 時計：右側に寄せる（天気が中央に来る分、右に押し出す） */
+.clock-scale {
+    position: absolute;
+    right: 0; /* 右端に固定 */
+    display: flex;
+    align-items: flex-end;
 }
 
 /* スクロールバーを隠す（デザイン優先） */
@@ -121,21 +118,18 @@ body {
 .weather-rainy { color: #1e88e5; }
 .weather-snowy { color: #81d4fa; }
 
-/* 日付の配置はそのまま維持 */
 #date {
     position: absolute;
     top: 0; 
     left: 0;
     
-    /* スタイルのみをアップデート */
     text-align: left;
     font-family: 'Roboto', sans-serif;
-    font-weight: 300;         /* 太字を解除してモダンに */
-    font-size: 1.1rem;        /* 視認性の良いサイズ */
-    letter-spacing: 0.05em;   /* 文字間隔を広げて高級感を出す */
-    color: rgba(255, 255, 255, 0.9); /* わずかに透過 */
+    font-weight: 300; /* 先ほど提案したスタイリッシュな太さ */
+    font-size: 20px; 
     line-height: 1.1;
-    white-space: nowrap;      /* 改行禁止 */
+    color: white;
+    white-space: nowrap;
 }
 
 /* 和暦部分（R8）のアクセント設定 */
@@ -309,6 +303,7 @@ body {
   line-height: 1.5;
   opacity: 0.9;
 }
+
 
 
 
