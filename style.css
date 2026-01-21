@@ -120,8 +120,9 @@ body {
 }
 
 /* 天気エリア全体 */
+/* 天気エリア全体 */
 #forecast-viewport {
-    height: 160px; /* ラベルとアイテムが収まる高さ */
+    height: 160px; /* ここの高さを固定 */
     overflow: hidden;
     position: relative;
     width: 100%;
@@ -131,16 +132,32 @@ body {
 #forecast-wrapper {
     display: flex;
     flex-direction: column;
-    transition: transform 1.2s cubic-bezier(0.45, 0.05, 0.55, 0.95); /* より滑らかなスライド */
+    /* transitionを滑らかに。transformとopacityを同時に動かす */
+    transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 .day-group {
-    height: 160px;
+    height: 160px; /* viewportの高さと完全に一致させる */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    transition: opacity 1.2s; /* フェード効果も追加 */
+}
+
+/* 表示されていない方のグループを少し薄くする（JSで制御） */
+.day-group.inactive {
+    opacity: 0.2;
+    filter: blur(2px); /* 少しぼかすとさらにスタイリッシュ */
+}
+
+.day-label {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 15px;
+    text-transform: uppercase;
 }
 
 .day-items {
@@ -150,14 +167,6 @@ body {
     width: 100%;
 }
 
-.day-label {
-    font-size: 13px;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 12px;
-}
 .weather-icon svg {
   width: 100%;
   height: 100%;
@@ -343,6 +352,7 @@ body {
   line-height: 1.5;
   opacity: 0.9;
 }
+
 
 
 
