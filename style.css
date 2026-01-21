@@ -58,20 +58,54 @@ body {
 .left-bottom {
     display: flex;
     flex-direction: row;
-    /* justify-contentをcenterにすることで、天気を中央へ */
-    justify-content: center; 
+    justify-content: center; /* 天気を中央に寄せる */
     align-items: flex-end;
     margin-top: auto;
     width: 100%;
-    position: relative; /* 日付のabsoluteの基準になります */
+    position: relative;     /* これが重要：子要素の基準点になる */
+    min-height: 180px;      /* 日付と天気が重ならないよう高さを確保 */
+    padding-bottom: 10px;
 }
 
-/* 天気：パネル内で中央揃え */
+/* 日付：左上固定 */
+#date {
+    position: absolute;
+    top: 0;                /* 親要素の上端 */
+    left: 0;               /* 親要素の左端 */
+    
+    text-align: left;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+    font-size: 20px;
+    line-height: 1.0;
+    color: white;
+    white-space: nowrap;
+    z-index: 10;           /* 他の要素より上に配置 */
+}
+
 #weather {
     display: flex;
     flex-direction: column;
-    align-items: center; /* アイコンと文字を中央に */
-    gap: 5px;
+    align-items: center;
+    margin-bottom: 0;      /* 下揃えにするため */
+}
+
+/* 時計：右下固定 */
+.clock-scale {
+    position: absolute;
+    right: 0;              /* 親要素の右端 */
+    bottom: 0;             /* 親要素の下端 */
+    display: flex;
+    align-items: flex-end;
+}
+
+/* 時計：右下固定 */
+.clock-scale {
+    position: absolute;
+    right: 0;              /* 親要素の右端 */
+    bottom: 0;             /* 親要素の下端 */
+    display: flex;
+    align-items: flex-end;
 }
 
 #forecast-container {
@@ -80,14 +114,6 @@ body {
     gap: 25px;
     margin-top: 15px;
     width: 100%;
-}
-
-/* 時計：右側に寄せる（天気が中央に来る分、右に押し出す） */
-.clock-scale {
-    position: absolute;
-    right: 0; /* 右端に固定 */
-    display: flex;
-    align-items: flex-end;
 }
 
 /* スクロールバーを隠す（デザイン優先） */
@@ -118,19 +144,6 @@ body {
 .weather-rainy { color: #1e88e5; }
 .weather-snowy { color: #81d4fa; }
 
-#date {
-    position: absolute;
-    top: 0; 
-    left: 0;
-    
-    text-align: left;
-    font-family: 'Roboto', sans-serif;
-    font-weight: 300; /* 先ほど提案したスタイリッシュな太さ */
-    font-size: 20px; 
-    line-height: 1.1;
-    color: white;
-    white-space: nowrap;
-}
 
 /* 和暦部分（R8）のアクセント設定 */
 .era-label {
@@ -303,6 +316,7 @@ body {
   line-height: 1.5;
   opacity: 0.9;
 }
+
 
 
 
