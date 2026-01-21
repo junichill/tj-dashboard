@@ -109,6 +109,9 @@ function getWeatherType(id) {
 // =========================
 // WEATHER (3時間ごとの予報)
 // =========================
+let weatherSlideIndex = 0;
+let weatherTimer = null;
+
 async function fetchWeather() {
   try {
     const r = await fetch(
@@ -116,33 +119,56 @@ async function fetchWeather() {
     );
     const d = await r.json();
 
-    const container = document.getElementById('forecast-container');
-    container.innerHTML = ''; // 一旦クリア
+    const wrapper = document.getElementById('forecast-wrapper');
+    wrapper.innerHTML = ''; 
 
-    // 直近の4つ（12時間分）を取得して表示
-    const forecastList = d.list.slice(0, 8);
+    const now = new Date();
+    const todayStr = now.toLocaleDateString();
+    const tomorrow = new Date();
+    tomorrow.setDate(now.getDate() + 1);
+    const tomorrowStr = tomorrow.toLocaleDateString();
 
-    forecastList.forEach(item => {
-      const date = new Date(item.dt * 1000);
-      const hour = date.getHours().toString().padStart(2, '0') + ":00";
-      const temp = Math.round(item.main.temp);
-      const type = getWeatherType(item.weather[0].id);
+    const todayForecasts = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === todayStr);
+    const tomorrowForecasts = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr);
 
-      const forecastHtml = `
-        <div class="forecast-item" style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
-          <div style="font-size: 14px; opacity: 0.8;">${hour}</div>
-          <div class="weather-icon weather-${type}" style="width: 40px; height: 40px;">
-            ${WEATHER_ICONS[type]}
-          </div>
-          <div style="font-size: 18px; font-weight: 700;">${temp}℃</div>
-        </div>
-      `;
-      container.insertAdjacentHTML('beforeend', forecastHtml);
-    });
+    const createItemsHtml = (list) => {
+      return list.map(item => {
+        const date = new Date(item.dt * 1000);
+        const hour = date.getHours().toString().padStart(2, '0') + ":00";
+        const temp = Math.round(item.main.temp);
+        const type = getWeatherType(item.weather[0].id);
+        return `
+          <div class="forecast-item">
+            <div class="forecast-time">${hour}</div>
+            <div class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</div>
+            <div class="forecast-temp">${temp}℃</div>
+          </div>`;
+      }).join('');
+    };
+
+    // TodayとTomorrowを追加
+    wrapper.insertAdjacentHTML('beforeend', `
+      <div class="day-group"><div class="day-label">— Today —</div><div class="day-items">${createItemsHtml(todayForecasts)}</div></div>
+      <div class="day-group"><div class="day-label">— Tomorrow —</div><div class="day-items">${createItemsHtml(tomorrowForecasts.slice(0, 8))}</div></div>
+    `);
+
+    // スライド開始
+    startWeatherCycle();
 
   } catch (err) {
     console.error('天気情報取得失敗', err);
   }
+}
+
+function startWeatherCycle() {
+  if (weatherTimer) clearInterval(weatherTimer);
+  const wrapper = document.getElementById('forecast-wrapper');
+  
+  weatherTimer = setInterval(() => {
+    weatherSlideIndex = (weatherSlideIndex + 1) % 2; // TodayとTomorrowの2つ
+    const y = weatherSlideIndex * -140; // 高さ140px分ずらす
+    wrapper.style.transform = `translateY(${y}px)`;
+  }, 8000); // 8秒ごとに切り替え
 }
 
 fetchWeather();
