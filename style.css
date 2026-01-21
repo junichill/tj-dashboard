@@ -121,7 +121,7 @@ body {
 
 /* 天気エリア全体 */
 #forecast-viewport {
-    height: 180px; /* 全ての要素が収まる高さに固定 */
+    height: 180px; 
     overflow: hidden;
     position: relative;
 }
@@ -129,6 +129,7 @@ body {
 #forecast-wrapper {
     display: flex;
     flex-direction: column;
+    /* 高級感のあるイージング設定 */
     transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
@@ -183,12 +184,22 @@ body {
 .forecast-temp .min { color: #448aff; }
 
 .day-group {
-    height: 180px; /* スライドの1単位をviewportと完全に一致させる */
+    height: 180px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* 上下中央に配置して見切れを防ぐ */
+    justify-content: center;
     flex-shrink: 0;
+    /* フォーカス効果のための遷移設定 */
+    transition: opacity 1.2s ease, filter 1.2s ease;
+    opacity: 1;
+    filter: blur(0);
+}
+
+/* 消えゆく予報・出てくる前の予報（フォーカス外） */
+.day-group.inactive {
+    opacity: 0.1;      /* 薄くする */
+    filter: blur(4px); /* ボケさせる */
 }
 
 .day-label {
@@ -198,11 +209,6 @@ body {
     letter-spacing: 0.2em;
     color: rgba(255, 255, 255, 0.6);
     margin-bottom: 15px; /* アイコンとの距離を最適化 */
-}
-
-.day-group.inactive {
-    opacity: 0.2; /* 完全に消すことで重なりを防ぐ */
-    filter: blur(5px);
 }
 
 .day-items {
@@ -403,3 +409,4 @@ body {
   line-height: 1.5;
   opacity: 0.9;
 }
+
