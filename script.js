@@ -134,14 +134,19 @@ function createForecastGroupHtml(list, label) {
 function createWeeklyForecastHtml(list) {
   const dailyData = {};
   list.forEach(item => {
-    const date = new Date(item.dt * 1000).toLocaleDateString('ja-JP', {weekday:'short', day:'numeric'});
-    if (!dailyData[date]) dailyData[date] = { temps: [], ids: [] };
-    dailyData[date].temps.push(item.main.temp);
-    dailyData[date].ids.push(item.weather[0].id);
+    // 曜日を英語(short: Mon, Tue...)、日付を数字で取得
+    const dateObj = new Date(item.dt * 1000);
+    const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
+    const dayNum = dateObj.getDate();
+    const dateKey = `${dayName} ${dayNum}`; // "Wed 21" のような形式
+    
+    if (!dailyData[dateKey]) dailyData[dateKey] = { temps: [], ids: [] };
+    dailyData[dateKey].temps.push(item.main.temp);
+    dailyData[dateKey].ids.push(item.weather[0].id);
   });
 
   let itemsHtml = '';
-  // 明日以降の5日間を抽出
+  // 今日を除いた明日以降の5日間を表示
   Object.keys(dailyData).slice(1, 6).forEach(date => {
     const day = dailyData[date];
     const maxTemp = Math.round(Math.max(...day.temps));
@@ -153,7 +158,9 @@ function createWeeklyForecastHtml(list) {
       <div class="forecast-item weekly-item">
         <div class="forecast-time">${date}</div>
         <div class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</div>
-        <div class="forecast-temp"><span class="max">${maxTemp}</span>/<span class="min">${minTemp}</span></div>
+        <div class="forecast-temp weekly-temp">
+          <span class="max">${maxTemp}</span><span class="separator">/</span><span class="min">${minTemp}</span>
+        </div>
       </div>`;
   });
 
