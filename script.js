@@ -175,31 +175,56 @@ async function fetchWeather() {
 
     const wrapper = document.getElementById('forecast-wrapper');
     
-    // 1. 今日 (今から8枠)
+    // --- 1-3枚目: 天気データ ---
     const todayHtml = createForecastGroupHtml(d.list.slice(0, 8), "Today's Forecast");
-
-    // 2. 明日 (明日0時〜の8枠)
+    
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowStr = tomorrow.toLocaleDateString();
     const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr).slice(0, 8);
     const tomorrowHtml = createForecastGroupHtml(tomorrowList, "Tomorrow's Plan");
 
-    // 3. 週間
     const weeklyHtml = createWeeklyForecastHtml(d.list);
 
-    // 3つ全てを結合して代入（順番を固定）
-    wrapper.innerHTML = todayHtml + tomorrowHtml + weeklyHtml;
+    // --- 4枚目: FX (為替) ダミーデータ ---
+    const fxData = [
+      { name: 'USD/JPY', value: '148.22', change: '+0.12', dir: 'up' },
+      { name: 'EUR/JPY', value: '161.45', change: '-0.05', dir: 'down' },
+      { name: 'EUR/USD', value: '1.0890', change: '+0.002', dir: 'up' }
+    ];
+    const fxHtml = createMarketGroupHtml(fxData, "Market: FX");
 
-    // スライドの初期化
+    // --- 5枚目: Futures (先物) ダミーデータ ---
+    const futuresData = [
+      { name: 'NK225', value: '38,520', change: '+450', dir: 'up' },
+      { name: 'NASDAQ', value: '17,850', change: '-20', dir: 'down' },
+      { name: 'S&P 500', value: '5,022', change: '+12', dir: 'up' }
+    ];
+    const futuresHtml = createMarketGroupHtml(futuresData, "Market: Futures");
+
+    // 全5枚を統合
+    wrapper.innerHTML = todayHtml + tomorrowHtml + weeklyHtml + fxHtml + futuresHtml;
+
+    // 初期化
     weatherSlideIndex = 0;
     wrapper.style.transform = `translateY(0px)`;
-    
     startWeatherCycle();
 
   } catch (err) {
-    console.error('天気情報取得失敗', err);
+    console.error('データ取得失敗', err);
   }
+}
+
+// 経済情報用のHTMLを生成する共通関数（JSの末尾などに追加してください）
+function createMarketGroupHtml(data, label) {
+  const itemsHtml = data.map(item => `
+    <div class="forecast-item market-item">
+      <div class="market-name">${item.name}</div>
+      <div class="market-value">${item.value}</div>
+      <div class="market-change ${item.dir}">${item.change}</div>
+    </div>`).join('');
+
+  return `<div class="day-group"><div class="day-label">— ${label} —</div><div class="day-items">${itemsHtml}</div></div>`;
 }
 
 function startWeatherCycle() {
