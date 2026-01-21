@@ -248,6 +248,48 @@ body {
     font-weight: 400;         /* 視認性確保のためウェイト微調整 */
 }
 
+/* 経済情報専用スタイル */
+.market-item {
+    width: 100px !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.market-name {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 4px;
+    font-weight: bold;
+}
+
+.market-value {
+    font-size: 20px; /* 天気より少し小さくしてシャープに */
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+}
+
+.market-change {
+    font-size: 13px;
+    font-weight: bold;
+    margin-top: 2px;
+}
+
+/* 上昇・下落の色分け */
+.market-change.up { color: #00ff88; }   /* ネオン気味のグリーン */
+.market-change.down { color: #ff4d4d; } /* 鮮やかなレッド */
+
+/* 週間天気のセパレーターも念のため確認 */
+.weekly-temp .separator {
+    font-size: 22px;
+    margin: 0 6px;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 300;
+    transform: rotate(10deg);
+    display: inline-block;
+}
+
 /* =========================
    Flip時計（スリム＆縦長）
 =========================== */
@@ -412,6 +454,7 @@ body {
   line-height: 1.5;
   opacity: 0.9;
 }
+
 
 
 
