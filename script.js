@@ -120,27 +120,20 @@ async function fetchWeather() {
     const wrapper = document.getElementById('forecast-wrapper');
     wrapper.innerHTML = ''; 
 
-    // --- 1. Today (今から24時間分 = 8個) ---
-    const todayList = d.list.slice(0, 8);
-    const todayHtml = createForecastGroupHtml(todayList, "Today's Forecast");
+    // --- 1. Today ---
+    const todayHtml = createForecastGroupHtml(d.list.slice(0, 8), "Today's Forecast");
 
-    // --- 2. Tomorrow (明日の0:00〜21:00 = 8個) ---
+    // --- 2. Tomorrow ---
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowStr = tomorrow.toLocaleDateString();
-
-    const tomorrowList = d.list.filter(item => {
-      const dt = new Date(item.dt * 1000);
-      return dt.toLocaleDateString() === tomorrowStr;
-    }).slice(0, 8); // 念のため8個に絞る
-
+    const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr).slice(0, 8);
     const tomorrowHtml = createForecastGroupHtml(tomorrowList, "Tomorrow's Plan");
 
-    // HTMLをセット
-    wrapper.insertAdjacentHTML('beforeend', todayHtml);
-    wrapper.insertAdjacentHTML('beforeend', tomorrowHtml);
+    // --- 3. Weekly (5日間) ---
+    const weeklyHtml = createWeeklyForecastHtml(d.list);
 
-    // スライドサイクル開始
+    wrapper.insertAdjacentHTML('beforeend', todayHtml + tomorrowHtml + weeklyHtml);
     startWeatherCycle();
 
   } catch (err) {
@@ -148,50 +141,54 @@ async function fetchWeather() {
   }
 }
 
-// 予報グループのHTMLを生成する共通関数
-function createForecastGroupHtml(list, label) {
-  const itemsHtml = list.map(item => {
-    const date = new Date(item.dt * 1000);
-    const hour = date.getHours().toString().padStart(2, '0') + ":00";
-    const temp = Math.round(item.main.temp);
-    const type = getWeatherType(item.weather[0].id);
-    return `
-      <div class="forecast-item">
-        <div class="forecast-time">${hour}</div>
-        <div class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</div>
-        <div class="forecast-temp">${temp}℃</div>
-      </div>`;
-  }).join('');
+// 週間天気のHTML生成
+function createWeeklyForecastHtml(list) {
+  const dailyData = {};
+  list.forEach(item => {
+    const date = new Date(item.dt * 1000).toLocaleDateString('ja-JP', {weekday:'short', day:'numeric'});
+    if (!dailyData[date]) {
+      dailyData[date] = { temps: [], ids: [] };
+    }
+    dailyData[date].temps.push(item.main.temp);
+    dailyData[date].ids.push(item.weather[0].id);
+  });
 
-  return `
-    <div class="day-group">
-      <div class="day-label">— ${label} —</div>
-      <div class="day-items">${itemsHtml}</div>
-    </div>`;
+  let itemsHtml = '';
+  Object.keys(dailyData).slice(1, 6).forEach(date => { // 明日以降の5日間
+    const day = dailyData[date];
+    const maxTemp = Math.round(Math.max(...day.temps));
+    const minTemp = Math.round(Math.min(...day.temps));
+    // その日の代表的な天気（配列の真ん中の時間を採用）
+    const midId = day.ids[Math.floor(day.ids.length / 2)];
+    const type = getWeatherType(midId);
+    
+    itemsHtml += `
+      <div class="forecast-item weekly-item">
+        <div class="forecast-time">${date}</div>
+        <div class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</div>
+        <div class="forecast-temp"><span class="max">${maxTemp}</span> / <span class="min">${minTemp}</span></div>
+      </div>`;
+  });
+
+  return `<div class="day-group"><div class="day-label">— Weekly Outlook —</div><div class="day-items">${itemsHtml}</div></div>`;
 }
 
 function startWeatherCycle() {
-    if (weatherTimer) clearInterval(weatherTimer);
-    const wrapper = document.getElementById('forecast-wrapper');
-    
-    weatherTimer = setInterval(() => {
-        weatherSlideIndex = (weatherSlideIndex + 1) % 2; 
-        
-        // 1. 移動距離をCSSの高さ「160」にピッタリ合わせる
-        const y = weatherSlideIndex * -160; 
-        wrapper.style.transform = `translateY(${y}px)`;
+  if (weatherTimer) clearInterval(weatherTimer);
+  const wrapper = document.getElementById('forecast-wrapper');
+  
+  weatherTimer = setInterval(() => {
+    const groups = wrapper.querySelectorAll('.day-group');
+    if (groups.length === 0) return;
 
-        // 2. スタイリッシュなフェード演出の切り替え
-        const groups = wrapper.querySelectorAll('.day-group');
-        groups.forEach((group, index) => {
-            if (index === weatherSlideIndex) {
-                group.classList.remove('inactive');
-            } else {
-                group.classList.add('inactive');
-            }
-        });
-        
-    }, 8000); // 8秒間隔
+    weatherSlideIndex = (weatherSlideIndex + 1) % groups.length; 
+    const y = weatherSlideIndex * -160; 
+    wrapper.style.transform = `translateY(${y}px)`;
+
+    groups.forEach((group, index) => {
+      group.classList.toggle('inactive', index !== weatherSlideIndex);
+    });
+  }, 8000); 
 }
 
 fetchWeather();
