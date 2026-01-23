@@ -185,22 +185,23 @@ async function fetchWeather() {
     const weeklyHtml = createWeeklyForecastHtml(d.list);
 
     // --- 4-9枚目: 経済データ (TradingView / 5分足) ---
-    const mktHtml = (id, label) => `
-      <div class="day-group">
-        <div class="day-label">— ${label} —</div>
-        <div id="${id}" class="tv-mini-wrapper"></div>
-      </div>`;
+    // --- 4-9枚目: 経済データ (TradingView / 5分足) ---
+const mktHtml = (id, label) => `
+  <div class="day-group">
+    <div class="day-label">— ${label} —</div>
+    <div id="${id}" class="tv-mini-wrapper"></div>
+  </div>`;
 
-    // 全てを代入（計9枚構成）
-    wrapper.innerHTML = 
-        todayHtml + tomorrowHtml + weeklyHtml + 
-        mktHtml("tv-usd-jpy", "Realtime FX: USD/JPY") +
-        mktHtml("tv-eur-jpy", "Realtime FX: EUR/JPY") +
-        mktHtml("tv-eur-usd", "Realtime FX: EUR/USD") +
-        mktHtml("tv-n225",    "Index: Nikkei 225") +
-        mktHtml("tv-nasdaq",  "Index: NASDAQ 100") +
-        mktHtml("tv-sp500",   "Index: S&P 500");
-
+// fetchWeather 関数内の innerHTML 生成部分
+wrapper.innerHTML = 
+    todayHtml + tomorrowHtml + weeklyHtml + 
+    mktHtml("tv-usd-jpy", "Realtime FX: USD/JPY") +
+    mktHtml("tv-eur-jpy", "Realtime FX: EUR/JPY") +
+    mktHtml("tv-eur-usd", "Realtime FX: EUR/USD") +
+    mktHtml("tv-n225",    "Realtime Indices: Nikkei 225") + // ここは変えない
+    mktHtml("tv-nasdaq",  "Nasdaq 100 Futures (CFD/US100)") +
+    mktHtml("tv-sp500",   "S&P 500 Futures (CFD/US500)");
+    
     initTradingViewWidgets();
 
     weatherSlideIndex = 0;
@@ -231,8 +232,8 @@ function initTradingViewWidgets() {
     
     // 指数
     appendMiniWidget("tv-n225",    { ...conf, "symbol": "OSE:NK2251!" });
-    appendMiniWidget("tv-nasdaq",  { ...conf, "symbol": "TVC:NDX" });
-    appendMiniWidget("tv-sp500",   { ...conf, "symbol": "TVC:SPX" });
+    appendMiniWidget("tv-nasdaq",  { ...conf, "symbol": "CAPITALCOM:US100" });
+    appendMiniWidget("tv-sp500",   { ...conf, "symbol": "CAPITALCOM:US500" });
 }
 
 function appendMiniWidget(containerId, config) {
