@@ -184,34 +184,22 @@ async function fetchWeather() {
     const tomorrowHtml = createForecastGroupHtml(tomorrowList, "Tomorrow's Plan");
     const weeklyHtml = createWeeklyForecastHtml(d.list);
 
-    // --- 4-7枚目: 経済データ (TradingView) ---
-    // 4枚目: USD/JPY, EUR/JPY
-    const mkt1Html = `
+    // --- 4-9枚目: 経済データ (TradingView / 5分足) ---
+    const mktHtml = (id, label) => `
       <div class="day-group">
-        <div class="day-label">— FX: USD/JPY & EUR/JPY —</div>
-        <div id="tv-mkt-1" class="tv-mini-wrapper"></div>
-      </div>`;
-    // 5枚目: EUR/USD
-    const mkt2Html = `
-      <div class="day-group">
-        <div class="day-label">— FX: EUR/USD —</div>
-        <div id="tv-mkt-2" class="tv-mini-wrapper"></div>
-      </div>`;
-    // 6枚目: NK225 & NASDAQ
-    const mkt3Html = `
-      <div class="day-group">
-        <div class="day-label">— Indices: Nikkei & NASDAQ —</div>
-        <div id="tv-mkt-3" class="tv-mini-wrapper"></div>
-      </div>`;
-    // 7枚目: S&P 500
-    const mkt4Html = `
-      <div class="day-group">
-        <div class="day-label">— Indices: S&P 500 —</div>
-        <div id="tv-mkt-4" class="tv-mini-wrapper"></div>
+        <div class="day-label">— ${label} —</div>
+        <div id="${id}" class="tv-mini-wrapper"></div>
       </div>`;
 
-    // 全てを代入（計7枚構成）
-    wrapper.innerHTML = todayHtml + tomorrowHtml + weeklyHtml + mkt1Html + mkt2Html + mkt3Html + mkt4Html;
+    // 全てを代入（計9枚構成）
+    wrapper.innerHTML = 
+        todayHtml + tomorrowHtml + weeklyHtml + 
+        mktHtml("tv-usd-jpy", "Realtime FX: USD/JPY") +
+        mktHtml("tv-eur-jpy", "Realtime FX: EUR/JPY") +
+        mktHtml("tv-eur-usd", "Realtime FX: EUR/USD") +
+        mktHtml("tv-n225",    "Index: Nikkei 225") +
+        mktHtml("tv-nasdaq",  "Index: NASDAQ 100") +
+        mktHtml("tv-sp500",   "Index: S&P 500");
 
     initTradingViewWidgets();
 
@@ -229,25 +217,22 @@ function initTradingViewWidgets() {
         "width": 750,
         "height": 160,
         "locale": "ja",
-        "dateRange": "1D",
+        "dateRange": "1D",    // 5分足を綺麗に見せるための1日表示
         "colorTheme": "dark",
         "isTransparent": true,
-        "interval": "5", // 5分足
+        "interval": "5",       // 5分足設定
         "largeChartUrl": ""
     };
 
-    // 4枚目: ドル円
-    appendMiniWidget("tv-mkt-1", { ...conf, "symbol": "FX:USDJPY" });
-    // 5枚目: ユーロ円
-    appendMiniWidget("tv-mkt-2", { ...conf, "symbol": "FX:EURJPY" });
-    // 追加分: ユーロドルも見たい場合は、スライドを分けるか、この関数内でシンボルを切り替えてください
-    // 今回は分かりやすく1枚1銘柄のイメージで構成を組みます（適宜 symbol を書き換えてください）
+    // 為替
+    appendMiniWidget("tv-usd-jpy", { ...conf, "symbol": "FX:USDJPY" });
+    appendMiniWidget("tv-eur-jpy", { ...conf, "symbol": "FX:EURJPY" });
+    appendMiniWidget("tv-eur-usd", { ...conf, "symbol": "FX:EURUSD" });
     
-    // 修正版：各コンテナに1銘柄ずつ割り当て
-    appendMiniWidget("tv-mkt-1", { ...conf, "symbol": "FX:USDJPY" });
-    appendMiniWidget("tv-mkt-2", { ...conf, "symbol": "FX:EURJPY" }); // ここをユーロ円に
-    appendMiniWidget("tv-mkt-3", { ...conf, "symbol": "CME_MINI:NQ1!" }); // NASDAQ先物
-    appendMiniWidget("tv-mkt-4", { ...conf, "symbol": "CME:ES1!" });    // S&P500先物
+    // 指数
+    appendMiniWidget("tv-n225",    { ...conf, "symbol": "OSE:NK2251!" });
+    appendMiniWidget("tv-nasdaq",  { ...conf, "symbol": "CME_MINI:NQ1!" });
+    appendMiniWidget("tv-sp500",   { ...conf, "symbol": "CME:ES1!" });
 }
 
 function appendMiniWidget(containerId, config) {
