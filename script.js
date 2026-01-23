@@ -163,12 +163,13 @@ async function fetchWeather() {
 }
 
 function initTradingViewWidgets() {
-    const conf = { "width": "100%", "height": 160, "locale": "ja", "dateRange": "1D", "colorTheme": "dark", "isTransparent": true, "interval": "5" };
+    const conf = { "width": "100%", "height": 140, "locale": "ja", "dateRange": "1D", "colorTheme": "dark", "isTransparent": true, "interval": "5" };
 
-    // --- 左パネル（固定：日経・ドル円） ---
+    // --- 左パネル（固定3本） ---
     appendMiniWidget("tv-usd-jpy-fixed", { ...conf, "symbol": "FX:USDJPY" });
     appendMiniWidget("tv-n225-fixed",    { ...conf, "symbol": "OSE:NK2251!" });
-
+    appendMiniWidget("tv-nasdaq-fixed",  { ...conf, "symbol": "CAPITALCOM:US100" });
+  
     // --- 中央パネル（スライド） ---
     appendMiniWidget("tv-nasdaq", { ...conf, "symbol": "CAPITALCOM:US100" });
     appendMiniWidget("tv-sp500",  { ...conf, "symbol": "CAPITALCOM:US500" });
