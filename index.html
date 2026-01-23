@@ -20,22 +20,24 @@
 
 <div id="left-panel">
   <div class="clock-container glass-card">
+    <div class="clock-scale">
+      <div class="tick" data-did-init="handleTickInit">
+        <span data-view="flip" data-key="hours1" class="tick-flip"></span>
+        <span data-view="flip" data-key="hours2" class="tick-flip"></span>
+        <span class="tick-text-inline">:</span>
+        <span data-view="flip" data-key="minutes1" class="tick-flip"></span>
+        <span data-view="flip" data-key="minutes2" class="tick-flip"></span>
+      </div>
+      <span id="seconds-static">00</span>
     </div>
+  </div>
 
   <div id="fixed-market-container">
-    <div class="fixed-label">— REALTIME FIXED —</div>
     <div id="tv-usd-jpy-fixed" class="glass-card mini-widget-fixed"></div>
     <div id="tv-n225-fixed" class="glass-card mini-widget-fixed"></div>
     <div id="tv-nasdaq-fixed" class="glass-card mini-widget-fixed"></div>
   </div>
 </div>
-  
-    <div id="fixed-market-container">
-      <div class="fixed-label">— REALTIME FIXED —</div>
-      <div id="tv-usd-jpy-fixed" class="glass-card mini-widget-fixed"></div>
-      <div id="tv-n225-fixed" class="glass-card mini-widget-fixed"></div>
-    </div>
-  </div>
 
   <div id="center-panel">
     <div class="glass-card main-slide-card">
@@ -58,3 +60,4 @@
 </body>
 
 </html>
+
