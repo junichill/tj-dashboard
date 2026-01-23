@@ -139,21 +139,20 @@ async function fetchWeather() {
     const tomorrowHtml = createForecastGroupHtml(tomorrowList, "Tomorrow's Plan");
     const weeklyHtml = createWeeklyForecastHtml(d.list);
 
-    const mktHtml = (id, label) => `
-      <div class="day-group">
-        <div class="day-label">— ${label} —</div>
-        <div id="${id}" class="tv-mini-wrapper" style="width:750px; height:160px;"></div>
-      </div>`;
+   const mktHtml = (id, label) => `
+    <div class="day-group">
+      <div class="day-label">— ${label} —</div>
+      <div id="${id}" style="width:700px; height:130px;"></div>
+    </div>`;
 
-    // 中央のスライド：日経・ドル円以外を代入（計9枚）
-    wrapper.innerHTML = todayHtml + tomorrowHtml + weeklyHtml + 
-                        mktHtml("tv-nasdaq", "Nasdaq 100 Futures (CFD/US100)") +
-                        mktHtml("tv-sp500",  "S&P 500 Futures (CFD/US500)") +
-                        mktHtml("tv-gold",   "Gold Spot (XAU/USD)") +
-                        mktHtml("tv-oil",    "WTI Crude Oil Futures (CFD)") +
-                        mktHtml("tv-eur-jpy", "Realtime FX: EUR/JPY") +
-                        mktHtml("tv-eur-usd", "Realtime FX: EUR/USD");
-
+  // 中央はNASDAQを抜いた構成
+  wrapper.innerHTML = todayHtml + tomorrowHtml + weeklyHtml + 
+                      mktHtml("tv-sp500", "S&P 500 Futures") +
+                      mktHtml("tv-gold", "Gold Spot") +
+                      mktHtml("tv-oil", "WTI Crude Oil") +
+                      mktHtml("tv-eur-jpy", "EUR/JPY") +
+                      mktHtml("tv-eur-usd", "EUR/USD");
+    
     initTradingViewWidgets();
     weatherSlideIndex = 0;
     wrapper.style.transform = `translateY(0px)`;
@@ -163,20 +162,19 @@ async function fetchWeather() {
 }
 
 function initTradingViewWidgets() {
-    const conf = { "width": "100%", "height": 140, "locale": "ja", "dateRange": "1D", "colorTheme": "dark", "isTransparent": true, "interval": "5" };
+    const conf = { "width": "100%", "height": 155, "locale": "ja", "dateRange": "1D", "colorTheme": "dark", "isTransparent": true, "interval": "5" };
 
-    // --- 左パネル（固定3本） ---
+    // 左パネル：固定3本 (NASDAQ追加)
     appendMiniWidget("tv-usd-jpy-fixed", { ...conf, "symbol": "FX:USDJPY" });
     appendMiniWidget("tv-n225-fixed",    { ...conf, "symbol": "OSE:NK2251!" });
     appendMiniWidget("tv-nasdaq-fixed",  { ...conf, "symbol": "CAPITALCOM:US100" });
-  
-    // --- 中央パネル（スライド） ---
-    appendMiniWidget("tv-nasdaq", { ...conf, "symbol": "CAPITALCOM:US100" });
-    appendMiniWidget("tv-sp500",  { ...conf, "symbol": "CAPITALCOM:US500" });
-    appendMiniWidget("tv-gold",   { ...conf, "symbol": "TVC:GOLD" });
-    appendMiniWidget("tv-oil",    { ...conf, "symbol": "CAPITALCOM:OIL_CRUDE" });
-    appendMiniWidget("tv-eur-jpy", { ...conf, "symbol": "FX:EURJPY" });
-    appendMiniWidget("tv-eur-usd", { ...conf, "symbol": "FX:EURUSD" });
+
+    // 中央パネル：スライド用
+    appendMiniWidget("tv-sp500", conf, "CAPITALCOM:US500");
+    appendMiniWidget("tv-gold",  conf, "TVC:GOLD");
+    appendMiniWidget("tv-oil",   conf, "CAPITALCOM:OIL_CRUDE");
+    appendMiniWidget("tv-eur-jpy", conf, "FX:EURJPY");
+    appendMiniWidget("tv-eur-usd", conf, "FX:EURUSD");
 }
 
 function appendMiniWidget(containerId, config) {
