@@ -1,279 +1,69 @@
-/* =========================================
-   1. 基本レイアウト & リセット
-   ========================================= */
 :root {
   --glass-bg: rgba(255, 255, 255, 0.05);
   --glass-border: rgba(255, 255, 255, 0.12);
-  --blur: blur(20px);
-  --accent: #00d4ff;
+  --blur: blur(25px);
+  --accent: #00e5ff;
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  background: #000;
-  color: white;
-  font-family: 'Roboto', 'JetBrains Mono', sans-serif;
-  overflow: hidden;
-  width: 100vw;
-  height: 100vh;
+  margin: 0; padding: 0; background: #000; color: white;
+  font-family: 'Roboto', sans-serif; overflow: hidden;
 }
 
-/* 背景オーロラアニメーション */
 .aurora-bg {
-  position: fixed;
-  width: 200%;
-  height: 200%;
-  top: -50%;
-  left: -50%;
-  background: radial-gradient(circle at 20% 30%, #1a237e, transparent),
-              radial-gradient(circle at 80% 70%, #4a148c, transparent),
-              radial-gradient(circle at 50% 50%, #004d40, transparent);
-  filter: blur(80px);
-  opacity: 0.4;
-  animation: rotate-bg 60s linear infinite;
-  z-index: -1;
+  position: fixed; width: 200%; height: 200%; top: -50%; left: -50%;
+  background: radial-gradient(circle at 15% 15%, #0d47a1, transparent),
+              radial-gradient(circle at 85% 85%, #311b92, transparent);
+  filter: blur(100px); opacity: 0.4; animation: rotate-bg 60s linear infinite; z-index: -1;
 }
-@keyframes rotate-bg {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
+@keyframes rotate-bg { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
 #container {
-  width: 1920px;
-  height: 720px;
-  display: flex;
-  padding: 40px;
-  box-sizing: border-box;
-  gap: 30px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform-origin: top left;
+  width: 1920px; height: 720px; display: flex; padding: 30px; 
+  box-sizing: border-box; gap: 25px; transform-origin: top left;
 }
 
-/* =========================================
-   2. 各パネルの構成
-   ========================================= */
 .glass-card {
-  background: var(--glass-bg);
-  backdrop-filter: var(--blur);
-  -webkit-backdrop-filter: var(--blur);
-  border: 1px solid var(--glass-border);
-  border-radius: 24px;
-  box-shadow: 0 15px 45px rgba(0,0,0,0.5);
+  background: var(--glass-bg); backdrop-filter: var(--blur);
+  border: 1px solid var(--glass-border); border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
 }
 
-/* 左パネル: 固定(440px) */
-#left-panel {
-  flex: 0 0 440px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
+/* 左パネル: 固定枠を3つ入れるため、少し詰め気味に */
+#left-panel { flex: 0 0 420px; display: flex; flex-direction: column; gap: 15px; }
+.clock-container { padding: 25px 15px; }
+.fixed-label { font-size: 10px; letter-spacing: 0.4em; color: rgba(255,255,255,0.3); text-align: center; margin-bottom: -5px; }
+.mini-widget-fixed { height: 135px; overflow: hidden; }
 
-/* 中央パネル: スライド(柔軟) */
-#center-panel {
-  flex: 1;
-  min-width: 0;
-}
+/* 中央パネル: 余白を殺して巨大化 */
+#center-panel { flex: 1; min-width: 0; }
+.main-slide-card { height: 100%; overflow: hidden; position: relative; }
+#forecast-viewport { height: 400px; margin-top: 130px; overflow: hidden; }
+#forecast-wrapper { transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1); }
 
-/* 右パネル: ニュース(520px) */
-#right-panel {
-  flex: 0 0 520px;
-}
-
-/* =========================================
-   3. 時計 & 日付
-   ========================================= */
-#date {
-  position: absolute;
-  top: 12px;
-  left: 55px;
-  font-size: 14px;
-  letter-spacing: 0.1em;
-  opacity: 0.7;
-  z-index: 10;
-}
-
-.clock-container {
-  padding: 35px 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.clock-scale {
-  display: flex;
-  align-items: flex-end;
-  gap: 5px;
-}
-
-.tick { font-size: 3.2rem; }
-#seconds-static {
-  font-size: 2.8rem;
-  font-weight: 300;
-  margin-left: 10px;
-  color: var(--accent);
-}
-
-/* =========================================
-   4. 固定指標 (左パネル)
-   ========================================= */
-#fixed-market-container {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.fixed-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.4em;
-  color: rgba(255,255,255,0.3);
-  text-align: center;
-  text-transform: uppercase;
-}
-
-.tv-mini-wrapper {
-  transform: scale(1.1); /* チャートも少し大きく */
-}
-
-/* 左パネルの高さ調整（3つ入れるために少し詰め気味にする） */
-.mini-widget-fixed {
-  height: 145px; 
-}
-
-/* =========================================
-   5. スライドエリア (中央パネル)
-   ========================================= */
-.main-slide-card {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  overflow: hidden;
-}
-
-#forecast-viewport {
-  height: 250px; /* script.jsの移動量と一致させる */
-  overflow: hidden;
-}
-
-#forecast-wrapper {
-  /* スムーズなアニメーション設定 */
-}
-
-/* 中央パネルの余白改善：コンテンツを大きく見せる */
 .day-group {
-  height: 350px; /* 高さを広げて余白を埋める */
-  gap: 30px;
+  height: 400px; display: flex; flex-direction: column; 
+  justify-content: center; align-items: center; gap: 40px;
 }
+.day-label { font-size: 18px; font-weight: 700; letter-spacing: 0.6em; color: var(--accent); }
+.day-items { transform: scale(1.6); display: flex; gap: 20px; } /* 天気を1.6倍に拡大 */
+.tv-mini-wrapper { transform: scale(1.3); } /* 中央チャートも1.3倍 */
 
-.day-items {
-  transform: scale(1.4); /* 天気アイコンや数字を1.4倍に拡大 */
-  gap: 25px;
-}
-
-.day-group.inactive {
-  opacity: 0.1;
-  filter: blur(8px) scale(0.95);
-}
-
-.day-label {
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.4em;
-  color: var(--accent);
-  margin-bottom: 20px;
-  text-transform: uppercase;
-}
-
-/* 天気アイテムのデザイン */
-.forecast-item {
-  text-align: center;
-  width: 80px;
-}
-
-.weather-icon {
-  width: 50px;
-  height: 50px;
-  margin: 10px auto;
-}
-
-.weather-sunny { color: #ffeb3b; }
-.weather-cloudy { color: #cfd8dc; }
-.weather-rainy { color: #4fc3f7; }
-.weather-snowy { color: #ffffff; }
-
-/* =========================================
-   6. ニュース (右パネル)
-   ========================================= */
+/* 右パネル: ニュース背景画像化 */
+#right-panel { flex: 0 0 540px; }
 #news-card {
-  height: 100%;
-  padding: 40px;
-  box-sizing: border-box;
-  position: relative;
-  overflow: hidden;
-  /* 報道番組風の背景画像 (プレースホルダーURLですが、お好みの画像に変更可能です) */
-  background: linear-gradient(135deg, rgba(0,20,50,0.8), rgba(20,0,40,0.8)), 
-              url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80');
-  background-size: cover;
-  background-position: center;
+  height: 100%; padding: 40px; position: relative; overflow: hidden;
+  background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000&auto=format&fit=crop');
+  background-size: cover; background-position: center;
   border: 1px solid rgba(255,255,255,0.2);
 }
-
-.news-item {
-  position: absolute;
-  top: 50px;
-  left: 40px;
-  right: 40px;
-  opacity: 0;
-  transition: opacity 1.8s ease, transform 1.8s ease;
-  transform: translateY(20px);
-  pointer-events: none;
+.news-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,30,0.7) 0%, rgba(0,0,0,0.9) 100%);
+  z-index: 1;
 }
+.news-item { z-index: 2; }
 
-.news-item.show {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-.news-mark {
-  display: inline-block;
-  background: var(--accent);
-  color: black;
-  font-size: 10px;
-  font-weight: 900;
-  padding: 2px 8px;
-  border-radius: 4px;
-  margin-bottom: 15px;
-}
-
-.news-title {
-  display: block;
-  font-size: 38px;
-  font-weight: 900;
-  line-height: 1.4;
-  color: white;
-  text-decoration: none;
-  margin-bottom: 20px;
-  word-break: break-all;
-}
-
-.news-description {
-  font-size: 18px;
-  line-height: 1.8;
-  color: rgba(255,255,255,0.7);
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-}
-
-/* インジケーター位置調整 */
-#news-card > div:last-child {
-  bottom: 30px !important;
-
-}
+/* ニュースタイトルの視認性向上 */
+.news-title { font-size: 40px; font-weight: 900; line-height: 1.3; text-shadow: 0 4px 10px rgba(0,0,0,0.8); }
+#date { position: absolute; top: 10px; left: 45px; font-size: 14px; opacity: 0.6; z-index: 10; }
