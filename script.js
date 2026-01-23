@@ -188,18 +188,16 @@ async function fetchWeather() {
 
     // --- 4枚目: FX (TradingView) ---
     const fxHtml = `
-      <div class="day-group">
-        <div class="day-label">— Market: FX —</div>
-        <div id="tv-fx-container" class="tv-widget-frame"></div>
-      </div>`;
+  <div class="day-group">
+    <div class="day-label">— Realtime FX —</div>
+    <div id="tv-fx-mini" class="tv-mini-wrapper"></div>
+  </div>`;
 
-    // --- 5枚目: Futures (TradingView) ---
-    const futuresHtml = `
-      <div class="day-group">
-        <div class="day-label">— Market: Indices —</div>
-        <div id="tv-indices-container" class="tv-widget-frame"></div>
-      </div>`;
-
+const futuresHtml = `
+  <div class="day-group">
+    <div class="day-label">— Realtime Indices —</div>
+    <div id="tv-indices-mini" class="tv-mini-wrapper"></div>
+  </div>`;
     // 全てを代入（5枚構成）
     wrapper.innerHTML = todayHtml + tomorrowHtml + weeklyHtml + fxHtml + futuresHtml;
 
@@ -217,45 +215,39 @@ async function fetchWeather() {
 
 // TradingViewの起動用関数（fetchWeatherの外に配置してください）
 function initTradingViewWidgets() {
-    const commonConfig = {
-        "width": "600",
-        "height": "160", // 高さを少し広げて視認性アップ
+    const commonSettings = {
+        "width": 750,        // 画面サイズに合わせて調整
+        "height": 160,
         "locale": "ja",
+        "dateRange": "12M",
         "colorTheme": "dark",
-        "gridLineColor": "rgba(42, 46, 57, 0)",
-        "fontColor": "rgba(255, 255, 255, 0.8)", // 文字を明るく
         "isTransparent": true,
-        "showFloatingTooltip": false,
-        "chartOnly": false,
-        "showSymbolLogo": true, // ロゴを表示して直感的に
+        "autosize": false,
+        "largeChartUrl": ""
     };
 
-    // 4枚目：FX（通貨ペアの名前をわかりやすく）
-    appendTVWidget("tv-fx-container", {
-        ...commonConfig,
-        "symbols": [
-            { "proName": "FX:USDJPY", "title": "ドル / 円" },
-            { "proName": "FX:EURJPY", "title": "ユーロ / 円" },
-            { "proName": "FX:EURUSD", "title": "ユーロ / ドル" }
-        ]
+    // 4枚目：ドル円（数値＋グラフ）
+    appendMiniWidget("tv-fx-mini", {
+        ...commonSettings,
+        "symbol": "FX:USDJPY"
     });
 
-    // 5枚目：指数先物（何の指数か日本語で明記）
-    appendTVWidget("tv-indices-container", {
-        ...commonConfig,
-        "symbols": [
-            { "proName": "OSE:NK2251!", "title": "日経平均先物" },
-            { "proName": "CME_MINI:NQ1!", "title": "NASDAQ先物" },
-            { "proName": "CME:ES1!", "title": "S&P500先物" }
-        ]
+    // 5枚目：日経平均先物（数値＋グラフ）
+    appendMiniWidget("tv-indices-mini", {
+        ...commonSettings,
+        "symbol": "OSE:NK2251!"
     });
 }
 
-function appendTVWidget(containerId, config) {
+function appendMiniWidget(containerId, config) {
     const container = document.getElementById(containerId);
     if (!container) return;
+
+    // 重複読み込み防止：すでにウィジェットがある場合は中身を空にする
+    container.innerHTML = ''; 
+
     const script = document.createElement('script');
-    script.src = "https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js";
+    script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
     script.async = true;
     script.innerHTML = JSON.stringify(config);
     container.appendChild(script);
