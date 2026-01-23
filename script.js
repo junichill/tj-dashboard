@@ -231,8 +231,8 @@ function initTradingViewWidgets() {
     
     // 指数
     appendMiniWidget("tv-n225",    { ...conf, "symbol": "OSE:NK2251!" });
-    appendMiniWidget("tv-nasdaq",  { ...conf, "symbol": "CME:NQH2026" });
-    appendMiniWidget("tv-sp500",   { ...conf, "symbol": "CME:ESH2026" });
+    appendMiniWidget("tv-nasdaq",  { ...conf, "symbol": "TVC:NDX" });
+    appendMiniWidget("tv-sp500",   { ...conf, "symbol": "TVC:SPX" });
 }
 
 function appendMiniWidget(containerId, config) {
