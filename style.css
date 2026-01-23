@@ -73,13 +73,13 @@ body {
 
 /* 中央パネル: スライド(柔軟) */
 #center-panel {
-  flex: 1;
+  flex: 1; /* 残りのスペースを等分 */
   min-width: 0;
 }
 
-/* 右パネル: ニュース(520px) */
 #right-panel {
-  flex: 0 0 520px;
+  flex: 1; /* 中央と同じ比率に設定 */
+  min-width: 0;
 }
 
 /* =========================================
@@ -144,14 +144,15 @@ body {
    ========================================= */
 .main-slide-card {
   height: 100%;
+  padding: 40px;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  overflow: hidden;
 }
 
 #forecast-viewport {
-  height: 250px; /* script.jsの移動量と一致させる */
+  height: 250px; /* 少し高さを出して安定感を出す */
+  width: 100%;
   overflow: hidden;
 }
 
@@ -210,9 +211,10 @@ body {
    ========================================= */
 #news-card {
   height: 100%;
-  padding: 40px;
+  padding: 50px;
   box-sizing: border-box;
-  position: relative;
+  background: linear-gradient(145deg, rgba(15, 20, 40, 0.8), rgba(0, 0, 0, 0.95));
+  border-left: 4px solid var(--accent); /* 太めのアクセントライン */
 }
 
 .news-item {
@@ -244,28 +246,22 @@ body {
 }
 
 .news-title {
-  display: block;
-  font-size: 38px;
+  font-size: 46px; /* ワイドになった分、さらに大きく */
   font-weight: 900;
-  line-height: 1.4;
-  color: white;
-  text-decoration: none;
-  margin-bottom: 20px;
-  word-break: break-all;
+  line-height: 1.2;
+  margin-bottom: 25px;
+  letter-spacing: -0.01em;
 }
 
 .news-description {
-  font-size: 18px;
+  font-size: 22px; /* 読みやすさを向上 */
   line-height: 1.8;
-  color: rgba(255,255,255,0.7);
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* インジケーター位置調整 */
 #news-card > div:last-child {
   bottom: 30px !important;
+
 
 }
