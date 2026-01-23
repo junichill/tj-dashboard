@@ -135,10 +135,13 @@ body {
   text-transform: uppercase;
 }
 
+.tv-mini-wrapper {
+  transform: scale(1.1); /* チャートも少し大きく */
+}
+
+/* 左パネルの高さ調整（3つ入れるために少し詰め気味にする） */
 .mini-widget-fixed {
-  height: 160px;
-  overflow: hidden;
-  transition: transform 0.3s ease;
+  height: 145px; 
 }
 
 /* =========================================
@@ -161,13 +164,15 @@ body {
   /* スムーズなアニメーション設定 */
 }
 
+/* 中央パネルの余白改善：コンテンツを大きく見せる */
 .day-group {
-  height: 250px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  transition: all 1.2s ease;
+  height: 350px; /* 高さを広げて余白を埋める */
+  gap: 30px;
+}
+
+.day-items {
+  transform: scale(1.4); /* 天気アイコンや数字を1.4倍に拡大 */
+  gap: 25px;
 }
 
 .day-group.inactive {
@@ -182,12 +187,6 @@ body {
   color: var(--accent);
   margin-bottom: 20px;
   text-transform: uppercase;
-}
-
-.day-items {
-  display: flex;
-  gap: 15px;
-  justify-content: center;
 }
 
 /* 天気アイテムのデザイン */
@@ -215,6 +214,13 @@ body {
   padding: 40px;
   box-sizing: border-box;
   position: relative;
+  overflow: hidden;
+  /* 報道番組風の背景画像 (プレースホルダーURLですが、お好みの画像に変更可能です) */
+  background: linear-gradient(135deg, rgba(0,20,50,0.8), rgba(20,0,40,0.8)), 
+              url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80');
+  background-size: cover;
+  background-position: center;
+  border: 1px solid rgba(255,255,255,0.2);
 }
 
 .news-item {
@@ -269,4 +275,5 @@ body {
 /* インジケーター位置調整 */
 #news-card > div:last-child {
   bottom: 30px !important;
+
 }
