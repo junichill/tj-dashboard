@@ -216,26 +216,29 @@ const futuresHtml = `
 // TradingViewの起動用関数（fetchWeatherの外に配置してください）
 function initTradingViewWidgets() {
     const commonSettings = {
-        "width": 750,        // 画面サイズに合わせて調整
+        "width": 750,
         "height": 160,
         "locale": "ja",
-        "dateRange": "12M",
+        "dateRange": "1D",      // 5分足を表示するため、表示範囲を「1日」に変更
         "colorTheme": "dark",
         "isTransparent": true,
         "autosize": false,
-        "largeChartUrl": ""
+        "largeChartUrl": "",
+        "chartOnly": false      // 数値も表示するために必要
     };
 
-    // 4枚目：ドル円（数値＋グラフ）
+    // 4枚目：ドル円（5分足）
     appendMiniWidget("tv-fx-mini", {
         ...commonSettings,
-        "symbol": "FX:USDJPY"
+        "symbol": "FX:USDJPY",
+        "interval": "5"         // ここで5分足を指定
     });
 
-    // 5枚目：日経平均先物（数値＋グラフ）
+    // 5枚目：日経平均先物（5分足）
     appendMiniWidget("tv-indices-mini", {
         ...commonSettings,
-        "symbol": "OSE:NK2251!"
+        "symbol": "OSE:NK2251!",
+        "interval": "5"         // ここで5分足を指定
     });
 }
 
