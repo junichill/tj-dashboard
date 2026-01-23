@@ -1,414 +1,230 @@
-/* ===========================
-   リセット & 基本設定
-=========================== */
-html {
-    width: 100%;
-    height: 100%;
-    overflow: hidden; 
+/* =========================================
+   1. 基本レイアウト & リセット
+   ========================================= */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --blur: blur(20px);
+  --accent: #00d4ff;
 }
 
 body {
-    margin: 0;
-    padding: 0;
-    background: black;
-    font-family: Arial, sans-serif;
-    color: white;
-    -webkit-text-size-adjust: 100%;
-    
-    /* 上寄せにするため flex 関連を削除し、標準のブロック表示にします */
-    display: block; 
-    
-    width: 100vw;
-    /* 100vhだとスケーリングした後に下が切れることがあるため min-height にします */
-    min-height: 100vh; 
-    overflow-x: hidden; /* 横はみ出しを隠す */
-    overflow-y: auto;   /* 縦スクロールは許可 */
+  margin: 0;
+  padding: 0;
+  background: #000;
+  color: white;
+  font-family: 'Roboto', 'JetBrains Mono', sans-serif;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
 }
 
-/* ===========================
-   全体コンテナ
-=========================== */
-:root {
-  --ui-scale: 1.0;
+/* 背景オーロラアニメーション */
+.aurora-bg {
+  position: fixed;
+  width: 200%;
+  height: 200%;
+  top: -50%;
+  left: -50%;
+  background: radial-gradient(circle at 20% 30%, #1a237e, transparent),
+              radial-gradient(circle at 80% 70%, #4a148c, transparent),
+              radial-gradient(circle at 50% 50%, #004d40, transparent);
+  filter: blur(80px);
+  opacity: 0.4;
+  animation: rotate-bg 60s linear infinite;
+  z-index: -1;
+}
+@keyframes rotate-bg {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 #container {
-    width: 1920px;
-    height: 720px;
-    background: black;
-    display: flex;
-    flex-direction: row;
-    position: relative;
-    flex-shrink: 0; /* 比率を守るために縮ませない */
-    transform-origin: top left;
+  width: 1920px;
+  height: 720px;
+  display: flex;
+  padding: 40px;
+  box-sizing: border-box;
+  gap: 30px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
 }
 
-/* ===========================
-   左パネル（時計・日付・天気）
-=========================== */
+/* =========================================
+   2. 各パネルの構成
+   ========================================= */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  box-shadow: 0 15px 45px rgba(0,0,0,0.5);
+}
+
+/* 左パネル: 固定(440px) */
 #left-panel {
-  flex: 55%;
-  min-width: 0;
+  flex: 0 0 440px;
   display: flex;
   flex-direction: column;
-  padding: 10px 40px 30px 50px;
-  box-sizing: border-box;
+  gap: 20px;
 }
 
-/* --- 修正箇所1：左パネル下部の設定 --- */
-.left-bottom {
-    display: flex;
-    flex-direction: row;
-    justify-content: center; /* これで天気を中央へ */
-    align-items: flex-end;
-    margin-top: auto;
-    width: 100%;
-    position: static;        /* relativeを解除して日付の基準にさせない */
-    padding: 0;
-    box-sizing: border-box;
+/* 中央パネル: スライド(柔軟) */
+#center-panel {
+  flex: 1;
+  min-width: 0;
 }
 
-/* --- 修正箇所2：天気の余計な幅を削る --- */
-#weather {
-    display: flex;
-    flex-direction: column;
-    align-items: center;     /* 天気の内容を中央に */
-    gap: 5px;
-    /* min-width: 300px; は削除するか、中央寄せに影響しない程度に */
+/* 右パネル: ニュース(520px) */
+#right-panel {
+  flex: 0 0 520px;
 }
 
-/* --- 修正箇所3：日付をコンテナの絶対左上に固定 --- */
+/* =========================================
+   3. 時計 & 日付
+   ========================================= */
 #date {
-    position: absolute;      /* #container(1920x720)の左上を基準にする */
-    top: 20px;               /* 画面端からの余白（調整可） */
-    left: 40px;              /* 画面端からの余白（調整可） */
-    
-    text-align: left;
-    font-family: 'Roboto', sans-serif;
-    font-weight: 300;
-    font-size: 1.1rem;
-    letter-spacing: 0.05em;
-    color: rgba(255, 255, 255, 0.9);
-    line-height: 1.1;
-    white-space: nowrap;
-    z-index: 100;            /* 常に最前面 */
-}
-
-#forecast-container {
-  display: flex;
-  gap: 25px;
-  margin-top: 15px;
-  padding-bottom: 10px;
-  /* 横に並びきらない場合はスクロールさせる */
-  overflow-x: auto; 
-  white-space: nowrap;
-  width: 100%;
-}
-
-/* スクロールバーを隠す（デザイン優先） */
-#forecast-container::-webkit-scrollbar {
-  display: none;
-}
-
-.weather-icon {
-  width: 80px !important;  /* !important を追加 */
-  height: 80px !important; /* !important を追加 */
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  overflow: visible !important;
-}
-
-/* 天気エリア全体 */
-#forecast-viewport {
-    height: 180px; 
-    overflow: hidden;
-    position: relative;
-}
-
-#forecast-wrapper {
-    display: flex;
-    flex-direction: column;
-    opacity: 1;
-    filter: blur(0);
-    transform: scale(1); /* 初期値 */
-    will-change: transform, opacity, filter;
-    transform-origin: center center; /* 真ん中を中心に伸縮 */
-}
-
-/* 週間予報専用のスタイル */
-.weekly-item {
-    width: 100px !important; /* 英語表記と大きい文字のために幅を広げる */
-}
-
-.weekly-item .forecast-time {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.7);
-    margin-bottom: 5px;
-}
-
-/* 気温表示を大きく強調 */
-.weekly-temp {
-    font-size: 24px !important; /* 通常の18pxから24pxへアップ */
-    font-weight: 800 !important;
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-}
-
-.weekly-temp .max {
-    color: #ff5252;
-}
-
-.weekly-temp .min {
-    color: #448aff;
-}
-
-.weekly-temp {
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    margin-top: 5px;
-}
-
-/* 数字（max/min）の調整 */
-.weekly-temp .max, .weekly-temp .min {
-    font-size: 26px;             /* 数字をさらに少し大きくしてインパクトを出す */
-    letter-spacing: -0.02em;     /* 文字間を少し詰めるとよりスタイリッシュに */
-}
-
-/* アイコンサイズも週間予報では少し存在感を出す */
-.weekly-item .weather-icon {
-    transform: scale(1.1);
-    margin: 5px 0;
-}
-
-.forecast-temp .max { color: #ff5252; }
-.forecast-temp .min { color: #448aff; }
-
-.day-group {
-    height: 180px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    /* フォーカス効果のための遷移設定 */
-    transition: opacity 1.2s ease, filter 1.2s ease;
-    opacity: 1;
-    filter: blur(0);
-}
-
-/* 消えゆく予報・出てくる前の予報（フォーカス外） */
-.day-group.inactive {
-    opacity: 0.1;      /* 薄くする */
-    filter: blur(4px); /* ボケさせる */
-}
-
-.day-label {
-    font-size: 13px;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 15px; /* アイコンとの距離を最適化 */
-}
-
-.day-items {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    align-items: flex-end; /* アイコンと温度のラインを揃える */
-}
-
-/* 温度の文字サイズ再確認 */
-.forecast-temp {
-    font-size: 18px;
-    font-weight: 700;
-}
-
-.weather-icon svg {
-  width: 100%;
-  height: 100%;
-  stroke-width: 4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-/* 天気別カラー */
-.weather-sunny { color: #e53935; }
-.weather-cloudy { color: #9e9e9e; }
-.weather-rainy { color: #1e88e5; }
-.weather-snowy { color: #81d4fa; }
-
-/* 和暦部分（R8）のアクセント設定 */
-.era-label {
-    font-size: 0.85em;        /* 少し小さく */
-    color: #888;              /* グレーにして西暦と差別化 */
-    font-weight: 400;         /* 視認性確保のためウェイト微調整 */
-}
-
-/* 経済情報専用スタイル */
-.market-item {
-    width: 110px !important;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.market-name {
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.5); /* 少し薄くして品を出す */
-    margin-bottom: 5px;
-    font-weight: 400; /* 通常の太さに */
-    letter-spacing: 0.1em;
-}
-
-.market-value {
-    font-size: 28px; /* さらに少し大きく */
-    font-weight: 300; /* あえて細身にすることでスマートな印象に */
-    color: #ffffff;
-    letter-spacing: -0.01em;
-    line-height: 1.0;
-}
-
-.market-change {
-    font-size: 15px;
-    font-weight: 400; /* 細身に */
-    margin-top: 6px;
-}
-
-/* 上昇・下落の色（細い文字でも見えるよう、少し彩度を調整） */
-.market-change.up { color: #52ffb8; } 
-.market-change.down { color: #ff6b6b; }
-
-/* 週間天気のセパレーターも念のため確認 */
-.weekly-temp .separator {
-    font-size: 22px;
-    margin: 0 6px;
-    color: rgba(255, 255, 255, 0.5);
-    font-weight: 300;
-    transform: rotate(10deg);
-    display: inline-block;
-}
-
-/* =========================
-   Flip時計（スリム＆縦長）
-=========================== */
-.tick {
-  font-size: 3.8rem;
-  white-space: nowrap;
-}
-
-.tick, .tick * {
-  font-family: 'Roboto', 'M PLUS Rounded 1c', sans-serif;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
-}
-
-.tick-flip, .tick-text-inline {
-  font-size: 2.8em;
-}
-
-.tick-char {
-  display: inline-flex !important;
-  justify-content: center !important;
-}
-
-.tick-flip {
-  display: inline-block !important;
-  vertical-align: bottom;
-  margin: 0 !important;
-  /* 横幅をガチガチに固定 */
-  width: 1.00em !important; 
-  min-width: 1.00em !important;
-  max-width: 1.00em !important;
-  /* 縦幅を固定 */
-  height: 1.80em !important;
-  line-height: 1.80em !important;
-}
-
-/* 文字の縦伸ばし：詳細度を上げてJSの上書きをブロック */
-.tick.tick .tick-flip-panel-text > span {
-  transform-origin: center center !important;
-  display: inline-block !important;
-  transform: scaleY(2.2) scaleX(0.55) !important; /* ここで縦の長さを調整 */
-}
-
-.tick-text-inline {
-  display: inline-block !important;
-  text-align: center;
-  margin: 0 -0.10em !important;
-}
-
-.tick-flip-panel {
-  height: 50% !important;
-  background-color: #3c3e3c;
-  color: #fff;
+  position: absolute;
+  top: 12px;
+  left: 55px;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+  z-index: 10;
 }
 
 .clock-container {
-  margin-top: 20px;
+  padding: 35px 20px;
   display: flex;
   justify-content: center;
-}
-
-/* 親要素である .clock-scale の中で日付を浮かせる */
-.clock-scale {
-    position: relative; 
-    display: flex;
-    align-items: flex-end;
-    /* 日付が表示されるスペースを確保 */
-    padding-top: 3.5rem; 
-}
-
-/* 秒表示（この真上に日付が来ます） */
-#seconds-static {
-    font-size: 3.2em;
-    font-weight: 700;
-    color: white;
-    opacity: 0.8;
-    margin-left: 6px;
-    line-height: 1;
-    transform: scaleY(0.8);
-    transform-origin: bottom;
-}
-
-/* ===========================
-   右パネル（ニュース）
-=========================== */
-#right-panel {
-  flex: 45%;
-  min-width: 400px; /* ニュース側の最低幅を確保 */
-  background: url('news-bg.png') center / cover no-repeat;
-  display: flex;
   align-items: center;
-  justify-content: center;
-  font-family: "BIZ UDPGothic", "Hiragino Sans", sans-serif;
 }
 
-#news-card {
-  width: min(80%, 900px);
-  height: min(85%, 850px); /* 縦幅を大きく調整 */
-  background: rgba(0,0,0,0.6);
-  border-radius: 15px;
-  position: relative;
+.clock-scale {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.tick { font-size: 3.2rem; }
+#seconds-static {
+  font-size: 2.8rem;
+  font-weight: 300;
+  margin-left: 10px;
+  color: var(--accent);
+}
+
+/* =========================================
+   4. 固定指標 (左パネル)
+   ========================================= */
+#fixed-market-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.fixed-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4em;
+  color: rgba(255,255,255,0.3);
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.mini-widget-fixed {
+  height: 160px;
   overflow: hidden;
-  padding: 30px;
+  transition: transform 0.3s ease;
+}
+
+/* =========================================
+   5. スライドエリア (中央パネル)
+   ========================================= */
+.main-slide-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+#forecast-viewport {
+  height: 250px; /* script.jsの移動量と一致させる */
+  overflow: hidden;
+}
+
+#forecast-wrapper {
+  /* スムーズなアニメーション設定 */
+}
+
+.day-group {
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: all 1.2s ease;
+}
+
+.day-group.inactive {
+  opacity: 0.1;
+  filter: blur(8px) scale(0.95);
+}
+
+.day-label {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.4em;
+  color: var(--accent);
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.day-items {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+/* 天気アイテムのデザイン */
+.forecast-item {
+  text-align: center;
+  width: 80px;
+}
+
+.weather-icon {
+  width: 50px;
+  height: 50px;
+  margin: 10px auto;
+}
+
+.weather-sunny { color: #ffeb3b; }
+.weather-cloudy { color: #cfd8dc; }
+.weather-rainy { color: #4fc3f7; }
+.weather-snowy { color: #ffffff; }
+
+/* =========================================
+   6. ニュース (右パネル)
+   ========================================= */
+#news-card {
+  height: 100%;
+  padding: 40px;
   box-sizing: border-box;
+  position: relative;
 }
 
 .news-item {
   position: absolute;
-  inset: 20px;
+  top: 50px;
+  left: 40px;
+  right: 40px;
   opacity: 0;
-  transform: translateY(15px);
-  /* 2秒かけてゆっくりフェード＆アップ */
-  transition: opacity 2.0s cubic-bezier(0.22, 1, 0.36, 1), 
-              transform 2.0s cubic-bezier(0.22, 1, 0.36, 1);
-  padding-top: 46px;
-  box-sizing: border-box;
+  transition: opacity 1.8s ease, transform 1.8s ease;
+  transform: translateY(20px);
   pointer-events: none;
 }
 
@@ -419,69 +235,38 @@ body {
 }
 
 .news-mark {
-  display: block;
-  background-color: red;
-  color: white;
-  font-weight: bold;
-  font-size: 14px;
-  padding: 2px 6px;
-  border-radius: 2px;
-  margin-bottom: 6px;
-  width: fit-content;
+  display: inline-block;
+  background: var(--accent);
+  color: black;
+  font-size: 10px;
+  font-weight: 900;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 15px;
 }
 
 .news-title {
-  font-size: 48px;
-  font-weight: 700;
+  display: block;
+  font-size: 38px;
+  font-weight: 900;
+  line-height: 1.4;
   color: white;
   text-decoration: none;
-  line-height: 1.25; /* 2行時に重ならないよう調整 */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.news-pubdate {
-  font-size: 16px;
-  color: #ccc;
-  text-align: right;
-  margin-top: 1.2em;
-  margin-bottom: 0.8em;
+  margin-bottom: 20px;
+  word-break: break-all;
 }
 
 .news-description {
-  font-size: 24px;
-  margin-top: 10px;
-  line-height: 1.5;
-  opacity: 0.9;
+  font-size: 18px;
+  line-height: 1.8;
+  color: rgba(255,255,255,0.7);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
 }
 
-.tv-widget-frame {
-    width: 600px;
-    height: 160px; /* 145px -> 160px */
-    margin: 0 auto;
-    overflow: hidden;
-    pointer-events: none;
-}
-
-/* TradingView特有の読み込みチラつきを抑える */
-.tv-widget-frame iframe {
-    mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
-}
-
-/* ウィジェットを中央に配置するコンテナ */
-.tv-mini-wrapper {
-    width: 750px; 
-    height: 160px;
-    margin: 0 auto;
-    overflow: hidden;
-    pointer-events: none; /* スライド操作を邪魔しない */
-}
-
-/* ラベルとの隙間を調整 */
-.day-group .day-label {
-    margin-bottom: 10px;
-    letter-spacing: 0.3em;
-    color: rgba(255, 255, 255, 0.4);
+/* インジケーター位置調整 */
+#news-card > div:last-child {
+  bottom: 30px !important;
 }
