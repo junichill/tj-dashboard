@@ -165,10 +165,11 @@ async function fetchWeather() {
 function initTradingViewWidgets() {
     const conf = { "width": "100%", "height": 160, "locale": "ja", "dateRange": "1D", "colorTheme": "dark", "isTransparent": true, "interval": "5" };
 
-    // --- 左パネル（固定：日経・ドル円） ---
+    // --- 左パネル（固定にNASDAQを追加） ---
     appendMiniWidget("tv-usd-jpy-fixed", { ...conf, "symbol": "FX:USDJPY" });
     appendMiniWidget("tv-n225-fixed",    { ...conf, "symbol": "OSE:NK2251!" });
-
+    appendMiniWidget("tv-nasdaq-fixed",  { ...conf, "symbol": "CAPITALCOM:US100" });
+  
     // --- 中央パネル（スライド） ---
     appendMiniWidget("tv-nasdaq", { ...conf, "symbol": "CAPITALCOM:US100" });
     appendMiniWidget("tv-sp500",  { ...conf, "symbol": "CAPITALCOM:US500" });
@@ -221,7 +222,7 @@ function startWeatherCycle() {
       weatherSlideIndex = nextIndex;
       // スライド移動量を 250px に設定（CSSの.day-groupの高さ）
       wrapper.style.transition = 'transform 1.2s cubic-bezier(0.65, 0, 0.35, 1), opacity 1.2s ease';
-      wrapper.style.transform = `translateY(${weatherSlideIndex * -250}px) scale(1)`;
+      wrapper.style.transform = `translateY(${weatherSlideIndex * -350}px) scale(1)`;
       groups.forEach((group, index) => {
         group.classList.toggle('inactive', index !== weatherSlideIndex);
       });
