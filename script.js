@@ -175,6 +175,7 @@ async function fetchWeather() {
 
     const wrapper = document.getElementById('forecast-wrapper');
     
+    // --- 1-3枚目: 天気データ生成 ---
     const todayHtml = createForecastGroupHtml(d.list.slice(0, 8), "Today's Forecast");
     
     const tomorrow = new Date();
@@ -185,23 +186,25 @@ async function fetchWeather() {
 
     const weeklyHtml = createWeeklyForecastHtml(d.list);
 
-    // 経済データ（ここが未定義だとエラーで止まります）
-    const fxData = [
-      { name: 'USD/JPY', value: '148.22', change: '+0.12', dir: 'up' },
-      { name: 'EUR/JPY', value: '161.45', change: '-0.05', dir: 'down' },
-      { name: 'EUR/USD', value: '1.0890', change: '+0.002', dir: 'up' }
-    ];
-    const fxHtml = createMarketGroupHtml(fxData, "Market: FX");
+    // --- 4枚目: FX (TradingView) ---
+    const fxHtml = `
+      <div class="day-group">
+        <div class="day-label">— Market: FX —</div>
+        <div id="tv-fx-container" class="tv-widget-frame"></div>
+      </div>`;
 
-    const futuresData = [
-      { name: 'NK225', value: '38,520', change: '+450', dir: 'up' },
-      { name: 'NASDAQ', value: '17,850', change: '-20', dir: 'down' },
-      { name: 'S&P 500', value: '5,022', change: '+12', dir: 'up' }
-    ];
-    const futuresHtml = createMarketGroupHtml(futuresData, "Market: Futures");
+    // --- 5枚目: Futures (TradingView) ---
+    const futuresHtml = `
+      <div class="day-group">
+        <div class="day-label">— Market: Indices —</div>
+        <div id="tv-indices-container" class="tv-widget-frame"></div>
+      </div>`;
 
-    // 全てを代入
+    // 全てを代入（5枚構成）
     wrapper.innerHTML = todayHtml + tomorrowHtml + weeklyHtml + fxHtml + futuresHtml;
+
+    // TradingViewウィジェットを即座に起動
+    initTradingViewWidgets();
 
     weatherSlideIndex = 0;
     wrapper.style.transform = `translateY(0px)`;
@@ -210,6 +213,43 @@ async function fetchWeather() {
   } catch (err) {
     console.error('Weather/Market Fetch Error:', err);
   }
+}
+
+// TradingViewの起動用関数（fetchWeatherの外に配置してください）
+function initTradingViewWidgets() {
+    const commonConfig = {
+        "width": "600",
+        "height": "145",
+        "locale": "ja",
+        "colorTheme": "dark",
+        "gridLineColor": "rgba(42, 46, 57, 0)",
+        "fontColor": "#787B86",
+        "isTransparent": true,
+        "showFloatingTooltip": false,
+        "chartOnly": false
+    };
+
+    // FX用
+    appendTVWidget("tv-fx-container", {
+        ...commonConfig,
+        "symbols": [["FX:USDJPY|1D"], ["FX:EURJPY|1D"], ["FX:EURUSD|1D"]]
+    });
+
+    // 指数先物用
+    appendTVWidget("tv-indices-container", {
+        ...commonConfig,
+        "symbols": [["OSE:NK2251!|1D"], ["CME_MINI:NQ1!|1D"], ["CME:ES1!|1D"]]
+    });
+}
+
+function appendTVWidget(containerId, config) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const script = document.createElement('script');
+    script.src = "https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js";
+    script.async = true;
+    script.innerHTML = JSON.stringify(config);
+    container.appendChild(script);
 }
 
 // 経済情報用のHTMLを生成する共通関数（JSの末尾などに追加してください）
