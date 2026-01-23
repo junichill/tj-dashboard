@@ -457,7 +457,17 @@ body {
   opacity: 0.9;
 }
 
+/* ウィジェット表示エリアのサイズ調整 */
+.tv-widget-frame {
+    width: 600px;
+    height: 145px;
+    margin: 0 auto;
+    overflow: hidden;
+    /* ウィジェット内のクリックを無効化してスライドの邪魔をさせない */
+    pointer-events: none; 
+}
 
-
-
-
+/* TradingView特有の読み込みチラつきを抑える */
+.tv-widget-frame iframe {
+    mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
+}
