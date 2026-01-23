@@ -184,24 +184,24 @@ async function fetchWeather() {
     const tomorrowHtml = createForecastGroupHtml(tomorrowList, "Tomorrow's Plan");
     const weeklyHtml = createWeeklyForecastHtml(d.list);
 
-    // --- 4-9枚目: 経済データ (TradingView / 5分足) ---
-    // --- 4-9枚目: 経済データ (TradingView / 5分足) ---
+// --- 4-11枚目: 経済データ (TradingView / 5分足) ---
 const mktHtml = (id, label) => `
   <div class="day-group">
     <div class="day-label">— ${label} —</div>
     <div id="${id}" class="tv-mini-wrapper"></div>
   </div>`;
 
-// fetchWeather 関数内の innerHTML 生成部分
+// 全てを代入（計11枚）
 wrapper.innerHTML = 
     todayHtml + tomorrowHtml + weeklyHtml + 
     mktHtml("tv-usd-jpy", "Realtime FX: USD/JPY") +
     mktHtml("tv-eur-jpy", "Realtime FX: EUR/JPY") +
     mktHtml("tv-eur-usd", "Realtime FX: EUR/USD") +
-    mktHtml("tv-n225",    "Realtime Indices: Nikkei 225") + // ここは変えない
+    mktHtml("tv-n225",    "Realtime Indices: Nikkei 225") +
     mktHtml("tv-nasdaq",  "Nasdaq 100 Futures (CFD/US100)") +
-    mktHtml("tv-sp500",   "S&P 500 Futures (CFD/US500)");
-    
+    mktHtml("tv-sp500",   "S&P 500 Futures (CFD/US500)") +
+    mktHtml("tv-gold",    "Gold Spot (XAU/USD)") +          // 追加
+    mktHtml("tv-oil",     "WTI Crude Oil Futures (CFD)");   // 追加    
     initTradingViewWidgets();
 
     weatherSlideIndex = 0;
@@ -234,6 +234,12 @@ function initTradingViewWidgets() {
     appendMiniWidget("tv-n225",    { ...conf, "symbol": "OSE:NK2251!" });
     appendMiniWidget("tv-nasdaq",  { ...conf, "symbol": "CAPITALCOM:US100" });
     appendMiniWidget("tv-sp500",   { ...conf, "symbol": "CAPITALCOM:US500" });
+
+  // 商品（追加分）
+    // Gold: TVCのスポット価格は外部表示に強く、非常に安定しています
+    appendMiniWidget("tv-gold",    { ...conf, "symbol": "TVC:GOLD" });
+    // 原油: WTI原油のCFDソース（Capital.com）
+    appendMiniWidget("tv-oil",     { ...conf, "symbol": "CAPITALCOM:OIL_CRUDE" });
 }
 
 function appendMiniWidget(containerId, config) {
