@@ -219,26 +219,35 @@ async function fetchWeather() {
 function initTradingViewWidgets() {
     const commonConfig = {
         "width": "600",
-        "height": "145",
+        "height": "160", // 高さを少し広げて視認性アップ
         "locale": "ja",
         "colorTheme": "dark",
         "gridLineColor": "rgba(42, 46, 57, 0)",
-        "fontColor": "#787B86",
+        "fontColor": "rgba(255, 255, 255, 0.8)", // 文字を明るく
         "isTransparent": true,
         "showFloatingTooltip": false,
-        "chartOnly": false
+        "chartOnly": false,
+        "showSymbolLogo": true, // ロゴを表示して直感的に
     };
 
-    // FX用
+    // 4枚目：FX（通貨ペアの名前をわかりやすく）
     appendTVWidget("tv-fx-container", {
         ...commonConfig,
-        "symbols": [["FX:USDJPY|1D"], ["FX:EURJPY|1D"], ["FX:EURUSD|1D"]]
+        "symbols": [
+            { "proName": "FX:USDJPY", "title": "ドル / 円" },
+            { "proName": "FX:EURJPY", "title": "ユーロ / 円" },
+            { "proName": "FX:EURUSD", "title": "ユーロ / ドル" }
+        ]
     });
 
-    // 指数先物用
+    // 5枚目：指数先物（何の指数か日本語で明記）
     appendTVWidget("tv-indices-container", {
         ...commonConfig,
-        "symbols": [["OSE:NK2251!|1D"], ["CME_MINI:NQ1!|1D"], ["CME:ES1!|1D"]]
+        "symbols": [
+            { "proName": "OSE:NK2251!", "title": "日経平均先物" },
+            { "proName": "CME_MINI:NQ1!", "title": "NASDAQ先物" },
+            { "proName": "CME:ES1!", "title": "S&P500先物" }
+        ]
     });
 }
 
