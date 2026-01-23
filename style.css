@@ -470,3 +470,18 @@ body {
     mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
 }
 
+/* ウィジェットを中央に配置するコンテナ */
+.tv-mini-wrapper {
+    width: 750px; 
+    height: 160px;
+    margin: 0 auto;
+    overflow: hidden;
+    pointer-events: none; /* スライド操作を邪魔しない */
+}
+
+/* ラベルとの隙間を調整 */
+.day-group .day-label {
+    margin-bottom: 10px;
+    letter-spacing: 0.3em;
+    color: rgba(255, 255, 255, 0.4);
+}
