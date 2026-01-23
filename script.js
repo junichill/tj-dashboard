@@ -129,40 +129,48 @@ async function fetchWeather() {
     if (!d || !d.list) return;
 
     const wrapper = document.getElementById('forecast-wrapper');
-    const todayHtml = createForecastGroupHtml(d.list.slice(0, 8), "TODAY'S FORECAST");
-    const tomorrowHtml = createForecastGroupHtml(d.list.slice(8, 16), "TOMORROW'S PLAN");
+    
+    // スライド用HTML（中央：天気・米国・商品・他FX）
+    const todayHtml = createForecastGroupHtml(d.list.slice(0, 8), "Today's Forecast");
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toLocaleDateString();
+    const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr).slice(0, 8);
+    const tomorrowHtml = createForecastGroupHtml(tomorrowList, "Tomorrow's Plan");
     const weeklyHtml = createWeeklyForecastHtml(d.list);
 
     const mktHtml = (id, label) => `
       <div class="day-group">
         <div class="day-label">— ${label} —</div>
-        <div id="${id}" class="tv-mini-wrapper" style="width:500px; height:160px;"></div>
+        <div id="${id}" class="tv-mini-wrapper" style="width:750px; height:160px;"></div>
       </div>`;
 
-    // 中央スライド: NASDAQは抜いて、S&P500、ゴールド、原油、為替を巡回
+    // 中央のスライド：日経・ドル円以外を代入（計9枚）
     wrapper.innerHTML = todayHtml + tomorrowHtml + weeklyHtml + 
-                        mktHtml("tv-sp500",  "S&P 500 Futures") +
+                        mktHtml("tv-nasdaq", "Nasdaq 100 Futures (CFD/US100)") +
+                        mktHtml("tv-sp500",  "S&P 500 Futures (CFD/US500)") +
                         mktHtml("tv-gold",   "Gold Spot (XAU/USD)") +
-                        mktHtml("tv-oil",    "WTI Crude Oil") +
-                        mktHtml("tv-eur-jpy", "FX: EUR/JPY") +
-                        mktHtml("tv-eur-usd", "FX: EUR/USD");
+                        mktHtml("tv-oil",    "WTI Crude Oil Futures (CFD)") +
+                        mktHtml("tv-eur-jpy", "Realtime FX: EUR/JPY") +
+                        mktHtml("tv-eur-usd", "Realtime FX: EUR/USD");
 
     initTradingViewWidgets();
     weatherSlideIndex = 0;
     wrapper.style.transform = `translateY(0px)`;
     startWeatherCycle();
-  } catch (err) { console.error(err); }
+
+  } catch (err) { console.error('Weather/Market Fetch Error:', err); }
 }
 
 function initTradingViewWidgets() {
     const conf = { "width": "100%", "height": 160, "locale": "ja", "dateRange": "1D", "colorTheme": "dark", "isTransparent": true, "interval": "5" };
 
-    // --- 左パネル (固定 3本立て) ---
+    // --- 左パネル（固定：日経・ドル円） ---
     appendMiniWidget("tv-usd-jpy-fixed", { ...conf, "symbol": "FX:USDJPY" });
     appendMiniWidget("tv-n225-fixed",    { ...conf, "symbol": "OSE:NK2251!" });
-    appendMiniWidget("tv-nasdaq-fixed",  { ...conf, "symbol": "CAPITALCOM:US100" });
 
-    // --- 中央パネル (スライド用) ---
+    // --- 中央パネル（スライド） ---
+    appendMiniWidget("tv-nasdaq", { ...conf, "symbol": "CAPITALCOM:US100" });
     appendMiniWidget("tv-sp500",  { ...conf, "symbol": "CAPITALCOM:US500" });
     appendMiniWidget("tv-gold",   { ...conf, "symbol": "TVC:GOLD" });
     appendMiniWidget("tv-oil",    { ...conf, "symbol": "CAPITALCOM:OIL_CRUDE" });
@@ -184,13 +192,40 @@ function appendMiniWidget(containerId, config) {
 function startWeatherCycle() {
   if (weatherTimer) clearInterval(weatherTimer);
   const wrapper = document.getElementById('forecast-wrapper');
+  
   weatherTimer = setInterval(() => {
     const groups = wrapper.querySelectorAll('.day-group');
     if (groups.length === 0) return;
-    weatherSlideIndex = (weatherSlideIndex + 1) % groups.length;
-    // translateY の移動量を CSS の .day-group の高さ (400px) に合わせる
-    wrapper.style.transform = `translateY(${weatherSlideIndex * -400}px)`;
-    groups.forEach((g, i) => g.classList.toggle('inactive', i !== weatherSlideIndex));
+
+    const nextIndex = (weatherSlideIndex + 1) % groups.length;
+
+    if (nextIndex === 0) {
+      // 週間から最初に戻るフェード演出
+      wrapper.style.transition = 'opacity 1.5s ease-in, filter 1.5s ease-in, transform 1.5s ease-in';
+      wrapper.style.opacity = '0';
+      wrapper.style.filter = 'blur(15px)';
+      wrapper.style.transform = `translateY(${weatherSlideIndex * -250}px) scale(0.92)`;
+
+      setTimeout(() => {
+        weatherSlideIndex = 0;
+        wrapper.style.transition = 'none';
+        wrapper.style.transform = `translateY(0px) scale(0.92)`;
+        groups.forEach((g, i) => g.classList.toggle('inactive', i !== 0));
+        wrapper.offsetHeight; 
+        wrapper.style.transition = 'opacity 1.8s ease-out, filter 1.8s ease-out, transform 1.8s ease-out';
+        wrapper.style.opacity = '1';
+        wrapper.style.filter = 'blur(0)';
+        wrapper.style.transform = `translateY(0px) scale(1)`;
+      }, 1500);
+    } else {
+      weatherSlideIndex = nextIndex;
+      // スライド移動量を 250px に設定（CSSの.day-groupの高さ）
+      wrapper.style.transition = 'transform 1.2s cubic-bezier(0.65, 0, 0.35, 1), opacity 1.2s ease';
+      wrapper.style.transform = `translateY(${weatherSlideIndex * -250}px) scale(1)`;
+      groups.forEach((group, index) => {
+        group.classList.toggle('inactive', index !== weatherSlideIndex);
+      });
+    }
   }, 9000);
 }
 
