@@ -360,8 +360,27 @@ body {
   bottom: 30px !important;
 }
 
+/* --- 経済スケジュール専用スタイル --- */
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 600px; /* スライド幅に合わせる */
+  margin: 0 auto;
+}
 
+.schedule-item {
+  display: flex;
+  align-items: center;
+  font-family: 'JetBrains Mono', sans-serif;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 8px;
+}
 
+.sch-time { width: 80px; color: var(--accent); font-size: 18px; }
+.sch-country { width: 80px; color: rgba(255,255,255,0.6); font-size: 14px; }
+.sch-name { flex: 1; text-align: left; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sch-star { width: 80px; color: #ffca28; text-align: right; }
 
 
 
