@@ -153,8 +153,8 @@ async function fetchWeather() {
                         mktHtml("tv-gold", "Gold Spot") +
                         mktHtml("tv-oil", "WTI Crude Oil") +
                         mktHtml("tv-eur-jpy", "EUR/JPY") +
-                        mktHtml("tv-eur-usd", "EUR/USD") + // ここに + が漏れていました
-                        `<div id="economic-schedule-container"></div>`; 
+                        mktHtml("tv-eur-usd", "EUR/USD") + 
+                        `<div id="economic-schedule-container" class="day-group"></div>`; // classを追加
 
     updateScheduleUI();
     initTradingViewWidgets();
