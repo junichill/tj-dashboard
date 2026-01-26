@@ -123,7 +123,6 @@ let weatherSlideIndex = 0;
 let weatherTimer = null;
 let economicScheduleHtml = ""; // 経済スケジュールのHTMLを保持する変数
 
-// --- fetchWeather関数内の修正 ---
 async function fetchWeather() {
   try {
     const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=ja`);
