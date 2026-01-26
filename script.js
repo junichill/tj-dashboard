@@ -266,8 +266,13 @@ function createNews() {
   newsEls = newsItems.map(n => {
     const div = document.createElement('div');
     div.className = 'news-item';
-    div.innerHTML = `<div class="news-mark">NHKONEニュース</div><a class="news-title" href="${n.link}" target="_blank">${n.title}</a><div class="news-pubdate">${n.pubDate}</div><div class="news-description">${n.description}</div>`;
-    newsCard.appendChild(div);
+    div.innerHTML = `
+  <div class="news-mark"></div>
+  <div class="news-title">${n.title}</div>
+  <div class="news-description">${n.description}
+  </div>
+
+`;newsCard.appendChild(div);
     return div;
   });
   updateIndicator();
