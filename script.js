@@ -153,7 +153,10 @@ async function fetchWeather() {
                       mktHtml("tv-oil", "WTI Crude Oil") +
                       mktHtml("tv-eur-jpy", "EUR/JPY") +
                       mktHtml("tv-eur-usd", "EUR/USD");
-                      economicScheduleHtml; // これを追加
+                      `<div id="economic-schedule-container"></div>`; // ここを固定の器にする
+
+// その直後で、スケジュールを流し込む関数を呼ぶ
+    updateScheduleUI();
     initTradingViewWidgets();
     weatherSlideIndex = 0;
     wrapper.style.transform = `translateY(0px)`;
@@ -340,6 +343,8 @@ async function fetchNews() {
 fetchNews();
 setInterval(fetchNews, FETCH_INTERVAL);
 
+let currentScheduleHtml = ""; // データを保持する変数
+
 async function fetchEconomicSchedule() {
   try {
     const RSS_URL = 'https://fx.minkabu.jp/indicator.xml';
@@ -347,13 +352,11 @@ async function fetchEconomicSchedule() {
     const data = await r.json();
     const parser = new DOMParser();
     const xml = parser.parseFromString(data.contents, "application/xml");
-    const items = Array.from(xml.querySelectorAll('item')).slice(0, 5); // 直近5件
+    const items = Array.from(xml.querySelectorAll('item')).slice(0, 5);
 
     const listHtml = items.map(item => {
-      const title = item.querySelector('title').textContent; // 例: "[米国] 雇用統計"
-      const description = item.querySelector('description').textContent; // 例: "22:30 重要度:★★★"
-      
-      // 文字列から情報を抽出
+      const title = item.querySelector('title').textContent;
+      const description = item.querySelector('description').textContent;
       const country = title.match(/\[(.*?)\]/)?.[1] || "";
       const name = title.replace(/\[.*?\]/, "").trim();
       const time = description.match(/\d{2}:\d{2}/)?.[0] || "--:--";
@@ -368,13 +371,29 @@ async function fetchEconomicSchedule() {
         </div>`;
     }).join('');
 
-    economicScheduleHtml = `
+    // HTMLを組み立てて変数に保存
+    currentScheduleHtml = `
       <div class="day-group">
         <div class="day-label">— Economic Schedule —</div>
         <div class="schedule-list">${listHtml}</div>
       </div>`;
+    
+    // UIを更新
+    updateScheduleUI();
   } catch (e) { console.error('Schedule fetch failed', e); }
 }
+
+// 器(container)に中身を流し込むだけの関数
+function updateScheduleUI() {
+  const container = document.getElementById('economic-schedule-container');
+  if (container && currentScheduleHtml) {
+    container.innerHTML = currentScheduleHtml;
+  }
+}
+
+// 実行
+fetchEconomicSchedule();
+
 
 // 初回実行と定期更新
 fetchEconomicSchedule();
