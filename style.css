@@ -252,6 +252,8 @@ body {
   margin-bottom: 15px;
   letter-spacing: 0.03em;
   border-bottom: none !important;
+  pointer-events: auto; /* 念のため個別にも設定 */
+  cursor: pointer;
 }
 
 /* 本文：可読性を重視したスタイル */
@@ -325,6 +327,7 @@ body {
 #news-card > div:last-child {
   bottom: 30px !important;
 }
+
 
 
 
