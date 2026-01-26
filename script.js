@@ -267,10 +267,10 @@ function createNews() {
     const div = document.createElement('div');
     div.className = 'news-item';
     div.innerHTML = `
-  <div class="news-mark"></div>
-  <div class="news-title">${n.title}</div>
-  <div class="news-description">${n.description}
-  </div>
+     <div class="news-mark"></div>
+     <div class="news-title">${n.title}</div>
+     <div class="news-description">${n.description}
+    </div>
 
 `;newsCard.appendChild(div);
     return div;
