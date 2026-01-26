@@ -236,26 +236,22 @@ body {
   height: 280px;
   padding: 35px;
   box-sizing: border-box;
-  
-  /* 背景画像の設定（右上の画像） */
   background-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop');
   background-size: cover;
   background-position: center;
-  
-  /* ガラス質感と色のブレンド（文字を読みやすくしつつ質感を出す） */
   background-blend-mode: overlay;
   background-color: rgba(15, 20, 30, 0.7); /* 暗めの色で文字を浮かせる */
-  
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 24px;
-  
   opacity: 0;
   transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1) !important;
   overflow: hidden;
   box-shadow: 0 20px 50px rgba(0,0,0,0.5);
   pointer-events: none;
+  display: flex;
+  flex-direction: column;
 }
 
 .news-title {
@@ -293,6 +289,7 @@ body {
   text-shadow: 0 1px 5px rgba(0,0,0,0.5);
   position: relative;
   z-index: 2;
+  margin-bottom: 12px;
 }
 
 /* --- ニュースマーク：さらに小さく、右寄せに配置 --- */
@@ -349,10 +346,20 @@ body {
   z-index: 4;
 }
 
+.news-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: auto; /* これで一番下に配置されます */
+  text-align: right; /* これで右寄せになります */
+  letter-spacing: 0.05em;
+}
+
 /* インジケーター位置調整 */
 #news-card > div:last-child {
   bottom: 30px !important;
 }
+
 
 
 
