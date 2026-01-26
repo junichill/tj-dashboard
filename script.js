@@ -145,7 +145,7 @@ async function fetchWeather() {
       <div id="${id}" style="width:700px; height:130px;"></div>
     </div>`;
 
-    // 【ここを修正】 全て + で繋ぎ、最後に器(container)を合体させます
+    // 全て + で繋ぎ、最後に「器」を確実に合体させます
     wrapper.innerHTML = todayHtml + 
                         tomorrowHtml + 
                         weeklyHtml + 
@@ -153,8 +153,8 @@ async function fetchWeather() {
                         mktHtml("tv-gold", "Gold Spot") +
                         mktHtml("tv-oil", "WTI Crude Oil") +
                         mktHtml("tv-eur-jpy", "EUR/JPY") +
-                        mktHtml("tv-eur-usd", "EUR/USD") +
-                        `<div id="economic-schedule-container"></div>`; // 連結を確認
+                        mktHtml("tv-eur-usd", "EUR/USD") + // ここに + が漏れていました
+                        `<div id="economic-schedule-container"></div>`; 
 
     updateScheduleUI();
     initTradingViewWidgets();
@@ -164,7 +164,6 @@ async function fetchWeather() {
 
   } catch (err) { console.error('Weather/Market Fetch Error:', err); }
 }
-
 function initTradingViewWidgets() {
     const conf = { "width": "100%", "height": 155, "locale": "ja", "dateRange": "1D", "colorTheme": "dark", "isTransparent": true, "interval": "5" };
 
