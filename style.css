@@ -383,6 +383,17 @@ body {
 .sch-star { width: 80px; color: #ffca28; text-align: right; }
 
 
+#tv-economic-calendar {
+    margin-top: 10px;
+    border-radius: 12px;
+    overflow: hidden;
+    mask-image: linear-gradient(to bottom, black 80%, transparent 100%); /* 下部を少しフェードアウト */
+}
+
+/* カレンダー内のフォントサイズを調整（ウィジェット内のスタイルを上書きできない場合が多いですが、コンテナを整えます） */
+.schedule-list {
+    display: none; /* 古いRSS用のリスト表示は不要なので隠します */
+}
 
 
 
