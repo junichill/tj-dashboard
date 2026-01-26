@@ -283,13 +283,13 @@ body {
   overflow: hidden;
   font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
   font-size: 15px;
-  line-height: 1.8; /* 行間を広げて「読みやすさ」を向上 */
   color: rgba(255, 255, 255, 0.6); /* メインを邪魔しない落ち着いた色 */
   letter-spacing: 0.02em;
   text-shadow: 0 1px 5px rgba(0,0,0,0.5);
   position: relative;
   z-index: 2;
-  margin-bottom: 8px;
+  line-height: 1.5; /* 行間を少し詰めると3行入りやすくなります */
+  margin-bottom: 5px; /* 日付との間隔を最小限に */
 }
 
 /* --- ニュースマーク：さらに小さく、右寄せに配置 --- */
@@ -359,6 +359,7 @@ body {
 #news-card > div:last-child {
   bottom: 30px !important;
 }
+
 
 
 
