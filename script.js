@@ -105,20 +105,35 @@ async function fetchEconomicSchedule() {
     const xml = parser.parseFromString(data.contents, "application/xml");
     const items = Array.from(xml.querySelectorAll('item')).slice(0, 5);
 
+    if (items.length === 0) throw new Error("No items found");
+
     const listHtml = items.map(item => {
-      const title = item.querySelector('title').textContent;
-      const description = item.querySelector('description').textContent;
-      const country = title.match(/\[(.*?)\]/)?.[1] || "";
+      const title = item.querySelector('title')?.textContent || "";
+      const description = item.querySelector('description')?.textContent || "";
+      
+      // 国名：[日本] 形式から抽出、なければ空文字
+      const country = title.match(/\[(.*?)\]/)?.[1] || "指標";
+      // 指標名：[]の部分を削除
       const name = title.replace(/\[.*?\]/, "").trim();
+      // 時間：00:00 形式を抽出
       const time = description.match(/\d{2}:\d{2}/)?.[0] || "--:--";
-      const stars = description.match(/★+/)?.[0] || "";
-      return `<div class="schedule-item"><div class="sch-time">${time}</div><div class="sch-country">${country}</div><div class="sch-name">${name}</div><div class="sch-star">${stars}</div></div>`;
+      // 星：★を抽出、なければ☆☆☆を表示
+      const stars = description.match(/★+/)?.[0] || "☆☆☆";
+
+      return `
+        <div class="schedule-item">
+          <div class="sch-time">${time}</div>
+          <div class="sch-country">${country}</div>
+          <div class="sch-name">${name}</div>
+          <div class="sch-star" style="color: #ffca28;">${stars}</div>
+        </div>`;
     }).join('');
 
     economicScheduleHtml = `<div class="day-group"><div class="day-label">— Economic Schedule —</div><div class="schedule-list">${listHtml}</div></div>`;
   } catch (e) { 
     console.error('Schedule fetch failed', e); 
-    economicScheduleHtml = `<div class="day-group"><div class="day-label">— Economic Schedule —</div><div style="opacity:0.5">No Data Available</div></div>`;
+    // 失敗した時でも空のリストではなく「取得中」や「更新待機」としてスライド自体は維持する
+    economicScheduleHtml = `<div class="day-group"><div class="day-label">— Economic Schedule —</div><div style="opacity:0.5; padding: 20px;">Updating market data...</div></div>`;
   }
 }
 
