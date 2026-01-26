@@ -217,6 +217,17 @@ body {
   box-shadow: none;
 }
 
+#news-card > div:last-child {
+  z-index: 1; 
+  pointer-events: none; /* ドット自体がクリックを邪魔しないようにする */
+}
+
+.news-link-wrapper {
+  text-decoration: none !important;
+  display: block;
+  cursor: pointer;
+}
+
 .news-item {
   position: absolute;
   top: 0;
@@ -327,6 +338,7 @@ body {
 #news-card > div:last-child {
   bottom: 30px !important;
 }
+
 
 
 
