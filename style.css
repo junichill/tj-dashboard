@@ -289,7 +289,6 @@ body {
   text-shadow: 0 1px 5px rgba(0,0,0,0.5);
   position: relative;
   z-index: 2;
-  margin-bottom: 12px;
 }
 
 /* --- ニュースマーク：さらに小さく、右寄せに配置 --- */
@@ -359,6 +358,7 @@ body {
 #news-card > div:last-child {
   bottom: 30px !important;
 }
+
 
 
 
