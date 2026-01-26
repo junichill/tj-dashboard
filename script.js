@@ -3,23 +3,13 @@
 // =========================
 function handleTickInit(tick) {
   const secondsEl = document.getElementById('seconds-static');
-
   Tick.helper.interval(() => {
     const d = new Date();
     const h = d.getHours().toString().padStart(2, '0');
     const m = d.getMinutes().toString().padStart(2, '0');
     const s = d.getSeconds().toString().padStart(2, '0');
-
-    tick.value = {
-      hours1: h[0],
-      hours2: h[1],
-      minutes1: m[0],
-      minutes2: m[1]
-    };
-
-    if (secondsEl) {
-      secondsEl.textContent = s;
-    }
+    tick.value = { hours1: h[0], hours2: h[1], minutes1: m[0], minutes2: m[1] };
+    if (secondsEl) { secondsEl.textContent = s; }
   }, 1000);
 }
 
@@ -30,13 +20,11 @@ function updateDate() {
     const now = new Date();
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    
     const dayName = days[now.getDay()];
     const monthName = months[now.getMonth()];
     const date = now.getDate();
     const year = now.getFullYear();
     const reiwa = year - 2018;
-
     const dateEl = document.getElementById('date');
     if (dateEl) {
         dateEl.innerHTML = `${dayName}, ${monthName} ${date}, ${year} <span class="era-label">(R${reiwa})</span>`;
@@ -67,7 +55,7 @@ function getWeatherType(id) {
 }
 
 // =========================
-// HTML生成関数
+// HTML生成関数 (WEATHER)
 // =========================
 function createForecastGroupHtml(list, label) {
   const itemsHtml = list.map(item => {
@@ -75,12 +63,7 @@ function createForecastGroupHtml(list, label) {
     const hour = date.getHours().toString().padStart(2, '0') + ":00";
     const temp = Math.round(item.main.temp);
     const type = getWeatherType(item.weather[0].id);
-    return `
-      <div class="forecast-item">
-        <div class="forecast-time">${hour}</div>
-        <div class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</div>
-        <div class="forecast-temp">${temp}℃</div>
-      </div>`;
+    return `<div class="forecast-item"><div class="forecast-time">${hour}</div><div class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</div><div class="forecast-temp">${temp}℃</div></div>`;
   }).join('');
   return `<div class="day-group"><div class="day-label">— ${label} —</div><div class="day-items">${itemsHtml}</div></div>`;
 }
@@ -96,7 +79,6 @@ function createWeeklyForecastHtml(list) {
     dailyData[dateKey].temps.push(item.main.temp);
     dailyData[dateKey].ids.push(item.weather[0].id);
   });
-
   let itemsHtml = '';
   Object.keys(dailyData).slice(1, 6).forEach(date => {
     const day = dailyData[date];
@@ -104,33 +86,58 @@ function createWeeklyForecastHtml(list) {
     const minTemp = Math.round(Math.min(...day.temps));
     const midId = day.ids[Math.floor(day.ids.length / 2)];
     const type = getWeatherType(midId);
-    itemsHtml += `
-      <div class="forecast-item weekly-item">
-        <div class="forecast-time">${date}</div>
-        <div class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</div>
-        <div class="forecast-temp weekly-temp">
-          <span class="max">${maxTemp}</span><span class="separator">/</span><span class="min">${minTemp}</span>
-        </div>
-      </div>`;
+    itemsHtml += `<div class="forecast-item weekly-item"><div class="forecast-time">${date}</div><div class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</div><div class="forecast-temp weekly-temp"><span class="max">${maxTemp}</span><span class="separator">/</span><span class="min">${minTemp}</span></div></div>`;
   });
   return `<div class="day-group"><div class="day-label">— Weekly Outlook —</div><div class="day-items">${itemsHtml}</div></div>`;
 }
 
 // =========================
-// WEATHER & MARKET メイン
+// 経済スケジュール取得
+// =========================
+let economicScheduleHtml = ""; 
+
+async function fetchEconomicSchedule() {
+  try {
+    const RSS_URL = 'https://fx.minkabu.jp/indicator.xml';
+    const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
+    const data = await r.json();
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(data.contents, "application/xml");
+    const items = Array.from(xml.querySelectorAll('item')).slice(0, 5);
+
+    const listHtml = items.map(item => {
+      const title = item.querySelector('title').textContent;
+      const description = item.querySelector('description').textContent;
+      const country = title.match(/\[(.*?)\]/)?.[1] || "";
+      const name = title.replace(/\[.*?\]/, "").trim();
+      const time = description.match(/\d{2}:\d{2}/)?.[0] || "--:--";
+      const stars = description.match(/★+/)?.[0] || "";
+      return `<div class="schedule-item"><div class="sch-time">${time}</div><div class="sch-country">${country}</div><div class="sch-name">${name}</div><div class="sch-star">${stars}</div></div>`;
+    }).join('');
+
+    economicScheduleHtml = `<div class="day-group"><div class="day-label">— Economic Schedule —</div><div class="schedule-list">${listHtml}</div></div>`;
+  } catch (e) { 
+    console.error('Schedule fetch failed', e); 
+    economicScheduleHtml = `<div class="day-group"><div class="day-label">— Economic Schedule —</div><div style="opacity:0.5">No Data Available</div></div>`;
+  }
+}
+
+// =========================
+// WEATHER & MARKET メイン表示
 // =========================
 let weatherSlideIndex = 0;
 let weatherTimer = null;
-let economicScheduleHtml = ""; // 経済スケジュールのHTMLを保持する変数
 
 async function fetchWeather() {
   try {
+    // スケジュールを先に取得（または前回のデータを使用）
+    await fetchEconomicSchedule();
+
     const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=ja`);
     const d = await r.json();
     if (!d || !d.list) return;
 
     const wrapper = document.getElementById('forecast-wrapper');
-    
     const todayHtml = createForecastGroupHtml(d.list.slice(0, 8), "Today's Forecast");
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -139,24 +146,17 @@ async function fetchWeather() {
     const tomorrowHtml = createForecastGroupHtml(tomorrowList, "Tomorrow's Plan");
     const weeklyHtml = createWeeklyForecastHtml(d.list);
 
-    const mktHtml = (id, label) => `
-    <div class="day-group">
-      <div class="day-label">— ${label} —</div>
-      <div id="${id}" style="width:700px; height:130px;"></div>
-    </div>`;
+    const mktHtml = (id, label) => `<div class="day-group"><div class="day-label">— ${label} —</div><div id="${id}" style="width:700px; height:130px;"></div></div>`;
 
-    // 全て + で繋ぎ、最後に「器」を確実に合体させます
-    wrapper.innerHTML = todayHtml + 
-                        tomorrowHtml + 
-                        weeklyHtml + 
+    // 全ての要素を結合して一気に書き込み
+    wrapper.innerHTML = todayHtml + tomorrowHtml + weeklyHtml + 
                         mktHtml("tv-sp500", "S&P 500 Futures") +
                         mktHtml("tv-gold", "Gold Spot") +
                         mktHtml("tv-oil", "WTI Crude Oil") +
                         mktHtml("tv-eur-jpy", "EUR/JPY") +
-                        mktHtml("tv-eur-usd", "EUR/USD") + 
-                        `<div id="economic-schedule-container" class="day-group"></div>`; // classを追加
+                        mktHtml("tv-eur-usd", "EUR/USD") +
+                        economicScheduleHtml; // 最後にスケジュールを追加
 
-    updateScheduleUI();
     initTradingViewWidgets();
     weatherSlideIndex = 0;
     wrapper.style.transform = `translateY(0px)`;
@@ -164,16 +164,12 @@ async function fetchWeather() {
 
   } catch (err) { console.error('Weather/Market Fetch Error:', err); }
 }
+
 function initTradingViewWidgets() {
     const conf = { "width": "100%", "height": 155, "locale": "ja", "dateRange": "1D", "colorTheme": "dark", "isTransparent": true, "interval": "5" };
-
-    // 左パネル：固定3本 (configの中にsymbolを直接入れる)
     appendMiniWidget("tv-usd-jpy-fixed", { ...conf, "symbol": "FX:USDJPY" });
     appendMiniWidget("tv-n225-fixed",    { ...conf, "symbol": "OSE:NK2251!" });
     appendMiniWidget("tv-nasdaq-fixed",  { ...conf, "symbol": "CAPITALCOM:US100" });
-
-    // 中央パネル：スライド用
-    // 【修正箇所】第2引数のオブジェクトの中に "symbol" を含めて渡すように統一しました
     appendMiniWidget("tv-sp500",   { ...conf, "symbol": "CAPITALCOM:US500" });
     appendMiniWidget("tv-gold",    { ...conf, "symbol": "TVC:GOLD" });
     appendMiniWidget("tv-oil",     { ...conf, "symbol": "CAPITALCOM:OIL_CRUDE" });
@@ -195,20 +191,15 @@ function appendMiniWidget(containerId, config) {
 function startWeatherCycle() {
   if (weatherTimer) clearInterval(weatherTimer);
   const wrapper = document.getElementById('forecast-wrapper');
-  
   weatherTimer = setInterval(() => {
     const groups = wrapper.querySelectorAll('.day-group');
     if (groups.length === 0) return;
-
     const nextIndex = (weatherSlideIndex + 1) % groups.length;
-
     if (nextIndex === 0) {
-      // 週間から最初に戻るフェード演出
       wrapper.style.transition = 'opacity 1.5s ease-in, filter 1.5s ease-in, transform 1.5s ease-in';
       wrapper.style.opacity = '0';
       wrapper.style.filter = 'blur(15px)';
       wrapper.style.transform = `translateY(${weatherSlideIndex * -250}px) scale(0.92)`;
-
       setTimeout(() => {
         weatherSlideIndex = 0;
         wrapper.style.transition = 'none';
@@ -222,12 +213,9 @@ function startWeatherCycle() {
       }, 1500);
     } else {
       weatherSlideIndex = nextIndex;
-      // スライド移動量を 250px に設定（CSSの.day-groupの高さ）
       wrapper.style.transition = 'transform 1.2s cubic-bezier(0.65, 0, 0.35, 1), opacity 1.2s ease';
       wrapper.style.transform = `translateY(${weatherSlideIndex * -250}px) scale(1)`;
-      groups.forEach((group, index) => {
-        group.classList.toggle('inactive', index !== weatherSlideIndex);
-      });
+      groups.forEach((group, index) => { group.classList.toggle('inactive', index !== weatherSlideIndex); });
     }
   }, 9000);
 }
@@ -236,14 +224,13 @@ fetchWeather();
 setInterval(fetchWeather, 600000);
 
 // =========================
-// NEWS
+// NEWS (右パネル)
 // =========================
 const RSS_URL = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
 const newsCard = document.getElementById('news-card');
-
 let newsItems = [], newsEls = [], index = 0, newsT = null;
 let lastGoodNews = null;
-const FADE = 1.8, AUTO_INTERVAL = 11000, FETCH_INTERVAL = 10*60*1000;
+const AUTO_INTERVAL = 11000, FETCH_INTERVAL = 10*60*1000;
 
 const updateEl = document.createElement('div');
 updateEl.style.cssText = 'position:absolute; top:10px; right:15px; font-size:12px; opacity:0.6;';
@@ -252,8 +239,6 @@ newsCard.appendChild(updateEl);
 const indicator = document.createElement('div');
 indicator.style.cssText = 'position:absolute; bottom:10px; left:50%; transform:translateX(-50%); display:flex; gap:8px;';
 newsCard.appendChild(indicator);
-
-function isImportant(title) { return /(地震|津波|警報|注意報|台風|噴火|避難)/.test(title); }
 
 function updateIndicator() {
   indicator.innerHTML = '';
@@ -270,15 +255,7 @@ function createNews() {
   newsEls = newsItems.map(n => {
     const div = document.createElement('div');
     div.className = 'news-item';
-    // aタグをタイトルの外側に配置し、確実にリンクとして機能させる
-    div.innerHTML = `
-  <div class="news-mark"></div>
-  <a href="${n.link}" target="_blank" class="news-link-wrapper">
-    <div class="news-title">${n.title}</div>
-  </a>
-  <div class="news-description">${n.description}</div>
-  <div class="news-date">${n.pubDate}</div>
-`;
+    div.innerHTML = `<div class="news-mark"></div><a href="${n.link}" target="_blank" class="news-link-wrapper"><div class="news-title">${n.title}</div></a><div class="news-description">${n.description}</div><div class="news-date">${n.pubDate}</div>`;
     newsCard.appendChild(div);
     return div;
   });
@@ -287,25 +264,11 @@ function createNews() {
 
 function showNews(next, init = false) {
   if (!newsEls[next]) return;
-  
-  // 全要素から特定のクラスを一度削除
-  newsEls.forEach(el => {
-    el.classList.remove('show', 'next', 'exit');
-  });
-
-  const currentIdx = next;
-  const nextIdx = (next + 1) % newsEls.length;
-
-  if (!init) {
-    // 直前のカードを「exit（上へ抜ける）」状態にする
-    const prevIdx = index;
-    newsEls[prevIdx].classList.add('exit');
-  }
-
-  // 現在のカードと次のカードをセット
-  newsEls[currentIdx].classList.add('show');
-  newsEls[nextIdx].classList.add('next');
-  
+  newsEls.forEach(el => el.classList.remove('show', 'next', 'exit'));
+  if (!init) { newsEls[index].classList.add('exit'); }
+  newsEls[next].classList.add('show');
+  const nxtIdx = (next + 1) % newsEls.length;
+  newsEls[nxtIdx].classList.add('next');
   index = next;
   updateIndicator();
 }
@@ -326,12 +289,8 @@ async function fetchNews() {
       pubDate: item.querySelector('pubDate')?.textContent,
       description: item.querySelector('description')?.textContent
     }));
-
-    if (fetched.length === 0) {
-      if (lastGoodNews) newsItems = lastGoodNews; else return;
-    } else {
-      newsItems = fetched; lastGoodNews = fetched;
-    }
+    if (fetched.length === 0) { if (lastGoodNews) newsItems = lastGoodNews; else return; } 
+    else { newsItems = fetched; lastGoodNews = fetched; }
     createNews();
     showNews(0, true);
     if (newsItems.length > 1) startAutoNews();
@@ -341,59 +300,6 @@ async function fetchNews() {
 }
 fetchNews();
 setInterval(fetchNews, FETCH_INTERVAL);
-
-let currentScheduleHtml = ""; // データを保持する変数
-
-async function fetchEconomicSchedule() {
-  try {
-    const RSS_URL = 'https://fx.minkabu.jp/indicator.xml';
-    const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
-    const data = await r.json();
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(data.contents, "application/xml");
-    const items = Array.from(xml.querySelectorAll('item')).slice(0, 5);
-
-    const listHtml = items.map(item => {
-      const title = item.querySelector('title').textContent;
-      const description = item.querySelector('description').textContent;
-      const country = title.match(/\[(.*?)\]/)?.[1] || "";
-      const name = title.replace(/\[.*?\]/, "").trim();
-      const time = description.match(/\d{2}:\d{2}/)?.[0] || "--:--";
-      const stars = description.match(/★+/)?.[0] || "";
-
-      return `
-        <div class="schedule-item">
-          <div class="sch-time">${time}</div>
-          <div class="sch-country">${country}</div>
-          <div class="sch-name">${name}</div>
-          <div class="sch-star">${stars}</div>
-        </div>`;
-    }).join('');
-
-    // HTMLを組み立てて変数に保存
-   currentScheduleHtml = `
-    <div class="day-label">— Economic Schedule —</div>
-    <div class="schedule-list">${listHtml}</div>
-  `;
-    updateScheduleUI();
-  } catch (e) { console.error('Schedule fetch failed', e); }
-}
-
-// 器(container)に中身を流し込むだけの関数
-function updateScheduleUI() {
-  const container = document.getElementById('economic-schedule-container');
-  if (container && currentScheduleHtml) {
-    container.innerHTML = currentScheduleHtml;
-  }
-}
-
-// 実行
-fetchEconomicSchedule();
-
-
-// 初回実行と定期更新
-fetchEconomicSchedule();
-setInterval(fetchEconomicSchedule, 1800000); // 30分おき
 
 // =========================
 // SCALING
@@ -409,4 +315,3 @@ function adjustScale() {
 window.addEventListener('resize', adjustScale);
 window.addEventListener('load', adjustScale);
 adjustScale();
-
