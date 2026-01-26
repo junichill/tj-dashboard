@@ -222,46 +222,67 @@ body {
   top: 0;
   left: 0;
   width: 520px;
-  height: 280px; /* カードの高さを固定 */
-  padding: 25px;
+  height: 280px;
+  padding: 35px; /* 余白を広げて視覚的なゆとりを確保 */
   box-sizing: border-box;
-  background: var(--glass-bg);
-  backdrop-filter: var(--blur);
-  border: 1px solid var(--glass-border);
+  background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 24px;
   opacity: 0;
   display: block !important;
-  transition: all 0.9s cubic-bezier(0.23, 1, 0.32, 1) !important;
-  overflow: hidden; /* はみ出しをカット */
+  transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
 }
 
-/* タイトル：最大2行 */
+/* ニュースタイトルの改善：太すぎない（500）かつ洗練された漢字 */
 .news-title {
   display: -webkit-box !important;
-  -webkit-line-clamp: 2; /* 2行に制限 */
+  -webkit-line-clamp: 2; /* 最大2行 */
   -webkit-box-orient: vertical;
   overflow: hidden;
-  font-size: 30px !important; /* 少しサイズを調整 */
-  font-weight: 900;
-  line-height: 1.3;
-  color: white;
-  margin-bottom: 12px;
-  white-space: normal;
+  /* 漢字を最も美しく見せるフォントスタック */
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+  font-size: 26px !important; /* 少しサイズを落として知的な印象に */
+  font-weight: 500 !important; /* 太すぎ（900）を解消し、適度な太さに */
+  line-height: 1.5;
+  color: #ffffff;
+  text-decoration: none !important; /* 下線を完全に排除 */
+  margin-bottom: 15px;
+  letter-spacing: 0.03em; /* 文字間をわずかに広げ、漢字の美しさを強調 */
+  border-bottom: none !important; /* 念のためボーダーも排除 */
 }
 
-/* 本文：最大3行 */
+/* 本文：可読性を重視したスタイル */
 .news-description {
   display: -webkit-box !important;
-  -webkit-line-clamp: 3; /* 3行に制限 */
+  -webkit-line-clamp: 3; /* 最大3行 */
   -webkit-box-orient: vertical;
   overflow: hidden;
-  font-size: 17px;
-  line-height: 1.6;
-  color: rgba(255,255,255,0.7);
-  opacity: 1 !important;
-  margin-top: 0;
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+  font-size: 15px;
+  line-height: 1.8; /* 行間を広げて「読みやすさ」を向上 */
+  color: rgba(255, 255, 255, 0.6); /* メインを邪魔しない落ち着いた色 */
+  letter-spacing: 0.02em;
 }
 
+.news-mark {
+  background: transparent !important;
+  color: var(--accent) !important;
+  border: 1px solid var(--accent);
+  font-family: 'JetBrains Mono', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  padding: 3px 12px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+/* スタック配置：奥行きの演出 */
 .news-item.show {
   opacity: 1;
   transform: translateY(0) scale(1);
@@ -270,28 +291,19 @@ body {
 
 .news-item.next {
   opacity: 0.4;
-  transform: translateY(310px) scale(0.95); /* カード高280 + 隙間30 */
+  transform: translateY(320px) scale(0.96); /* 2枚目の位置を最適化 */
   z-index: 2;
+  filter: blur(1px); /* 背後のカードをわずかにぼかし、メインを際立たせる（改善提案） */
 }
 
 .news-item.exit {
   opacity: 0;
-  transform: translateY(-80px) scale(1.05);
+  transform: translateY(-80px) scale(1.05); /* 上へスッと抜ける動き */
   z-index: 4;
-}
-
-.news-mark {
-  display: inline-block;
-  background: var(--accent);
-  color: black;
-  font-size: 10px;
-  font-weight: 900;
-  padding: 2px 8px;
-  border-radius: 4px;
-  margin-bottom: 15px;
 }
 
 /* インジケーター位置調整 */
 #news-card > div:last-child {
   bottom: 30px !important;
 }
+
