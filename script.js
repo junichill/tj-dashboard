@@ -164,17 +164,18 @@ async function fetchWeather() {
 function initTradingViewWidgets() {
     const conf = { "width": "100%", "height": 155, "locale": "ja", "dateRange": "1D", "colorTheme": "dark", "isTransparent": true, "interval": "5" };
 
-    // 左パネル：固定3本 (NASDAQ追加)
+    // 左パネル：固定3本 (configの中にsymbolを直接入れる)
     appendMiniWidget("tv-usd-jpy-fixed", { ...conf, "symbol": "FX:USDJPY" });
     appendMiniWidget("tv-n225-fixed",    { ...conf, "symbol": "OSE:NK2251!" });
     appendMiniWidget("tv-nasdaq-fixed",  { ...conf, "symbol": "CAPITALCOM:US100" });
 
     // 中央パネル：スライド用
-    appendMiniWidget("tv-sp500", conf, "CAPITALCOM:US500");
-    appendMiniWidget("tv-gold",  conf, "TVC:GOLD");
-    appendMiniWidget("tv-oil",   conf, "CAPITALCOM:OIL_CRUDE");
-    appendMiniWidget("tv-eur-jpy", conf, "FX:EURJPY");
-    appendMiniWidget("tv-eur-usd", conf, "FX:EURUSD");
+    // 【修正箇所】第2引数のオブジェクトの中に "symbol" を含めて渡すように統一しました
+    appendMiniWidget("tv-sp500",   { ...conf, "symbol": "CAPITALCOM:US500" });
+    appendMiniWidget("tv-gold",    { ...conf, "symbol": "TVC:GOLD" });
+    appendMiniWidget("tv-oil",     { ...conf, "symbol": "CAPITALCOM:OIL_CRUDE" });
+    appendMiniWidget("tv-eur-jpy", { ...conf, "symbol": "FX:EURJPY" });
+    appendMiniWidget("tv-eur-usd", { ...conf, "symbol": "FX:EURUSD" });
 }
 
 function appendMiniWidget(containerId, config) {
