@@ -184,10 +184,17 @@ body {
 
 .day-items {
   display: flex;
-  gap: 15px;
-  justify-content: center;
+  justify-content: space-around; /* 均等に配置 */
+  width: 100%;                  /* 親の幅いっぱいに広げる */
+  flex-wrap: nowrap;            /* 折り返さない */
 }
 
+.tv-mini-wrapper, 
+#forecast-wrapper div[id^="tv-"] {
+  width: 100% !important;       /* 固定幅を解除し、100%にする */
+  max-width: 100%;
+  box-sizing: border-box;
+}
 /* 天気アイテムのデザイン */
 .forecast-item {
   text-align: center;
@@ -269,3 +276,4 @@ body {
   bottom: 30px !important;
 
 }
+
