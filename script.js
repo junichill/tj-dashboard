@@ -121,6 +121,7 @@ function createWeeklyForecastHtml(list) {
 // =========================
 let weatherSlideIndex = 0;
 let weatherTimer = null;
+let economicScheduleHtml = ""; // 経済スケジュールのHTMLを保持する変数
 
 async function fetchWeather() {
   try {
@@ -152,7 +153,7 @@ async function fetchWeather() {
                       mktHtml("tv-oil", "WTI Crude Oil") +
                       mktHtml("tv-eur-jpy", "EUR/JPY") +
                       mktHtml("tv-eur-usd", "EUR/USD");
-    
+                      economicScheduleHtml; // これを追加
     initTradingViewWidgets();
     weatherSlideIndex = 0;
     wrapper.style.transform = `translateY(0px)`;
@@ -339,6 +340,46 @@ async function fetchNews() {
 fetchNews();
 setInterval(fetchNews, FETCH_INTERVAL);
 
+async function fetchEconomicSchedule() {
+  try {
+    const RSS_URL = 'https://fx.minkabu.jp/indicator.xml';
+    const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
+    const data = await r.json();
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(data.contents, "application/xml");
+    const items = Array.from(xml.querySelectorAll('item')).slice(0, 5); // 直近5件
+
+    const listHtml = items.map(item => {
+      const title = item.querySelector('title').textContent; // 例: "[米国] 雇用統計"
+      const description = item.querySelector('description').textContent; // 例: "22:30 重要度:★★★"
+      
+      // 文字列から情報を抽出
+      const country = title.match(/\[(.*?)\]/)?.[1] || "";
+      const name = title.replace(/\[.*?\]/, "").trim();
+      const time = description.match(/\d{2}:\d{2}/)?.[0] || "--:--";
+      const stars = description.match(/★+/)?.[0] || "";
+
+      return `
+        <div class="schedule-item">
+          <div class="sch-time">${time}</div>
+          <div class="sch-country">${country}</div>
+          <div class="sch-name">${name}</div>
+          <div class="sch-star">${stars}</div>
+        </div>`;
+    }).join('');
+
+    economicScheduleHtml = `
+      <div class="day-group">
+        <div class="day-label">— Economic Schedule —</div>
+        <div class="schedule-list">${listHtml}</div>
+      </div>`;
+  } catch (e) { console.error('Schedule fetch failed', e); }
+}
+
+// 初回実行と定期更新
+fetchEconomicSchedule();
+setInterval(fetchEconomicSchedule, 1800000); // 30分おき
+
 // =========================
 // SCALING
 // =========================
@@ -353,3 +394,4 @@ function adjustScale() {
 window.addEventListener('resize', adjustScale);
 window.addEventListener('load', adjustScale);
 adjustScale();
+
