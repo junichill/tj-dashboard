@@ -273,7 +273,7 @@ function createNews() {
     <div class="news-title">${n.title}</div>
   </a>
   <div class="news-description">${n.description}</div>
-  <div class="news-date">${new Date(n.pubDate).getHours().toString().padStart(2, '0')}:${new Date(n.pubDate).getMinutes().toString().padStart(2, '0')}</div>
+  <div class="news-date">${n.pubDate}</div>
 `;
     newsCard.appendChild(div);
     return div;
