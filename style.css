@@ -223,7 +223,7 @@ body {
   left: 0;
   width: 520px;
   height: 280px;
-  padding: 35px; /* 余白を広げて視覚的なゆとりを確保 */
+  padding: 35px;
   box-sizing: border-box;
   background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
   backdrop-filter: blur(30px);
@@ -235,6 +235,7 @@ body {
   transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1) !important;
   overflow: hidden;
   box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  pointer-events: none; 
 }
 
 .news-title {
@@ -300,11 +301,11 @@ body {
   letter-spacing: 0.05em;
 }
 
-/* スタック配置：奥行きの演出 */
 .news-item.show {
   opacity: 1;
   transform: translateY(0) scale(1);
   z-index: 3;
+  pointer-events: auto; 
 }
 
 .news-item.next {
@@ -324,6 +325,7 @@ body {
 #news-card > div:last-child {
   bottom: 30px !important;
 }
+
 
 
 
