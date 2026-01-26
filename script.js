@@ -371,13 +371,10 @@ async function fetchEconomicSchedule() {
     }).join('');
 
     // HTMLを組み立てて変数に保存
-    currentScheduleHtml = `
-      <div class="day-group">
-        <div class="day-label">— Economic Schedule —</div>
-        <div class="schedule-list">${listHtml}</div>
-      </div>`;
-    
-    // UIを更新
+   currentScheduleHtml = `
+    <div class="day-label">— Economic Schedule —</div>
+    <div class="schedule-list">${listHtml}</div>
+  `;
     updateScheduleUI();
   } catch (e) { console.error('Schedule fetch failed', e); }
 }
