@@ -1,131 +1,328 @@
-const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
-const LAT = 35.6895; const LON = 139.6917;
-
-// --- Tick CLOCK ---
+// =========================
+// Tick CLOCK
+// =========================
 function handleTickInit(tick) {
   const secondsEl = document.getElementById('seconds-static');
+
   Tick.helper.interval(() => {
     const d = new Date();
-    tick.value = { 
-      hours1: d.getHours().toString().padStart(2, '0')[0], 
-      hours2: d.getHours().toString().padStart(2, '0')[1],
-      minutes1: d.getMinutes().toString().padStart(2, '0')[0], 
-      minutes2: d.getMinutes().toString().padStart(2, '0')[1]
+    const h = d.getHours().toString().padStart(2, '0');
+    const m = d.getMinutes().toString().padStart(2, '0');
+    const s = d.getSeconds().toString().padStart(2, '0');
+
+    tick.value = {
+      hours1: h[0],
+      hours2: h[1],
+      minutes1: m[0],
+      minutes2: m[1]
     };
-    if (secondsEl) secondsEl.textContent = d.getSeconds().toString().padStart(2, '0');
+
+    if (secondsEl) {
+      secondsEl.textContent = s;
+    }
   }, 1000);
 }
 
-// --- Weather Visuals ---
-const WEATHER_ICONS = { sunny: '☀️', cloudy: '☁️', rainy: '🌧️', snowy: '❄️' };
+// =========================
+// DATE
+// =========================
+function updateDate() {
+    const now = new Date();
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    const dayName = days[now.getDay()];
+    const monthName = months[now.getMonth()];
+    const date = now.getDate();
+    const year = now.getFullYear();
+    const reiwa = year - 2018;
+
+    const dateEl = document.getElementById('date');
+    if (dateEl) {
+        dateEl.innerHTML = `${dayName}, ${monthName} ${date}, ${year} <span class="era-label">(R${reiwa})</span>`;
+    }
+}
+updateDate();
+setInterval(updateDate, 60000);
+
+// =========================
+// WEATHER 設定 & アイコン
+// =========================
+const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
+const LAT = 35.6895;
+const LON = 139.6917;
+
+const WEATHER_ICONS = {
+  sunny: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4"><circle cx="32" cy="32" r="12"/><line x1="32" y1="2" x2="32" y2="14"/><line x1="32" y1="50" x2="32" y2="62"/><line x1="2" y1="32" x2="14" y2="32"/><line x1="50" y1="32" x2="62" y2="32"/><line x1="10" y1="10" x2="18" y2="18"/><line x1="46" y1="46" x2="54" y2="54"/><line x1="46" y1="18" x2="54" y2="10"/><line x1="10" y1="54" x2="18" y2="46"/></svg>`,
+  cloudy: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 44h26a10 10 0 0 0 0-20 14 14 0 0 0-27-4A10 10 0 0 0 20 44z"/></svg>`,
+  rainy: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 36c0-11 9-20 20-20s20 9 20 20H12z" /><line x1="32" y1="16" x2="32" y2="12" /><path d="M32 36v12c0 4-3 7-7 7s-7-3-7-7" /></svg>`,
+  snowy: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="46" r="14" /><circle cx="32" cy="22" r="10" /><circle cx="28" cy="20" r="0.5" fill="currentColor" stroke="none" /><circle cx="36" cy="20" r="0.5" fill="currentColor" stroke="none" /><line x1="20" y1="40" x2="12" y2="32" /><line x1="44" y1="40" x2="52" y2="32" /></svg>`,
+};
+
 function getWeatherType(id) {
   if (id >= 200 && id < 600) return 'rainy';
   if (id >= 600 && id < 700) return 'snowy';
-  return (id >= 801) ? 'cloudy' : 'sunny';
+  if (id >= 801) return 'cloudy';
+  return 'sunny';
 }
+
+// =========================
+// HTML生成関数
+// =========================
+function createForecastGroupHtml(list, label) {
+  const itemsHtml = list.map(item => {
+    const date = new Date(item.dt * 1000);
+    const hour = date.getHours().toString().padStart(2, '0') + ":00";
+    const temp = Math.round(item.main.temp);
+    const type = getWeatherType(item.weather[0].id);
+    return `
+      <div class="forecast-item">
+        <div class="forecast-time">${hour}</div>
+        <div class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</div>
+        <div class="forecast-temp">${temp}℃</div>
+      </div>`;
+  }).join('');
+  return `<div class="day-group"><div class="day-label">— ${label} —</div><div class="day-items">${itemsHtml}</div></div>`;
+}
+
+function createWeeklyForecastHtml(list) {
+  const dailyData = {};
+  list.forEach(item => {
+    const dateObj = new Date(item.dt * 1000);
+    const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
+    const dayNum = dateObj.getDate();
+    const dateKey = `${dayName} ${dayNum}`;
+    if (!dailyData[dateKey]) dailyData[dateKey] = { temps: [], ids: [] };
+    dailyData[dateKey].temps.push(item.main.temp);
+    dailyData[dateKey].ids.push(item.weather[0].id);
+  });
+
+  let itemsHtml = '';
+  Object.keys(dailyData).slice(1, 6).forEach(date => {
+    const day = dailyData[date];
+    const maxTemp = Math.round(Math.max(...day.temps));
+    const minTemp = Math.round(Math.min(...day.temps));
+    const midId = day.ids[Math.floor(day.ids.length / 2)];
+    const type = getWeatherType(midId);
+    itemsHtml += `
+      <div class="forecast-item weekly-item">
+        <div class="forecast-time">${date}</div>
+        <div class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</div>
+        <div class="forecast-temp weekly-temp">
+          <span class="max">${maxTemp}</span><span class="separator">/</span><span class="min">${minTemp}</span>
+        </div>
+      </div>`;
+  });
+  return `<div class="day-group"><div class="day-label">— Weekly Outlook —</div><div class="day-items">${itemsHtml}</div></div>`;
+}
+
+// =========================
+// WEATHER & MARKET メイン
+// =========================
+let weatherSlideIndex = 0;
+let weatherTimer = null;
 
 async function fetchWeather() {
   try {
     const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=ja`);
     const d = await r.json();
-    const type = getWeatherType(d.list[0].weather[0].id);
-    document.getElementById('weather-bg-overlay').className = `weather-bg-overlay bg-${type}`;
+    if (!d || !d.list) return;
 
     const wrapper = document.getElementById('forecast-wrapper');
-    wrapper.innerHTML = `
-      <div class="day-group">
-        <div class="massive-weather-icon">${WEATHER_ICONS[type]}</div>
-        <div class="massive-temp">${Math.round(d.list[0].main.temp)}°C</div>
-        <div class="day-label">${d.list[0].weather[0].description.toUpperCase()}</div>
-      </div>
-      <div class="day-group">
-        <div class="day-label">— ECONOMIC CALENDAR —</div>
-        <div id="tv-economic-calendar" style="width:90%; height:350px;"></div>
-      </div>
-      <div class="day-group">
-        <div class="day-label">— MARKET FOCUS —</div>
-        <div id="tv-sp500" style="width:750px; height:200px;"></div>
-      </div>
-    `;
-    initTV();
-    startSlide();
-  } catch (e) { console.error(e); }
+    
+    // スライド用HTML（中央：天気・米国・商品・他FX）
+    const todayHtml = createForecastGroupHtml(d.list.slice(0, 8), "Today's Forecast");
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toLocaleDateString();
+    const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr).slice(0, 8);
+    const tomorrowHtml = createForecastGroupHtml(tomorrowList, "Tomorrow's Plan");
+    const weeklyHtml = createWeeklyForecastHtml(d.list);
+
+   const mktHtml = (id, label) => `
+    <div class="day-group">
+      <div class="day-label">— ${label} —</div>
+      <div id="${id}" style="width:700px; height:130px;"></div>
+    </div>`;
+
+  // 中央はNASDAQを抜いた構成
+  wrapper.innerHTML = todayHtml + tomorrowHtml + weeklyHtml + 
+                      mktHtml("tv-sp500", "S&P 500 Futures") +
+                      mktHtml("tv-gold", "Gold Spot") +
+                      mktHtml("tv-oil", "WTI Crude Oil") +
+                      mktHtml("tv-eur-jpy", "EUR/JPY") +
+                      mktHtml("tv-eur-usd", "EUR/USD");
+    
+    initTradingViewWidgets();
+    weatherSlideIndex = 0;
+    wrapper.style.transform = `translateY(0px)`;
+    startWeatherCycle();
+
+  } catch (err) { console.error('Weather/Market Fetch Error:', err); }
 }
 
-let slideIdx = 0;
-function startSlide() {
-  setInterval(() => {
-    slideIdx = (slideIdx + 1) % 3;
-    document.getElementById('forecast-wrapper').style.transform = `translateY(${slideIdx * -450}px)`;
-  }, 10000);
+function initTradingViewWidgets() {
+    const conf = { "width": "100%", "height": 155, "locale": "ja", "dateRange": "1D", "colorTheme": "dark", "isTransparent": true, "interval": "5" };
+
+    // 左パネル：固定3本 (NASDAQ追加)
+    appendMiniWidget("tv-usd-jpy-fixed", { ...conf, "symbol": "FX:USDJPY" });
+    appendMiniWidget("tv-n225-fixed",    { ...conf, "symbol": "OSE:NK2251!" });
+    appendMiniWidget("tv-nasdaq-fixed",  { ...conf, "symbol": "CAPITALCOM:US100" });
+
+    // 中央パネル：スライド用
+    appendMiniWidget("tv-sp500", conf, "CAPITALCOM:US500");
+    appendMiniWidget("tv-gold",  conf, "TVC:GOLD");
+    appendMiniWidget("tv-oil",   conf, "CAPITALCOM:OIL_CRUDE");
+    appendMiniWidget("tv-eur-jpy", conf, "FX:EURJPY");
+    appendMiniWidget("tv-eur-usd", conf, "FX:EURUSD");
 }
 
-function initTV() {
-  const common = { "colorTheme": "dark", "isTransparent": true, "locale": "ja" };
-  // 左固定
-  renderTV("tv-usd-jpy-fixed", { ...common, "width":"100%", "height":150, "symbol":"FX:USDJPY" });
-  renderTV("tv-n225-fixed", { ...common, "width":"100%", "height":150, "symbol":"OSE:NK2251!" });
-  renderTV("tv-nasdaq-fixed", { ...common, "width":"100%", "height":150, "symbol":"CAPITALCOM:US100" });
-  // 中央
-  renderTV("tv-sp500", { ...common, "width":"100%", "height":200, "symbol":"CAPITALCOM:US500" });
+function appendMiniWidget(containerId, config) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = ''; 
+    const script = document.createElement('script');
+    script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
+    script.async = true;
+    script.innerHTML = JSON.stringify(config);
+    container.appendChild(script);
+}
+
+function startWeatherCycle() {
+  if (weatherTimer) clearInterval(weatherTimer);
+  const wrapper = document.getElementById('forecast-wrapper');
   
-  // 経済カレンダー
-  const cal = document.createElement('script');
-  cal.src = "https://s3.tradingview.com/external-embedding/embed-widget-events.js";
-  cal.async = true;
-  cal.innerHTML = JSON.stringify({ ...common, "width":"100%", "height":"100%", "importanceFilter":"-1,0,1", "currencyFilter":"USD,JPY,EUR" });
-  document.getElementById('tv-economic-calendar').appendChild(cal);
+  weatherTimer = setInterval(() => {
+    const groups = wrapper.querySelectorAll('.day-group');
+    if (groups.length === 0) return;
+
+    const nextIndex = (weatherSlideIndex + 1) % groups.length;
+
+    if (nextIndex === 0) {
+      // 週間から最初に戻るフェード演出
+      wrapper.style.transition = 'opacity 1.5s ease-in, filter 1.5s ease-in, transform 1.5s ease-in';
+      wrapper.style.opacity = '0';
+      wrapper.style.filter = 'blur(15px)';
+      wrapper.style.transform = `translateY(${weatherSlideIndex * -250}px) scale(0.92)`;
+
+      setTimeout(() => {
+        weatherSlideIndex = 0;
+        wrapper.style.transition = 'none';
+        wrapper.style.transform = `translateY(0px) scale(0.92)`;
+        groups.forEach((g, i) => g.classList.toggle('inactive', i !== 0));
+        wrapper.offsetHeight; 
+        wrapper.style.transition = 'opacity 1.8s ease-out, filter 1.8s ease-out, transform 1.8s ease-out';
+        wrapper.style.opacity = '1';
+        wrapper.style.filter = 'blur(0)';
+        wrapper.style.transform = `translateY(0px) scale(1)`;
+      }, 1500);
+    } else {
+      weatherSlideIndex = nextIndex;
+      // スライド移動量を 250px に設定（CSSの.day-groupの高さ）
+      wrapper.style.transition = 'transform 1.2s cubic-bezier(0.65, 0, 0.35, 1), opacity 1.2s ease';
+      wrapper.style.transform = `translateY(${weatherSlideIndex * -250}px) scale(1)`;
+      groups.forEach((group, index) => {
+        group.classList.toggle('inactive', index !== weatherSlideIndex);
+      });
+    }
+  }, 9000);
 }
 
-function renderTV(id, cfg) {
-  const el = document.getElementById(id); if (!el) return;
-  const s = document.createElement('script');
-  s.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
-  s.async = true; s.innerHTML = JSON.stringify(cfg);
-  el.appendChild(s);
+fetchWeather();
+setInterval(fetchWeather, 600000);
+
+// =========================
+// NEWS
+// =========================
+const RSS_URL = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
+const newsCard = document.getElementById('news-card');
+
+let newsItems = [], newsEls = [], index = 0, newsT = null;
+let lastGoodNews = null;
+const FADE = 1.8, AUTO_INTERVAL = 11000, FETCH_INTERVAL = 10*60*1000;
+
+const updateEl = document.createElement('div');
+updateEl.style.cssText = 'position:absolute; top:10px; right:15px; font-size:12px; opacity:0.6;';
+newsCard.appendChild(updateEl);
+
+const indicator = document.createElement('div');
+indicator.style.cssText = 'position:absolute; bottom:10px; left:50%; transform:translateX(-50%); display:flex; gap:8px;';
+newsCard.appendChild(indicator);
+
+function isImportant(title) { return /(地震|津波|警報|注意報|台風|噴火|避難)/.test(title); }
+
+function updateIndicator() {
+  indicator.innerHTML = '';
+  newsItems.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.style.cssText = `width:10px; height:10px; border-radius:50%; background:${i === index ? '#fff' : '#555'}; cursor:pointer;`;
+    dot.onclick = () => { if (i === index) return; stopAutoNews(); showNews(i); startAutoNews(); };
+    indicator.appendChild(dot);
+  });
 }
 
-// --- News Stack ---
-let news = [];
-let newsPtr = 0;
+function createNews() {
+  newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
+  newsEls = newsItems.map(n => {
+    const div = document.createElement('div');
+    div.className = 'news-item';
+    div.innerHTML = `<div class="news-mark">NHKONEニュース</div><a class="news-title" href="${n.link}" target="_blank">${n.title}</a><div class="news-pubdate">${n.pubDate}</div><div class="news-description">${n.description}</div>`;
+    newsCard.appendChild(div);
+    return div;
+  });
+  updateIndicator();
+}
+
+function showNews(next, init = false) {
+  if (!newsEls[next]) return;
+  if (init) { newsEls[next].classList.add('show'); index = next; updateIndicator(); return; }
+  newsEls[index].classList.remove('show');
+  setTimeout(() => { newsEls[next].classList.add('show'); index = next; updateIndicator(); }, FADE*1000);
+}
+
+function startAutoNews() { stopAutoNews(); newsT = setInterval(() => showNews((index+1)%newsEls.length), AUTO_INTERVAL); }
+function stopAutoNews() { if (newsT) clearInterval(newsT); }
+
 async function fetchNews() {
   try {
-    const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://news.web.nhk/n-data/conf/na/rss/cat0.xml'));
-    const d = await r.json();
-    const items = new DOMParser().parseFromString(d.contents, "application/xml").querySelectorAll('item');
-    news = Array.from(items).map(i => i.querySelector('title').textContent);
-    const container = document.getElementById('news-stack-container');
-    for(let i=0; i<3; i++) createCard(i, i);
-    setInterval(rotateNews, 8000);
-  } catch (e) { console.error(e); }
-}
+    const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
+    const data = await r.json();
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(data.contents, "application/xml");
+    const items = xml.querySelectorAll('item');
+    let fetched = Array.from(items).map(item => ({
+      title: item.querySelector('title')?.textContent,
+      link: item.querySelector('link')?.textContent,
+      pubDate: item.querySelector('pubDate')?.textContent,
+      description: item.querySelector('description')?.textContent
+    }));
 
-function createCard(posIdx, dataIdx) {
-  const c = document.createElement('div');
-  c.className = `news-card-item pos-${posIdx}`;
-  c.innerHTML = `<div class="news-mark">NHK NEWS FLASH</div><div class="news-title">${news[dataIdx % news.length]}</div>`;
-  document.getElementById('news-stack-container').appendChild(c);
+    if (fetched.length === 0) {
+      if (lastGoodNews) newsItems = lastGoodNews; else return;
+    } else {
+      newsItems = fetched; lastGoodNews = fetched;
+    }
+    createNews();
+    showNews(0, true);
+    if (newsItems.length > 1) startAutoNews();
+    const now = new Date();
+    updateEl.textContent = `Last update ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')} JST`;
+  } catch (e) { console.error('News fetch failed', e); }
 }
+fetchNews();
+setInterval(fetchNews, FETCH_INTERVAL);
 
-function rotateNews() {
-  const container = document.getElementById('news-stack-container');
-  const cards = container.querySelectorAll('.news-card-item');
-  cards[0].classList.replace('pos-0', 'exit');
-  cards[1].classList.replace('pos-1', 'pos-0');
-  cards[2].classList.replace('pos-2', 'pos-1');
-  setTimeout(() => {
-    cards[0].remove();
-    newsPtr = (newsPtr + 1) % news.length;
-    createCard(2, newsPtr + 2);
-  }, 900);
+// =========================
+// SCALING
+// =========================
+function adjustScale() {
+    const container = document.getElementById('container');
+    if (!container) return;
+    const baseWidth = 1920, baseHeight = 720;
+    const sW = window.innerWidth, sH = window.innerHeight;
+    let scale = Math.min(sW / baseWidth, sH / baseHeight);
+    container.style.transform = `scale(${scale})`;
 }
-
-window.addEventListener('load', () => {
-  fetchWeather(); fetchNews();
-  const upDate = () => {
-    const d = new Date();
-    const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
-    document.getElementById('date').textContent = `${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()} ${days[d.getDay()]}`;
-  };
-  upDate(); setInterval(upDate, 60000);
-});
+window.addEventListener('resize', adjustScale);
+window.addEventListener('load', adjustScale);
+adjustScale();
