@@ -266,38 +266,38 @@ body {
   letter-spacing: 0.02em;
 }
 
+/* --- ニュースマーク：さらに小さく、右寄せに配置 --- */
 .news-mark {
   background: transparent !important;
   border: none !important;
   padding: 0 !important;
-  margin-bottom: 22px;
+  margin-bottom: 10px; /* タイトルとの間隔を少し詰める */
   display: flex;
+  justify-content: flex-end; /* 右寄せ */
   align-items: center;
-  gap: 15px;
-  /* 本家を意識したフォント構成 */
+  gap: 8px; /* NHKとONEの距離を少し詰める */
+  
   font-family: 'Roboto', 'Arial', sans-serif;
-  font-style: italic; /* 斜体 */
+  font-style: italic;
   text-decoration: none !important;
 }
 
-/* NHK部分：太字・イタリック */
+/* NHK部分：サイズを少し縮小 (20px -> 16px) */
 .news-mark::before {
   content: "NHK";
   font-weight: 900;
-  font-size: 20px;
+  font-size: 16px;
   color: #ffffff;
   letter-spacing: -0.02em;
-  font-style: italic;
 }
 
-/* ONE部分：細字・イタリック */
+/* ONE部分：サイズを少し縮小 (20px -> 16px) */
 .news-mark::after {
   content: "ONE";
   font-weight: 300;
-  font-size: 20px;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.6);
   letter-spacing: 0.05em;
-  font-style: italic;
 }
 
 /* スタック配置：奥行きの演出 */
@@ -324,5 +324,6 @@ body {
 #news-card > div:last-child {
   bottom: 30px !important;
 }
+
 
 
