@@ -266,13 +266,15 @@ function createNews() {
   newsEls = newsItems.map(n => {
     const div = document.createElement('div');
     div.className = 'news-item';
+    // aタグをタイトルの外側に配置し、確実にリンクとして機能させる
     div.innerHTML = `
-     <div class="news-mark"></div>
-     <div class="news-title">${n.title}</div>
-     <div class="news-description">${n.description}
-    </div>
-
-`;newsCard.appendChild(div);
+      <div class="news-mark"></div>
+      <a href="${n.link}" target="_blank" class="news-link-wrapper">
+        <div class="news-title">${n.title}</div>
+      </a>
+      <div class="news-description">${n.description}</div>
+    `;
+    newsCard.appendChild(div);
     return div;
   });
   updateIndicator();
