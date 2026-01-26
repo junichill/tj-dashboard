@@ -2,8 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pro-Density Cinematic Dashboard</title>
+  <title>Dynamic Cinematic Dashboard</title>
   <link rel="stylesheet" href="flip.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
@@ -20,11 +19,11 @@
     <div class="clock-container glass-card">
       <div class="clock-scale">
         <div class="tick" data-did-init="handleTickInit">
-          <span data-view="flip" data-key="hours1" class="tick-flip"></span>
-          <span data-view="flip" data-key="hours2" class="tick-flip"></span>
+          <span data-view="flip" data-key="hours1"></span>
+          <span data-view="flip" data-key="hours2"></span>
           <span class="tick-text-inline">:</span>
-          <span data-view="flip" data-key="minutes1" class="tick-flip"></span>
-          <span data-view="flip" data-key="minutes2" class="tick-flip"></span>
+          <span data-view="flip" data-key="minutes1"></span>
+          <span data-view="flip" data-key="minutes2"></span>
         </div>
         <span id="seconds-static">00</span>
       </div>
@@ -46,8 +45,7 @@
   </div>
 
   <div id="right-panel">
-    <div id="news-stack-container" class="news-stack-container">
-      </div>
+    <div id="news-stack-container" class="news-stack-container"></div>
   </div>
 </div>
 
