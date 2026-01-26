@@ -238,7 +238,7 @@ body {
   box-sizing: border-box;
   
   /* 背景画像の設定（右上の画像） */
-  background-image: url('http://googleusercontent.com/image_collection/image_retrieval/18287311063226412592_1');
+  background-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop');
   background-size: cover;
   background-position: center;
   
@@ -353,6 +353,7 @@ body {
 #news-card > div:last-child {
   bottom: 30px !important;
 }
+
 
 
 
