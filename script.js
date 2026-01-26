@@ -2,7 +2,7 @@
 const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
 const LAT = 35.6895; const LON = 139.6917;
 
-// --- Tick CLOCK (安定版) ---
+// --- Tick CLOCK (左パネル固定) ---
 function handleTickInit(tick) {
   const secondsEl = document.getElementById('seconds-static');
   Tick.helper.interval(() => {
@@ -14,18 +14,14 @@ function handleTickInit(tick) {
   }, 1000);
 }
 
-// --- Weather Icons ---
-const WEATHER_ICONS = {
-  sunny: '☀️', cloudy: '☁️', rainy: '🌧️', snowy: '❄️'
-};
-
+// --- Weather Settings ---
+const WEATHER_ICONS = { sunny: '☀️', cloudy: '☁️', rainy: '🌧️', snowy: '❄️' };
 function getWeatherType(id) {
   if (id >= 200 && id < 600) return 'rainy';
   if (id >= 600 && id < 700) return 'snowy';
   return (id >= 801) ? 'cloudy' : 'sunny';
 }
 
-// --- 中央パネル更新ロジック ---
 let weatherSlideIndex = 0;
 let weatherTimer = null;
 
@@ -40,7 +36,7 @@ async function fetchWeather() {
 
     const wrapper = document.getElementById('forecast-wrapper');
     
-    // スライド構成：特大天気 -> 経済カレンダー -> 指標チャート
+    // スライド構成：1.特大天気 2.経済カレンダー 3.S&P500チャート
     wrapper.innerHTML = `
       <div class="day-group">
         <div class="massive-weather-icon">${WEATHER_ICONS[type]}</div>
@@ -49,18 +45,11 @@ async function fetchWeather() {
       </div>
       <div class="day-group">
         <div class="day-label">— ECONOMIC CALENDAR —</div>
-        <div class="calendar-item">
-          <div class="calendar-time">22:30 COUNTDOWN</div>
-          <div class="calendar-event">米・雇用統計発表</div>
-        </div>
-        <div class="calendar-item">
-          <div class="calendar-time">04:00 UP NEXT</div>
-          <div class="calendar-event">FOMC 政策金利発表</div>
-        </div>
+        <div id="tv-economic-calendar" style="width:90%; height:350px;"></div>
       </div>
       <div class="day-group">
         <div class="day-label">— S&P 500 —</div>
-        <div id="tv-sp500" style="width:700px; height:180px;"></div>
+        <div id="tv-sp500" style="width:750px; height:200px;"></div>
       </div>
     `;
 
@@ -76,27 +65,44 @@ function startWeatherCycle() {
     const groups = wrapper.querySelectorAll('.day-group');
     weatherSlideIndex = (weatherSlideIndex + 1) % groups.length;
     wrapper.style.transform = `translateY(${weatherSlideIndex * -450}px)`;
-  }, 9000);
+  }, 10000); // 10秒ごとにスライド
 }
 
 function initTradingViewWidgets() {
-  const conf = { "width": "100%", "height": 150, "locale": "ja", "dateRange": "1D", "colorTheme": "dark", "isTransparent": true, "interval": "5" };
-  appendWidget("tv-usd-jpy-fixed", { ...conf, "symbol": "FX:USDJPY" });
-  appendWidget("tv-n225-fixed", { ...conf, "symbol": "OSE:NK2251!" });
-  appendWidget("tv-nasdaq-fixed", { ...conf, "symbol": "CAPITALCOM:US100" });
-  appendWidget("tv-sp500", { ...conf, "symbol": "CAPITALCOM:US500", "height": 180 });
+  const common = { "colorTheme": "dark", "isTransparent": true, "locale": "ja" };
+
+  // 左パネル固定指標
+  appendMiniChart("tv-usd-jpy-fixed", { ...common, "width": "100%", "height": 150, "symbol": "FX:USDJPY" });
+  appendMiniChart("tv-n225-fixed", { ...common, "width": "100%", "height": 150, "symbol": "OSE:NK2251!" });
+  appendMiniChart("tv-nasdaq-fixed", { ...common, "width": "100%", "height": 150, "symbol": "CAPITALCOM:US100" });
+
+  // 中央パネル：経済カレンダーウィジェット
+  const calendarScript = document.createElement('script');
+  calendarScript.src = "https://s3.tradingview.com/external-embedding/embed-widget-events.js";
+  calendarScript.async = true;
+  calendarScript.innerHTML = JSON.stringify({
+    ...common,
+    "width": "100%", "height": "100%",
+    "importanceFilter": "-1,0,1",
+    "currencyFilter": "USD,JPY,EUR"
+  });
+  document.getElementById('tv-economic-calendar').appendChild(calendarScript);
+
+  // 中央パネル：S&P500
+  appendMiniChart("tv-sp500", { ...common, "width": "100%", "height": 200, "symbol": "CAPITALCOM:US500" });
 }
 
-function appendWidget(id, config) {
+function appendMiniChart(id, config) {
   const container = document.getElementById(id);
-  if (!container) return; container.innerHTML = '';
+  if (!container) return;
   const script = document.createElement('script');
   script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
-  script.async = true; script.innerHTML = JSON.stringify(config);
+  script.async = true;
+  script.innerHTML = JSON.stringify(config);
   container.appendChild(script);
 }
 
-// --- ニューススタック・ロジック ---
+// --- ニューススタック・ロジック (右パネル) ---
 const RSS_URL = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
 let newsData = [];
 let newsPointer = 0;
@@ -126,10 +132,9 @@ function renderNewsStack() {
 function rotateNews() {
   const container = document.getElementById('news-stack-container');
   const cards = Array.from(container.querySelectorAll('.news-card-item'));
-  
-  // 0番目を退場させる
+  if (cards.length < 3) return;
+
   cards[0].classList.replace('pos-0', 'exit');
-  // 1, 2番目を繰り上げる
   cards[1].classList.replace('pos-1', 'pos-0');
   cards[2].classList.replace('pos-2', 'pos-1');
 
@@ -144,5 +149,16 @@ function rotateNews() {
   }, 900);
 }
 
-// --- INIT ---
-window.addEventListener('load', () => { fetchWeather(); fetchNews(); });
+// --- 起動処理 ---
+window.addEventListener('load', () => {
+  fetchWeather();
+  fetchNews();
+  // 日付更新
+  const updateDate = () => {
+    const d = new Date();
+    const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+    document.getElementById('date').textContent = `${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()} ${days[d.getDay()]}`;
+  };
+  updateDate();
+  setInterval(updateDate, 60000);
+});
