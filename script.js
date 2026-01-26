@@ -268,12 +268,13 @@ function createNews() {
     div.className = 'news-item';
     // aタグをタイトルの外側に配置し、確実にリンクとして機能させる
     div.innerHTML = `
-      <div class="news-mark"></div>
-      <a href="${n.link}" target="_blank" class="news-link-wrapper">
-        <div class="news-title">${n.title}</div>
-      </a>
-      <div class="news-description">${n.description}</div>
-    `;
+  <div class="news-mark"></div>
+  <a href="${n.link}" target="_blank" class="news-link-wrapper">
+    <div class="news-title">${n.title}</div>
+  </a>
+  <div class="news-description">${n.description}</div>
+  <div class="news-date">${new Date(n.pubDate).getHours().toString().padStart(2, '0')}:${new Date(n.pubDate).getMinutes().toString().padStart(2, '0')}</div>
+`;
     newsCard.appendChild(div);
     return div;
   });
