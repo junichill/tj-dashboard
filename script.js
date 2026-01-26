@@ -275,9 +275,27 @@ function createNews() {
 
 function showNews(next, init = false) {
   if (!newsEls[next]) return;
-  if (init) { newsEls[next].classList.add('show'); index = next; updateIndicator(); return; }
-  newsEls[index].classList.remove('show');
-  setTimeout(() => { newsEls[next].classList.add('show'); index = next; updateIndicator(); }, FADE*1000);
+  
+  // 全要素から特定のクラスを一度削除
+  newsEls.forEach(el => {
+    el.classList.remove('show', 'next', 'exit');
+  });
+
+  const currentIdx = next;
+  const nextIdx = (next + 1) % newsEls.length;
+
+  if (!init) {
+    // 直前のカードを「exit（上へ抜ける）」状態にする
+    const prevIdx = index;
+    newsEls[prevIdx].classList.add('exit');
+  }
+
+  // 現在のカードと次のカードをセット
+  newsEls[currentIdx].classList.add('show');
+  newsEls[nextIdx].classList.add('next');
+  
+  index = next;
+  updateIndicator();
 }
 
 function startAutoNews() { stopAutoNews(); newsT = setInterval(() => showNews((index+1)%newsEls.length), AUTO_INTERVAL); }
