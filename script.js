@@ -97,44 +97,12 @@ function createWeeklyForecastHtml(list) {
 let economicScheduleHtml = ""; 
 
 async function fetchEconomicSchedule() {
-  try {
-    const RSS_URL = 'https://fx.minkabu.jp/indicator.xml';
-    const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
-    const data = await r.json();
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(data.contents, "application/xml");
-    const items = Array.from(xml.querySelectorAll('item')).slice(0, 5);
-
-    if (items.length === 0) throw new Error("No items found");
-
-    const listHtml = items.map(item => {
-      const title = item.querySelector('title')?.textContent || "";
-      const description = item.querySelector('description')?.textContent || "";
-      
-      // 国名：[日本] 形式から抽出、なければ空文字
-      const country = title.match(/\[(.*?)\]/)?.[1] || "指標";
-      // 指標名：[]の部分を削除
-      const name = title.replace(/\[.*?\]/, "").trim();
-      // 時間：00:00 形式を抽出
-      const time = description.match(/\d{2}:\d{2}/)?.[0] || "--:--";
-      // 星：★を抽出、なければ☆☆☆を表示
-      const stars = description.match(/★+/)?.[0] || "☆☆☆";
-
-      return `
-        <div class="schedule-item">
-          <div class="sch-time">${time}</div>
-          <div class="sch-country">${country}</div>
-          <div class="sch-name">${name}</div>
-          <div class="sch-star" style="color: #ffca28;">${stars}</div>
-        </div>`;
-    }).join('');
-
-    economicScheduleHtml = `<div class="day-group"><div class="day-label">— Economic Schedule —</div><div class="schedule-list">${listHtml}</div></div>`;
-  } catch (e) { 
-    console.error('Schedule fetch failed', e); 
-    // 失敗した時でも空のリストではなく「取得中」や「更新待機」としてスライド自体は維持する
-    economicScheduleHtml = `<div class="day-group"><div class="day-label">— Economic Schedule —</div><div style="opacity:0.5; padding: 20px;">Updating market data...</div></div>`;
-  }
+  // RSSのフェッチは不要になるため、HTML構造だけを準備します
+  economicScheduleHtml = `
+    <div class="day-group">
+      <div class="day-label">— Economic Calendar —</div>
+      <div id="tv-economic-calendar" style="width:100%; height:200px;"></div>
+    </div>`;
 }
 
 // =========================
@@ -182,6 +150,8 @@ async function fetchWeather() {
 
 function initTradingViewWidgets() {
     const conf = { "width": "100%", "height": 155, "locale": "ja", "dateRange": "1D", "colorTheme": "dark", "isTransparent": true, "interval": "5" };
+    
+    // ...既存の symbols への appendMiniWidget 処理...
     appendMiniWidget("tv-usd-jpy-fixed", { ...conf, "symbol": "FX:USDJPY" });
     appendMiniWidget("tv-n225-fixed",    { ...conf, "symbol": "OSE:NK2251!" });
     appendMiniWidget("tv-nasdaq-fixed",  { ...conf, "symbol": "CAPITALCOM:US100" });
@@ -190,6 +160,25 @@ function initTradingViewWidgets() {
     appendMiniWidget("tv-oil",     { ...conf, "symbol": "CAPITALCOM:OIL_CRUDE" });
     appendMiniWidget("tv-eur-jpy", { ...conf, "symbol": "FX:EURJPY" });
     appendMiniWidget("tv-eur-usd", { ...conf, "symbol": "FX:EURUSD" });
+
+    // --- ここから追加：経済カレンダーウィジェット ---
+    const calendarContainer = document.getElementById("tv-economic-calendar");
+    if (calendarContainer) {
+        calendarContainer.innerHTML = '';
+        const script = document.createElement('script');
+        script.src = "https://s3.tradingview.com/external-embedding/embed-widget-events.js";
+        script.async = true;
+        script.innerHTML = JSON.stringify({
+            "colorTheme": "dark",
+            "isTransparent": true,
+            "width": "100%",
+            "height": "100%",
+            "locale": "ja",
+            "importanceFilter": "-1,0,1", // すべての重要度を表示
+            "currencyFilter": "USD,JPY,EUR,GBP" // 主要通貨に絞る
+        });
+        calendarContainer.appendChild(script);
+    }
 }
 
 function appendMiniWidget(containerId, config) {
