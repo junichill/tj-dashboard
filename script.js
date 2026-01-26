@@ -123,6 +123,7 @@ let weatherSlideIndex = 0;
 let weatherTimer = null;
 let economicScheduleHtml = ""; // 経済スケジュールのHTMLを保持する変数
 
+// --- fetchWeather関数内の修正 ---
 async function fetchWeather() {
   try {
     const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=ja`);
@@ -131,7 +132,6 @@ async function fetchWeather() {
 
     const wrapper = document.getElementById('forecast-wrapper');
     
-    // スライド用HTML（中央：天気・米国・商品・他FX）
     const todayHtml = createForecastGroupHtml(d.list.slice(0, 8), "Today's Forecast");
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -140,22 +140,23 @@ async function fetchWeather() {
     const tomorrowHtml = createForecastGroupHtml(tomorrowList, "Tomorrow's Plan");
     const weeklyHtml = createWeeklyForecastHtml(d.list);
 
-   const mktHtml = (id, label) => `
+    const mktHtml = (id, label) => `
     <div class="day-group">
       <div class="day-label">— ${label} —</div>
       <div id="${id}" style="width:700px; height:130px;"></div>
     </div>`;
 
-  // 中央はNASDAQを抜いた構成
-  wrapper.innerHTML = todayHtml + tomorrowHtml + weeklyHtml + 
-                      mktHtml("tv-sp500", "S&P 500 Futures") +
-                      mktHtml("tv-gold", "Gold Spot") +
-                      mktHtml("tv-oil", "WTI Crude Oil") +
-                      mktHtml("tv-eur-jpy", "EUR/JPY") +
-                      mktHtml("tv-eur-usd", "EUR/USD");
-                      `<div id="economic-schedule-container"></div>`; // ここを固定の器にする
+    // 【ここを修正】 全て + で繋ぎ、最後に器(container)を合体させます
+    wrapper.innerHTML = todayHtml + 
+                        tomorrowHtml + 
+                        weeklyHtml + 
+                        mktHtml("tv-sp500", "S&P 500 Futures") +
+                        mktHtml("tv-gold", "Gold Spot") +
+                        mktHtml("tv-oil", "WTI Crude Oil") +
+                        mktHtml("tv-eur-jpy", "EUR/JPY") +
+                        mktHtml("tv-eur-usd", "EUR/USD") +
+                        `<div id="economic-schedule-container"></div>`; // 連結を確認
 
-// その直後で、スケジュールを流し込む関数を呼ぶ
     updateScheduleUI();
     initTradingViewWidgets();
     weatherSlideIndex = 0;
