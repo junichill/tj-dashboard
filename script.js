@@ -285,15 +285,25 @@ let fixedWeatherIndex = 0;
 function startFixedWeatherCycle() {
     const slides = document.querySelectorAll('.weather-slide');
     if (slides.length === 0) return;
+
     if (window.fixedWeatherTimer) clearInterval(window.fixedWeatherTimer);
+    
     fixedWeatherIndex = 0;
+
     window.fixedWeatherTimer = setInterval(() => {
         const currentSlides = document.querySelectorAll('.weather-slide');
-        if (currentSlides.length === 0) return;
+        if (currentSlides.length < 2) return;
+
+        // 1. 今表示されているスライドをフェードアウト
         currentSlides[fixedWeatherIndex].classList.remove('active');
-        fixedWeatherIndex = (fixedWeatherIndex + 1) % currentSlides.length;
-        currentSlides[fixedWeatherIndex].classList.add('active');
-    }, 8000); 
+
+        // 2. 1.5秒（フェードアウト時間）待ってから次のスライドを出す
+        setTimeout(() => {
+            fixedWeatherIndex = (fixedWeatherIndex + 1) % currentSlides.length;
+            currentSlides[fixedWeatherIndex].classList.add('active');
+        }, 1500); // ここを長くすると、真っ白な時間が生まれてより余韻が出ます
+
+    }, 8000); // 8秒ごとに切り替え
 }
 
 fetchWeather();
