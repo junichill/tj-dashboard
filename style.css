@@ -165,7 +165,6 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  transition: all 1.2s ease;
 }
 
 .day-group.inactive {
@@ -395,29 +394,42 @@ body {
     display: none; /* 古いRSS用のリスト表示は不要なので隠します */
 }
 
-/* 中央3分割レイアウト */
+/* 中央パネル全体のグリッド定義 */
 .center-grid-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 220px 1fr; /* 上段の高さを指定、下段は残り */
+  /* 上段を正方形にするため、列幅と同じ高さ（1fr）を指定し、下段を自動調整 */
+  grid-template-rows: 1fr auto; 
   gap: 20px;
   height: 100%;
+  width: 100%;
 }
 
+/* 上段パネルを正方形に保つ設定 */
+.grid-item-tl, .grid-item-tr {
+  aspect-ratio: 1 / 1; /* 正方形に固定 */
+  width: 100%;
+  min-height: 0;
+}
+
+/* 下段パネル：上段の正方形に合わせて残りのスペースを埋める */
 .grid-item-bottom {
   grid-column: span 2;
+  position: relative;
   overflow: hidden;
-  padding: 0 !important; /* スライドを端まで表示 */
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  min-height: 0;
+  /* スライド移動量(250px)より小さくならないよう、最低高さを確保 */
+  min-height: 250px; 
 }
 
-/* スライドエリアを中央下段のサイズに固定 */
+/* スライドの表示窓：既存のスクリプト設定を維持 */
 #forecast-viewport {
-  height: 250px; /* script.jsの移動量 250px と必ず一致させる */
+  height: 250px; 
   width: 100%;
   overflow: hidden;
+  margin: auto 0;
 }
 
 /* 上段の中身を整える（任意） */
@@ -427,6 +439,7 @@ body {
   align-items: center;
   justify-content: center;
 }
+
 
 
 
