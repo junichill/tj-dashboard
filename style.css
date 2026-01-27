@@ -395,12 +395,63 @@ body {
     display: none; /* 古いRSS用のリスト表示は不要なので隠します */
 }
 
+/* 中央パネルのグリッドレイアウト */
+.central-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 15px;
+    padding: 10px;
+    width: 720px; /* 全体幅に合わせて調整 */
+    height: 700px;
+}
 
+.panel-box {
+    background: rgba(10, 15, 25, 0.6);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 8px;
+    position: relative;
+    padding: 15px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
 
+/* L字の装飾アクセント */
+.panel-box::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 10px; height: 10px;
+    border-top: 2px solid var(--accent);
+    border-left: 2px solid var(--accent);
+}
 
+.panel-label {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    opacity: 0.7;
+}
 
+.content-wrapper {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
 
+/* Googleトレンド用リスト */
+.trend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border-left: 2px solid var(--accent);
+    padding-left: 10px;
+}
 
-
-
-
+.trend-rank { color: var(--accent); font-weight: bold; }
