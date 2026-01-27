@@ -143,6 +143,38 @@ async function fetchWeather() {
     initTradingViewWidgets();
     weatherSlideIndex = 0;
     wrapper.style.transform = `translateY(0px)`;
+
+const weatherFixed = document.getElementById('weather-fixed-content');
+if (weatherFixed) {
+    const today = d.list[0];
+    const dayTemps = d.list.slice(0, 8).map(v => v.main.temp);
+    const tomorrowStr = new Date(Date.now() + 86400000).toLocaleDateString();
+    const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr);
+
+    const createSlide = (title, iconType, temp, high = null, low = null, pop = 0) => `
+        <div class="weather-slide">
+            <div class="weather-slide-label">${title}</div>
+            <div class="weather-main-row">
+                <div class="weather-icon-large weather-${iconType}">${WEATHER_ICONS[iconType]}</div>
+                <div class="weather-temp-display">
+                    <div class="current-t">${Math.round(temp)}°</div>
+                    ${high !== null ? `<div class="hi-lo"><span class="hi">${Math.round(high)}°</span> / <span class="lo">${Math.round(low)}°</span></div>` : ''}
+                </div>
+            </div>
+            ${pop > 0 ? `<div class="weather-pop"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z"/></svg> ${Math.round(pop * 100)}%</div>` : '<div class="weather-pop">-</div>'}
+        </div>`;
+
+    weatherFixed.innerHTML = `
+        <div id="weather-fixed-wrapper">
+            ${createSlide("NOW", getWeatherType(today.weather[0].id), today.main.temp)}
+            ${createSlide("TODAY", getWeatherType(today.weather[0].id), today.main.temp, Math.max(...dayTemps), Math.min(...dayTemps), today.pop || 0)}
+            ${createSlide("TOMORROW", getWeatherType(tomorrowList[0].weather[0].id), tomorrowList[0].main.temp, Math.max(...tomorrowList.map(v=>v.main.temp)), Math.min(...tomorrowList.map(v=>v.main.temp)), tomorrowList[0].pop || 0)}
+        </div>`;
+    
+    startFixedWeatherCycle();
+}
+    
+    
     startWeatherCycle();
 
   } catch (err) { console.error('Weather/Market Fetch Error:', err); }
@@ -222,6 +254,20 @@ function startWeatherCycle() {
       groups.forEach((group, index) => { group.classList.toggle('inactive', index !== weatherSlideIndex); });
     }
   }, 9000);
+}
+
+// サイクル制御用関数を最後に追加
+let fixedWeatherIndex = 0;
+function startFixedWeatherCycle() {
+    const slides = document.querySelectorAll('.weather-slide');
+    if (slides.length === 0) return;
+    slides.forEach((s, i) => s.classList.toggle('active', i === 0));
+    if (window.fixedWeatherTimer) clearInterval(window.fixedWeatherTimer);
+    window.fixedWeatherTimer = setInterval(() => {
+        slides[fixedWeatherIndex].classList.remove('active');
+        fixedWeatherIndex = (fixedWeatherIndex + 1) % slides.length;
+        slides[fixedWeatherIndex].classList.add('active');
+    }, 8000);
 }
 
 fetchWeather();
