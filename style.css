@@ -453,20 +453,25 @@ body {
     border-radius: 24px;
     background-size: cover;
     background-position: center;
-    /* 画像がない時の保険用グラデーション */
-    background-color: #050a15;
-    background-image: linear-gradient(135deg, #050a15 0%, #1a237e 100%); 
-    transition: background-image 2s ease-in-out;
+    background-color: #0a0a0a; /* 画像読み込み前のベース色 */
+    transition: background-image 1.5s ease-in-out;
 }
 
-/* 文字を浮かせるオーバーレイを強化 */
+/* 文字の視認性を100%確保するレイヤー */
 #weather-fixed-content::before {
     content: '';
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle at top left, rgba(0,0,0,0.4), rgba(0,0,0,0.85));
+    /* 背景画像の上から、中央だけ少し明るいグラデーションを被せる */
+    background: radial-gradient(
+        circle at 50% 50%, 
+        rgba(0, 0, 0, 0.4) 0%, 
+        rgba(0, 0, 0, 0.8) 100%
+    );
     z-index: 0;
 }
+
+
 
 .weather-slide {
     position: absolute;
@@ -561,5 +566,6 @@ body {
 .weather-data-line .hi { color: #ff5252; opacity: 0.9; }
 .weather-data-line .lo { color: #448aff; opacity: 0.9; }
 .weather-data-line .sep { color: rgba(255, 255, 255, 0.1); margin: 0 2px; }
+
 
 
