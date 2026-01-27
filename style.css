@@ -395,38 +395,36 @@ body {
 }
 
 /* 中央パネル全体のグリッド定義 */
-/* 中央パネル全体のグリッド定義 */
 .center-grid-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  /* 上段の高さを列幅と合わせ、下段はスライドに必要な250pxを確保 */
-  grid-template-rows: 1fr 250px; 
-  gap: 30px; /* パネル間の隙間を広げて重なりを防止 */
+  /* 上段と下段の比率を明示的に固定（400px : 250px + 隙間） */
+  grid-template-rows: 400px 250px; 
+  gap: 20px; /* パネル間の明確な距離 */
   height: 100%;
   width: 100%;
   box-sizing: border-box;
 }
 
-/* 上段パネル：正方形を維持 */
+/* 上段パネル：正方形を解除し、400pxの高さにフィットさせる */
 .grid-item-tl, .grid-item-tr {
-  aspect-ratio: 1 / 1;
   width: 100%;
+  height: 400px; /* 明示的に高さを指定 */
   min-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
+  overflow: hidden;
 }
 
-/* 下段パネル：縦幅をスライド移動量(250px)にジャストフィットさせる */
+/* 下段パネル：スライド移動量(250px)に完全に合わせる */
 .grid-item-bottom {
   grid-column: span 2;
-  height: 250px; /* 縦幅を縮小 */
+  height: 250px; /* 高さを固定 */
   overflow: hidden;
   display: flex;
   align-items: center;
   padding: 0 !important;
-  position: relative;
 }
 
 /* スライド表示領域 */
@@ -436,15 +434,13 @@ body {
   overflow: hidden;
 }
 
-/* 上段の中身を整える（任意） */
+/* パネル内のコンテンツがはみ出さないように制御 */
 #weather-fixed-content, #trend-fixed-content {
+  width: 100%;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-/* ラベル削除に伴う調整（不要な余白を消す） */
+/* ラベルは非表示を維持 */
 .panel-label {
   display: none;
 }
