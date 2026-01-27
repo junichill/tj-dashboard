@@ -151,30 +151,31 @@ if (weatherFixed) {
     const tomorrowStr = new Date(Date.now() + 86400000).toLocaleDateString();
     const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr);
 
-    const createSlide = (title, iconType, temp, high = null, low = null, pop = 0) => `
-        <div class="weather-slide">
-            <div class="weather-slide-label">${title}</div>
-            <div class="weather-main-row">
-                <div class="weather-icon-large weather-${iconType}">${WEATHER_ICONS[iconType]}</div>
-                <div class="weather-temp-display">
-                    <div class="current-t">${Math.round(temp)}°</div>
-                    ${high !== null ? `<div class="hi-lo"><span class="hi">${Math.round(high)}°</span> / <span class="lo">${Math.round(low)}°</span></div>` : ''}
-                </div>
+const createSlide = (title, iconType, high, low, pop) => `
+    <div class="weather-slide">
+        <div class="weather-slide-label">${title}</div>
+        <div class="weather-icon-large weather-${iconType}">${WEATHER_ICONS[iconType]}</div>
+        <div class="weather-temp-display">
+            <div class="hi-lo-main">
+                <span class="hi">${Math.round(high)}</span>
+                <span class="sep">/</span>
+                <span class="lo">${Math.round(low)}</span>
             </div>
-            ${pop > 0 ? `<div class="weather-pop"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z"/></svg> ${Math.round(pop * 100)}%</div>` : '<div class="weather-pop">-</div>'}
-        </div>`;
+        </div>
+        <div class="weather-pop-large">${Math.round(pop * 100)}%</div>
+    </div>`;
 
 weatherFixed.innerHTML = `
-        <div id="weather-fixed-wrapper">
-            ${createSlide("NOW", getWeatherType(today.weather[0].id), today.main.temp)}
-            ${createSlide("TODAY", getWeatherType(today.weather[0].id), today.main.temp, Math.max(...dayTemps), Math.min(...dayTemps), today.pop || 0)}
-            ${createSlide("TOMORROW", getWeatherType(tomorrowList[0].weather[0].id), tomorrowList[0].main.temp, Math.max(...tomorrowList.map(v=>v.main.temp)), Math.min(...tomorrowList.map(v=>v.main.temp)), tomorrowList[0].pop || 0)}
-        </div>`;
-    
-    // 生成直後に1枚目をアクティブにする
-    const firstSlide = weatherFixed.querySelector('.weather-slide');
-    if (firstSlide) firstSlide.classList.add('active');
-    
+    <div id="weather-fixed-wrapper">
+        ${createSlide("今", getWeatherType(today.weather[0].id), today.main.temp_max, today.main.temp_min, today.pop || 0)}
+        ${createSlide("今日", getWeatherType(today.weather[0].id), Math.max(...dayTemps), Math.min(...dayTemps), today.pop || 0)}
+        ${createSlide("明日", getWeatherType(tomorrowList[0].weather[0].id), Math.max(...tomorrowList.map(v=>v.main.temp)), Math.min(...tomorrowList.map(v=>v.main.temp)), tomorrowList[0].pop || 0)}
+    </div>`;
+
+// 1枚目をアクティブにする処理
+const slides = weatherFixed.querySelectorAll('.weather-slide');
+if(slides.length > 0) slides[0].classList.add('active');
+  
     startFixedWeatherCycle();
 }
     
