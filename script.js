@@ -151,24 +151,39 @@ if (weatherFixed) {
     const tomorrowStr = new Date(Date.now() + 86400000).toLocaleDateString();
     const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr);
 
-const createSlide = (title, iconType, high, low, pop) => `
+const createSlide = (title, iconType, high, low, pop, prevHigh = null, prevLow = null) => {
+    // 前日差の計算
+    const diffHigh = prevHigh !== null ? (high - prevHigh).toFixed(0) : null;
+    const diffLow = prevLow !== null ? (low - prevLow).toFixed(0) : null;
+    const formatDiff = (diff) => {
+        if (diff === null) return "";
+        const num = parseInt(diff);
+        return num > 0 ? `<span class="diff-plus">[+${num}]</span>` : num < 0 ? `<span class="diff-minus">[${num}]</span>` : `<span class="diff-zero">[±0]</span>`;
+    };
+
+    return `
     <div class="weather-slide">
-        <div class="weather-slide-label">${title}</div>
+        <div class="weather-slide-label">${title} 1/27(Tue)</div>
         <div class="weather-icon-large weather-${iconType}">${WEATHER_ICONS[iconType]}</div>
+        <div class="weather-sub-info">
+            <span class="weather-desc">晴れ</span>
+            <span class="pop-group">
+                <svg class="drop-icon" viewBox="0 0 24 24"><path d="M12,2C12,2 6,8.19 6,12.5C6,15.78 8.42,18.5 12,18.5C15.58,18.5 18,15.78 18,12.5C18,8.19 12,2 12,2Z" fill="#4fc3f7"/></svg>
+                ${Math.round(pop * 100)}%
+            </span>
+        </div>
         <div class="weather-data-line">
-            <span class="hi">${Math.round(high)}</span>
+            <span class="hi">${Math.round(high)}°${formatDiff(diffHigh)}</span>
             <span class="sep">/</span>
-            <span class="lo">${Math.round(low)}</span>
-            <span class="sep">/</span>
-            <span class="pop">${Math.round(pop * 100)}%</span>
+            <span class="lo">${Math.round(low)}°${formatDiff(diffLow)}</span>
         </div>
     </div>`;
-
+};
+  
 weatherFixed.innerHTML = `
     <div id="weather-fixed-wrapper">
-        ${createSlide("今", getWeatherType(today.weather[0].id), today.main.temp_max, today.main.temp_min, today.pop || 0)}
-        ${createSlide("今日", getWeatherType(today.weather[0].id), Math.max(...dayTemps), Math.min(...dayTemps), today.pop || 0)}
-        ${createSlide("明日", getWeatherType(tomorrowList[0].weather[0].id), Math.max(...tomorrowList.map(v=>v.main.temp)), Math.min(...tomorrowList.map(v=>v.main.temp)), tomorrowList[0].pop || 0)}
+        ${createSlide("今日", getWeatherType(today.weather[0].id), Math.max(...dayTemps), Math.min(...dayTemps), today.pop || 0, 10, 2)}
+        ${createSlide("明日", getWeatherType(tomorrowList[0].weather[0].id), Math.max(...tomorrowList.map(v=>v.main.temp)), Math.min(...tomorrowList.map(v=>v.main.temp)), tomorrowList[0].pop || 0, Math.max(...dayTemps), Math.min(...dayTemps))}
     </div>`;
 
 // 1枚目をアクティブにする処理
