@@ -285,30 +285,31 @@ let fixedWeatherIndex = 0;
 function startFixedWeatherCycle() {
     const slides = document.querySelectorAll('.weather-slide');
     if (slides.length === 0) return;
+
     if (window.fixedWeatherTimer) clearInterval(window.fixedWeatherTimer);
     
     fixedWeatherIndex = 0;
+
     window.fixedWeatherTimer = setInterval(() => {
         const currentSlides = document.querySelectorAll('.weather-slide');
         if (currentSlides.length < 2) return;
 
-        // 1. 現在のスライドに「消える（粒子）」アニメーションを適用
+        // 1. 今のスライドに「粒子消去」クラスをつける
         currentSlides[fixedWeatherIndex].classList.remove('active');
         currentSlides[fixedWeatherIndex].classList.add('exit');
 
-        // 2. 完全に消えるのを待ってから（4秒後）、次のスライドを準備して表示
+        // 2. 消え去る粒子をしっかり見せるために「3.5秒」待つ
         setTimeout(() => {
-            // 前のスライドの掃除
+            // クリーンアップ
             currentSlides[fixedWeatherIndex].classList.remove('exit');
-            
-            // インデックス更新
-            fixedWeatherIndex = (fixedWeatherIndex + 1) % currentSlides.length;
-            
-            // 次のスライドを「ふわっ」と出す
-            currentSlides[fixedWeatherIndex].classList.add('active');
-        }, 4000); // 消えるアニメーション(3.5s)より少し長く取る
 
-    }, 12000); // サイクル全体をさらにゆったり（12秒）に
+            // 3. 完全に消えた後に、インデックスを進めて次を表示
+            fixedWeatherIndex = (fixedWeatherIndex + 1) % currentSlides.length;
+            currentSlides[fixedWeatherIndex].classList.add('active');
+            
+        }, 3500); // ここが粒子アニメーションの時間(3.5s)と一致
+
+    }, 10000); // 10秒おきに切り替え
 }
 
 fetchWeather();
