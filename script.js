@@ -193,6 +193,7 @@ function initTradingViewWidgets() {
 window.addEventListener('load', () => {
     updateDate();
     initTradingViewWidgets(); // これを必ず呼ぶ
+    initCentralWidgets();    // 中央下パネル用（これを追加）
     // 他のfetchNewsなどはそのまま
 });
 
@@ -319,6 +320,30 @@ async function fetchNews() {
 }
 fetchNews();
 setInterval(fetchNews, FETCH_INTERVAL);
+
+// =========================
+// CENTRAL WIDGETS (下段パネル)
+// =========================
+function initCentralWidgets() {
+  // 中央下：経済カレンダー（TradingView）
+  const calContainer = document.getElementById('tv-calendar-container');
+  if (calContainer) {
+    calContainer.innerHTML = ""; // 初期化
+    const script = document.createElement('script');
+    script.src = "https://s3.tradingview.com/external-embedding/embed-widget-events.js";
+    script.async = true;
+    script.innerHTML = JSON.stringify({
+      "colorTheme": "dark",
+      "isTransparent": true,
+      "width": "100%",
+      "height": "100%",
+      "locale": "ja",
+      "importanceFilter": "0,1", // 重要度：中・高
+      "currencyFilter": "USD,JPY,EUR"
+    });
+    calContainer.appendChild(script);
+  }
+}
 
 // =========================
 // SCALING
