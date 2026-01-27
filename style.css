@@ -481,30 +481,33 @@ body {
 
 /* 「今」「今日」「明日」のラベル */
 .weather-slide-label {
-    font-size: 1.4rem; /* 巨大すぎるのを抑え、品のあるサイズに */
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.5); /* 真っ白やアクセント色ではなく、少し透過させて馴染ませる */
-    margin-bottom: 5px;
-    letter-spacing: 0.3em; /* 他の指標ラベルと間隔を統一 */
+    font-size: 1.2rem;
+    font-weight: 300; /* 細身に */
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 8px;
+    letter-spacing: 0.5em; /* 文字間隔を広げて高級感を出す */
     text-transform: uppercase;
 }
+
 .weather-sub-info {
     display: flex;
     align-items: center;
-    gap: 12px;
-    font-size: 1.4rem;
-    color: rgba(255,255,255,0.4); /* 暗めにしてメインの気温を立たせる */
-    margin-bottom: 5px;
+    gap: 20px;
+    font-size: 1.2rem;
+    font-weight: 200;
+    color: rgba(255, 255, 255, 0.3);
+    margin-bottom: 8px;
+    letter-spacing: 0.1em;
 }
 
 .drop-icon { width: 20px; height: 20px; vertical-align: middle; }
 
 /* 天気アイコン */
 .weather-icon-large svg {
-    width: 110px; 
-    height: 110px;
-    margin: 10px 0;
-    filter: drop-shadow(0 0 10px rgba(255,255,255,0.1));
+    width: 100px; 
+    height: 100px;
+    margin: 12px 0;
+    opacity: 0.9;
 }
 
 /* 気温・前日差ライン */
@@ -512,10 +515,11 @@ body {
     display: flex;
     align-items: baseline;
     justify-content: center;
-    gap: 12px;
-    font-size: 4.2rem; /* 一行に収まり、かつインパクトのある最大サイズ */
-    font-weight: 800;
+    gap: 18px;
+    font-size: 3.8rem; /* 少しサイズを落として洗練させる */
+    font-weight: 200;  /* 【重要】細いウェイトに変更 */
     white-space: nowrap;
+    font-family: 'JetBrains Mono', sans-serif; /* 数字が綺麗に見える等幅フォント */
 }
 
 .weather-data-line .hi { color: #ff5252; text-shadow: 0 0 15px rgba(255, 82, 82, 0.3); } /* 最高（赤） */
@@ -532,3 +536,13 @@ body {
 .weather-data-line .lo { color: #448aff; }
 .weather-data-line .sep { color: rgba(255,255,255,0.2); margin: 0 5px; }
 
+.diff-plus, .diff-minus, .diff-zero {
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin-left: 6px;
+    vertical-align: super;
+}
+
+.weather-data-line .hi { color: #ff5252; opacity: 0.9; }
+.weather-data-line .lo { color: #448aff; opacity: 0.9; }
+.weather-data-line .sep { color: rgba(255, 255, 255, 0.1); margin: 0 2px; }
