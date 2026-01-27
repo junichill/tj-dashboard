@@ -395,46 +395,73 @@ body {
     display: none; /* 古いRSS用のリスト表示は不要なので隠します */
 }
 
-/* 中央パネル内部のレイアウト定義 */
+/* =========================================
+   5. 中央パネル 3分割レイアウト (確定版)
+   ========================================= */
+
+/* 中央パネルの親：flex:1 は維持 */
+#center-panel {
+  flex: 1;
+  min-width: 0;
+  height: 100%; /* 親の720pxいっぱいに使う */
+}
+
+/* 内部のグリッド構造 */
 .center-grid-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 250px 1fr; /* 上段固定、下段可変 */
+  grid-template-rows: 250px 1fr; /* 上段250px、下段は残り全部 */
   gap: 20px;
   height: 100%;
   width: 100%;
 }
 
+/* 各カードの共通設定 */
 .grid-item-tl, .grid-item-tr, .grid-item-bottom {
   position: relative;
-  padding: 30px 15px 15px; /* ラベル用の余白 */
-  overflow: hidden;
+  padding: 35px 20px 20px 20px; /* ラベルとの重なりを防ぐ余白 */
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 .grid-item-bottom {
-  grid-column: span 2; /* 下段を横いっぱいに広げる */
+  grid-column: span 2; /* 下段を横いっぱいに */
 }
 
-.panel-label {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 10px;
-  font-family: 'JetBrains Mono', monospace;
-  color: var(--accent);
-  letter-spacing: 0.15em;
-  opacity: 0.6;
-}
-
+/* 下段内部の2分割（ゲージとカレンダー） */
 .bottom-split {
   display: flex;
   gap: 15px;
-  height: 100%;
+  flex: 1;
   width: 100%;
+  min-height: 0;
 }
 
 #tv-gauge-container, #tv-calendar-container {
   flex: 1;
   height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* カード内のコンテンツ領域 */
+.content-fill {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+}
+
+/* パネル内の右上のラベル */
+.panel-label {
+  position: absolute;
+  top: 12px;
+  right: 20px;
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+  opacity: 0.6;
 }
