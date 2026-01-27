@@ -468,10 +468,25 @@ body {
     z-index: 0;
 }
 
-/* 粒子アニメーションの定義 */
-@keyframes particle-out {
-    0% { mask-size: 100% 100%; mask-image: radial-gradient(circle, #000 100%, transparent 100%); }
-    100% { mask-size: 400% 400%; mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); opacity: 0; }
+/* 粒子の集まりがバラバラに散っていくアニメーション */
+@keyframes particle-dissolve {
+    0% {
+        mask-image: radial-gradient(circle, #000 100%, #000 100%);
+        mask-size: 100% 100%;
+        opacity: 1;
+    }
+    50% {
+        /* ここで粒子（ノイズ）を混ぜ始める */
+        mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        mask-size: 150% 150%;
+        opacity: 0.8;
+    }
+    100% {
+        /* 粒子を巨大化させてスカスカにする */
+        mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        mask-size: 600% 600%;
+        opacity: 0;
+    }
 }
 
 .weather-slide {
@@ -479,23 +494,24 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 90%;
+    width: 95%;
     text-align: center;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 2s ease; /* 現れる時はスムーズに */
+    /* 現れるときはシンプルにふわっと */
+    transition: opacity 1.5s ease-in;
 }
 
-/* アクティブな時 */
 .weather-slide.active {
     opacity: 1;
     pointer-events: auto;
     mask-image: none;
 }
 
-/* 消えていく時専用のクラス */
+/* 消える時専用：粒子アニメーションを強制発動 */
 .weather-slide.exit {
-    animation: particle-out 3.5s forwards ease-in;
+    animation: particle-dissolve 3.5s forwards ease-out;
+    opacity: 1; /* アニメーション中はopacityが勝手に消えないように固定 */
 }
 
 /* 「今」「今日」「明日」のラベル */
@@ -565,6 +581,7 @@ body {
 .weather-data-line .hi { color: #ff5252; opacity: 0.9; }
 .weather-data-line .lo { color: #448aff; opacity: 0.9; }
 .weather-data-line .sep { color: rgba(255, 255, 255, 0.1); margin: 0 2px; }
+
 
 
 
