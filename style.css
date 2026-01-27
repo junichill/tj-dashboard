@@ -395,41 +395,45 @@ body {
 }
 
 /* 中央パネル全体のグリッド定義 */
+/* 中央パネル全体のグリッド定義 */
 .center-grid-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  /* 上段を正方形にするため、列幅と同じ高さ（1fr）を指定し、下段を自動調整 */
-  grid-template-rows: 1fr auto; 
-  gap: 20px;
+  /* 上段の高さを列幅と合わせ、下段はスライドに必要な250pxを確保 */
+  grid-template-rows: 1fr 250px; 
+  gap: 30px; /* パネル間の隙間を広げて重なりを防止 */
   height: 100%;
   width: 100%;
+  box-sizing: border-box;
 }
 
-/* 上段パネルを正方形に保つ設定 */
+/* 上段パネル：正方形を維持 */
 .grid-item-tl, .grid-item-tr {
-  aspect-ratio: 1 / 1; /* 正方形に固定 */
+  aspect-ratio: 1 / 1;
   width: 100%;
   min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
 
-/* 下段パネル：上段の正方形に合わせて残りのスペースを埋める */
+/* 下段パネル：縦幅をスライド移動量(250px)にジャストフィットさせる */
 .grid-item-bottom {
   grid-column: span 2;
-  position: relative;
+  height: 250px; /* 縦幅を縮小 */
   overflow: hidden;
   display: flex;
-  flex-direction: column;
-  min-height: 0;
-  /* スライド移動量(250px)より小さくならないよう、最低高さを確保 */
-  min-height: 250px; 
+  align-items: center;
+  padding: 0 !important;
+  position: relative;
 }
 
-/* スライドの表示窓：既存のスクリプト設定を維持 */
+/* スライド表示領域 */
 #forecast-viewport {
-  height: 250px; 
+  height: 250px;
   width: 100%;
   overflow: hidden;
-  margin: auto 0;
 }
 
 /* 上段の中身を整える（任意） */
@@ -440,13 +444,7 @@ body {
   justify-content: center;
 }
 
-
-
-
-
-
-
-
-
-
-
+/* ラベル削除に伴う調整（不要な余白を消す） */
+.panel-label {
+  display: none;
+}
