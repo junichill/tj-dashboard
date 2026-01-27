@@ -136,8 +136,9 @@ function updateWeatherBackground(weatherId) {
 }
 
 // fetchWeather の最後の方で呼び出す
-// updateWeatherBackground(today.weather[0].id);
-
+if (today && today.weather[0]) {
+    updateWeatherBackground(today.weather[0].id);
+  
 async function fetchWeather() {
   try {
     // スケジュールを先に取得（または前回のデータを使用）
@@ -220,10 +221,14 @@ weatherFixed.innerHTML = `
         ${createSlide("明日", getWeatherType(tomorrowList[0].weather[0].id), Math.max(...tomorrowList.map(v=>v.main.temp)), Math.min(...tomorrowList.map(v=>v.main.temp)), tomorrowList[0].pop || 0, Math.max(...dayTemps), Math.min(...dayTemps))}
     </div>`;
 
+// ここで呼び出し（カッコの閉じ忘れを修正）
+if (today && today.weather && today.weather[0]) {
+    updateWeatherBackground(today.weather[0].id);
+}
+
 // 1枚目をアクティブにする処理
 const slides = weatherFixed.querySelectorAll('.weather-slide');
-if(slides.length > 0) slides[0].classList.add('active');
-  
+if(slides.length > 0) slides[0].classList.add('active'); 
     startFixedWeatherCycle();
 }
     
