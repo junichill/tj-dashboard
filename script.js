@@ -111,6 +111,30 @@ async function fetchEconomicSchedule() {
 let weatherSlideIndex = 0;
 let weatherTimer = null;
 
+function updateWeatherBackground(weatherId) {
+    const el = document.getElementById('weather-fixed-content');
+    let bgUrl = "";
+    const month = new Date().getMonth() + 1;
+
+    // 天候と季節で出し分け（画像は Unsplash の高品質なものを使用）
+    if (weatherId >= 200 && weatherId < 600) {
+        bgUrl = "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?q=80&w=1000"; // 雨
+    } else if (weatherId >= 600 && weatherId < 700) {
+        bgUrl = "https://images.unsplash.com/photo-1478265409131-1f65c88f965c?q=80&w=1000"; // 雪
+    } else if (month >= 3 && month <= 5) {
+        bgUrl = "https://images.unsplash.com/photo-1491153041158-9454e5835950?q=80&w=1000"; // 春
+    } else if (month >= 6 && month <= 8) {
+        bgUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000"; // 夏
+    } else {
+        bgUrl = "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1000"; // 秋・冬（夜空）
+    }
+
+    el.style.backgroundImage = `url('${bgUrl}')`;
+}
+
+// fetchWeather の最後の方で呼び出す
+// updateWeatherBackground(today.weather[0].id);
+
 async function fetchWeather() {
   try {
     // スケジュールを先に取得（または前回のデータを使用）
