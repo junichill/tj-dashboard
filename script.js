@@ -113,37 +113,35 @@ let weatherTimer = null;
 
 async function fetchWeather() {
   try {
-    // スケジュールを先に取得（または前回のデータを使用）
     await fetchEconomicSchedule();
-
     const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=ja`);
     const d = await r.json();
     if (!d || !d.list) return;
 
+    // --- [変更点] スライドさせる要素のリストを再構築 ---
     const wrapper = document.getElementById('forecast-wrapper');
-    const todayHtml = createForecastGroupHtml(d.list.slice(0, 8), "Today's Forecast");
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowStr = tomorrow.toLocaleDateString();
-    const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr).slice(0, 8);
-    const tomorrowHtml = createForecastGroupHtml(tomorrowList, "Tomorrow's Plan");
-    const weeklyHtml = createWeeklyForecastHtml(d.list);
+    const mktHtml = (id, label) => `<div class="day-group"><div class="day-label">— ${label} —</div><div id="${id}" style="width:700px; height:155px; margin:0 auto;"></div></div>`;
 
-    const mktHtml = (id, label) => `<div class="day-group"><div class="day-label">— ${label} —</div><div id="${id}" style="width:700px; height:130px;"></div></div>`;
+    wrapper.innerHTML = 
+      // 1. 経済スケジュール
+      economicScheduleHtml + 
+      // 2. 各種マーケット指標 (自動切り替え対象)
+      mktHtml("tv-sp500", "S&P 500 Futures") +
+      mktHtml("tv-gold", "Gold Spot") +
+      mktHtml("tv-oil", "WTI Crude Oil") +
+      mktHtml("tv-eur-jpy", "EUR/JPY") +
+      mktHtml("tv-eur-usd", "EUR/USD");
 
-    // 全ての要素を結合して一気に書き込み
-    wrapper.innerHTML = todayHtml + tomorrowHtml + weeklyHtml + 
-                        mktHtml("tv-sp500", "S&P 500 Futures") +
-                        mktHtml("tv-gold", "Gold Spot") +
-                        mktHtml("tv-oil", "WTI Crude Oil") +
-                        mktHtml("tv-eur-jpy", "EUR/JPY") +
-                        mktHtml("tv-eur-usd", "EUR/USD") +
-                        economicScheduleHtml; // 最後にスケジュールを追加
-
+    // ウィジェットの再初期化
     initTradingViewWidgets();
+    
+    // スライド制御（既存のロジックをそのまま使用）
     weatherSlideIndex = 0;
     wrapper.style.transform = `translateY(0px)`;
     startWeatherCycle();
+
+    // 天気とトレンドは上段の固定枠へ（次のステップで実装）
+    document.getElementById('weather-fixed-container').innerHTML = createForecastGroupHtml(d.list.slice(0, 5), "Today");
 
   } catch (err) { console.error('Weather/Market Fetch Error:', err); }
 }
