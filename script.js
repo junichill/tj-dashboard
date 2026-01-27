@@ -152,30 +152,37 @@ if (weatherFixed) {
     const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr);
 
 const createSlide = (title, iconType, high, low, pop, prevHigh = null, prevLow = null) => {
-    // 前日差の計算
-    const diffHigh = prevHigh !== null ? (high - prevHigh).toFixed(0) : null;
-    const diffLow = prevLow !== null ? (low - prevLow).toFixed(0) : null;
-    const formatDiff = (diff) => {
-        if (diff === null) return "";
-        const num = parseInt(diff);
-        return num > 0 ? `<span class="diff-plus">[+${num}]</span>` : num < 0 ? `<span class="diff-minus">[${num}]</span>` : `<span class="diff-zero">[±0]</span>`;
+    const d = new Date();
+    
+    // 「明日」というタイトルの場合は、日付を+1日する
+    if (title === "明日") {
+        d.setDate(d.getDate() + 1);
+    }
+
+    // 日付フォーマット (例: 1/28(Wed))
+    const dateStr = `${d.getMonth() + 1}/${d.getDate()}(${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]})`;
+
+    // 前日差の整形
+    const formatDiff = (h, ph) => {
+        if (ph === null) return "";
+        const diff = Math.round(h - ph);
+        if (diff > 0) return `<span class="diff-plus">[+${diff}]</span>`;
+        if (diff < 0) return `<span class="diff-minus">[${diff}]</span>`;
+        return `<span class="diff-zero">[±0]</span>`;
     };
 
     return `
     <div class="weather-slide">
-        <div class="weather-slide-label">${title} 1/27(Tue)</div>
+        <div class="weather-slide-label">${title} ${dateStr}</div>
         <div class="weather-icon-large weather-${iconType}">${WEATHER_ICONS[iconType]}</div>
         <div class="weather-sub-info">
-            <span class="weather-desc">晴れ</span>
-            <span class="pop-group">
-                <svg class="drop-icon" viewBox="0 0 24 24"><path d="M12,2C12,2 6,8.19 6,12.5C6,15.78 8.42,18.5 12,18.5C15.58,18.5 18,15.78 18,12.5C18,8.19 12,2 12,2Z" fill="#4fc3f7"/></svg>
-                ${Math.round(pop * 100)}%
-            </span>
+            <span>晴れ</span>
+            <span><svg class="drop-icon" viewBox="0 0 24 24" fill="#4fc3f7"><path d="M12,2C12,2 6,8.19 6,12.5C6,15.78 8.42,18.5 12,18.5C15.58,18.5 18,15.78 18,12.5C18,8.19 12,2 12,2Z"/></svg>${Math.round(pop * 100)}%</span>
         </div>
         <div class="weather-data-line">
-            <span class="hi">${Math.round(high)}°${formatDiff(diffHigh)}</span>
+            <span class="hi">${Math.round(high)}°${formatDiff(high, prevHigh)}</span>
             <span class="sep">/</span>
-            <span class="lo">${Math.round(low)}°${formatDiff(diffLow)}</span>
+            <span class="lo">${Math.round(low)}°${formatDiff(low, prevLow)}</span>
         </div>
     </div>`;
 };
