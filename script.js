@@ -124,11 +124,11 @@ function updateWeatherBackground(weatherId) {
     } else if (month >= 3 && month <= 5) {
         bgUrl = "https://images.unsplash.com/photo-1522748906645-95d8adfd52c7?auto=format&fit=crop&w=800&q=80"; // 春
     } else if (month >= 6 && month <= 8) {
-        bgUrl = "https://images.unsplash.com/photo-1500491460312-750fc0df9392?auto=format&fit=crop&w=800&q=80"; // 夏
+        bgUrl = "https://images.unsplash.com/photo-1471922694854-ff1b63b20054?auto=format&fit=crop&w=800&q=80"; // 夏
     } else if (month >= 9 && month <= 11) {
         bgUrl = "https://images.unsplash.com/photo-1477414348463-c0eb7f1359b6?auto=format&fit=crop&w=800&q=80"; // 秋
     } else {
-        bgUrl = "https://images.unsplash.com/photo-1518218811150-1499d5056784?auto=format&fit=crop&w=800&q=80"; // 冬（夜空）
+        bgUrl = "https://images.unsplash.com/photo-1483921020237-2ff51e8e4b22?auto=format&fit=crop&w=800&q=80"; // 冬（夜空）
     }
 
     // 背景としてセット
