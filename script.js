@@ -285,25 +285,30 @@ let fixedWeatherIndex = 0;
 function startFixedWeatherCycle() {
     const slides = document.querySelectorAll('.weather-slide');
     if (slides.length === 0) return;
-
     if (window.fixedWeatherTimer) clearInterval(window.fixedWeatherTimer);
     
     fixedWeatherIndex = 0;
-
     window.fixedWeatherTimer = setInterval(() => {
         const currentSlides = document.querySelectorAll('.weather-slide');
         if (currentSlides.length < 2) return;
 
-        // 1. 今表示されているスライドをフェードアウト
+        // 1. 現在のスライドに「消える（粒子）」アニメーションを適用
         currentSlides[fixedWeatherIndex].classList.remove('active');
+        currentSlides[fixedWeatherIndex].classList.add('exit');
 
-        // 2. 1.5秒（フェードアウト時間）待ってから次のスライドを出す
+        // 2. 完全に消えるのを待ってから（4秒後）、次のスライドを準備して表示
         setTimeout(() => {
+            // 前のスライドの掃除
+            currentSlides[fixedWeatherIndex].classList.remove('exit');
+            
+            // インデックス更新
             fixedWeatherIndex = (fixedWeatherIndex + 1) % currentSlides.length;
+            
+            // 次のスライドを「ふわっ」と出す
             currentSlides[fixedWeatherIndex].classList.add('active');
-        }, 1500); // ここを長くすると、真っ白な時間が生まれてより余韻が出ます
+        }, 4000); // 消えるアニメーション(3.5s)より少し長く取る
 
-    }, 8000); // 8秒ごとに切り替え
+    }, 12000); // サイクル全体をさらにゆったり（12秒）に
 }
 
 fetchWeather();
