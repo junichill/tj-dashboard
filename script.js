@@ -123,15 +123,12 @@ async function fetchWeather() {
     const mktHtml = (id, label) => `<div class="day-group"><div class="day-label">— ${label} —</div><div id="${id}" style="width:700px; height:155px; margin:0 auto;"></div></div>`;
 
     wrapper.innerHTML = 
-      // 1. 経済スケジュール
-      economicScheduleHtml + 
-      // 2. 各種マーケット指標 (自動切り替え対象)
-      mktHtml("tv-sp500", "S&P 500 Futures") +
-      mktHtml("tv-gold", "Gold Spot") +
-      mktHtml("tv-oil", "WTI Crude Oil") +
-      mktHtml("tv-eur-jpy", "EUR/JPY") +
-      mktHtml("tv-eur-usd", "EUR/USD");
-
+        economicScheduleHtml + // 1. 経済スケジュール
+        mktHtml("tv-sp500", "S&P 500 Futures") + // 2. 指標
+        mktHtml("tv-gold", "Gold Spot") +
+        mktHtml("tv-oil", "WTI Crude Oil") +
+        mktHtml("tv-eur-jpy", "EUR/JPY") +
+        mktHtml("tv-eur-usd", "EUR/USD");
     // ウィジェットの再初期化
     initTradingViewWidgets();
     
