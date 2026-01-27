@@ -481,12 +481,22 @@ body {
 
 /* 「今」「今日」「明日」のラベル */
 .weather-slide-label {
-    font-size: 3.5rem;
+    font-size: 2.8rem;
     font-weight: 700;
     color: var(--accent);
-    margin-bottom: 5px;
-    filter: drop-shadow(0 0 10px var(--accent));
+    margin-bottom: 0;
 }
+
+.weather-sub-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 1.8rem;
+    color: rgba(255,255,255,0.8);
+    margin-top: -5px;
+}
+
+.drop-icon { width: 20px; height: 20px; vertical-align: middle; }
 
 /* 天気アイコン */
 .weather-icon-large svg {
@@ -495,19 +505,27 @@ body {
     margin: 5px 0;
 }
 
-/* 【重要】最高/最低/降水確率を一行に収めるライン */
+/* 気温・前日差ライン */
 .weather-data-line {
     display: flex;
-    align-items: center;
+    align-items: baseline; /* 数字の底辺を合わせる */
     justify-content: center;
-    gap: 12px;
-    font-size: 4.5rem; /* 幅に収まるよう微調整 */
+    gap: 15px;
+    font-size: 4.8rem;
     font-weight: 800;
-    white-space: nowrap; /* 絶対に改行させない */
-    margin-top: 10px;
+    white-space: nowrap;
 }
 
 .weather-data-line .hi { color: #ff5252; text-shadow: 0 0 15px rgba(255, 82, 82, 0.3); } /* 最高（赤） */
 .weather-data-line .lo { color: #448aff; text-shadow: 0 0 15px rgba(68, 138, 255, 0.3); } /* 最低（青） */
 .weather-data-line .pop { color: rgba(255, 255, 255, 0.8); font-weight: 300; } /* 降水確率 */
 .weather-data-line .sep { color: rgba(255, 255, 255, 0.15); font-weight: 200; } /* セパレーター */
+
+/* 前日差の小文字スタイル */
+.diff-plus { font-size: 1.5rem; color: #ff5252; margin-left: 4px; vertical-align: top; }
+.diff-minus { font-size: 1.5rem; color: #448aff; margin-left: 4px; vertical-align: top; }
+.diff-zero { font-size: 1.5rem; color: #888; margin-left: 4px; vertical-align: top; }
+
+.weather-data-line .hi { color: #ff5252; }
+.weather-data-line .lo { color: #448aff; }
+.weather-data-line .sep { color: rgba(255,255,255,0.2); margin: 0 5px; }
