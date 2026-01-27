@@ -481,37 +481,39 @@ body {
 
 /* 「今」「今日」「明日」のラベル */
 .weather-slide-label {
-    font-size: 2.8rem;
+    font-size: 1.4rem; /* 巨大すぎるのを抑え、品のあるサイズに */
     font-weight: 700;
-    color: var(--accent);
-    margin-bottom: 0;
+    color: rgba(255, 255, 255, 0.5); /* 真っ白やアクセント色ではなく、少し透過させて馴染ませる */
+    margin-bottom: 5px;
+    letter-spacing: 0.3em; /* 他の指標ラベルと間隔を統一 */
+    text-transform: uppercase;
 }
-
 .weather-sub-info {
     display: flex;
     align-items: center;
-    gap: 15px;
-    font-size: 1.8rem;
-    color: rgba(255,255,255,0.8);
-    margin-top: -5px;
+    gap: 12px;
+    font-size: 1.4rem;
+    color: rgba(255,255,255,0.4); /* 暗めにしてメインの気温を立たせる */
+    margin-bottom: 5px;
 }
 
 .drop-icon { width: 20px; height: 20px; vertical-align: middle; }
 
 /* 天気アイコン */
 .weather-icon-large svg {
-    width: 130px;
-    height: 130px;
-    margin: 5px 0;
+    width: 110px; 
+    height: 110px;
+    margin: 10px 0;
+    filter: drop-shadow(0 0 10px rgba(255,255,255,0.1));
 }
 
 /* 気温・前日差ライン */
 .weather-data-line {
     display: flex;
-    align-items: baseline; /* 数字の底辺を合わせる */
+    align-items: baseline;
     justify-content: center;
-    gap: 15px;
-    font-size: 4.8rem;
+    gap: 12px;
+    font-size: 4.2rem; /* 一行に収まり、かつインパクトのある最大サイズ */
     font-weight: 800;
     white-space: nowrap;
 }
@@ -529,3 +531,4 @@ body {
 .weather-data-line .hi { color: #ff5252; }
 .weather-data-line .lo { color: #448aff; }
 .weather-data-line .sep { color: rgba(255,255,255,0.2); margin: 0 5px; }
+
