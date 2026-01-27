@@ -298,7 +298,10 @@ function startFixedWeatherCycle() {
         currentSlides[fixedWeatherIndex].classList.remove('active');
         currentSlides[fixedWeatherIndex].classList.add('exit');
 
-        // 2. 消え去る粒子をしっかり見せるために「3.5秒」待つ
+  // 2. 消え去る粒子(3.5秒)を見せた後、さらに「無」の時間を足して待つ
+        const particleTime = 3500; // 粒子が消えるのにかかる時間
+        const silentTime = 2000;   // 背景だけを見せたい時間（2秒）
+
         setTimeout(() => {
             // クリーンアップ
             currentSlides[fixedWeatherIndex].classList.remove('exit');
@@ -307,9 +310,8 @@ function startFixedWeatherCycle() {
             fixedWeatherIndex = (fixedWeatherIndex + 1) % currentSlides.length;
             currentSlides[fixedWeatherIndex].classList.add('active');
             
-        }, 3500); // ここが粒子アニメーションの時間(3.5s)と一致
-
-    }, 10000); // 10秒おきに切り替え
+        }, particleTime + silentTime); // ここで合計の待ち時間を指定
+    }, 12000); // 12秒おきに切り替え
 }
 
 fetchWeather();
