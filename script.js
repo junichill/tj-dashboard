@@ -1,5 +1,5 @@
 // =========================
-// Tick CLOCK
+// 1. CLOCK & DATE (左パネル維持)
 // =========================
 function handleTickInit(tick) {
   const secondsEl = document.getElementById('seconds-static');
@@ -13,28 +13,23 @@ function handleTickInit(tick) {
   }, 1000);
 }
 
-// =========================
-// DATE
-// =========================
 function updateDate() {
-    const now = new Date();
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const dayName = days[now.getDay()];
-    const monthName = months[now.getMonth()];
-    const date = now.getDate();
-    const year = now.getFullYear();
-    const reiwa = year - 2018;
-    const dateEl = document.getElementById('date');
-    if (dateEl) {
-        dateEl.innerHTML = `${dayName}, ${monthName} ${date}, ${year} <span class="era-label">(R${reiwa})</span>`;
-    }
+  const now = new Date();
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const dayName = days[now.getDay()];
+  const monthName = months[now.getMonth()];
+  const date = now.getDate();
+  const year = now.getFullYear();
+  const reiwa = year - 2018;
+  const dateEl = document.getElementById('date');
+  if (dateEl) {
+    dateEl.innerHTML = `${dayName}, ${monthName} ${date}, ${year} <span class="era-label">(R${reiwa})</span>`;
+  }
 }
-updateDate();
-setInterval(updateDate, 60000);
 
 // =========================
-// WEATHER 設定 & アイコン
+// 2. WEATHER SETTINGS & LOGIC (左上パネル)
 // =========================
 const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
 const LAT = 35.6895;
@@ -54,131 +49,105 @@ function getWeatherType(id) {
   return 'sunny';
 }
 
-// =========================
-// HTML生成関数 (WEATHER)
-// =========================
+async function updateWeatherPanel() {
+  try {
+    const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=ja`);
+    const d = await r.json();
+    const container = document.getElementById('weather-content');
+    if (!container || !d.list) return;
+
+    let showWeekly = false;
+    const render = () => {
+      container.style.opacity = 0;
+      setTimeout(() => {
+        container.innerHTML = showWeekly ? createWeeklyForecastHtml(d.list) : createForecastGroupHtml(d.list.slice(0, 5), "Today");
+        container.style.opacity = 1;
+        showWeekly = !showWeekly;
+      }, 500);
+    };
+    render();
+    setInterval(render, 15000); 
+  } catch (err) { console.error('Weather error:', err); }
+}
+
 function createForecastGroupHtml(list, label) {
-  const itemsHtml = list.map(item => {
-    const date = new Date(item.dt * 1000);
-    const hour = date.getHours().toString().padStart(2, '0') + ":00";
-    const temp = Math.round(item.main.temp);
+  const items = list.map(item => {
+    const hour = new Date(item.dt * 1000).getHours() + ":00";
     const type = getWeatherType(item.weather[0].id);
-    return `<div class="forecast-item"><div class="forecast-time">${hour}</div><div class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</div><div class="forecast-temp">${temp}℃</div></div>`;
+    return `<div class="forecast-item"><span>${hour}</span><span class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</span><span>${Math.round(item.main.temp)}℃</span></div>`;
   }).join('');
-  return `<div class="day-group"><div class="day-label">— ${label} —</div><div class="day-items">${itemsHtml}</div></div>`;
+  return `<div class="day-group"><div class="day-label">— ${label} —</div><div class="day-items">${items}</div></div>`;
 }
 
 function createWeeklyForecastHtml(list) {
-  const dailyData = {};
+  // 週間の簡易ロジック（重複除外）
+  const daily = {};
   list.forEach(item => {
-    const dateObj = new Date(item.dt * 1000);
-    const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
-    const dayNum = dateObj.getDate();
-    const dateKey = `${dayName} ${dayNum}`;
-    if (!dailyData[dateKey]) dailyData[dateKey] = { temps: [], ids: [] };
-    dailyData[dateKey].temps.push(item.main.temp);
-    dailyData[dateKey].ids.push(item.weather[0].id);
+    const d = new Date(item.dt * 1000).toLocaleDateString('en-US', { weekday: 'short' });
+    if (!daily[d]) daily[d] = { temp: item.main.temp, id: item.weather[0].id };
   });
-  let itemsHtml = '';
-  Object.keys(dailyData).slice(1, 6).forEach(date => {
-    const day = dailyData[date];
-    const maxTemp = Math.round(Math.max(...day.temps));
-    const minTemp = Math.round(Math.min(...day.temps));
-    const midId = day.ids[Math.floor(day.ids.length / 2)];
-    const type = getWeatherType(midId);
-    itemsHtml += `<div class="forecast-item weekly-item"><div class="forecast-time">${date}</div><div class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</div><div class="forecast-temp weekly-temp"><span class="max">${maxTemp}</span><span class="separator">/</span><span class="min">${minTemp}</span></div></div>`;
-  });
-  return `<div class="day-group"><div class="day-label">— Weekly Outlook —</div><div class="day-items">${itemsHtml}</div></div>`;
+  const items = Object.keys(daily).slice(1, 6).map(day => {
+    const type = getWeatherType(daily[day].id);
+    return `<div class="forecast-item"><span>${day}</span><span class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</span><span>${Math.round(daily[day].temp)}℃</span></div>`;
+  }).join('');
+  return `<div class="day-group"><div class="day-label">— Weekly —</div><div class="day-items">${items}</div></div>`;
 }
 
 // =========================
-// 経済スケジュール取得
+// 3. GOOGLE TRENDS (右上パネル)
 // =========================
-let economicScheduleHtml = ""; 
-
-async function fetchEconomicSchedule() {
-  // RSSのフェッチは不要になるため、HTML構造だけを準備します
-  economicScheduleHtml = `
-    <div class="day-group">
-      <div class="day-label">— Economic Calendar —</div>
-      <div id="tv-economic-calendar" style="width:100%; height:200px;"></div>
-    </div>`;
-}
-
-// =========================
-// WEATHER & MARKET メイン表示
-// =========================
-let weatherSlideIndex = 0;
-let weatherTimer = null;
-
-async function fetchWeather() {
+async function fetchGoogleTrends() {
   try {
-    // スケジュールを先に取得（または前回のデータを使用）
-    await fetchEconomicSchedule();
-
-    const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=ja`);
-    const d = await r.json();
-    if (!d || !d.list) return;
-
-    const wrapper = document.getElementById('forecast-wrapper');
-    const todayHtml = createForecastGroupHtml(d.list.slice(0, 8), "Today's Forecast");
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowStr = tomorrow.toLocaleDateString();
-    const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr).slice(0, 8);
-    const tomorrowHtml = createForecastGroupHtml(tomorrowList, "Tomorrow's Plan");
-    const weeklyHtml = createWeeklyForecastHtml(d.list);
-
-    const mktHtml = (id, label) => `<div class="day-group"><div class="day-label">— ${label} —</div><div id="${id}" style="width:700px; height:130px;"></div></div>`;
-
-    // 全ての要素を結合して一気に書き込み
-    wrapper.innerHTML = todayHtml + tomorrowHtml + weeklyHtml + 
-                        mktHtml("tv-sp500", "S&P 500 Futures") +
-                        mktHtml("tv-gold", "Gold Spot") +
-                        mktHtml("tv-oil", "WTI Crude Oil") +
-                        mktHtml("tv-eur-jpy", "EUR/JPY") +
-                        mktHtml("tv-eur-usd", "EUR/USD") +
-                        economicScheduleHtml; // 最後にスケジュールを追加
-
-    initTradingViewWidgets();
-    weatherSlideIndex = 0;
-    wrapper.style.transform = `translateY(0px)`;
-    startWeatherCycle();
-
-  } catch (err) { console.error('Weather/Market Fetch Error:', err); }
+    const RSS_URL = 'https://trends.google.co.jp/trends/trendingsearches/daily/rss?geo=JP';
+    const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
+    const data = await r.json();
+    const xml = new DOMParser().parseFromString(data.contents, "application/xml");
+    const items = Array.from(xml.querySelectorAll('item')).slice(0, 6);
+    const html = items.map((item, i) => `
+      <div class="trend-item">
+        <span class="trend-rank">0${i+1}</span>
+        <span class="trend-word">${item.querySelector('title').textContent}</span>
+      </div>`).join('');
+    document.getElementById('trend-content').innerHTML = html;
+  } catch (e) { console.error("Trend error", e); }
 }
 
-function initTradingViewWidgets() {
-    const conf = { "width": "100%", "height": 155, "locale": "ja", "dateRange": "1D", "colorTheme": "dark", "isTransparent": true, "interval": "5" };
-    
-    // ...既存の symbols への appendMiniWidget 処理...
-    appendMiniWidget("tv-usd-jpy-fixed", { ...conf, "symbol": "FX:USDJPY" });
-    appendMiniWidget("tv-n225-fixed",    { ...conf, "symbol": "OSE:NK2251!" });
-    appendMiniWidget("tv-nasdaq-fixed",  { ...conf, "symbol": "CAPITALCOM:US100" });
-    appendMiniWidget("tv-sp500",   { ...conf, "symbol": "CAPITALCOM:US500" });
-    appendMiniWidget("tv-gold",    { ...conf, "symbol": "TVC:GOLD" });
-    appendMiniWidget("tv-oil",     { ...conf, "symbol": "CAPITALCOM:OIL_CRUDE" });
-    appendMiniWidget("tv-eur-jpy", { ...conf, "symbol": "FX:EURJPY" });
-    appendMiniWidget("tv-eur-usd", { ...conf, "symbol": "FX:EURUSD" });
+// =========================
+// 4. TRADINGVIEW WIDGETS (左・中央下・左固定)
+// =========================
+function initAllWidgets() {
+  const conf = { "width": "100%", "height": 155, "locale": "ja", "dateRange": "1D", "colorTheme": "dark", "isTransparent": true, "interval": "5" };
+  
+  // 左パネルの固定表示 (USD/JPY, NK225, NASDAQ)
+  appendMiniWidget("tv-usd-jpy-fixed", { ...conf, "symbol": "FX:USDJPY" });
+  appendMiniWidget("tv-n225-fixed",    { ...conf, "symbol": "OSE:NK2251!" });
+  appendMiniWidget("tv-nasdaq-fixed",  { ...conf, "symbol": "CAPITALCOM:US100" });
 
-    // --- ここから追加：経済カレンダーウィジェット ---
-    const calendarContainer = document.getElementById("tv-economic-calendar");
-    if (calendarContainer) {
-        calendarContainer.innerHTML = '';
-        const script = document.createElement('script');
-        script.src = "https://s3.tradingview.com/external-embedding/embed-widget-events.js";
-        script.async = true;
-        script.innerHTML = JSON.stringify({
-            "colorTheme": "dark",
-            "isTransparent": true,
-            "width": "100%",
-            "height": "100%",
-            "locale": "ja",
-            "importanceFilter": "-1,0,1", // すべての重要度を表示
-            "currencyFilter": "USD,JPY,EUR,GBP" // 主要通貨に絞る
-        });
-        calendarContainer.appendChild(script);
-    }
+  // 中央下：テクニカルゲージ
+  const gaugeContainer = document.getElementById("tv-gauge-container");
+  if(gaugeContainer) {
+    const s = document.createElement('script');
+    s.src = "https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js";
+    s.async = true;
+    s.innerHTML = JSON.stringify({
+      "interval": "1D", "width": "100%", "height": "100%", "isTransparent": true,
+      "symbol": "FX:USDJPY", "showIntervalTabs": false, "locale": "ja", "colorTheme": "dark"
+    });
+    gaugeContainer.appendChild(s);
+  }
+
+  // 中央下：経済カレンダー
+  const calContainer = document.getElementById("tv-calendar-container");
+  if(calContainer) {
+    const s = document.createElement('script');
+    s.src = "https://s3.tradingview.com/external-embedding/embed-widget-events.js";
+    s.async = true;
+    s.innerHTML = JSON.stringify({
+      "colorTheme": "dark", "isTransparent": true, "width": "100%", "height": "100%",
+      "locale": "ja", "importanceFilter": "-1,0,1", "currencyFilter": "USD,JPY"
+    });
+    calContainer.appendChild(s);
+  }
 }
 
 function appendMiniWidget(containerId, config) {
@@ -192,206 +161,57 @@ function appendMiniWidget(containerId, config) {
     container.appendChild(script);
 }
 
-function startWeatherCycle() {
-  if (weatherTimer) clearInterval(weatherTimer);
-  const wrapper = document.getElementById('forecast-wrapper');
-  weatherTimer = setInterval(() => {
-    const groups = wrapper.querySelectorAll('.day-group');
-    if (groups.length === 0) return;
-    const nextIndex = (weatherSlideIndex + 1) % groups.length;
-    if (nextIndex === 0) {
-      wrapper.style.transition = 'opacity 1.5s ease-in, filter 1.5s ease-in, transform 1.5s ease-in';
-      wrapper.style.opacity = '0';
-      wrapper.style.filter = 'blur(15px)';
-      wrapper.style.transform = `translateY(${weatherSlideIndex * -250}px) scale(0.92)`;
-      setTimeout(() => {
-        weatherSlideIndex = 0;
-        wrapper.style.transition = 'none';
-        wrapper.style.transform = `translateY(0px) scale(0.92)`;
-        groups.forEach((g, i) => g.classList.toggle('inactive', i !== 0));
-        wrapper.offsetHeight; 
-        wrapper.style.transition = 'opacity 1.8s ease-out, filter 1.8s ease-out, transform 1.8s ease-out';
-        wrapper.style.opacity = '1';
-        wrapper.style.filter = 'blur(0)';
-        wrapper.style.transform = `translateY(0px) scale(1)`;
-      }, 1500);
-    } else {
-      weatherSlideIndex = nextIndex;
-      wrapper.style.transition = 'transform 1.2s cubic-bezier(0.65, 0, 0.35, 1), opacity 1.2s ease';
-      wrapper.style.transform = `translateY(${weatherSlideIndex * -250}px) scale(1)`;
-      groups.forEach((group, index) => { group.classList.toggle('inactive', index !== weatherSlideIndex); });
-    }
-  }, 9000);
-}
-
-fetchWeather();
-setInterval(fetchWeather, 600000);
-
 // =========================
-// NEWS (右パネル)
+// 5. NEWS (右パネル維持)
 // =========================
-const RSS_URL = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
-const newsCard = document.getElementById('news-card');
-let newsItems = [], newsEls = [], index = 0, newsT = null;
-let lastGoodNews = null;
-const AUTO_INTERVAL = 11000, FETCH_INTERVAL = 10*60*1000;
-
-const updateEl = document.createElement('div');
-updateEl.style.cssText = 'position:absolute; top:10px; right:15px; font-size:12px; opacity:0.6;';
-newsCard.appendChild(updateEl);
-
-const indicator = document.createElement('div');
-indicator.style.cssText = 'position:absolute; bottom:10px; left:50%; transform:translateX(-50%); display:flex; gap:8px;';
-newsCard.appendChild(indicator);
-
-function updateIndicator() {
-  indicator.innerHTML = '';
-  newsItems.forEach((_, i) => {
-    const dot = document.createElement('div');
-    dot.style.cssText = `width:10px; height:10px; border-radius:50%; background:${i === index ? '#fff' : '#555'}; cursor:pointer;`;
-    dot.onclick = () => { if (i === index) return; stopAutoNews(); showNews(i); startAutoNews(); };
-    indicator.appendChild(dot);
-  });
-}
-
-function createNews() {
-  newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
-  newsEls = newsItems.map(n => {
-    const div = document.createElement('div');
-    div.className = 'news-item';
-    div.innerHTML = `<div class="news-mark"></div><a href="${n.link}" target="_blank" class="news-link-wrapper"><div class="news-title">${n.title}</div></a><div class="news-description">${n.description}</div><div class="news-date">${n.pubDate}</div>`;
-    newsCard.appendChild(div);
-    return div;
-  });
-  updateIndicator();
-}
-
-function showNews(next, init = false) {
-  if (!newsEls[next]) return;
-  newsEls.forEach(el => el.classList.remove('show', 'next', 'exit'));
-  if (!init) { newsEls[index].classList.add('exit'); }
-  newsEls[next].classList.add('show');
-  const nxtIdx = (next + 1) % newsEls.length;
-  newsEls[nxtIdx].classList.add('next');
-  index = next;
-  updateIndicator();
-}
-
-function startAutoNews() { stopAutoNews(); newsT = setInterval(() => showNews((index+1)%newsEls.length), AUTO_INTERVAL); }
-function stopAutoNews() { if (newsT) clearInterval(newsT); }
+const NEWS_RSS = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
+let newsItems = [], index = 0, newsT = null;
 
 async function fetchNews() {
   try {
-    const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
+    const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(NEWS_RSS));
     const data = await r.json();
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(data.contents, "application/xml");
-    const items = xml.querySelectorAll('item');
-    let fetched = Array.from(items).map(item => ({
+    const xml = new DOMParser().parseFromString(data.contents, "application/xml");
+    newsItems = Array.from(xml.querySelectorAll('item')).map(item => ({
       title: item.querySelector('title')?.textContent,
       link: item.querySelector('link')?.textContent,
-      pubDate: item.querySelector('pubDate')?.textContent,
       description: item.querySelector('description')?.textContent
     }));
-    if (fetched.length === 0) { if (lastGoodNews) newsItems = lastGoodNews; else return; } 
-    else { newsItems = fetched; lastGoodNews = fetched; }
-    createNews();
-    showNews(0, true);
-    if (newsItems.length > 1) startAutoNews();
-    const now = new Date();
-    updateEl.textContent = `Last update ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')} JST`;
-  } catch (e) { console.error('News fetch failed', e); }
+    renderNews();
+  } catch (e) { console.error('News error', e); }
 }
-fetchNews();
-setInterval(fetchNews, FETCH_INTERVAL);
 
-// =========================
-// 1. WEATHER HUB (左上)
-// =========================
-async function updateWeatherPanel() {
-    const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=ja`);
-    const d = await r.json();
-    const container = document.getElementById('weather-content');
-    
-    // 今日と週間の2パターンを交互に表示する仕組み
-    let showWeekly = false;
-    setInterval(() => {
-        container.style.opacity = 0;
-        setTimeout(() => {
-            if (showWeekly) {
-                container.innerHTML = createWeeklyForecastHtml(d.list);
-            } else {
-                container.innerHTML = createForecastGroupHtml(d.list.slice(0, 5), "Today");
-            }
-            container.style.opacity = 1;
-            showWeekly = !showWeekly;
-        }, 500);
-    }, 10000);
+function renderNews() {
+  const card = document.getElementById('news-card');
+  if (!newsItems.length) return;
+  const showNext = () => {
+    const item = newsItems[index];
+    card.innerHTML = `<div class="news-item show">
+      <div class="news-title">${item.title}</div>
+      <div class="news-description">${item.description}</div>
+    </div>`;
+    index = (index + 1) % newsItems.length;
+  };
+  showNext();
+  setInterval(showNext, 11000);
 }
 
 // =========================
-// 2. GOOGLE TRENDS (右上)
-// =========================
-async function fetchGoogleTrends() {
-    try {
-        const RSS_URL = 'https://trends.google.co.jp/trends/trendingsearches/daily/rss?geo=JP';
-        const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
-        const data = await r.json();
-        const xml = new DOMParser().parseFromString(data.contents, "application/xml");
-        const items = Array.from(xml.querySelectorAll('item')).slice(0, 6);
-        
-        const html = items.map((item, i) => `
-            <div class="trend-item">
-                <span class="trend-rank">0${i+1}</span>
-                <span class="trend-word">${item.querySelector('title').textContent}</span>
-            </div>
-        `).join('');
-        document.getElementById('trend-content').innerHTML = html;
-    } catch (e) { console.error("Trend error", e); }
-}
-
-// =========================
-// 3. TRADINGVIEW WIDGETS (下段)
-// =========================
-function initCentralWidgets() {
-    // テクニカルゲージ (左下)
-    new TradingView.MediumWidget({
-        "container_id": "tv-gauge-container",
-        "symbols": [["FX:USDJPY|1D"]],
-        "chartOnly": false, "width": "100%", "height": "100%",
-        "locale": "ja", "colorTheme": "dark", "gridLineColor": "rgba(42, 46, 57, 0)",
-        "trendLineColor": "#2962FF", "fontColor": "#787B86", "underLineColor": "rgba(41, 98, 255, 0.3)"
-    });
-
-    // 経済カレンダー (右下)
-    const calScript = document.createElement('script');
-    calScript.src = "https://s3.tradingview.com/external-embedding/embed-widget-events.js";
-    calScript.async = true;
-    calScript.innerHTML = JSON.stringify({
-        "colorTheme": "dark", "isTransparent": true, "width": "100%", "height": "100%",
-        "locale": "ja", "importanceFilter": "0,1", "currencyFilter": "USD,JPY"
-    });
-    document.getElementById('tv-calendar-container').appendChild(calScript);
-}
-
-// 初期化実行
-updateWeatherPanel();
-fetchGoogleTrends();
-initCentralWidgets();
-setInterval(fetchGoogleTrends, 1800000); // 30分おき
-
-
-// =========================
-// SCALING
+// 6. SCALING & INIT
 // =========================
 function adjustScale() {
-    const container = document.getElementById('container');
-    if (!container) return;
-    const baseWidth = 1920, baseHeight = 720;
-    const sW = window.innerWidth, sH = window.innerHeight;
-    let scale = Math.min(sW / baseWidth, sH / baseHeight);
-    container.style.transform = `scale(${scale})`;
+  const container = document.getElementById('container');
+  if (!container) return;
+  let scale = Math.min(window.innerWidth / 1920, window.innerHeight / 720);
+  container.style.transform = `scale(${scale})`;
 }
-window.addEventListener('resize', adjustScale);
-window.addEventListener('load', adjustScale);
-adjustScale();
+
+window.onload = () => {
+  updateDate();
+  updateWeatherPanel();
+  fetchGoogleTrends();
+  initAllWidgets();
+  fetchNews();
+  adjustScale();
+};
+window.onresize = adjustScale;
