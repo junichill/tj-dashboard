@@ -468,24 +468,34 @@ body {
     z-index: 0;
 }
 
-.weather-slide {
-    position: absolute;
-    /* パネルの真ん中に配置 */
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); 
-    
-    width: 90%; /* 少し余裕を持たせる */
-    text-align: center; /* 中のテキストもセンター */
-    
-    opacity: 0;
-    transition: opacity 3.0s cubic-bezier(0.4, 0, 0.2, 1);
-    pointer-events: none;
+/* 粒子アニメーションの定義 */
+@keyframes particle-out {
+    0% { mask-size: 100% 100%; mask-image: radial-gradient(circle, #000 100%, transparent 100%); }
+    100% { mask-size: 400% 400%; mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); opacity: 0; }
 }
 
+.weather-slide {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 2s ease; /* 現れる時はスムーズに */
+}
+
+/* アクティブな時 */
 .weather-slide.active {
     opacity: 1;
     pointer-events: auto;
+    mask-image: none;
+}
+
+/* 消えていく時専用のクラス */
+.weather-slide.exit {
+    animation: particle-out 3.5s forwards ease-in;
 }
 
 /* 「今」「今日」「明日」のラベル */
@@ -555,6 +565,7 @@ body {
 .weather-data-line .hi { color: #ff5252; opacity: 0.9; }
 .weather-data-line .lo { color: #448aff; opacity: 0.9; }
 .weather-data-line .sep { color: rgba(255, 255, 255, 0.1); margin: 0 2px; }
+
 
 
 
