@@ -148,38 +148,53 @@ async function fetchWeather() {
   } catch (err) { console.error('Weather/Market Fetch Error:', err); }
 }
 
+// =========================
+// TRADINGVIEW WIDGETS (左パネル復旧用)
+// =========================
 function initTradingViewWidgets() {
-    const conf = { "width": "100%", "height": 155, "locale": "ja", "dateRange": "1D", "colorTheme": "dark", "isTransparent": true, "interval": "5" };
-    
-    // ...既存の symbols への appendMiniWidget 処理...
-    appendMiniWidget("tv-usd-jpy-fixed", { ...conf, "symbol": "FX:USDJPY" });
-    appendMiniWidget("tv-n225-fixed",    { ...conf, "symbol": "OSE:NK2251!" });
-    appendMiniWidget("tv-nasdaq-fixed",  { ...conf, "symbol": "CAPITALCOM:US100" });
-    appendMiniWidget("tv-sp500",   { ...conf, "symbol": "CAPITALCOM:US500" });
-    appendMiniWidget("tv-gold",    { ...conf, "symbol": "TVC:GOLD" });
-    appendMiniWidget("tv-oil",     { ...conf, "symbol": "CAPITALCOM:OIL_CRUDE" });
-    appendMiniWidget("tv-eur-jpy", { ...conf, "symbol": "FX:EURJPY" });
-    appendMiniWidget("tv-eur-usd", { ...conf, "symbol": "FX:EURUSD" });
+    // 共通設定
+    const commonConfig = {
+        "width": "100%",
+        "height": 155,
+        "locale": "ja",
+        "dateRange": "1D",
+        "colorTheme": "dark",
+        "isTransparent": true,
+        "autosize": false,
+        "large_chart_url": ""
+    };
 
-    // --- ここから追加：経済カレンダーウィジェット ---
-    const calendarContainer = document.getElementById("tv-economic-calendar");
-    if (calendarContainer) {
-        calendarContainer.innerHTML = '';
-        const script = document.createElement('script');
-        script.src = "https://s3.tradingview.com/external-embedding/embed-widget-events.js";
-        script.async = true;
-        script.innerHTML = JSON.stringify({
-            "colorTheme": "dark",
-            "isTransparent": true,
-            "width": "100%",
-            "height": "100%",
-            "locale": "ja",
-            "importanceFilter": "-1,0,1", // すべての重要度を表示
-            "currencyFilter": "USD,JPY,EUR,GBP" // 主要通貨に絞る
-        });
-        calendarContainer.appendChild(script);
-    }
+    // 各指標の埋め込み
+    const widgets = [
+        { id: "tv-usd-jpy-fixed", symbol: "FX:USDJPY" },
+        { id: "tv-n225-fixed", symbol: "OSE:NK2251!" },
+        { id: "tv-nasdaq-fixed", symbol: "CAPITALCOM:US100" }
+    ];
+
+    widgets.forEach(w => {
+        const container = document.getElementById(w.id);
+        if (container) {
+            // 既存の中身をクリア（二重表示防止）
+            container.innerHTML = ""; 
+            
+            const script = document.createElement('script');
+            script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
+            script.async = true;
+            script.innerHTML = JSON.stringify({
+                ...commonConfig,
+                "symbol": w.symbol
+            });
+            container.appendChild(script);
+        }
+    });
 }
+
+// ページ読み込み時に実行
+window.addEventListener('load', () => {
+    updateDate();
+    initTradingViewWidgets(); // これを必ず呼ぶ
+    // 他のfetchNewsなどはそのまま
+});
 
 function appendMiniWidget(containerId, config) {
     const container = document.getElementById(containerId);
