@@ -479,19 +479,39 @@ body {
     z-index: 2;
 }
 
-/* 左上：天気の文字とアイコンを巨大化 */
+/* 左上：イメージ再現スタイル */
 .weather-slide-label { 
-    font-size: 1.5rem; /* ラベル（NOW等）を大きく */
-    color: var(--accent); 
-    margin-bottom: 20px; 
-    letter-spacing: 0.5em; 
+    font-size: 4rem; /* 「明日」などの文字を巨大に */
+    font-weight: 500;
+    color: var(--accent);
+    margin-bottom: 10px;
+    filter: drop-shadow(0 0 10px var(--accent));
 }
 
 .weather-icon-large svg { 
-    width: 180px;  /* アイコンを巨大化 */
-    height: 180px; 
+    width: 140px; 
+    height: 140px;
+    margin: 10px 0;
 }
 
+.hi-lo-main {
+    font-size: 5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.hi-lo-main .hi { color: #ff5252; } /* 赤色 */
+.hi-lo-main .lo { color: #448aff; } /* 青色 */
+.hi-lo-main .sep { color: #666; font-weight: 300; }
+
+.weather-pop-large {
+    font-size: 3.5rem;
+    font-weight: 300;
+    color: rgba(255,255,255,0.7);
+    margin-top: 10px;
+}
 .weather-temp-display .current-t { 
     font-size: 8rem; /* 気温を巨大化 */
     font-weight: 900; 
@@ -511,13 +531,16 @@ body {
 
 /* アニメーション用の基本構造（絶対配置で重ねる） */
 #weather-fixed-content { position: relative; height: 100%; width: 100%; overflow: hidden; }
+/* アニメーション設定（フェード＋スケール） */
 .weather-slide {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    opacity: 0; filter: blur(20px); transform: scale(1.3); /* 最初はかなり大きく、ボカす */
-    transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity: 0; transform: scale(0.9); /* 少し小さい状態から現れる */
+    transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 .weather-slide.active { 
-    opacity: 1; filter: blur(0); transform: scale(1); /* ちょうどいいサイズに収まる */
+    opacity: 1; transform: scale(1);
     z-index: 2; 
 }
+
