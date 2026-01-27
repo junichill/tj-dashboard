@@ -155,14 +155,13 @@ const createSlide = (title, iconType, high, low, pop) => `
     <div class="weather-slide">
         <div class="weather-slide-label">${title}</div>
         <div class="weather-icon-large weather-${iconType}">${WEATHER_ICONS[iconType]}</div>
-        <div class="weather-temp-display">
-            <div class="hi-lo-main">
-                <span class="hi">${Math.round(high)}</span>
-                <span class="sep">/</span>
-                <span class="lo">${Math.round(low)}</span>
-            </div>
+        <div class="weather-data-line">
+            <span class="hi">${Math.round(high)}</span>
+            <span class="sep">/</span>
+            <span class="lo">${Math.round(low)}</span>
+            <span class="sep">/</span>
+            <span class="pop">${Math.round(pop * 100)}%</span>
         </div>
-        <div class="weather-pop-large">${Math.round(pop * 100)}%</div>
     </div>`;
 
 weatherFixed.innerHTML = `
