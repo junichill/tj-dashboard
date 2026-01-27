@@ -395,6 +395,38 @@ body {
     display: none; /* 古いRSS用のリスト表示は不要なので隠します */
 }
 
+/* 中央3分割レイアウト */
+.center-grid-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 220px 1fr; /* 上段の高さを指定、下段は残り */
+  gap: 20px;
+  height: 100%;
+}
+
+.grid-item-bottom {
+  grid-column: span 2;
+  overflow: hidden;
+  padding: 0 !important; /* スライドを端まで表示 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* スライドエリアを中央下段のサイズに固定 */
+#forecast-viewport {
+  height: 250px; /* script.jsの移動量 250px と必ず一致させる */
+  width: 100%;
+  overflow: hidden;
+}
+
+/* 上段の中身を整える（任意） */
+#weather-fixed-content, #trend-fixed-content {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 
 
