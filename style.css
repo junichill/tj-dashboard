@@ -544,3 +544,24 @@ body {
     z-index: 2; 
 }
 
+
+/* 文字サイズを調整して一行に強制的に収める */
+.weather-data-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    font-size: 5rem; /* パネル幅に合わせて調整 */
+    font-weight: 800;
+    white-space: nowrap; /* 絶対に改行させない */
+    margin-top: 15px;
+}
+
+.weather-data-line .hi { color: #ff5252; }
+.weather-data-line .lo { color: #448aff; }
+.weather-data-line .pop { color: rgba(255, 255, 255, 0.8); font-weight: 300; }
+.weather-data-line .sep { color: rgba(255, 255, 255, 0.2); font-weight: 200; margin: 0 5px; }
+
+/* ラベルとアイコンの微調整 */
+.weather-slide-label { font-size: 3.5rem; font-weight: 700; color: var(--accent); margin-bottom: 5px; }
+.weather-icon-large svg { width: 130px; height: 130px; }
