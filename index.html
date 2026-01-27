@@ -1,78 +1,78 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Elite Digital Dashboard - Glassmorphism Edition</title>
-  
-  <link rel="stylesheet" href="flip.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;700;900&family=JetBrains+Mono:wght@300&display=swap" rel="stylesheet">
-  
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Trading Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/@pqina/flip/dist/flip.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="aurora-bg"></div>
+    <div id="container">
+        <div class="side-panel">
+            <div id="clock-card" class="panel-box">
+                <div class="panel-label">SYSTEM TIME</div>
+                <div class="tick" data-did-init="handleTickInit">
+                    <div data-repeat="true">
+                        <span data-view="flip"></span>
+                    </div>
+                </div>
+                <div id="date">Loading Date...</div>
+            </div>
 
-<div id="container">
-  
-  <div id="date"></div>
+            <div class="fixed-widget-card panel-box">
+                <div class="panel-label">USD / JPY</div>
+                <div id="tv-usd-jpy-fixed" class="content-wrapper"></div>
+            </div>
 
-<div id="left-panel">
-  <div class="clock-container glass-card">
-    <div class="clock-scale">
-      <div class="tick" data-did-init="handleTickInit">
-        <span data-view="flip" data-key="hours1" class="tick-flip"></span>
-        <span data-view="flip" data-key="hours2" class="tick-flip"></span>
-        <span class="tick-text-inline">:</span>
-        <span data-view="flip" data-key="minutes1" class="tick-flip"></span>
-        <span data-view="flip" data-key="minutes2" class="tick-flip"></span>
-      </div>
-      <span id="seconds-static">00</span>
+            <div class="fixed-widget-card panel-box">
+                <div class="panel-label">NIKKEI 225</div>
+                <div id="tv-n225-fixed" class="content-wrapper"></div>
+            </div>
+
+            <div class="fixed-widget-card panel-box">
+                <div class="panel-label">NASDAQ 100</div>
+                <div id="tv-nasdaq-fixed" class="content-wrapper"></div>
+            </div>
+        </div>
+
+        <div class="central-panel">
+            <div class="panel-box" id="panel-weather">
+                <div class="panel-label">ENVIRONMENT</div>
+                <div id="weather-content" class="content-wrapper">
+                    </div>
+            </div>
+
+            <div class="panel-box" id="panel-trends">
+                <div class="panel-label">SOCIAL TRENDS</div>
+                <div id="trend-content" class="content-wrapper">
+                    </div>
+            </div>
+
+            <div class="panel-box" id="panel-analysis">
+                <div class="panel-label">TECHNICAL GAUGE</div>
+                <div id="tv-gauge-container" class="content-wrapper">
+                    </div>
+            </div>
+
+            <div class="panel-box" id="panel-schedule">
+                <div class="panel-label">ECONOMIC CALENDAR</div>
+                <div id="tv-calendar-container" class="content-wrapper">
+                    </div>
+            </div>
+        </div>
+
+        <div class="side-panel">
+            <div id="news-card" class="panel-box">
+                <div class="panel-label">NHK NEWS FEED</div>
+                </div>
+        </div>
     </div>
-  </div>
 
-  <div id="fixed-market-container">
-    <div id="tv-usd-jpy-fixed" class="glass-card mini-widget-fixed"></div>
-    <div id="tv-n225-fixed" class="glass-card mini-widget-fixed"></div>
-    <div id="tv-nasdaq-fixed" class="glass-card mini-widget-fixed"></div>
-  </div>
-</div>
-
-  <div class="central-panel">
-    <div class="panel-box" id="panel-weather">
-        <div class="panel-label">ENVIRONMENT</div>
-        <div id="weather-content" class="content-wrapper"></div>
-    </div>
-
-    <div class="panel-box" id="panel-trends">
-        <div class="panel-label">SOCIAL TRENDS</div>
-        <div id="trend-content" class="content-wrapper"></div>
-    </div>
-
-    <div class="panel-box" id="panel-analysis">
-        <div class="panel-label">MARKET ANALYSIS</div>
-        <div id="tv-gauge-container" class="content-wrapper"></div>
-    </div>
-
-    <div class="panel-box" id="panel-schedule">
-        <div class="panel-label">ECONOMIC SCHEDULE</div>
-        <div id="tv-calendar-container" class="content-wrapper"></div>
-    </div>
-</div>
-
-  <div id="right-panel">
-    <div id="news-card" class="glass-card">
-      </div>
-  </div>
-
-</div>
-
-<script src="flip.min.js"></script>
-<script src="script.js"></script>
-
+    <script src="https://unpkg.com/@pqina/flip/dist/flip.min.js"></script>
+    <script src="https://s3.tradingview.com/tv.js"></script>
+    <script src="script.js"></script>
 </body>
-
 </html>
-
-
