@@ -135,10 +135,6 @@ function updateWeatherBackground(weatherId) {
     el.style.backgroundImage = `url('${bgUrl}')`;
 }
 
-// fetchWeather の最後の方で呼び出す
-if (today && today.weather[0]) {
-    updateWeatherBackground(today.weather[0].id);
-  
 async function fetchWeather() {
   try {
     // スケジュールを先に取得（または前回のデータを使用）
