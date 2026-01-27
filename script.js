@@ -113,23 +113,33 @@ let weatherTimer = null;
 
 function updateWeatherBackground(weatherId) {
     const el = document.getElementById('weather-fixed-content');
-    let bgUrl = "";
+    if (!el) return;
+
+    let keyword = "dark-night-sky";
     const month = new Date().getMonth() + 1;
 
-    // 天候と季節で出し分け（画像は Unsplash の高品質なものを使用）
+    // 天候と季節でキーワードを決定
     if (weatherId >= 200 && weatherId < 600) {
-        bgUrl = "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?q=80&w=1000"; // 雨
+        keyword = "rain-dark";
     } else if (weatherId >= 600 && weatherId < 700) {
-        bgUrl = "https://images.unsplash.com/photo-1478265409131-1f65c88f965c?q=80&w=1000"; // 雪
+        keyword = "snow-mountain-night";
     } else if (month >= 3 && month <= 5) {
-        bgUrl = "https://images.unsplash.com/photo-1491153041158-9454e5835950?q=80&w=1000"; // 春
+        keyword = "spring-dark-nature";
     } else if (month >= 6 && month <= 8) {
-        bgUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000"; // 夏
-    } else {
-        bgUrl = "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1000"; // 秋・冬（夜空）
+        keyword = "summer-ocean-night";
+    } else if (month >= 9 && month <= 11) {
+        keyword = "autumn-night";
     }
 
-    el.style.backgroundImage = `url('${bgUrl}')`;
+    // 高品質な画像を確実に取得するURL
+    const bgUrl = `https://source.unsplash.com/featured/800x600?${keyword}`;
+    
+    // 画像をプリロードしてから適用（パッと切り替わるように）
+    const img = new Image();
+    img.src = bgUrl;
+    img.onload = () => {
+        el.style.backgroundImage = `url('${bgUrl}')`;
+    };
 }
 
 // fetchWeather の最後の方で呼び出す
