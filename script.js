@@ -164,12 +164,16 @@ if (weatherFixed) {
             ${pop > 0 ? `<div class="weather-pop"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z"/></svg> ${Math.round(pop * 100)}%</div>` : '<div class="weather-pop">-</div>'}
         </div>`;
 
-    weatherFixed.innerHTML = `
+weatherFixed.innerHTML = `
         <div id="weather-fixed-wrapper">
             ${createSlide("NOW", getWeatherType(today.weather[0].id), today.main.temp)}
             ${createSlide("TODAY", getWeatherType(today.weather[0].id), today.main.temp, Math.max(...dayTemps), Math.min(...dayTemps), today.pop || 0)}
             ${createSlide("TOMORROW", getWeatherType(tomorrowList[0].weather[0].id), tomorrowList[0].main.temp, Math.max(...tomorrowList.map(v=>v.main.temp)), Math.min(...tomorrowList.map(v=>v.main.temp)), tomorrowList[0].pop || 0)}
         </div>`;
+    
+    // 生成直後に1枚目をアクティブにする
+    const firstSlide = weatherFixed.querySelector('.weather-slide');
+    if (firstSlide) firstSlide.classList.add('active');
     
     startFixedWeatherCycle();
 }
@@ -261,13 +265,20 @@ let fixedWeatherIndex = 0;
 function startFixedWeatherCycle() {
     const slides = document.querySelectorAll('.weather-slide');
     if (slides.length === 0) return;
-    slides.forEach((s, i) => s.classList.toggle('active', i === 0));
+
+    // 既存のタイマーを確実に殺す
     if (window.fixedWeatherTimer) clearInterval(window.fixedWeatherTimer);
+    
+    fixedWeatherIndex = 0; // インデックスをリセット
+
     window.fixedWeatherTimer = setInterval(() => {
-        slides[fixedWeatherIndex].classList.remove('active');
-        fixedWeatherIndex = (fixedWeatherIndex + 1) % slides.length;
-        slides[fixedWeatherIndex].classList.add('active');
-    }, 8000);
+        const currentSlides = document.querySelectorAll('.weather-slide');
+        if (currentSlides.length === 0) return;
+
+        currentSlides[fixedWeatherIndex].classList.remove('active');
+        fixedWeatherIndex = (fixedWeatherIndex + 1) % currentSlides.length;
+        currentSlides[fixedWeatherIndex].classList.add('active');
+    }, 8000); 
 }
 
 fetchWeather();
