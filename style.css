@@ -471,32 +471,20 @@ body {
     z-index: 0;
 }
 
-
-
 .weather-slide {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    
-    /* アニメーション：少し小さい状態からフェードイン */
     opacity: 0;
-    filter: blur(10px);
-    transform: scale(0.95);
-    transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
-    z-index: 1;
+    /* 3秒かけて、ゆっくり加減速しながら変化 */
+    transition: opacity 3.0s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
 }
 
 .weather-slide.active {
     opacity: 1;
-    filter: blur(0);
-    transform: scale(1);
-    z-index: 2;
+    pointer-events: auto;
 }
 
 /* 「今」「今日」「明日」のラベル */
@@ -566,6 +554,7 @@ body {
 .weather-data-line .hi { color: #ff5252; opacity: 0.9; }
 .weather-data-line .lo { color: #448aff; opacity: 0.9; }
 .weather-data-line .sep { color: rgba(255, 255, 255, 0.1); margin: 0 2px; }
+
 
 
 
