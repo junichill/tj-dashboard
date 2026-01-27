@@ -306,6 +306,82 @@ fetchNews();
 setInterval(fetchNews, FETCH_INTERVAL);
 
 // =========================
+// 1. WEATHER HUB (左上)
+// =========================
+async function updateWeatherPanel() {
+    const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=ja`);
+    const d = await r.json();
+    const container = document.getElementById('weather-content');
+    
+    // 今日と週間の2パターンを交互に表示する仕組み
+    let showWeekly = false;
+    setInterval(() => {
+        container.style.opacity = 0;
+        setTimeout(() => {
+            if (showWeekly) {
+                container.innerHTML = createWeeklyForecastHtml(d.list);
+            } else {
+                container.innerHTML = createForecastGroupHtml(d.list.slice(0, 5), "Today");
+            }
+            container.style.opacity = 1;
+            showWeekly = !showWeekly;
+        }, 500);
+    }, 10000);
+}
+
+// =========================
+// 2. GOOGLE TRENDS (右上)
+// =========================
+async function fetchGoogleTrends() {
+    try {
+        const RSS_URL = 'https://trends.google.co.jp/trends/trendingsearches/daily/rss?geo=JP';
+        const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
+        const data = await r.json();
+        const xml = new DOMParser().parseFromString(data.contents, "application/xml");
+        const items = Array.from(xml.querySelectorAll('item')).slice(0, 6);
+        
+        const html = items.map((item, i) => `
+            <div class="trend-item">
+                <span class="trend-rank">0${i+1}</span>
+                <span class="trend-word">${item.querySelector('title').textContent}</span>
+            </div>
+        `).join('');
+        document.getElementById('trend-content').innerHTML = html;
+    } catch (e) { console.error("Trend error", e); }
+}
+
+// =========================
+// 3. TRADINGVIEW WIDGETS (下段)
+// =========================
+function initCentralWidgets() {
+    // テクニカルゲージ (左下)
+    new TradingView.MediumWidget({
+        "container_id": "tv-gauge-container",
+        "symbols": [["FX:USDJPY|1D"]],
+        "chartOnly": false, "width": "100%", "height": "100%",
+        "locale": "ja", "colorTheme": "dark", "gridLineColor": "rgba(42, 46, 57, 0)",
+        "trendLineColor": "#2962FF", "fontColor": "#787B86", "underLineColor": "rgba(41, 98, 255, 0.3)"
+    });
+
+    // 経済カレンダー (右下)
+    const calScript = document.createElement('script');
+    calScript.src = "https://s3.tradingview.com/external-embedding/embed-widget-events.js";
+    calScript.async = true;
+    calScript.innerHTML = JSON.stringify({
+        "colorTheme": "dark", "isTransparent": true, "width": "100%", "height": "100%",
+        "locale": "ja", "importanceFilter": "0,1", "currencyFilter": "USD,JPY"
+    });
+    document.getElementById('tv-calendar-container').appendChild(calScript);
+}
+
+// 初期化実行
+updateWeatherPanel();
+fetchGoogleTrends();
+initCentralWidgets();
+setInterval(fetchGoogleTrends, 1800000); // 30分おき
+
+
+// =========================
 // SCALING
 // =========================
 function adjustScale() {
