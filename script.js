@@ -55,6 +55,28 @@ function getWeatherType(id) {
 }
 
 // =========================
+// WEATHER 背景更新
+// =========================
+function updateWeatherBackground(weatherId) {
+    const el = document.getElementById('weather-fixed-content');
+    if (!el) return;
+    const month = new Date().getMonth() + 1;
+    let bgUrl = "";
+    if (weatherId >= 200 && weatherId < 600) {
+        bgUrl = "https://images.unsplash.com/photo-1438449805896-28a666819a20?auto=format&fit=crop&w=800&q=80"; // 雨
+    } else if (month >= 3 && month <= 5) {
+        bgUrl = "https://images.unsplash.com/photo-1522748906645-95d8adfd52c7?auto=format&fit=crop&w=800&q=80"; // 春
+    } else if (month >= 6 && month <= 8) {
+        bgUrl = "https://images.unsplash.com/photo-1471922694854-ff1b63b20054?auto=format&fit=crop&w=800&q=80"; // 夏
+    } else if (month >= 9 && month <= 11) {
+        bgUrl = "https://images.unsplash.com/photo-1477414348463-c0eb7f1359b6?auto=format&fit=crop&w=800&q=80"; // 秋
+    } else {
+        bgUrl = "https://images.unsplash.com/photo-1483921020237-2ff51e8e4b22?auto=format&fit=crop&w=800&q=80"; // 冬
+    }
+    el.style.backgroundImage = `url('${bgUrl}')`;
+}
+
+// =========================
 // HTML生成関数 (WEATHER)
 // =========================
 function createForecastGroupHtml(list, label) {
@@ -91,13 +113,8 @@ function createWeeklyForecastHtml(list) {
   return `<div class="day-group"><div class="day-label">— Weekly Outlook —</div><div class="day-items">${itemsHtml}</div></div>`;
 }
 
-// =========================
-// 経済スケジュール取得
-// =========================
 let economicScheduleHtml = ""; 
-
 async function fetchEconomicSchedule() {
-  // RSSのフェッチは不要になるため、HTML構造だけを準備します
   economicScheduleHtml = `
     <div class="day-group">
       <div class="day-label">— Economic Calendar —</div>
@@ -111,35 +128,9 @@ async function fetchEconomicSchedule() {
 let weatherSlideIndex = 0;
 let weatherTimer = null;
 
-function updateWeatherBackground(weatherId) {
-    const el = document.getElementById('weather-fixed-content');
-    if (!el) return;
-
-    // 季節・天候に合わせた高品質・高安定URL
-    const month = new Date().getMonth() + 1;
-    let bgUrl = "";
-
-    if (weatherId >= 200 && weatherId < 600) {
-        bgUrl = "https://images.unsplash.com/photo-1438449805896-28a666819a20?auto=format&fit=crop&w=800&q=80"; // 雨
-    } else if (month >= 3 && month <= 5) {
-        bgUrl = "https://images.unsplash.com/photo-1522748906645-95d8adfd52c7?auto=format&fit=crop&w=800&q=80"; // 春
-    } else if (month >= 6 && month <= 8) {
-        bgUrl = "https://images.unsplash.com/photo-1471922694854-ff1b63b20054?auto=format&fit=crop&w=800&q=80"; // 夏
-    } else if (month >= 9 && month <= 11) {
-        bgUrl = "https://images.unsplash.com/photo-1477414348463-c0eb7f1359b6?auto=format&fit=crop&w=800&q=80"; // 秋
-    } else {
-        bgUrl = "https://images.unsplash.com/photo-1483921020237-2ff51e8e4b22?auto=format&fit=crop&w=800&q=80"; // 冬（夜空）
-    }
-
-    // 背景としてセット
-    el.style.backgroundImage = `url('${bgUrl}')`;
-}
-
 async function fetchWeather() {
   try {
-    // スケジュールを先に取得（または前回のデータを使用）
     await fetchEconomicSchedule();
-
     const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=ja`);
     const d = await r.json();
     if (!d || !d.list) return;
@@ -155,89 +146,70 @@ async function fetchWeather() {
 
     const mktHtml = (id, label) => `<div class="day-group"><div class="day-label">— ${label} —</div><div id="${id}" style="width:700px; height:130px;"></div></div>`;
 
-    // 全ての要素を結合して一気に書き込み
     wrapper.innerHTML = todayHtml + tomorrowHtml + weeklyHtml + 
                         mktHtml("tv-sp500", "S&P 500 Futures") +
                         mktHtml("tv-gold", "Gold Spot") +
                         mktHtml("tv-oil", "WTI Crude Oil") +
                         mktHtml("tv-eur-jpy", "EUR/JPY") +
                         mktHtml("tv-eur-usd", "EUR/USD") +
-                        economicScheduleHtml; // 最後にスケジュールを追加
+                        economicScheduleHtml;
 
     initTradingViewWidgets();
     weatherSlideIndex = 0;
     wrapper.style.transform = `translateY(0px)`;
 
-const weatherFixed = document.getElementById('weather-fixed-content');
-if (weatherFixed) {
-    const today = d.list[0];
-    const dayTemps = d.list.slice(0, 8).map(v => v.main.temp);
-    const tomorrowStr = new Date(Date.now() + 86400000).toLocaleDateString();
-    const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr);
+    const weatherFixed = document.getElementById('weather-fixed-content');
+    if (weatherFixed) {
+        const today = d.list[0];
+        const dayTemps = d.list.slice(0, 8).map(v => v.main.temp);
+        const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr);
 
-const createSlide = (title, iconType, high, low, pop, prevHigh = null, prevLow = null) => {
-    const d = new Date();
-    
-    // 「明日」というタイトルの場合は、日付を+1日する
-    if (title === "明日") {
-        d.setDate(d.getDate() + 1);
+        const createSlide = (title, iconType, high, low, pop, prevHigh = null, prevLow = null) => {
+            const dateObj = new Date();
+            if (title === "明日") dateObj.setDate(dateObj.getDate() + 1);
+            const dateStr = `${dateObj.getMonth() + 1}/${dateObj.getDate()}(${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dateObj.getDay()]})`;
+            const formatDiff = (h, ph) => {
+                if (ph === null) return "";
+                const diff = Math.round(h - ph);
+                if (diff > 0) return `<span class="diff-plus">[+${diff}]</span>`;
+                if (diff < 0) return `<span class="diff-minus">[${diff}]</span>`;
+                return `<span class="diff-zero">[±0]</span>`;
+            };
+
+            return `
+            <div class="weather-slide">
+                <div class="weather-slide-label">${title} ${dateStr}</div>
+                <div class="weather-icon-large weather-${iconType}">${WEATHER_ICONS[iconType]}</div>
+                <div class="weather-sub-info">
+                    <span>${iconType === 'sunny' ? '晴れ' : iconType === 'cloudy' ? '曇り' : '雨'}</span>
+                    <span><svg class="drop-icon" viewBox="0 0 24 24" fill="#4fc3f7" width="16"><path d="M12,2C12,2 6,8.19 6,12.5C6,15.78 8.42,18.5 12,18.5C15.58,18.5 18,15.78 18,12.5C18,8.19 12,2 12,2Z"/></svg>${Math.round(pop * 100)}%</span>
+                </div>
+                <div class="weather-data-line">
+                    <span class="hi">${Math.round(high)}°${formatDiff(high, prevHigh)}</span>
+                    <span class="sep">/</span>
+                    <span class="lo">${Math.round(low)}°${formatDiff(low, prevLow)}</span>
+                </div>
+            </div>`;
+        };
+
+        weatherFixed.innerHTML = `
+            <div id="weather-fixed-wrapper">
+                ${createSlide("今日", getWeatherType(today.weather[0].id), Math.max(...dayTemps), Math.min(...dayTemps), today.pop || 0, 10, 2)}
+                ${createSlide("明日", getWeatherType(tomorrowList[0].weather[0].id), Math.max(...tomorrowList.map(v=>v.main.temp)), Math.min(...tomorrowList.map(v=>v.main.temp)), tomorrowList[0].pop || 0, Math.max(...dayTemps), Math.min(...dayTemps))}
+            </div>`;
+
+        if (today && today.weather[0]) updateWeatherBackground(today.weather[0].id);
+
+        const slides = weatherFixed.querySelectorAll('.weather-slide');
+        if(slides.length > 0) slides[0].classList.add('active'); 
+        startFixedWeatherCycle();
     }
-
-    // 日付フォーマット (例: 1/28(Wed))
-    const dateStr = `${d.getMonth() + 1}/${d.getDate()}(${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]})`;
-
-    // 前日差の整形
-    const formatDiff = (h, ph) => {
-        if (ph === null) return "";
-        const diff = Math.round(h - ph);
-        if (diff > 0) return `<span class="diff-plus">[+${diff}]</span>`;
-        if (diff < 0) return `<span class="diff-minus">[${diff}]</span>`;
-        return `<span class="diff-zero">[±0]</span>`;
-    };
-
-    return `
-    <div class="weather-slide">
-        <div class="weather-slide-label">${title} ${dateStr}</div>
-        <div class="weather-icon-large weather-${iconType}">${WEATHER_ICONS[iconType]}</div>
-        <div class="weather-sub-info">
-            <span>晴れ</span>
-            <span><svg class="drop-icon" viewBox="0 0 24 24" fill="#4fc3f7"><path d="M12,2C12,2 6,8.19 6,12.5C6,15.78 8.42,18.5 12,18.5C15.58,18.5 18,15.78 18,12.5C18,8.19 12,2 12,2Z"/></svg>${Math.round(pop * 100)}%</span>
-        </div>
-        <div class="weather-data-line">
-            <span class="hi">${Math.round(high)}°${formatDiff(high, prevHigh)}</span>
-            <span class="sep">/</span>
-            <span class="lo">${Math.round(low)}°${formatDiff(low, prevLow)}</span>
-        </div>
-    </div>`;
-};
-  
-weatherFixed.innerHTML = `
-    <div id="weather-fixed-wrapper">
-        ${createSlide("今日", getWeatherType(today.weather[0].id), Math.max(...dayTemps), Math.min(...dayTemps), today.pop || 0, 10, 2)}
-        ${createSlide("明日", getWeatherType(tomorrowList[0].weather[0].id), Math.max(...tomorrowList.map(v=>v.main.temp)), Math.min(...tomorrowList.map(v=>v.main.temp)), tomorrowList[0].pop || 0, Math.max(...dayTemps), Math.min(...dayTemps))}
-    </div>`;
-
-// ここで呼び出し（カッコの閉じ忘れを修正）
-if (today && today.weather && today.weather[0]) {
-    updateWeatherBackground(today.weather[0].id);
-}
-
-// 1枚目をアクティブにする処理
-const slides = weatherFixed.querySelectorAll('.weather-slide');
-if(slides.length > 0) slides[0].classList.add('active'); 
-    startFixedWeatherCycle();
-}
-    
-    
     startWeatherCycle();
-
   } catch (err) { console.error('Weather/Market Fetch Error:', err); }
 }
 
 function initTradingViewWidgets() {
     const conf = { "width": "100%", "height": 155, "locale": "ja", "dateRange": "1D", "colorTheme": "dark", "isTransparent": true, "interval": "5" };
-    
-    // ...既存の symbols への appendMiniWidget 処理...
     appendMiniWidget("tv-usd-jpy-fixed", { ...conf, "symbol": "FX:USDJPY" });
     appendMiniWidget("tv-n225-fixed",    { ...conf, "symbol": "OSE:NK2251!" });
     appendMiniWidget("tv-nasdaq-fixed",  { ...conf, "symbol": "CAPITALCOM:US100" });
@@ -247,7 +219,6 @@ function initTradingViewWidgets() {
     appendMiniWidget("tv-eur-jpy", { ...conf, "symbol": "FX:EURJPY" });
     appendMiniWidget("tv-eur-usd", { ...conf, "symbol": "FX:EURUSD" });
 
-    // --- ここから追加：経済カレンダーウィジェット ---
     const calendarContainer = document.getElementById("tv-economic-calendar");
     if (calendarContainer) {
         calendarContainer.innerHTML = '';
@@ -260,8 +231,8 @@ function initTradingViewWidgets() {
             "width": "100%",
             "height": "100%",
             "locale": "ja",
-            "importanceFilter": "-1,0,1", // すべての重要度を表示
-            "currencyFilter": "USD,JPY,EUR,GBP" // 主要通貨に絞る
+            "importanceFilter": "-1,0,1",
+            "currencyFilter": "USD,JPY,EUR,GBP"
         });
         calendarContainer.appendChild(script);
     }
@@ -310,21 +281,15 @@ function startWeatherCycle() {
   }, 9000);
 }
 
-// サイクル制御用関数を最後に追加
 let fixedWeatherIndex = 0;
 function startFixedWeatherCycle() {
     const slides = document.querySelectorAll('.weather-slide');
     if (slides.length === 0) return;
-
-    // 既存のタイマーを確実に殺す
     if (window.fixedWeatherTimer) clearInterval(window.fixedWeatherTimer);
-    
-    fixedWeatherIndex = 0; // インデックスをリセット
-
+    fixedWeatherIndex = 0;
     window.fixedWeatherTimer = setInterval(() => {
         const currentSlides = document.querySelectorAll('.weather-slide');
         if (currentSlides.length === 0) return;
-
         currentSlides[fixedWeatherIndex].classList.remove('active');
         fixedWeatherIndex = (fixedWeatherIndex + 1) % currentSlides.length;
         currentSlides[fixedWeatherIndex].classList.add('active');
@@ -335,31 +300,13 @@ fetchWeather();
 setInterval(fetchWeather, 600000);
 
 // =========================
-// NEWS (右パネル)
+// NEWS
 // =========================
 const RSS_URL = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
 const newsCard = document.getElementById('news-card');
 let newsItems = [], newsEls = [], index = 0, newsT = null;
 let lastGoodNews = null;
 const AUTO_INTERVAL = 11000, FETCH_INTERVAL = 10*60*1000;
-
-const updateEl = document.createElement('div');
-updateEl.style.cssText = 'position:absolute; top:10px; right:15px; font-size:12px; opacity:0.6;';
-newsCard.appendChild(updateEl);
-
-const indicator = document.createElement('div');
-indicator.style.cssText = 'position:absolute; bottom:10px; left:50%; transform:translateX(-50%); display:flex; gap:8px;';
-newsCard.appendChild(indicator);
-
-function updateIndicator() {
-  indicator.innerHTML = '';
-  newsItems.forEach((_, i) => {
-    const dot = document.createElement('div');
-    dot.style.cssText = `width:10px; height:10px; border-radius:50%; background:${i === index ? '#fff' : '#555'}; cursor:pointer;`;
-    dot.onclick = () => { if (i === index) return; stopAutoNews(); showNews(i); startAutoNews(); };
-    indicator.appendChild(dot);
-  });
-}
 
 function createNews() {
   newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
@@ -370,7 +317,6 @@ function createNews() {
     newsCard.appendChild(div);
     return div;
   });
-  updateIndicator();
 }
 
 function showNews(next, init = false) {
@@ -379,9 +325,8 @@ function showNews(next, init = false) {
   if (!init) { newsEls[index].classList.add('exit'); }
   newsEls[next].classList.add('show');
   const nxtIdx = (next + 1) % newsEls.length;
-  newsEls[nxtIdx].classList.add('next');
+  if (newsEls[nxtIdx]) newsEls[nxtIdx].classList.add('next');
   index = next;
-  updateIndicator();
 }
 
 function startAutoNews() { stopAutoNews(); newsT = setInterval(() => showNews((index+1)%newsEls.length), AUTO_INTERVAL); }
@@ -400,13 +345,11 @@ async function fetchNews() {
       pubDate: item.querySelector('pubDate')?.textContent,
       description: item.querySelector('description')?.textContent
     }));
-    if (fetched.length === 0) { if (lastGoodNews) newsItems = lastGoodNews; else return; } 
-    else { newsItems = fetched; lastGoodNews = fetched; }
+    if (fetched.length > 0) { newsItems = fetched; lastGoodNews = fetched; }
+    else if (lastGoodNews) { newsItems = lastGoodNews; }
     createNews();
     showNews(0, true);
     if (newsItems.length > 1) startAutoNews();
-    const now = new Date();
-    updateEl.textContent = `Last update ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')} JST`;
   } catch (e) { console.error('News fetch failed', e); }
 }
 fetchNews();
