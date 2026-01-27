@@ -445,7 +445,7 @@ body {
   display: none;
 }
 
-/* --- [style.css 修正箇所] --- */
+/* --- 左上：天気切り替えパネル（改行なし・一行表示版） --- */
 #weather-fixed-content {
     position: relative;
     height: 100%;
@@ -454,7 +454,7 @@ body {
 }
 
 .weather-slide {
-    position: absolute; /* 全てを同じ場所に重ねる */
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -464,14 +464,14 @@ body {
     align-items: center;
     justify-content: center;
     
-    opacity: 0; /* 最初は消す */
+    /* アニメーション：少し小さい状態からフェードイン */
+    opacity: 0;
     filter: blur(10px);
-    transform: scale(1.15); 
-    transition: opacity 1.2s ease, filter 1.2s ease, transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: scale(0.95);
+    transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
     z-index: 1;
 }
 
-/* これがついてる時だけ表示 */
 .weather-slide.active {
     opacity: 1;
     filter: blur(0);
@@ -479,89 +479,35 @@ body {
     z-index: 2;
 }
 
-/* 左上：イメージ再現スタイル */
-.weather-slide-label { 
-    font-size: 4rem; /* 「明日」などの文字を巨大に */
-    font-weight: 500;
+/* 「今」「今日」「明日」のラベル */
+.weather-slide-label {
+    font-size: 3.5rem;
+    font-weight: 700;
     color: var(--accent);
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     filter: drop-shadow(0 0 10px var(--accent));
 }
 
-.weather-icon-large svg { 
-    width: 140px; 
-    height: 140px;
-    margin: 10px 0;
+/* 天気アイコン */
+.weather-icon-large svg {
+    width: 130px;
+    height: 130px;
+    margin: 5px 0;
 }
 
-.hi-lo-main {
-    font-size: 5rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.hi-lo-main .hi { color: #ff5252; } /* 赤色 */
-.hi-lo-main .lo { color: #448aff; } /* 青色 */
-.hi-lo-main .sep { color: #666; font-weight: 300; }
-
-.weather-pop-large {
-    font-size: 3.5rem;
-    font-weight: 300;
-    color: rgba(255,255,255,0.7);
-    margin-top: 10px;
-}
-.weather-temp-display .current-t { 
-    font-size: 8rem; /* 気温を巨大化 */
-    font-weight: 900; 
-    line-height: 1;
-}
-
-.hi-lo { 
-    font-size: 2.2rem; /* 最高最低気温も大きく */
-    margin-top: 10px;
-}
-
-.weather-pop { 
-    margin-top: 30px; 
-    font-size: 1.8rem; /* 降水確率も大きく */
-    opacity: 0.8;
-}
-
-/* アニメーション用の基本構造（絶対配置で重ねる） */
-#weather-fixed-content { position: relative; height: 100%; width: 100%; overflow: hidden; }
-/* アニメーション設定（フェード＋スケール） */
-.weather-slide {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    opacity: 0; transform: scale(0.9); /* 少し小さい状態から現れる */
-    transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.weather-slide.active { 
-    opacity: 1; transform: scale(1);
-    z-index: 2; 
-}
-
-
-/* 文字サイズを調整して一行に強制的に収める */
+/* 【重要】最高/最低/降水確率を一行に収めるライン */
 .weather-data-line {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 15px;
-    font-size: 5rem; /* パネル幅に合わせて調整 */
+    gap: 12px;
+    font-size: 4.5rem; /* 幅に収まるよう微調整 */
     font-weight: 800;
     white-space: nowrap; /* 絶対に改行させない */
-    margin-top: 15px;
+    margin-top: 10px;
 }
 
-.weather-data-line .hi { color: #ff5252; }
-.weather-data-line .lo { color: #448aff; }
-.weather-data-line .pop { color: rgba(255, 255, 255, 0.8); font-weight: 300; }
-.weather-data-line .sep { color: rgba(255, 255, 255, 0.2); font-weight: 200; margin: 0 5px; }
-
-/* ラベルとアイコンの微調整 */
-.weather-slide-label { font-size: 3.5rem; font-weight: 700; color: var(--accent); margin-bottom: 5px; }
-.weather-icon-large svg { width: 130px; height: 130px; }
+.weather-data-line .hi { color: #ff5252; text-shadow: 0 0 15px rgba(255, 82, 82, 0.3); } /* 最高（赤） */
+.weather-data-line .lo { color: #448aff; text-shadow: 0 0 15px rgba(68, 138, 255, 0.3); } /* 最低（青） */
+.weather-data-line .pop { color: rgba(255, 255, 255, 0.8); font-weight: 300; } /* 降水確率 */
+.weather-data-line .sep { color: rgba(255, 255, 255, 0.15); font-weight: 200; } /* セパレーター */
