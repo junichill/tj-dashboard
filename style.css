@@ -151,24 +151,21 @@ body {
 }
 
 #forecast-viewport {
-  flex: 1;
-  width: 100%;
-  overflow: hidden; /* はみ出しを隠す */
-  display: flex;
-  align-items: center;
+  height: 250px; /* script.jsの移動量と一致させる */
+  overflow: hidden;
 }
 
 #forecast-wrapper {
-  width: 100%;
-  transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1); /* ご提示のスクリプトに合わせた動き */
+  /* スムーズなアニメーション設定 */
 }
 
 .day-group {
-  height: 250px; /* script.jsの移動量に固定 */
+  height: 250px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  box-sizing: border-box;
+  align-items: center;
+  transition: all 1.2s ease;
 }
 
 .day-group.inactive {
@@ -398,59 +395,13 @@ body {
     display: none; /* 古いRSS用のリスト表示は不要なので隠します */
 }
 
-/* =========================================
-   5. 中央パネル 3分割レイアウト (確定版)
-   ========================================= */
 
-/* 中央パネルの親：flex:1 は維持 */
-#center-panel {
-  flex: 1;
-  min-width: 0;
-  height: 100%; /* 親の720pxいっぱいに使う */
-}
 
-/* 内部のグリッド構造 */
-.center-grid-layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 250px 1fr; /* 上段250px、下段は残り全部 */
-  gap: 20px;
-  height: 100%;
-  width: 100%;
-}
 
-/* 各カードの共通設定 */
-.grid-item-tl, .grid-item-tr, .grid-item-bottom {
-  position: relative;
-  padding: 35px 20px 20px 20px; /* ラベルとの重なりを防ぐ余白 */
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-}
 
-.grid-item-bottom {
-  grid-column: span 2;
-  padding: 10px 20px 20px; /* スライド用に余白を再調整 */
-}
 
-/* カード内のコンテンツ領域 */
-.content-fill {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-height: 0;
-}
 
-/* パネル内の右上のラベル */
-.panel-label {
-  position: absolute;
-  top: 12px;
-  right: 20px;
-  font-size: 10px;
-  font-family: 'JetBrains Mono', monospace;
-  color: var(--accent);
-  letter-spacing: 0.15em;
-  opacity: 0.6;
-}
+
+
+
 
