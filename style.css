@@ -395,9 +395,48 @@ body {
     display: none; /* 古いRSS用のリスト表示は不要なので隠します */
 }
 
+/* 中央パネル専用の3分割レイアウト */
+.center-grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 横に2列 */
+  grid-template-rows: 250px 1fr;   /* 上段250px、下段は残り全部 */
+  gap: 20px;
+  height: 100%;
+}
 
+.grid-item-top-left, .grid-item-top-right, .grid-item-bottom {
+  position: relative;
+  padding: 30px 15px 15px; /* 上部にラベル用の余白 */
+  overflow: hidden;
+}
 
+.grid-item-bottom {
+  grid-column: span 2; /* 下段は2列分を結合 */
+}
 
+/* パネル内の右上のラベル */
+.panel-label {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+  opacity: 0.6;
+}
+
+.bottom-inner-flex {
+  display: flex;
+  gap: 15px;
+  height: 100%;
+  width: 100%;
+}
+
+#tv-gauge-container, #tv-calendar-container {
+  flex: 1;
+  height: 100%;
+}
 
 
 
