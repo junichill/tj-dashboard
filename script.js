@@ -397,27 +397,33 @@ async function fetchTrends() {
     if (!container) return;
 
     try {
-        // プロキシを変えて再トライ
+        // 1. 複数のプロキシを試して確実にRSSを取得する
         const RSS_URL = 'https://trends.google.co.jp/trends/trendingsearches/daily/rss?geo=JP';
-        const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
-        const data = await r.json();
+        // allorigins がダメな時のために別のプロキシ(corsproxy.io)を使用
+        const r = await fetch(`https://corsproxy.io/?${encodeURIComponent(RSS_URL)}`);
+        const text = await r.text();
         
         const parser = new DOMParser();
-        const xml = parser.parseFromString(data.contents, "application/xml");
+        const xml = parser.parseFromString(text, "application/xml");
         const items = xml.querySelectorAll('item');
         
-        trendItems = Array.from(items).map(item => item.querySelector('title').textContent);
+        // 2. トレンドワードを抽出（上位10個）
+        const fetched = Array.from(items).map(item => item.querySelector('title').textContent);
         
-        // もし取得できても空っぽだった場合の予備
-        if (trendItems.length === 0) throw new Error('Empty trends');
+        if (fetched.length > 0) {
+            trendItems = fetched;
+            console.log("Trends fetched:", trendItems);
+        } else {
+            throw new Error('No items found');
+        }
 
     } catch (e) {
-        console.warn('Trend fetch failed, using fallback words.', e);
-        // 通信エラーでもこれなら絶対出るはず！
-        trendItems = ["Market Update", "Tokyo 2026", "Breaking News", "System Active"];
+        console.warn('Google Trends fetch failed, using fallback.', e);
+        // 取得失敗時のみ表示されるダミー
+        trendItems = ["Now Tracking...", "Economic News", "Weather Alert", "System Standby"];
     }
 
-    // HTML生成
+    // 3. 画面への反映
     container.innerHTML = trendItems.map(word => `<div class="trend-word">${word}</div>`).join('');
     
     const words = container.querySelectorAll('.trend-word');
