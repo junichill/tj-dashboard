@@ -441,13 +441,13 @@ async function fetchTrends() {
 function renderTrends(container, data) {
     if (!container) return;
     
-    // 8x4グリッドで再構成
+    // 8x4グリッド設定
     container.style.display = "grid";
     container.style.gridTemplateColumns = "repeat(8, 1fr)";
     container.style.gridTemplateRows = "repeat(4, 1fr)";
     container.style.gap = "0px"; 
 
-    const backupWords = ["REALTIME", "MARKET", "GLOBAL", "SIGNAL", "INDEX", "CORE", "API", "DATA"];
+    const backupWords = ["CORE_NODE", "MARKET_IDX", "GLB_FEED", "SIG_PROC", "DATA_STREAM", "CLOUD_ARC", "API_LINK", "NET_STAT"];
     let trendData = data || [];
     const finalData = [];
     for (let i = 0; i < 8; i++) {
@@ -461,32 +461,30 @@ function renderTrends(container, data) {
         "rgba(35, 80, 160, 0.65)", "rgba(20, 30, 100, 0.6)"
     ];
 
-    // ★ 3位が正しく「4位より大きく、2位より小さい」面積を持つモザイク配置
     const layouts = [
-        "grid-area: 1 / 1 / 5 / 5;", // 1位: 4x4 (左半分)
-        "grid-area: 1 / 5 / 3 / 8;", // 2位: 3x2 (右上)
-        "grid-area: 1 / 8 / 3 / 9;", // 3位: 1x2 (右端縦)
-        "grid-area: 3 / 5 / 5 / 7;", // 4位: 2x2 (右下)
-        "grid-area: 3 / 7 / 5 / 8;", // 5位: 1x2 (小・縦長)
-        "grid-area: 3 / 8 / 5 / 9;", // 6位: 1x2 (小・右端下)
+        "grid-area: 1 / 1 / 4 / 6;", // 1位
+        "grid-area: 1 / 6 / 3 / 9;", // 2位
+        "grid-area: 3 / 6 / 5 / 8;", // 3位
+        "grid-area: 3 / 8 / 5 / 9;", // 4位
+        "grid-area: 4 / 1 / 5 / 3;", // 5位
+        "grid-area: 4 / 3 / 5 / 5;", // 6位
+        "grid-area: 4 / 5 / 5 / 6;", // 7位
     ];
 
-    for (let i = 1; i <= 6; i++) {
+    for (let i = 1; i <= 7; i++) {
         let style = layouts[i-1];
         let content = finalData[i-1];
         let bgColor = colormap[i-1];
         
-        // フォント設定：太字を排した洗練された細身スタイル
-        let fontSize = i === 1 ? "46px" : (i === 2 ? "22px" : (i === 3 ? "16px" : "12px"));
-        let fontWeight = "200"; 
-        let letterSpacing = i === 1 ? "0.1em" : "0.05em";
-        let textColor = (i >= 4) ? "rgba(0,0,0,0.7)" : "#ffffff";
+        let fontSize = i === 1 ? "44px" : (i <= 3 ? "20px" : "13px");
+        let textColor = (i >= 3 && i <= 5) ? "rgba(0,0,0,0.75)" : "#ffffff";
         
-        // 右下の数字演出（3位までに限定、サイズ感アップ）
+        // --- 右下の数字演出（3位までに限定） ---
         let valTag = "";
         if (i <= 3) {
+            // 数字を際立たせ、情報の優先順位を視覚化
             const randomVal = (Math.random() * 100).toFixed(1);
-            valTag = `<span style="position:absolute; bottom:12px; right:12px; font-size:14px; font-weight:400; font-family:monospace; opacity:0.85;">${randomVal}%</span>`;
+            valTag = `<span style="position:absolute; bottom:12px; right:12px; font-size:14px; font-weight:400; font-family:monospace; opacity:0.9;">${randomVal}%</span>`;
         }
 
         html += `<div class="trend-tile" style="${style} 
@@ -494,13 +492,17 @@ function renderTrends(container, data) {
                     border: 0.5px solid rgba(255,255,255,0.08) !important;
                     position: relative;
                     display: flex; align-items: center; justify-content: center;
-                    font-size: ${fontSize}; font-weight: ${fontWeight};
-                    letter-spacing: ${letterSpacing}; color: ${textColor}; 
-                    padding: 20px; text-align: center; text-transform: uppercase; 
+                    font-size: ${fontSize}; 
+                    font-weight: 300;
+                    letter-spacing: 0.05em;
+                    color: ${textColor}; 
+                    padding: 25px; text-align: center;
+                    text-transform: uppercase; 
                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                    overflow: hidden; cursor: pointer;"
+                    overflow: hidden;
+                    cursor: pointer;"
                     onclick="window.open('https://www.google.com/search?q=${encodeURIComponent(content)}', '_blank')">
-                    <div style="width:100%; word-wrap: break-word; line-height:1.0;">${content}</div>
+                    <div style="width:100%; word-wrap: break-word; line-height:1.1;">${content}</div>
                     ${valTag}
                  </div>`;
     }
