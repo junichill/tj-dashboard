@@ -694,3 +694,34 @@ body {
     border: none !important;
 }
 
+/* --- ヒートマップ色指定：最終整理（これをCSSの最後に貼る） --- */
+
+/* まず、すべてのタイルの基本色と枠線を設定 */
+.trend-tile {
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    transition: all 0.5s ease;
+}
+
+/* その後、特定のランクに「強い色」を上書きする */
+.trend-tile.rank-1 {
+    background-color: #00e5ff !important; /* シアン */
+    grid-column: span 3 !important;
+    grid-row: span 3 !important;
+}
+
+.trend-tile.rank-2 {
+    background-color: rgba(0, 80, 160, 0.9) !important; /* 濃い青 */
+    grid-column: span 3 !important;
+    grid-row: span 2 !important;
+}
+
+.trend-tile.rank-3 {
+    background-color: #2ecc71 !important; /* 緑 */
+    grid-column: span 3 !important;
+    grid-row: span 1 !important;
+}
+
+/* 最後に、どれにも当てはまらないものだけ薄くする */
+.trend-tile.rank-other {
+    background-color: rgba(0, 212, 255, 0.1) !important;
+}
