@@ -441,9 +441,15 @@ async function fetchTrends() {
 function renderTrends(container, data) {
     if (!container) return;
     
-    // 8パネル用の予備ワード
+    // 親コンテナのスタイルを強制上書きして隙間を消す
+    container.style.display = "grid";
+    container.style.gridTemplateColumns = "repeat(6, 1fr)";
+    container.style.gridTemplateRows = "repeat(4, 1fr)";
+    container.style.gap = "0px"; // 隙間をゼロに
+    container.style.padding = "0px";
+    container.style.overflow = "hidden";
+
     const backupWords = ["LIVE FEED", "MARKET", "GLOBAL", "SIGNAL", "INDEX", "CORE", "API", "CLOUD"];
-    
     let trendData = data || [];
     const finalData = [];
     for (let i = 0; i < 8; i++) {
@@ -452,47 +458,87 @@ function renderTrends(container, data) {
 
     let html = "";
 
-    // 青系を増やしたSpectralパレット (赤を1枚に絞り、青・緑を豊かに)
+    // 青系を増やしたSpectralパレット
     const colormap = [
-        "rgba(213, 62, 79, 0.95)",   // 1位: 赤（アクセント）
+        "rgba(213, 62, 79, 0.95)",   // 1位: 赤
         "rgba(253, 174, 97, 0.9)",   // 2位: オレンジ
-        "rgba(230, 245, 152, 0.85)", // 3位: 黄緑（明るい）
+        "rgba(230, 245, 152, 0.85)", // 3位: 黄緑
         "rgba(102, 194, 165, 0.8)",  // 4位: エメラルド
         "rgba(50, 136, 189, 0.75)",  // 5位: 青緑
         "rgba(40, 100, 170, 0.7)",   // 6位: 青
         "rgba(30, 60, 140, 0.65)",   // 7位: 深い青
-        "rgba(20, 30, 100, 0.6)"      // 8位: 紺
+        "rgba(20, 30, 100, 0.6)"     // 8位: 紺
     ];
 
     for (let i = 1; i <= 8; i++) {
         let style = "";
         let content = finalData[i-1];
         let bgColor = colormap[i-1];
-
-        // --- レイアウト設定 (8枚用のグリッド) ---
         let fontSize = "14px";
         let fontWeight = "400";
         let textColor = (i === 3 || i === 4) ? "rgba(0,0,0,0.8)" : "#fff";
 
+        // --- 隙間なく埋めるためのグリッド設計 ---
         if (i === 1) {
-            // 左上の巨大メイン
-            style = "grid-area: 1 / 1 / 4 / 5 !important;";
-            fontSize = "46px"; 
+            style = "grid-area: 1 / 1 / 5 / 4;"; // 左半分を占有
+            fontSize = "48px"; 
             fontWeight = "900";
         } else if (i === 2) {
-            // 右上のサブメイン
-            style = "grid-area: 1 / 5 / 3 / 8 !important;";
+            style = "grid-area: 1 / 4 / 3 / 7;"; // 右上
             fontSize = "28px";
             fontWeight = "800";
         } else if (i === 3) {
-            // 中段
-            style = "grid-area: 3 / 5 / 5 / 8 !important;";
-            fontSize = "20px";
+            style = "grid-area: 3 / 4 / 5 / 5;"; // 右下・左
+            fontSize = "18px";
             fontWeight = "700";
-        } else {
-            // 下段の小パネルたち
-            fontSize = "13px";
+        } else if (i === 4) {
+            style = "grid-area: 3 / 5 / 5 / 6;"; // 右下・中
+            fontSize = "18px";
+        } else if (i === 5) {
+            style = "grid-area: 3 / 6 / 5 / 7;"; // 右下・右
+            fontSize = "18px";
+        } else if (i === 6) {
+            style = "grid-area: 5 / 1 / 5 / 3;"; // ※もしコンテナがもっと縦長なら使うが、
+            // 今回は4x6グリッドに収めるため、余った3つを動的に配置
+            style = "grid-area: 4 / 4 / 5 / 5;"; // 重なりを避けるため微調整
         }
+        
+        // 8枚を確実に6x4の中に配置する座標指定
+        const layouts = [
+            "grid-area: 1 / 1 / 5 / 4;", // 1
+            "grid-area: 1 / 4 / 3 / 7;", // 2
+            "grid-area: 3 / 4 / 4 / 6;", // 3
+            "grid-area: 3 / 6 / 4 / 7;", // 4
+            "grid-area: 4 / 4 / 5 / 5;", // 5
+            "grid-area: 4 / 5 / 5 / 6;", // 6
+            "grid-area: 4 / 6 / 5 / 7;", // 7
+            "grid-area: 3 / 1 / 3 / 1;"  // 8枚目を隠さないよう2の一部を削るなど調整が必要
+        ];
+        
+        // シンプルに8枚をタイル状に埋める決定版レイアウト
+        const tightLayout = [
+            "grid-area: 1 / 1 / 5 / 4;", // 1: 左巨大
+            "grid-area: 1 / 4 / 3 / 7;", // 2: 右上
+            "grid-area: 3 / 4 / 4 / 7;", // 3: 右中横長
+            "grid-area: 4 / 4 / 5 / 5;", // 4: 右下1
+            "grid-area: 4 / 5 / 5 / 6;", // 5: 右下2
+            "grid-area: 4 / 6 / 5 / 7;", // 6: 右下3
+            "grid-area: 1 / 1 / 1 / 1;", // (ダミー)
+            "grid-area: 1 / 1 / 1 / 1;"  // (ダミー)
+        ];
+        // 実際には8枚を以下の構成で配置します
+        const finalLayouts = [
+            "grid-area: 1 / 1 / 5 / 4;", // 1位 (巨大)
+            "grid-area: 1 / 4 / 3 / 6;", // 2位
+            "grid-area: 1 / 6 / 3 / 7;", // 3位
+            "grid-area: 3 / 4 / 4 / 6;", // 4位
+            "grid-area: 3 / 6 / 4 / 7;", // 5位
+            "grid-area: 4 / 4 / 5 / 5;", // 6位
+            "grid-area: 4 / 5 / 5 / 6;", // 7位
+            "grid-area: 4 / 6 / 5 / 7;"  // 8位
+        ];
+
+        style = finalLayouts[i-1];
 
         const maxLen = i === 1 ? 20 : i <= 3 ? 15 : 10;
         if (content.length > maxLen) {
@@ -501,18 +547,16 @@ function renderTrends(container, data) {
 
         html += `<div class="trend-tile" style="${style} 
                     background-color: ${bgColor} !important;
-                    border: 1px solid rgba(255,255,255,0.1) !important;
+                    border: 0.5px solid rgba(255,255,255,0.1) !important;
                     display: flex; align-items: center; justify-content: center;
                     font-size: ${fontSize}; font-weight: ${fontWeight};
                     color: ${textColor}; 
-                    overflow: hidden; text-align: center;
-                    padding: 15px; box-sizing: border-box;
-                    backdrop-filter: blur(8px);
+                    text-align: center;
+                    padding: 10px; box-sizing: border-box;
                     text-transform: uppercase;">
                     ${content}
                  </div>`;
     }
-
     container.innerHTML = html;
 }
 
