@@ -441,8 +441,7 @@ async function fetchTrends() {
 function renderTrends(container, data) {
     if (!container) return;
     
-    // 空白を埋めるための力強いキーワード
-    const backupWords = ["HOT TOPIC", "BREAKING", "MARKET", "TECH", "GLOBAL", "ECO", "SIGNAL", "TREND", "STARTUP", "CRYPTO", "VENTURE", "FUTURE"];
+    const backupWords = ["REALTIME", "HOT DATA", "MARKET", "TECH", "GLOBAL", "SIGNAL", "TREND", "ANALYSIS", "SYSTEM", "CORE", "API", "CLOUD"];
     
     let trendData = data || [];
     const finalData = [];
@@ -452,21 +451,21 @@ function renderTrends(container, data) {
 
     let html = "";
 
-    // MatplotlibのInferno/Magmaにインスパイアされた暖色系パレット
-    // 1位: 鮮やかなオレンジ（発光）→ 下位: 深い紫・黒へ
+    // 1位を最も濃い「鮮血のような赤」にし、徐々に「深い紫」へ
+    // 色の差を小さくし、隣り合うタイルの違和感を排除
     const colormap = [
-        "rgba(252, 191, 73, 0.95)",  // 1位: 明るいオレンジ（最も熱い）
-        "rgba(247, 127, 0, 0.9)",   // 2位: オレンジ
-        "rgba(214, 40, 40, 0.85)",  // 3位: レッド
-        "rgba(150, 0, 50, 0.8)",    // 4位: 深い赤
-        "rgba(100, 0, 70, 0.75)",   // 5位: 赤紫
-        "rgba(80, 0, 80, 0.7)",     // 6位: 紫
-        "rgba(60, 0, 80, 0.65)",    // 7位
-        "rgba(40, 0, 60, 0.6)",     // 8位
-        "rgba(20, 0, 40, 0.55)",    // 9位
-        "rgba(10, 0, 30, 0.5)",     // 10位
-        "rgba(5, 0, 20, 0.45)",     // 11位
-        "rgba(0, 0, 10, 0.4)"       // 12位
+        "rgba(200, 0, 0, 0.95)",    // 1位: 鮮やかな深紅
+        "rgba(180, 0, 20, 0.9)",    // 2位
+        "rgba(160, 0, 40, 0.85)",   // 3位
+        "rgba(140, 0, 50, 0.8)",    // 4位
+        "rgba(120, 0, 60, 0.75)",   // 5位
+        "rgba(100, 0, 70, 0.7)",    // 6位
+        "rgba(85, 0, 75, 0.65)",    // 7位
+        "rgba(70, 0, 80, 0.6)",     // 8位
+        "rgba(55, 0, 75, 0.55)",    // 9位
+        "rgba(40, 0, 70, 0.5)",     // 10位
+        "rgba(30, 0, 60, 0.45)",    // 11位
+        "rgba(20, 0, 50, 0.4)"      // 12位
     ];
 
     for (let i = 1; i <= 12; i++) {
@@ -474,19 +473,17 @@ function renderTrends(container, data) {
         let content = finalData[i-1];
         let bgColor = colormap[i-1];
 
-        // --- レイアウトとフォント設定 ---
+        // --- フォント設定 ---
         let fontSize = "11px";
         let fontWeight = "400";
-        let textColor = "#fff";
 
         if (i === 1) {
             style = "grid-area: 1 / 1 / 4 / 4 !important;";
-            fontSize = "42px"; // さらに大きく！
+            fontSize = "40px"; // 巨大
             fontWeight = "900";
-            textColor = "#000"; // 1位は明るい背景なので黒文字で引き締める
         } else if (i === 2) {
             style = "grid-area: 1 / 4 / 3 / 7 !important;";
-            fontSize = "26px";
+            fontSize = "24px";
             fontWeight = "800";
         } else if (i === 3) {
             style = "grid-area: 4 / 1 / 5 / 4 !important;";
@@ -494,30 +491,29 @@ function renderTrends(container, data) {
             fontWeight = "700";
         }
 
-        const maxLen = i === 1 ? 25 : i <= 3 ? 15 : 12;
+        const maxLen = i === 1 ? 22 : i <= 3 ? 15 : 12;
         if (content.length > maxLen) {
             content = content.substring(0, maxLen) + "..";
         }
 
         html += `<div class="trend-tile" style="${style} 
                     background-color: ${bgColor} !important;
-                    border: 1px solid rgba(255,255,255,0.15) !important;
+                    border: 1px solid rgba(255,255,255,0.1) !important;
                     display: flex; align-items: center; justify-content: center;
                     font-size: ${fontSize}; font-weight: ${fontWeight};
-                    color: ${textColor}; 
+                    color: white; 
                     overflow: hidden; text-align: center;
                     padding: 12px; box-sizing: border-box;
-                    backdrop-filter: blur(4px);
-                    box-shadow: inset 0 0 40px rgba(0,0,0,0.1);
+                    backdrop-filter: blur(5px);
                     text-transform: uppercase;
-                    letter-spacing: -0.02em;">
+                    letter-spacing: -0.03em;">
                     ${content}
                  </div>`;
     }
 
     container.innerHTML = html;
 }
-  
+
 function startHeatmapCycle() {
     if (window.trendTimer) clearInterval(window.trendTimer);
 
