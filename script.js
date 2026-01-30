@@ -449,17 +449,15 @@ async function fetchTrends() {
 function renderTrends(container) {
     if (!trendItems || trendItems.length === 0) return;
 
-    // トレンドの数だけタイルを作成（上位8個程度）
-    const displayCount = 8;
-    let tilesHtml = '';
-    
-    for (let i = 0; i < displayCount; i++) {
-        tilesHtml += `<div class="trend-tile"></div>`;
+    // 上記CSSで定義した1〜10個程度の枠を生成
+    // 画像のように「隙間なく埋める」ために数を固定します
+    const tileCount = 12; 
+    let html = "";
+    for(let i=0; i<tileCount; i++) {
+        html += `<div class="trend-tile"></div>`;
     }
+    container.innerHTML = html;
     
-    container.innerHTML = tilesHtml;
-    
-    // サイクル開始
     startHeatmapCycle();
 }
 
