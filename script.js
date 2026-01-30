@@ -441,13 +441,12 @@ async function fetchTrends() {
 function renderTrends(container, data) {
     if (!container) return;
     
-    // レイアウト設定（隙間ゼロ・8x4グリッド）
     container.style.display = "grid";
     container.style.gridTemplateColumns = "repeat(8, 1fr)";
     container.style.gridTemplateRows = "repeat(4, 1fr)";
     container.style.gap = "0px"; 
 
-    const backupWords = ["REALTIME", "MARKET", "GLOBAL", "SIGNAL", "INDEX", "CORE", "API", "DATA"];
+    const backupWords = ["CORE_NODE", "MARKET_IDX", "GLB_FEED", "SIG_PROC", "DATA_STREAM", "CLOUD_ARC", "API_LINK", "NET_STAT"];
     let trendData = data || [];
     const finalData = [];
     for (let i = 0; i < 8; i++) {
@@ -455,22 +454,20 @@ function renderTrends(container, data) {
     }
 
     let html = "";
-
-    // 青系重視の洗練されたパレット
     const colormap = [
-        "rgba(213, 62, 79, 0.95)", "rgba(253, 174, 97, 0.9)", "rgba(254, 224, 139, 0.85)",
+        "rgba(213, 62, 79, 0.95)", "rgba(244, 109, 67, 0.9)", "rgba(253, 174, 97, 0.85)",
         "rgba(171, 221, 164, 0.8)", "rgba(102, 194, 165, 0.75)", "rgba(50, 136, 189, 0.7)",
         "rgba(35, 80, 160, 0.65)", "rgba(20, 30, 100, 0.6)"
     ];
 
     const layouts = [
-        "grid-area: 1 / 1 / 4 / 6;", // 1位
-        "grid-area: 1 / 6 / 3 / 9;", // 2位
-        "grid-area: 3 / 6 / 5 / 8;", // 3位
-        "grid-area: 3 / 8 / 5 / 9;", // 4位
-        "grid-area: 4 / 1 / 5 / 3;", // 5位
-        "grid-area: 4 / 3 / 5 / 5;", // 6位
-        "grid-area: 4 / 5 / 5 / 6;", // 7位
+        "grid-area: 1 / 1 / 4 / 6;", 
+        "grid-area: 1 / 6 / 3 / 9;", 
+        "grid-area: 3 / 6 / 5 / 8;", 
+        "grid-area: 3 / 8 / 5 / 9;", 
+        "grid-area: 4 / 1 / 5 / 3;", 
+        "grid-area: 4 / 3 / 5 / 5;", 
+        "grid-area: 4 / 5 / 5 / 6;", 
     ];
 
     for (let i = 1; i <= 7; i++) {
@@ -478,25 +475,31 @@ function renderTrends(container, data) {
         let content = finalData[i-1];
         let bgColor = colormap[i-1];
         
-        // --- 洗練されたタイポグラフィ設定 ---
-        let fontSize = i === 1 ? "48px" : (i <= 3 ? "20px" : "12px");
-        let fontWeight = "200"; // ★ 極細に設定
-        let letterSpacing = i === 1 ? "0.15em" : "0.1em"; // ★ 字間を広げて高級感を出す
-        let textColor = (i >= 3 && i <= 5) ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.9)";
+        // --- テック系タイポグラフィの再定義 ---
+        let fontSize = i === 1 ? "42px" : (i <= 3 ? "18px" : "11px");
+        let textColor = (i >= 3 && i <= 5) ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,1)";
+        
+        // 1位にはランク番号を添えて情報の密度を上げる
+        const rankTag = `<span style="position:absolute; top:8px; left:10px; font-size:10px; opacity:0.6; letter-spacing:0.2em;">RANK_0${i}</span>`;
+        // ランダムな数値をシミュレートして「動いている感」を出す
+        const valTag = `<span style="position:absolute; bottom:8px; right:10px; font-size:9px; opacity:0.5; font-family:monospace;">${(Math.random()*100).toFixed(2)}%</span>`;
 
         html += `<div class="trend-tile" style="${style} 
                     background-color: ${bgColor} !important;
-                    border: 0.1px solid rgba(255,255,255,0.05) !important;
-                    display: flex; align-items: center; justify-content: center;
+                    border: 0.5px solid rgba(255,255,255,0.1) !important;
+                    position: relative;
+                    display: flex; flex-direction: column; align-items: center; justify-content: center;
                     font-size: ${fontSize}; 
-                    font-weight: ${fontWeight};
-                    letter-spacing: ${letterSpacing};
+                    font-weight: 300;
+                    letter-spacing: 0.05em;
                     color: ${textColor}; 
                     padding: 20px; text-align: center;
                     text-transform: uppercase; 
-                    font-family: 'Helvetica Neue', Arial, sans-serif;
+                    font-family: 'Courier New', Courier, monospace; /* ★ 等幅フォントでテック感を出す */
                     overflow: hidden;">
-                    ${content}
+                    ${rankTag}
+                    <div style="width:100%; word-wrap: break-word;">${content}</div>
+                    ${valTag}
                  </div>`;
     }
     container.innerHTML = html;
