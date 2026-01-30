@@ -583,124 +583,70 @@ body {
 .weather-data-line .sep { color: rgba(255, 255, 255, 0.1); margin: 0 2px; }
 
 
-/* トレンドワード専用の配置設定 */
+/* ヒートマップ・コンテナの強制上書き */
 #trend-fixed-content {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-}
-
-.trend-word::before {
-    content: "# "; /* ワードの前にハッシュタグを強制付与 */
-    color: #1DA1F2; /* X（旧Twitter）のブランドカラー */
-    font-size: 0.8em;
-    margin-right: 5px;
-}
-
-.trend-word {
-    /* フォントをよりSNSっぽくモダンに */
-    font-family: 'Inter', 'Segoe UI', sans-serif;
-    letter-spacing: -1px;
-    /* ...既存の centering/particle 設定... */
-}
-
-.trend-word.active {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-/* 天気パネルと共通の粒子消去エフェクト */
-.trend-word.exit {
-    animation: particle-dissolve 3.5s forwards ease-out;
-    opacity: 1;
-}
-
-/* ラベルのスタイル（もし既にあれば不要です） */
-.card-label {
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 14px;
-    opacity: 0.6;
-    letter-spacing: 2px;
-}
-
-/* FOREX 縦スライド設定 */
-#forex-viewport-v {
-  width: 100%;
-  height: 155px; /* 親の mini-widget-fixed と合わせる */
-  overflow: hidden;
-  position: relative;
-}
-
-#forex-wrapper-v {
-  display: flex;
-  flex-direction: column; /* 縦並びに変更 */
-  width: 100%;
-  height: 300%; /* 3枚分 */
-  transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1); /* スタイリッシュな緩急 */
-}
-
-.forex-slide-v {
-  width: 100%;
-  height: 155px; /* 1枚の高さ */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* ヒートマップ・コンテナ */
-#trend-fixed-content {
-    display: grid !important; /* 強制的にグリッド化 */
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    gap: 8px;
-    padding: 10px;
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-    align-items: stretch !important; /* 中央寄せを解除 */
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    grid-template-rows: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    padding: 10px !important;
+    width: 100% !important;
+    height: 100% !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    /* 以前の中央寄せを解除 */
     justify-content: stretch !important;
+    align-items: stretch !important;
 }
 
-/* 各タイル（株価ヒートマップ風） */
+/* 各タイル：株価ヒートマップ風の枠と背景 */
 .trend-tile {
-    position: relative;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    transition: all 0.5s ease;
-    overflow: hidden;
-    /* 以前の absolute 設定などを無効化 */
+    position: relative !important;
+    background: rgba(0, 212, 255, 0.1) !important; /* 基本の色 */
+    border: 1px solid rgba(0, 212, 255, 0.4) !important; /* 枠線 */
+    border-radius: 4px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    overflow: hidden !important;
+    /* 以前の absolute 設定を無効化 */
     top: auto !important;
     left: auto !important;
     transform: none !important;
+    opacity: 1;
 }
 
-/* 1位と2位を大きく目立たせる（ヒートマップの重み付け） */
-.trend-tile:nth-child(1) { grid-column: span 2; grid-row: span 2; background: rgba(0, 212, 255, 0.15); border-color: var(--accent); }
-.trend-tile:nth-child(2) { grid-column: span 2; background: rgba(0, 212, 255, 0.1); }
+/* 注目度が高いタイルの色付け（ヒートマップの重み付け） */
+.trend-tile:nth-child(1) { 
+    grid-column: span 2; 
+    grid-row: span 2; 
+    background: rgba(0, 212, 255, 0.3) !important; /* 1位は濃く */
+    border: 2px solid #00d4ff !important;
+}
+.trend-tile:nth-child(2) { 
+    grid-column: span 2; 
+    background: rgba(0, 212, 255, 0.2) !important;
+}
 
-.tile-rank { font-size: 0.7rem; color: var(--accent); font-weight: 900; margin-bottom: 2px; }
-.tile-word { 
-    font-size: clamp(0.9rem, 1.5vw, 1.4rem); 
-    font-weight: 900; 
-    color: #fff;
+/* タイル内の文字 */
+.tile-rank {
+    font-size: 0.7rem;
+    color: #00d4ff;
+    font-weight: 900;
+    margin-bottom: 2px;
+}
+.tile-word {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: white;
     text-align: center;
-    padding: 0 5px;
+    padding: 4px;
+    word-break: break-all;
 }
 
-/* 粒子エフェクト用 */
+/* 粒子エフェクト実行中 */
 .trend-tile.exit {
-    animation: particle-dissolve 3.5s forwards ease-out;
+    animation: particle-dissolve 3.5s forwards ease-out !important;
     pointer-events: none;
 }
