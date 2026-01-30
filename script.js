@@ -484,9 +484,9 @@ function renderTrends(container, data) {
         let fontSize = i === 1 ? "44px" : (i <= 3 ? "20px" : "13px");
         let textColor = (i >= 3 && i <= 5) ? "rgba(0,0,0,0.75)" : "#ffffff";
         
-        // --- 右下の数字演出（3位までに限定） ---
+        // --- 右下の数字演出（1位と2位のみに限定） ---
         let valTag = "";
-        if (i <= 3) {
+        if (i <= 2) {
             const randomVal = (Math.random() * 100).toFixed(1);
             valTag = `<span style="position:absolute; bottom:12px; right:12px; font-size:14px; font-weight:400; font-family:monospace; opacity:0.9;">${randomVal}%</span>`;
         }
