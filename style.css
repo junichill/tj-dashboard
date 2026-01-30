@@ -583,24 +583,15 @@ body {
 .weather-data-line .sep { color: rgba(255, 255, 255, 0.1); margin: 0 2px; }
 
 
-/* ヒートマップの親のフィルターを無効化して中身を露出させる */
 .grid-item-tr {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    background: rgba(0,0,0,0.3) !important;
-    z-index: 10 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    display: block !important;
 }
 
 #trend-fixed-content {
-    display: grid !important;
-    /* 6列×4行の細かい網目を作る */
-    grid-template-columns: repeat(6, 1fr) !important;
-    grid-template-rows: repeat(4, 1fr) !important;
-    gap: 2px !important; /* 画像のような細い境界線 */
-    padding: 4px !important;
-    width: 100% !important;
-    height: 100% !important;
-    box-sizing: border-box !important;
+    /* JSで指定するので最小限でOK */
+    overflow: hidden;
 }
 
 /* タイルの基本：画像のような「枠線」と「透過」 */
@@ -711,5 +702,6 @@ body {
     outline: 1px solid yellow !important; /* タイルを黄枠で示す */
     min-height: 20px !important;
 }
+
 
 
