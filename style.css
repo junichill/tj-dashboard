@@ -583,20 +583,21 @@ body {
 .weather-data-line .sep { color: rgba(255, 255, 255, 0.1); margin: 0 2px; }
 
 
-/* ヒートマップ・コンテナの強制上書き */
+.grid-item-tr {
+    display: flex;
+    flex-direction: column;
+    padding: 0 !important; /* パディングをゼロにして、ヒートマップを端まで広げる */
+}
+
 #trend-fixed-content {
+    width: 100% !important;
+    height: 100% !important;
     display: grid !important;
     grid-template-columns: repeat(4, 1fr) !important;
     grid-template-rows: repeat(2, 1fr) !important;
-    gap: 8px !important;
-    padding: 10px !important;
-    width: 100% !important;
-    height: 100% !important;
+    gap: 5px !important; /* 隙間を少しタイトに */
+    padding: 8px !important; /* 外枠との微細な余白 */
     box-sizing: border-box !important;
-    position: relative !important;
-    /* 以前の中央寄せを解除 */
-    justify-content: stretch !important;
-    align-items: stretch !important;
 }
 
 /* ヒートマップ内の文字を完全に非表示 */
@@ -653,4 +654,5 @@ body {
     animation: particle-dissolve 3.5s forwards ease-out !important;
     pointer-events: none;
 }
+
 
