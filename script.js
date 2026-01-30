@@ -485,27 +485,6 @@ function startHeatmapCycle() {
     }, 20000); // ヒートマップは情報量が多いので、少し長めの20秒間隔
 }
 
-function startTrendCycle() {
-    if (window.trendTimer) clearInterval(window.trendTimer);
-
-    window.trendTimer = setInterval(() => {
-        const words = document.querySelectorAll('.trend-word');
-        if (words.length < 2) return;
-
-        // 1. 今のワードを粒子で消す
-        words[trendIndex].classList.remove('active');
-        words[trendIndex].classList.add('exit');
-
-        // 2. 消え際（3.5s）＋ 余韻（2s）を待ってから次を表示
-        setTimeout(() => {
-            words[trendIndex].classList.remove('exit');
-            trendIndex = (trendIndex + 1) % words.length;
-            words[trendIndex].classList.add('active');
-        }, 5500); // 天気パネルのwaitTimeと合わせる
-
-    }, 12000); // 12秒ごとに次のワードへ
-}
-
 // 起動時に実行
 fetchTrends();
 // 1時間ごとに最新トレンドに更新
