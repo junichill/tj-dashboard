@@ -449,15 +449,22 @@ async function fetchTrends() {
 function renderTrends(container) {
     if (!trendItems || trendItems.length === 0) return;
 
-    // 上記CSSで定義した1〜10個程度の枠を生成
-    // 画像のように「隙間なく埋める」ために数を固定します
-    const tileCount = 12; 
+    // 画像のレイアウトを埋めるための構成
+    // 1(特大), 2(大), 3(横長緑), 残り(小)
     let html = "";
-    for(let i=0; i<tileCount; i++) {
-        html += `<div class="trend-tile"></div>`;
+    
+    for (let i = 1; i <= 12; i++) {
+        let rankClass = "rank-other";
+        if (i === 1) rankClass = "rank-1";
+        if (i === 2) rankClass = "rank-2";
+        if (i === 3) rankClass = "rank-3";
+        
+        html += `<div class="trend-tile ${rankClass}"></div>`;
     }
+    
     container.innerHTML = html;
     
+    // 既存の1つずつ回すタイマーを止めてヒートマップ用に
     startHeatmapCycle();
 }
 
