@@ -396,38 +396,53 @@ async function fetchTrends() {
     const container = document.getElementById('trend-fixed-content');
     if (!container) return;
 
-    // 最新のトレンドRSS URL候補（geo=JPを末尾にしっかり付ける）
-    const GOOGLE_TRENDS_RSS = 'https://trends.google.co.jp/trending/rss?geo=JP';
-    const HATENA_HOTENTRY = 'https://b.hatena.ne.jp/hotentry.rss'; // SNSでバズっている話題の宝庫
+    // 複数のデータソースとプロキシの組み合わせ
+    const sources = [
+        `https://corsproxy.io/?${encodeURIComponent('https://trends.google.co.jp/trending/rss?geo=JP')}`,
+        `https://api.allorigins.win/get?url=${encodeURIComponent('https://b.hatena.ne.jp/hotentry.rss')}`
+    ];
 
-    try {
-        // 1. まずGoogleトレンドの新URLを試す
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(GOOGLE_TRENDS_RSS)}`;
-        const r = await fetch(proxyUrl);
-        const data = await r.json();
-        
-        const parser = new DOMParser();
-        const xml = parser.parseFromString(data.contents, "application/xml");
-        const items = xml.querySelectorAll('item');
+    for (const url of sources) {
+        try {
+            const r = await fetch(url);
+            let xmlText = "";
 
-        if (items.length > 0) {
-            trendItems = Array.from(items).map(item => item.querySelector('title').textContent);
-        } else {
-            // 2. Googleが404や空なら、SNSのバズ（はてブ）を拾う
-            console.log("Switching to Hatena Trends...");
-            const r2 = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(HATENA_HOTENTRY)}`);
-            const data2 = await r2.json();
-            const xml2 = parser.parseFromString(data2.contents, "application/xml");
-            const items2 = xml2.querySelectorAll('item');
-            trendItems = Array.from(items2).map(item => item.querySelector('title').textContent.substring(0, 20));
+            if (url.includes('allorigins')) {
+                const data = await r.json();
+                xmlText = data.contents;
+            } else {
+                xmlText = await r.text();
+            }
+
+            const parser = new DOMParser();
+            const xml = parser.parseFromString(xmlText, "application/xml");
+            const items = xml.querySelectorAll('item');
+
+            if (items.length > 0) {
+                // 成功したら trendItems を更新してループを抜ける
+                trendItems = Array.from(items).map(item => {
+                    const title = item.querySelector('title').textContent;
+                    // 余計な新聞社名などを削ってスマートに
+                    return title.split(' - ')[0].replace(/#|＃/g, '').substring(0, 15);
+                });
+                console.log("Real-time trends loaded from:", url);
+                break; 
+            }
+        } catch (e) {
+            console.warn(`Attempt failed for ${url}:`, e);
+            // 次のソースを試す
         }
-
-    } catch (e) {
-        console.warn('Fetch failed', e);
-        trendItems = ["#推しの子", "円安ドル高", "新作AI", "地震速報", "iPhone17", "Amazonセール"];
     }
 
-    // 画面反映（粒子エフェクト用の構造を維持）
+    // 描画処理
+    renderTrends(container);
+}
+
+function renderTrends(container) {
+    if (!trendItems || trendItems.length === 0) {
+        trendItems = ["Now Loading...", "Connecting Service"];
+    }
+
     container.innerHTML = trendItems.map(word => `<div class="trend-word">${word}</div>`).join('');
     
     const words = container.querySelectorAll('.trend-word');
@@ -438,6 +453,7 @@ async function fetchTrends() {
         startTrendCycle();
     }
 }
+
 
 function startTrendCycle() {
     if (window.trendTimer) clearInterval(window.trendTimer);
