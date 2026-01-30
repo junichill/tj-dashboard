@@ -449,18 +449,17 @@ async function fetchTrends() {
 function renderTrends(container) {
     if (!trendItems || trendItems.length === 0) return;
 
-    // 上位6個のトレンドを使用
-    const displayItems = trendItems.slice(0, 6);
+    // トレンドの数だけタイルを作成（上位8個程度）
+    const displayCount = 8;
+    let tilesHtml = '';
     
-    // 中身をタイル構造で生成
-    container.innerHTML = displayItems.map((word, i) => `
-        <div class="trend-tile">
-            <div class="tile-rank">#${i + 1}</div>
-            <div class="tile-word">${word}</div>
-        </div>
-    `).join('');
+    for (let i = 0; i < displayCount; i++) {
+        tilesHtml += `<div class="trend-tile"></div>`;
+    }
     
-    // ヒートマップ用の更新タイマーを始動
+    container.innerHTML = tilesHtml;
+    
+    // サイクル開始
     startHeatmapCycle();
 }
 
