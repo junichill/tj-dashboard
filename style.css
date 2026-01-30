@@ -738,3 +738,44 @@ body {
 .trend-tile.rank-other {
     background-color: rgba(0, 212, 255, 0.1) !important;
 }
+
+/* --- 強制色上書き：これで色が乗らない場合はJS側のクラス名ミスです --- */
+
+/* タイル全体の基本設定（枠線が見えるようにする） */
+#trend-fixed-content .trend-tile {
+    border: 1px solid rgba(0, 212, 255, 0.5) !important;
+    min-width: 1px;
+    min-height: 1px;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* 1位：特大シアン（左上） */
+#trend-fixed-content .trend-tile.rank-1 {
+    background-color: #00e5ff !important;
+    grid-column: span 3 !important;
+    grid-row: span 3 !important;
+    box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.5) !important;
+    z-index: 10;
+}
+
+/* 2位：濃い青（右上） */
+#trend-fixed-content .trend-tile.rank-2 {
+    background-color: rgba(0, 80, 160, 1) !important; /* 透過を一旦やめて1に */
+    grid-column: span 3 !important;
+    grid-row: span 2 !important;
+    z-index: 9;
+}
+
+/* 3位：緑（左下） */
+#trend-fixed-content .trend-tile.rank-3 {
+    background-color: #2ecc71 !important;
+    grid-column: span 3 !important;
+    grid-row: span 1 !important;
+    z-index: 8;
+}
+
+/* 4位以降：細かいタイル */
+#trend-fixed-content .trend-tile.rank-other {
+    background-color: rgba(0, 212, 255, 0.15) !important;
+}
