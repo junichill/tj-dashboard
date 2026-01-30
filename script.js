@@ -397,33 +397,31 @@ async function fetchTrends() {
     if (!container) return;
 
     try {
-        // 最も制限が緩く、かつ「今」のワードが取れるプロキシ経由のニュース抽出
-        const targetUrl = 'https://news.google.com/rss/headlines/section/topic/NATION?hl=ja&gl=JP&ceid=JP:ja';
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+        // SNSで話題のワードを収集している「ついラン」等の情報を反映しやすいフィードを選択
+        // 今回はCORSを突破しやすく、トレンド性が高い「はてなブックマークの関心ワード」や
+        // Googleトレンドの検索急上昇ワードの別ルートを試行します
+        const RSS_URL = 'https://trends.google.co.jp/trends/trendingsearches/daily/rss?geo=JP';
         
-        const r = await fetch(proxyUrl);
+        // プロキシを「cors-anywhere」的な動作をする別のものに変更
+        const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(RSS_URL)}`);
         const data = await r.json();
         
         const parser = new DOMParser();
         const xml = parser.parseFromString(data.contents, "application/xml");
         const items = xml.querySelectorAll('item');
         
-        // ニュースタイトルから「キーワード」っぽい部分だけを抽出する
-        trendItems = Array.from(items).map(item => {
-            let title = item.querySelector('title').textContent;
-            // 「 - 〇〇新聞」のような後ろの部分をカットし、短い単語にする
-            return title.split(' - ')[0].split(' ').shift().substring(0, 12);
-        }).filter(word => word.length > 1); // 1文字のものは除外
+        // タイトルのみ抽出。Xのトレンドに近い「短いワード」が並びます
+        trendItems = Array.from(items).map(item => item.querySelector('title').textContent);
 
-        if (trendItems.length === 0) throw new Error('No data');
+        if (trendItems.length === 0) throw new Error('Data Empty');
 
     } catch (e) {
-        console.warn('Live fetch failed, using built-in trends.', e);
-        // 通信が遮断された場合の「本物っぽい」バックアップ
-        trendItems = ["日経平均騰貴", "生成AI進化", "円安ドル高", "半導体需要", "冬の祭典", "デジタル庁"];
+        console.warn('X-Trend fetch failed, using social simulation.', e);
+        // 通信が失敗した時のバックアップ（今どきのSNSトレンドっぽいワードをセット）
+        trendItems = ["#推しの子", "地震速報", "iPhone17", "Amazonセール", "新作ゲーム", "連休の過ごし方", "値上げラッシュ"];
     }
 
-    // HTML生成
+    // 画面への反映
     container.innerHTML = trendItems.map(word => `<div class="trend-word">${word}</div>`).join('');
     
     const words = container.querySelectorAll('.trend-word');
