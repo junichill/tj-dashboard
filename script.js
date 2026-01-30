@@ -448,20 +448,42 @@ async function fetchTrends() {
 
 function renderTrends(container) {
     if (!trendItems || trendItems.length === 0) {
-        trendItems = ["Now Loading...", "Connecting Service"];
+        trendItems = ["Ready", "Syncing", "Fetching", "Data"];
     }
 
-    container.innerHTML = trendItems.map(word => `<div class="trend-word">${word}</div>`).join('');
+    // 上位8件を抽出してヒートマップ化
+    const displayItems = trendItems.slice(0, 8);
     
-    const words = container.querySelectorAll('.trend-word');
-    if (words.length > 0) {
-        trendIndex = 0;
-        words.forEach(w => w.classList.remove('active', 'exit'));
-        words[0].classList.add('active');
-        startTrendCycle();
-    }
+    container.innerHTML = displayItems.map((word, i) => {
+        const rankClass = i < 2 ? 'rank-high' : (i < 5 ? 'rank-mid' : '');
+        return `
+            <div class="trend-tile ${rankClass}">
+                <div class="tile-rank">RANK ${i + 1}</div>
+                <div class="tile-word">${word}</div>
+            </div>
+        `;
+    }).join('');
+    
+    // 全体を一斉に粒子化させるための管理
+    startHeatmapCycle();
 }
 
+function startHeatmapCycle() {
+    if (window.trendTimer) clearInterval(window.trendTimer);
+
+    window.trendTimer = setInterval(() => {
+        const tiles = document.querySelectorAll('.trend-tile');
+        
+        // 1. 全タイルを一斉に粒子化して消す
+        tiles.forEach(tile => tile.classList.add('exit'));
+
+        // 2. 5.5秒後にデータを更新（再取得はfetchTrendsで行われる）
+        setTimeout(() => {
+            fetchTrends(); // 新しいデータを取得して再描画
+        }, 5500);
+
+    }, 20000); // ヒートマップは情報量が多いので、少し長めの20秒間隔
+}
 
 function startTrendCycle() {
     if (window.trendTimer) clearInterval(window.trendTimer);
