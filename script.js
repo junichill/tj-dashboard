@@ -506,3 +506,19 @@ function startHeatmapCycle() {
 fetchTrends();
 // 1時間ごとに最新トレンドに更新
 setInterval(fetchTrends, 3600000);
+
+/* デバッグ：存在確認用 */
+#trend-fixed-content {
+    outline: 5px solid red !important; /* コンテナの場所を赤枠で示す */
+    min-height: 300px !important;    /* 高さを強制確保 */
+    z-index: 9999 !important;        /* 最前面へ */
+    display: grid !important;
+    position: relative !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.trend-tile {
+    outline: 1px solid yellow !important; /* タイルを黄枠で示す */
+    min-height: 20px !important;
+}
