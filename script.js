@@ -208,34 +208,41 @@ async function fetchWeather() {
   } catch (err) { console.error('Weather/Market Fetch Error:', err); }
 }
 
+let forexVIndex = 0;
+
 function initTradingViewWidgets() {
     const conf = { "width": "100%", "height": 155, "locale": "ja", "dateRange": "1D", "colorTheme": "dark", "isTransparent": true, "interval": "5" };
-    appendMiniWidget("tv-usd-jpy-fixed", { ...conf, "symbol": "FX:USDJPY" });
+    
+    // スライド用3通貨（IDを変更）
+    appendMiniWidget("slide-usd-jpy", { ...conf, "symbol": "FX:USDJPY" });
+    appendMiniWidget("slide-eur-jpy", { ...conf, "symbol": "FX:EURJPY" });
+    appendMiniWidget("slide-eur-usd", { ...conf, "symbol": "FX:EURUSD" });
+
+    // 固定2指標（元のまま）
     appendMiniWidget("tv-n225-fixed",    { ...conf, "symbol": "OSE:NK2251!" });
     appendMiniWidget("tv-nasdaq-fixed",  { ...conf, "symbol": "CAPITALCOM:US100" });
+
+    // その他中央パネル用
     appendMiniWidget("tv-sp500",   { ...conf, "symbol": "CAPITALCOM:US500" });
     appendMiniWidget("tv-gold",    { ...conf, "symbol": "TVC:GOLD" });
     appendMiniWidget("tv-oil",     { ...conf, "symbol": "CAPITALCOM:OIL_CRUDE" });
     appendMiniWidget("tv-eur-jpy", { ...conf, "symbol": "FX:EURJPY" });
     appendMiniWidget("tv-eur-usd", { ...conf, "symbol": "FX:EURUSD" });
 
-    const calendarContainer = document.getElementById("tv-economic-calendar");
-    if (calendarContainer) {
-        calendarContainer.innerHTML = '';
-        const script = document.createElement('script');
-        script.src = "https://s3.tradingview.com/external-embedding/embed-widget-events.js";
-        script.async = true;
-        script.innerHTML = JSON.stringify({
-            "colorTheme": "dark",
-            "isTransparent": true,
-            "width": "100%",
-            "height": "100%",
-            "locale": "ja",
-            "importanceFilter": "-1,0,1",
-            "currencyFilter": "USD,JPY,EUR,GBP"
-        });
-        calendarContainer.appendChild(script);
-    }
+    // 縦スライド開始
+    startForexVerticalSlide();
+}
+
+function startForexVerticalSlide() {
+    const wrapper = document.getElementById('forex-wrapper-v');
+    if (!wrapper) return;
+    
+    setInterval(() => {
+        forexVIndex = (forexVIndex + 1) % 3;
+        // 縦方向（Y軸）に155pxずつ移動
+        const offset = -forexVIndex * 155;
+        wrapper.style.transform = `translateY(${offset}px)`;
+    }, 10000); // 10秒ごとに切り替え
 }
 
 function appendMiniWidget(containerId, config) {
