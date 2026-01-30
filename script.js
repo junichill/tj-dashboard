@@ -481,3 +481,44 @@ function startTrendCycle() {
 fetchTrends();
 // 1時間ごとに最新トレンドに更新
 setInterval(fetchTrends, 3600000);
+
+let forexSlideIndex = 0;
+
+function initForexTradingView() {
+    const pairs = [
+        { id: "tv-usd-jpy", symbol: "FX:USDJPY" },
+        { id: "tv-eur-jpy", symbol: "FX:EURJPY" },
+        { id: "tv-eur-usd", symbol: "FX:EURUSD" }
+    ];
+
+    pairs.forEach(p => {
+        new TradingView.MediumWidget({
+            "symbols": [[p.pair, p.symbol]],
+            "chartOnly": false,
+            "width": "100%",
+            "height": "100%",
+            "locale": "ja",
+            "colorTheme": "dark",
+            "gridLineColor": "rgba(240, 243, 250, 0)",
+            "fontColor": "#787b86",
+            "isTransparent": true,
+            "autosize": true,
+            "container_id": p.id
+        });
+    });
+
+    startForexSlideCycle();
+}
+
+function startForexSlideCycle() {
+    const wrapper = document.getElementById('forex-wrapper');
+    
+    setInterval(() => {
+        forexSlideIndex = (forexSlideIndex + 1) % 3;
+        const offset = -forexSlideIndex * 33.333; // 横にずらす計算
+        wrapper.style.transform = `translateX(${offset}%)`;
+    }, 10000); // 10秒ごとにスライド
+}
+
+// 読み込み時に実行
+initForexTradingView();
