@@ -462,13 +462,13 @@ function renderTrends(container, data) {
     ];
 
     const layouts = [
-        "grid-area: 1 / 1 / 4 / 6;", 
-        "grid-area: 1 / 6 / 3 / 9;", 
-        "grid-area: 3 / 6 / 5 / 8;", 
-        "grid-area: 3 / 8 / 5 / 9;", 
-        "grid-area: 4 / 1 / 5 / 3;", 
-        "grid-area: 4 / 3 / 5 / 5;", 
-        "grid-area: 4 / 5 / 5 / 6;", 
+        "grid-area: 1 / 1 / 4 / 6;", // 1位
+        "grid-area: 1 / 6 / 3 / 9;", // 2位
+        "grid-area: 3 / 6 / 5 / 8;", // 3位
+        "grid-area: 3 / 8 / 5 / 9;", // 4位
+        "grid-area: 4 / 1 / 5 / 3;", // 5位
+        "grid-area: 4 / 3 / 5 / 5;", // 6位
+        "grid-area: 4 / 5 / 5 / 6;", // 7位
     ];
 
     for (let i = 1; i <= 7; i++) {
@@ -479,12 +479,12 @@ function renderTrends(container, data) {
         let fontSize = i === 1 ? "44px" : (i <= 3 ? "20px" : "13px");
         let textColor = (i >= 3 && i <= 5) ? "rgba(0,0,0,0.75)" : "#ffffff";
         
-        // --- 右下の数字演出（4位まで） ---
+        // --- 右下の数字演出（3位までに限定） ---
         let valTag = "";
-        if (i <= 4) {
-            // 文字を少し大きくし、不透明度を上げて「いい感じ」の存在感に
+        if (i <= 3) {
+            // 数字を際立たせ、情報の優先順位を視覚化
             const randomVal = (Math.random() * 100).toFixed(1);
-            valTag = `<span style="position:absolute; bottom:12px; right:12px; font-size:13px; font-weight:400; font-family:monospace; opacity:0.8;">${randomVal}%</span>`;
+            valTag = `<span style="position:absolute; bottom:12px; right:12px; font-size:14px; font-weight:400; font-family:monospace; opacity:0.9;">${randomVal}%</span>`;
         }
 
         html += `<div class="trend-tile" style="${style} 
@@ -499,7 +499,9 @@ function renderTrends(container, data) {
                     padding: 25px; text-align: center;
                     text-transform: uppercase; 
                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                    overflow: hidden;">
+                    overflow: hidden;
+                    cursor: pointer;"
+                    onclick="window.open('https://www.google.com/search?q=${encodeURIComponent(content)}', '_blank')">
                     <div style="width:100%; word-wrap: break-word; line-height:1.1;">${content}</div>
                     ${valTag}
                  </div>`;
