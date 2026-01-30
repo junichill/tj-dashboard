@@ -441,12 +441,11 @@ async function fetchTrends() {
 function renderTrends(container, data) {
     if (!container) return;
     
-    // 8x4のグリッドで、より緻密なパズルを構成
+    // レイアウト設定（隙間ゼロ・8x4グリッド）
     container.style.display = "grid";
     container.style.gridTemplateColumns = "repeat(8, 1fr)";
     container.style.gridTemplateRows = "repeat(4, 1fr)";
     container.style.gap = "0px"; 
-    container.style.padding = "0px";
 
     const backupWords = ["REALTIME", "MARKET", "GLOBAL", "SIGNAL", "INDEX", "CORE", "API", "DATA"];
     let trendData = data || [];
@@ -457,24 +456,21 @@ function renderTrends(container, data) {
 
     let html = "";
 
-    // 青〜緑を強調したSpectralパレット
+    // 青系重視の洗練されたパレット
     const colormap = [
         "rgba(213, 62, 79, 0.95)", "rgba(253, 174, 97, 0.9)", "rgba(254, 224, 139, 0.85)",
         "rgba(171, 221, 164, 0.8)", "rgba(102, 194, 165, 0.75)", "rgba(50, 136, 189, 0.7)",
         "rgba(35, 80, 160, 0.65)", "rgba(20, 30, 100, 0.6)"
     ];
 
-    // ★ 黄金比を意識した変則グリッド（左端の「棒」を解消）
-    // 1位を中央から左にかけて大きく取り、上下左右をパズルで固める
     const layouts = [
-        "grid-area: 1 / 1 / 4 / 6;", // 1位: メイン (5x3の巨大横長)
-        "grid-area: 1 / 6 / 3 / 9;", // 2位: 右上 (3x2の中型横長)
-        "grid-area: 3 / 6 / 5 / 8;", // 3位: 右下中 (2x2)
-        "grid-area: 3 / 8 / 5 / 9;", // 4位: 右端縦長 (1x2) - 隙間を殺す
-        "grid-area: 4 / 1 / 5 / 3;", // 5位: 左下小 (2x1)
-        "grid-area: 4 / 3 / 5 / 5;", // 6位: 下中小 (2x1)
-        "grid-area: 4 / 5 / 5 / 6;", // 7位: 下極小 (1x1)
-        "grid-area: 1 / 1 / 1 / 1;"  // 予備
+        "grid-area: 1 / 1 / 4 / 6;", // 1位
+        "grid-area: 1 / 6 / 3 / 9;", // 2位
+        "grid-area: 3 / 6 / 5 / 8;", // 3位
+        "grid-area: 3 / 8 / 5 / 9;", // 4位
+        "grid-area: 4 / 1 / 5 / 3;", // 5位
+        "grid-area: 4 / 3 / 5 / 5;", // 6位
+        "grid-area: 4 / 5 / 5 / 6;", // 7位
     ];
 
     for (let i = 1; i <= 7; i++) {
@@ -482,22 +478,24 @@ function renderTrends(container, data) {
         let content = finalData[i-1];
         let bgColor = colormap[i-1];
         
-        // 面積に応じたフォントサイズ調整
-        let fontSize = "12px";
-        if (i === 1) fontSize = "58px"; // 横長を活かして最大級に
-        else if (i === 2) fontSize = "28px";
-        else if (i === 3) fontSize = "22px";
-
-        let textColor = (i >= 3 && i <= 5) ? "rgba(0,0,0,0.8)" : "#fff";
+        // --- 洗練されたタイポグラフィ設定 ---
+        let fontSize = i === 1 ? "48px" : (i <= 3 ? "20px" : "12px");
+        let fontWeight = "200"; // ★ 極細に設定
+        let letterSpacing = i === 1 ? "0.15em" : "0.1em"; // ★ 字間を広げて高級感を出す
+        let textColor = (i >= 3 && i <= 5) ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.9)";
 
         html += `<div class="trend-tile" style="${style} 
                     background-color: ${bgColor} !important;
-                    border: 0.5px solid rgba(255,255,255,0.1) !important;
+                    border: 0.1px solid rgba(255,255,255,0.05) !important;
                     display: flex; align-items: center; justify-content: center;
-                    font-size: ${fontSize}; font-weight: ${i === 1 ? 900 : 700};
-                    color: ${textColor}; padding: 20px; text-align: center;
-                    text-transform: uppercase; line-height: 1; overflow: hidden;
-                    box-shadow: inset 0 0 50px rgba(0,0,0,0.1);">
+                    font-size: ${fontSize}; 
+                    font-weight: ${fontWeight};
+                    letter-spacing: ${letterSpacing};
+                    color: ${textColor}; 
+                    padding: 20px; text-align: center;
+                    text-transform: uppercase; 
+                    font-family: 'Helvetica Neue', Arial, sans-serif;
+                    overflow: hidden;">
                     ${content}
                  </div>`;
     }
