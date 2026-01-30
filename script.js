@@ -463,7 +463,17 @@ function renderTrends(container) {
         
         // style属性に直接 background-color を書き込む（!important付き）
         // これでCSSファイル内のどんな記述よりも優先して色がつきます
-        html += `<div class="trend-tile ${style.class}" style="background-color: ${style.color} !important;"></div>`;
+      
+// 中に「文字」と「強制的な高さ」を持たせます
+html += `<div class="trend-tile ${style.class}" 
+              style="background-color: ${style.color} !important; 
+                     min-height: 50px !important; 
+                     display: flex !important;
+                     align-items: center; 
+                     justify-content: center;
+                     z-index: 9999 !important;">
+            <span style="color:white !important; font-size:20px !important;">TEST</span>
+         </div>`;
     }
     
     container.innerHTML = html;
