@@ -387,3 +387,64 @@ function adjustScale() {
 window.addEventListener('resize', adjustScale);
 window.addEventListener('load', adjustScale);
 adjustScale();
+
+
+let trendItems = [];
+let trendIndex = 0;
+
+async function fetchTrends() {
+    try {
+        // CORS回避プロキシを経由してGoogleトレンドのRSSを取得
+        const RSS_URL = 'https://trends.google.co.jp/trends/trendingsearches/daily/rss?geo=JP';
+        const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
+        const data = await r.json();
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(data.contents, "application/xml");
+        const items = xml.querySelectorAll('item');
+        
+        // タイトル（トレンドワード）のみ抽出
+        trendItems = Array.from(items).map(item => item.querySelector('title').textContent);
+        
+        const container = document.getElementById('trend-fixed-content');
+        if (!container || trendItems.length === 0) return;
+
+        // HTML生成
+        container.innerHTML = trendItems.map(word => `<div class="trend-word">${word}</div>`).join('');
+        
+        // 最初のワードを表示
+        const words = container.querySelectorAll('.trend-word');
+        if (words.length > 0) {
+            trendIndex = 0;
+            words[0].classList.add('active');
+            startTrendCycle();
+        }
+    } catch (e) {
+        console.error('Trend fetch failed', e);
+    }
+}
+
+function startTrendCycle() {
+    if (window.trendTimer) clearInterval(window.trendTimer);
+
+    window.trendTimer = setInterval(() => {
+        const words = document.querySelectorAll('.trend-word');
+        if (words.length < 2) return;
+
+        // 1. 今のワードを粒子で消す
+        words[trendIndex].classList.remove('active');
+        words[trendIndex].classList.add('exit');
+
+        // 2. 消え際（3.5s）＋ 余韻（2s）を待ってから次を表示
+        setTimeout(() => {
+            words[trendIndex].classList.remove('exit');
+            trendIndex = (trendIndex + 1) % words.length;
+            words[trendIndex].classList.add('active');
+        }, 5500); // 天気パネルのwaitTimeと合わせる
+
+    }, 12000); // 12秒ごとに次のワードへ
+}
+
+// 起動時に実行
+fetchTrends();
+// 1時間ごとに最新トレンドに更新
+setInterval(fetchTrends, 3600000);
