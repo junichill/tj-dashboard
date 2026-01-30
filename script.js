@@ -449,14 +449,14 @@ async function fetchTrends() {
 function renderTrends(container) {
     if (!container) return;
     let html = "";
-    // 12個のタイルを作成し、1〜3番目にだけ特別なクラスを振る
     for (let i = 1; i <= 12; i++) {
-        let rankClass = "rank-other";
-        if (i === 1) rankClass = "rank-1";
-        if (i === 2) rankClass = "rank-2";
-        if (i === 3) rankClass = "rank-3";
+        let rc = "rank-other";
+        if (i === 1) rc = "rank-1";
+        if (i === 2) rc = "rank-2";
+        if (i === 3) rc = "rank-3";
         
-        html += `<div class="trend-tile ${rankClass}"></div>`;
+        // クラス名が正しく並ぶように注意
+        html += `<div class="trend-tile ${rc}"></div>`;
     }
     container.innerHTML = html;
 }
