@@ -441,7 +441,7 @@ async function fetchTrends() {
 function renderTrends(container, data) {
     if (!container) return;
     
-    const backupWords = ["REALTIME", "HOT DATA", "MARKET", "TECH", "GLOBAL", "SIGNAL", "TREND", "ANALYSIS", "SYSTEM", "CORE", "API", "CLOUD"];
+    const backupWords = ["LIVE FEED", "TRENDING", "MARKET", "TECH", "GLOBAL", "SIGNAL", "INDEX", "DATA", "CORE", "API", "LOG", "BIO"];
     
     let trendData = data || [];
     const finalData = [];
@@ -451,21 +451,20 @@ function renderTrends(container, data) {
 
     let html = "";
 
-    // 1位を最も濃い「鮮血のような赤」にし、徐々に「深い紫」へ
-    // 色の差を小さくし、隣り合うタイルの違和感を排除
+    // MatplotlibのSpectralにインスパイアされた配色（1位が赤、12位が青）
     const colormap = [
-        "rgba(200, 0, 0, 0.95)",    // 1位: 鮮やかな深紅
-        "rgba(180, 0, 20, 0.9)",    // 2位
-        "rgba(160, 0, 40, 0.85)",   // 3位
-        "rgba(140, 0, 50, 0.8)",    // 4位
-        "rgba(120, 0, 60, 0.75)",   // 5位
-        "rgba(100, 0, 70, 0.7)",    // 6位
-        "rgba(85, 0, 75, 0.65)",    // 7位
-        "rgba(70, 0, 80, 0.6)",     // 8位
-        "rgba(55, 0, 75, 0.55)",    // 9位
-        "rgba(40, 0, 70, 0.5)",     // 10位
-        "rgba(30, 0, 60, 0.45)",    // 11位
-        "rgba(20, 0, 50, 0.4)"      // 12位
+        "rgba(213, 62, 79, 0.95)",   // 1位: 赤 (Red)
+        "rgba(244, 109, 67, 0.9)",   // 2位: オレンジ
+        "rgba(253, 174, 97, 0.85)",  // 3位: 薄いオレンジ
+        "rgba(254, 224, 139, 0.8)",  // 4位: 黄
+        "rgba(230, 245, 152, 0.7)",  // 5位: 黄緑
+        "rgba(171, 221, 164, 0.6)",  // 6位: 緑
+        "rgba(102, 194, 165, 0.5)",  // 7位: エメラルド
+        "rgba(50, 136, 189, 0.45)",  // 8位: 青緑
+        "rgba(40, 100, 170, 0.4)",   // 9位: 青
+        "rgba(30, 70, 150, 0.35)",   // 10位: 深い青
+        "rgba(20, 40, 120, 0.3)",    // 11位: 紺
+        "rgba(10, 20, 80, 0.25)"     // 12位: ほぼ黒に近い紺
     ];
 
     for (let i = 1; i <= 12; i++) {
@@ -476,14 +475,16 @@ function renderTrends(container, data) {
         // --- フォント設定 ---
         let fontSize = "11px";
         let fontWeight = "400";
+        // 背景が明るい中間色（4,5,6位あたり）は黒文字で見やすく
+        let textColor = (i >= 4 && i <= 6) ? "rgba(0,0,0,0.8)" : "#fff";
 
         if (i === 1) {
             style = "grid-area: 1 / 1 / 4 / 4 !important;";
-            fontSize = "40px"; // 巨大
+            fontSize = "42px";
             fontWeight = "900";
         } else if (i === 2) {
             style = "grid-area: 1 / 4 / 3 / 7 !important;";
-            fontSize = "24px";
+            fontSize = "26px";
             fontWeight = "800";
         } else if (i === 3) {
             style = "grid-area: 4 / 1 / 5 / 4 !important;";
@@ -491,7 +492,7 @@ function renderTrends(container, data) {
             fontWeight = "700";
         }
 
-        const maxLen = i === 1 ? 22 : i <= 3 ? 15 : 12;
+        const maxLen = i === 1 ? 25 : i <= 3 ? 15 : 12;
         if (content.length > maxLen) {
             content = content.substring(0, maxLen) + "..";
         }
@@ -501,12 +502,12 @@ function renderTrends(container, data) {
                     border: 1px solid rgba(255,255,255,0.1) !important;
                     display: flex; align-items: center; justify-content: center;
                     font-size: ${fontSize}; font-weight: ${fontWeight};
-                    color: white; 
+                    color: ${textColor}; 
                     overflow: hidden; text-align: center;
                     padding: 12px; box-sizing: border-box;
-                    backdrop-filter: blur(5px);
+                    backdrop-filter: blur(8px);
                     text-transform: uppercase;
-                    letter-spacing: -0.03em;">
+                    transition: all 0.4s ease;">
                     ${content}
                  </div>`;
     }
