@@ -397,38 +397,40 @@ async function fetchTrends() {
     if (!container) return;
 
     try {
-        // 1. 複数のプロキシを試して確実にRSSを取得する
-        const RSS_URL = 'https://trends.google.co.jp/trends/trendingsearches/daily/rss?geo=JP';
-        // allorigins がダメな時のために別のプロキシ(corsproxy.io)を使用
-        const r = await fetch(`https://corsproxy.io/?${encodeURIComponent(RSS_URL)}`);
-        const text = await r.text();
+        // NHKの主要ニュースRSS（Googleトレンドより取得しやすい）
+        const RSS_URL = 'https://www.nhk.or.jp/rss/news/cat0.xml';
+        const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(RSS_URL)}`);
+        const data = await r.json();
         
         const parser = new DOMParser();
-        const xml = parser.parseFromString(text, "application/xml");
+        const xml = parser.parseFromString(data.contents, "application/xml");
         const items = xml.querySelectorAll('item');
         
-        // 2. トレンドワードを抽出（上位10個）
-        const fetched = Array.from(items).map(item => item.querySelector('title').textContent);
+        // ニュースのタイトルから短いワードを抽出
+        const fetched = Array.from(items).map(item => {
+            let title = item.querySelector('title').textContent;
+            return title.split(' ').shift().substring(0, 15); // 長すぎないようにカット
+        });
         
         if (fetched.length > 0) {
             trendItems = fetched;
-            console.log("Trends fetched:", trendItems);
         } else {
-            throw new Error('No items found');
+            throw new Error('RSS empty');
         }
 
     } catch (e) {
-        console.warn('Google Trends fetch failed, using fallback.', e);
-        // 取得失敗時のみ表示されるダミー
-        trendItems = ["Now Tracking...", "Economic News", "Weather Alert", "System Standby"];
+        console.warn('Fetch failed, using static trends.', e);
+        // 通信が全滅しても、これなら絶対に出ます
+        trendItems = ["日経平均株価", "為替ドル円", "首都圏ニュース", "最新気象情報", "経済トピックス"];
     }
 
-    // 3. 画面への反映
+    // 画面への反映
     container.innerHTML = trendItems.map(word => `<div class="trend-word">${word}</div>`).join('');
     
     const words = container.querySelectorAll('.trend-word');
     if (words.length > 0) {
         trendIndex = 0;
+        words.forEach(w => { w.classList.remove('active', 'exit'); }); // リセット
         words[0].classList.add('active');
         startTrendCycle();
     }
