@@ -444,27 +444,58 @@ function renderTrends(container, data) {
     const trendData = data || [];
     let html = "";
 
-    // 12個のタイルを生成
     for (let i = 1; i <= 12; i++) {
         let rc = "rank-other";
         let style = "";
-        // 実際のワードを挿入（なければ空）
         let content = trendData[i-1] ? trendData[i-1] : ""; 
+
+        // --- デザイン設定 ---
+        let fontSize = "12px";
+        let bgColor = "rgba(0, 229, 255, 0.1)"; // デフォルト（淡いシアン）
+        let fontWeight = "300";
 
         if (i === 1) {
             rc = "rank-1";
-            style = "grid-area: 1 / 1 / 4 / 4 !important; background-color: #00e5ff !important;";
+            // 1位：最も濃いシアン、大きな文字
+            style = "grid-area: 1 / 1 / 4 / 4 !important;";
+            bgColor = "rgba(0, 180, 216, 1)"; 
+            fontSize = "24px";
+            fontWeight = "900";
         } else if (i === 2) {
             rc = "rank-2";
-            style = "grid-area: 1 / 4 / 3 / 7 !important; background-color: rgba(0, 100, 150, 0.9) !important;";
+            // 2位：中間の濃さ、中くらいの文字
+            style = "grid-area: 1 / 4 / 3 / 7 !important;";
+            bgColor = "rgba(0, 150, 199, 0.8)";
+            fontSize = "18px";
+            fontWeight = "700";
         } else if (i === 3) {
             rc = "rank-3";
-            style = "grid-area: 4 / 1 / 5 / 4 !important; background-color: #2ecc71 !important;";
+            // 3位：少し薄め
+            style = "grid-area: 4 / 1 / 5 / 4 !important;";
+            bgColor = "rgba(0, 119, 182, 0.6)";
+            fontSize = "14px";
+            fontWeight = "500";
         } else {
-            style = "background-color: rgba(0, 212, 255, 0.1) !important;";
+            // その他：透明感のある背景
+            bgColor = "rgba(0, 229, 255, 0.15)";
         }
 
-        html += `<div class="trend-tile ${rc}" style="${style} border: 1px solid rgba(255,255,255,0.15) !important; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: white; overflow: hidden; text-align: center; padding: 5px; box-sizing: border-box;">
+        // 文字数が多い場合に省略する処理（1位は長く、他は短く）
+        const maxLen = i === 1 ? 40 : i <= 3 ? 20 : 10;
+        if (content.length > maxLen) {
+            content = content.substring(0, maxLen) + "...";
+        }
+
+        html += `<div class="trend-tile ${rc}" style="${style} 
+                    background-color: ${bgColor} !important;
+                    border: 1px solid rgba(255,255,255,0.2) !important;
+                    display: flex; align-items: center; justify-content: center;
+                    font-size: ${fontSize}; font-weight: ${fontWeight};
+                    color: white; overflow: hidden; text-align: center;
+                    padding: 12px; box-sizing: border-box;
+                    backdrop-filter: blur(10px);
+                    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                    letter-spacing: 0.05em; line-height: 1.3;">
                     ${content}
                  </div>`;
     }
