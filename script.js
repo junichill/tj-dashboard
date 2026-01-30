@@ -446,47 +446,39 @@ async function fetchTrends() {
     }
 }
 
-function renderTrends(container) {
+function renderTrends(container, trendItems) {
     if (!container) return;
     
-    // 中身を一度空にする
-    container.innerHTML = "";
-    
-    // グリッドの土台をJSで直接固定（CSSの競合を無視）
-    container.style.display = "grid";
-    container.style.gridTemplateColumns = "repeat(6, 1fr)";
-    container.style.gridTemplateRows = "repeat(4, 1fr)";
-    container.style.gap = "4px";
-    container.style.padding = "10px";
-    container.style.height = "100%";
-    container.style.width = "100%";
-    container.style.boxSizing = "border-box";
+    // データが空の場合の安全策
+    const data = trendItems || [];
+    let html = "";
 
-    const items = [
-        { color: "#00e5ff", span: "span 3 / span 3", text: "Trend 01" },
-        { color: "rgba(0, 80, 160, 0.9)", span: "span 3 / span 2", text: "Trend 02" },
-        { color: "#2ecc71", span: "span 3 / span 1", text: "Trend 03" }
-    ];
-
+    // 12個のタイルを生成
     for (let i = 1; i <= 12; i++) {
-        const data = items[i-1] || { color: "rgba(0, 212, 255, 0.15)", span: "auto", text: "" };
-        const tile = document.createElement('div');
-        
-        // タイルのスタイル
-        tile.className = `trend-tile rank-${i <= 3 ? i : 'other'}`;
-        tile.style.backgroundColor = data.color;
-        tile.style.gridArea = data.span;
-        tile.style.border = "1px solid rgba(255,255,255,0.2)";
-        tile.style.display = "flex";
-        tile.style.alignItems = "center";
-        tile.style.justifyContent = "center";
-        tile.style.fontSize = "12px";
-        tile.style.fontWeight = "bold";
-        tile.style.color = "white";
-        tile.innerText = data.text;
-        
-        container.appendChild(tile);
+        let rc = "rank-other";
+        let style = "";
+        let content = data[i-1] ? data[i-1].name : ""; // 実際のトレンド名を入れる
+
+        // ランク別の「色」と「サイズ（グリッド範囲）」をJSで直接指定
+        if (i === 1) {
+            rc = "rank-1";
+            style = "grid-area: 1 / 1 / 4 / 4 !important; background-color: #00e5ff !important;";
+        } else if (i === 2) {
+            rc = "rank-2";
+            style = "grid-area: 1 / 4 / 3 / 7 !important; background-color: rgba(0, 80, 160, 0.9) !important;";
+        } else if (i === 3) {
+            rc = "rank-3";
+            style = "grid-area: 4 / 1 / 5 / 4 !important; background-color: #2ecc71 !important;";
+        } else {
+            style = "background-color: rgba(0, 212, 255, 0.1) !important;";
+        }
+
+        html += `<div class="trend-tile ${rc}" style="${style} border: 1px solid rgba(255,255,255,0.1) !important; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; padding: 5px; box-sizing: border-box;">
+                    ${content}
+                 </div>`;
     }
+
+    container.innerHTML = html;
 }
 
 function startHeatmapCycle() {
