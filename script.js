@@ -448,19 +448,28 @@ async function fetchTrends() {
 
 function renderTrends(container) {
     if (!container) return;
+    
+    // trendItemsが空でも箱だけは作る
     let html = "";
+    
+    // CSSの「.rank-1」「.rank-2」「.rank-other」という名前に合わせる
     for (let i = 1; i <= 12; i++) {
-        let rc = "rank-other";
-        if (i === 1) rc = "rank-1";
-        if (i === 2) rc = "rank-2";
-        if (i === 3) rc = "rank-3";
+        let rc = "rank-other"; // デフォルト（4位以降）
+        if (i === 1) rc = "rank-1"; // 1位（シアン）
+        if (i === 2) rc = "rank-2"; // 2位（青）
+        if (i === 3) rc = "rank-3"; // 3位（緑）
         
-        // クラス名が正しく並ぶように注意
+        // CSSの .trend-tile と .rank-X を両方付与
         html += `<div class="trend-tile ${rc}"></div>`;
     }
+    
     container.innerHTML = html;
+    
+    // 既存のタイマー処理などがあれば継続
+    if (typeof startHeatmapCycle === 'function') {
+        startHeatmapCycle();
+    }
 }
-
 function startHeatmapCycle() {
     if (window.trendTimer) clearInterval(window.trendTimer);
 
