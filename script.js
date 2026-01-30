@@ -449,38 +449,43 @@ async function fetchTrends() {
 function renderTrends(container) {
     if (!container) return;
     
-    let html = "";
-    // 色の定義をJS側に持たせる（CSSの設定より優先される）
-    const rankStyles = {
-        1: { color: "#00e5ff", class: "rank-1" },     // シアン
-        2: { color: "rgba(0, 100, 150, 0.9)", class: "rank-2" }, // 濃い青
-        3: { color: "#2ecc71", class: "rank-3" }      // 緑
-    };
+    // 中身を一度空にする
+    container.innerHTML = "";
+    
+    // グリッドの土台をJSで直接固定（CSSの競合を無視）
+    container.style.display = "grid";
+    container.style.gridTemplateColumns = "repeat(6, 1fr)";
+    container.style.gridTemplateRows = "repeat(4, 1fr)";
+    container.style.gap = "4px";
+    container.style.padding = "10px";
+    container.style.height = "100%";
+    container.style.width = "100%";
+    container.style.boxSizing = "border-box";
+
+    const items = [
+        { color: "#00e5ff", span: "span 3 / span 3", text: "Trend 01" },
+        { color: "rgba(0, 80, 160, 0.9)", span: "span 3 / span 2", text: "Trend 02" },
+        { color: "#2ecc71", span: "span 3 / span 1", text: "Trend 03" }
+    ];
 
     for (let i = 1; i <= 12; i++) {
-        // 1〜3位は定義した色、それ以外は薄い青
-        const style = rankStyles[i] || { color: "rgba(0, 212, 255, 0.15)", class: "rank-other" };
+        const data = items[i-1] || { color: "rgba(0, 212, 255, 0.15)", span: "auto", text: "" };
+        const tile = document.createElement('div');
         
-        // style属性に直接 background-color を書き込む（!important付き）
-        // これでCSSファイル内のどんな記述よりも優先して色がつきます
-      
-// 中に「文字」と「強制的な高さ」を持たせます
-html += `<div class="trend-tile ${style.class}" 
-              style="background-color: ${style.color} !important; 
-                     min-height: 50px !important; 
-                     display: flex !important;
-                     align-items: center; 
-                     justify-content: center;
-                     z-index: 9999 !important;">
-            <span style="color:white !important; font-size:20px !important;">TEST</span>
-         </div>`;
-    }
-    
-    container.innerHTML = html;
-
-    // もし既存のサイクル関数があれば実行
-    if (typeof startHeatmapCycle === 'function') {
-        startHeatmapCycle();
+        // タイルのスタイル
+        tile.className = `trend-tile rank-${i <= 3 ? i : 'other'}`;
+        tile.style.backgroundColor = data.color;
+        tile.style.gridArea = data.span;
+        tile.style.border = "1px solid rgba(255,255,255,0.2)";
+        tile.style.display = "flex";
+        tile.style.alignItems = "center";
+        tile.style.justifyContent = "center";
+        tile.style.fontSize = "12px";
+        tile.style.fontWeight = "bold";
+        tile.style.color = "white";
+        tile.innerText = data.text;
+        
+        container.appendChild(tile);
     }
 }
 
