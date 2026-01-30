@@ -454,6 +454,11 @@ function renderTrends(container, data) {
         finalData.push(trendData[i] || backupWords[i]);
     }
 
+    // --- 3位と4位のワードを入れ替え ---
+    const temp = finalData[2];
+    finalData[2] = finalData[3];
+    finalData[3] = temp;
+
     let html = "";
     const colormap = [
         "rgba(213, 62, 79, 0.95)", "rgba(244, 109, 67, 0.9)", "rgba(253, 174, 97, 0.85)",
@@ -482,7 +487,6 @@ function renderTrends(container, data) {
         // --- 右下の数字演出（3位までに限定） ---
         let valTag = "";
         if (i <= 3) {
-            // 数字を際立たせ、情報の優先順位を視覚化
             const randomVal = (Math.random() * 100).toFixed(1);
             valTag = `<span style="position:absolute; bottom:12px; right:12px; font-size:14px; font-weight:400; font-family:monospace; opacity:0.9;">${randomVal}%</span>`;
         }
