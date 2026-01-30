@@ -433,7 +433,12 @@ async function fetchTrends() {
         console.warn('Fetch failed', e);
         trendItems = ["#推しの子", "円安ドル高", "新作AI", "地震速報", "iPhone17", "Amazonセール"];
     }
-
+     renderTrends(container, trendItems);
+    
+    // 既存のサイクル処理があれば開始
+    if (typeof startHeatmapCycle === 'function') {
+        startHeatmapCycle();
+      
     // 画面反映（粒子エフェクト用の構造を維持）
     container.innerHTML = trendItems.map(word => `<div class="trend-word">${word}</div>`).join('');
     
@@ -446,26 +451,25 @@ async function fetchTrends() {
     }
 }
 
-function renderTrends(container, trendItems) {
+function renderTrends(container, data) {
     if (!container) return;
     
-    // データが空の場合の安全策
-    const data = trendItems || [];
+    const trendData = data || [];
     let html = "";
 
     // 12個のタイルを生成
     for (let i = 1; i <= 12; i++) {
         let rc = "rank-other";
         let style = "";
-        let content = data[i-1] ? data[i-1].name : ""; // 実際のトレンド名を入れる
+        // 実際のワードを挿入（なければ空）
+        let content = trendData[i-1] ? trendData[i-1] : ""; 
 
-        // ランク別の「色」と「サイズ（グリッド範囲）」をJSで直接指定
         if (i === 1) {
             rc = "rank-1";
             style = "grid-area: 1 / 1 / 4 / 4 !important; background-color: #00e5ff !important;";
         } else if (i === 2) {
             rc = "rank-2";
-            style = "grid-area: 1 / 4 / 3 / 7 !important; background-color: rgba(0, 80, 160, 0.9) !important;";
+            style = "grid-area: 1 / 4 / 3 / 7 !important; background-color: rgba(0, 100, 150, 0.9) !important;";
         } else if (i === 3) {
             rc = "rank-3";
             style = "grid-area: 4 / 1 / 5 / 4 !important; background-color: #2ecc71 !important;";
@@ -473,14 +477,14 @@ function renderTrends(container, trendItems) {
             style = "background-color: rgba(0, 212, 255, 0.1) !important;";
         }
 
-        html += `<div class="trend-tile ${rc}" style="${style} border: 1px solid rgba(255,255,255,0.1) !important; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; padding: 5px; box-sizing: border-box;">
+        html += `<div class="trend-tile ${rc}" style="${style} border: 1px solid rgba(255,255,255,0.15) !important; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: white; overflow: hidden; text-align: center; padding: 5px; box-sizing: border-box;">
                     ${content}
                  </div>`;
     }
 
     container.innerHTML = html;
 }
-
+  
 function startHeatmapCycle() {
     if (window.trendTimer) clearInterval(window.trendTimer);
 
@@ -503,52 +507,3 @@ function startHeatmapCycle() {
 fetchTrends();
 // 1時間ごとに最新トレンドに更新
 setInterval(fetchTrends, 3600000);
-
-
-(function() {
-    const container = document.getElementById('trend-fixed-content');
-    if (!container) return;
-
-    // 1. レイアウトの強制固定（赤を消して透明な黒に）
-    container.style.cssText = `
-        display: grid !important;
-        grid-template-columns: repeat(6, 1fr) !important;
-        grid-template-rows: repeat(4, 1fr) !important;
-        gap: 4px !important;
-        width: 100% !important;
-        height: 100% !important;
-        padding: 8px !important;
-        box-sizing: border-box !important;
-        background: rgba(0, 0, 0, 0.3) !important;
-    `;
-
-    // 2. 本物のトレンド（仮）を流し込む
-    const trends = [
-        { name: "NASDAQ", color: "#00e5ff", area: "1 / 1 / 4 / 4" }, // 1位: 3x3
-        { name: "JPY/USD", color: "rgba(0, 80, 160, 0.9)", area: "1 / 4 / 3 / 7" }, // 2位: 3x2
-        { name: "Nikkei 225", color: "#2ecc71", area: "4 / 1 / 5 / 4" }  // 3位: 3x1
-    ];
-
-    let html = "";
-    // 1〜3位の配置
-    trends.forEach(t => {
-        html += `<div class="trend-tile" style="
-            grid-area: ${t.area} !important;
-            background-color: ${t.color} !important;
-            border: 1px solid rgba(255,255,255,0.2) !important;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 14px; font-weight: bold; color: white;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
-        ">${t.name}</div>`;
-    });
-
-    // 残りの細かい隙間（9個）を埋める
-    for (let i = 0; i < 9; i++) {
-        html += `<div class="trend-tile" style="
-            background-color: rgba(0, 212, 255, 0.1) !important;
-            border: 1px solid rgba(255,255,255,0.1) !important;
-        "></div>`;
-    }
-
-    container.innerHTML = html;
-})();
