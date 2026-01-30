@@ -441,14 +441,16 @@ async function fetchTrends() {
 function renderTrends(container, data) {
     if (!container) return;
     
-    // グリッド設定：横5列 × 縦4行で隙間なく構成
+    // 親コンテナの設定：8列x4行の細かいグリッドで自由度を上げる
     container.style.display = "grid";
-    container.style.gridTemplateColumns = "repeat(5, 1fr)";
+    container.style.gridTemplateColumns = "repeat(8, 1fr)";
     container.style.gridTemplateRows = "repeat(4, 1fr)";
     container.style.gap = "0px"; 
     container.style.padding = "0px";
+    container.style.width = "100%";
+    container.style.height = "100%";
 
-    const backupWords = ["LIVE FEED", "MARKET", "GLOBAL", "SIGNAL", "INDEX", "CORE", "API", "DATA", "LOG", "CLOUD"];
+    const backupWords = ["REALTIME", "MARKET", "GLOBAL", "SIGNAL", "INDEX", "CORE", "API", "DATA", "LOG", "CLOUD"];
     let trendData = data || [];
     const finalData = [];
     for (let i = 0; i < 10; i++) {
@@ -457,106 +459,52 @@ function renderTrends(container, data) {
 
     let html = "";
 
-    // 青系を重視したSpectralグラデーション (10段階)
+    // 青系重視のSpectralパレット（10段階）
     const colormap = [
-        "rgba(213, 62, 79, 0.95)",   // 1位: 赤
-        "rgba(253, 174, 97, 0.9)",   // 2位: オレンジ
-        "rgba(254, 224, 139, 0.85)", // 3位: 黄
-        "rgba(230, 245, 152, 0.8)",  // 4位: 黄緑
-        "rgba(171, 221, 164, 0.75)", // 5位: 緑
-        "rgba(102, 194, 165, 0.7)",  // 6位: 青緑
-        "rgba(50, 136, 189, 0.65)",  // 7位: 水色
-        "rgba(40, 100, 170, 0.6)",   // 8位: 青
-        "rgba(30, 60, 140, 0.55)",   // 9位: 深い青
-        "rgba(20, 30, 100, 0.5)"     // 10位: 紺
+        "rgba(213, 62, 79, 0.95)", "rgba(253, 174, 97, 0.9)", "rgba(254, 224, 139, 0.85)",
+        "rgba(230, 245, 152, 0.8)", "rgba(171, 221, 164, 0.75)", "rgba(102, 194, 165, 0.7)",
+        "rgba(50, 136, 189, 0.65)", "rgba(40, 100, 170, 0.6)", "rgba(30, 60, 140, 0.55)", "rgba(20, 30, 100, 0.5)"
     ];
 
-    // 10枚を5x4のグリッドに完璧にハメ込む座標
+    // ★ センス良く配置するための「変則グリッド」座標設定（合計32マスを完璧に埋める）
     const layouts = [
-        "grid-area: 1 / 1 / 5 / 4;", // 1位: 左側60%を占有 (3x4マス)
-        "grid-area: 1 / 4 / 3 / 6;", // 2位: 右上大きなサブ (2x2マス)
-        "grid-area: 3 / 4 / 4 / 5;", // 3位: 中段1
-        "grid-area: 3 / 5 / 4 / 6;", // 4位: 中段2
-        "grid-area: 4 / 4 / 5 / 5;", // 5位: 下段1
-        "grid-area: 4 / 5 / 5 / 6;", // 6位: 下段2
-        "grid-area: 1 / 1 / 1 / 1;", // (以下予備・重複回避用)
-        "grid-area: 1 / 1 / 1 / 1;",
-        "grid-area: 1 / 1 / 1 / 1;",
-        "grid-area: 1 / 1 / 1 / 1;"
+        "grid-area: 1 / 1 / 5 / 5;", // 1位: 左側 4x4 (巨大)
+        "grid-area: 1 / 5 / 3 / 7;", // 2位: 右上中 2x2
+        "grid-area: 1 / 7 / 4 / 9;", // 3位: 右端縦長 2x3 (これで右端の隙間を埋める)
+        "grid-area: 3 / 5 / 5 / 6;", // 4位: 中下 1x2 (縦長)
+        "grid-area: 3 / 6 / 4 / 7;", // 5位: 小 1x1
+        "grid-area: 4 / 6 / 5 / 8;", // 6位: 下横長 2x1
+        "grid-area: 4 / 8 / 5 / 9;", // 7位: 右下隅 1x1
+        "grid-area: 1 / 1 / 2 / 2;", // (以下予備、重複しないよう8位以降は隠し気味に)
+        "grid-area: 1 / 1 / 2 / 2;",
+        "grid-area: 1 / 1 / 2 / 2;"
     ];
 
-    // 10枚をきれいに並べるための完全版レイアウト配列
-    const finalLayouts = [
-        "grid-area: 1 / 1 / 5 / 4;", // 1位 (巨大)
-        "grid-area: 1 / 4 / 3 / 6;", // 2位 (右上の顔)
-        "grid-area: 3 / 4 / 4 / 5;", // 3位
-        "grid-area: 3 / 5 / 4 / 6;", // 4位
-        "grid-area: 4 / 4 / 5 / 5;", // 5位
-        "grid-area: 4 / 5 / 5 / 6;", // 6位
-        // 7位〜10位は、もしさらに分割するならここを調整しますが、
-        // 10枚をこの面積に収めるため、さらに細かく割ります
-        "grid-area: 3 / 4 / 4 / 5;", // 重複を避けるため実際は以下のように再定義
-    ];
-
-    // 10枚を隙間なく配置するロジック（右側を4分割×2層）
-    const vLayout = [
-        "grid-area: 1 / 1 / 5 / 4;", // 1位: 左巨大
-        "grid-area: 1 / 4 / 2 / 5;", // 2位
-        "grid-area: 1 / 5 / 2 / 6;", // 3位
-        "grid-area: 2 / 4 / 3 / 5;", // 4位
-        "grid-area: 2 / 5 / 3 / 6;", // 5位
-        "grid-area: 3 / 4 / 4 / 5;", // 6位
-        "grid-area: 3 / 5 / 4 / 6;", // 7位
-        "grid-area: 4 / 4 / 5 / 5;", // 8位
-        "grid-area: 4 / 5 / 5 / 6;", // 9位
-        "grid-area: 1 / 1 / 2 / 2;"  // 10位 (1位の影に隠すか、1位のエリアを少し削る)
-    ];
-
-    // 【決定版】10枚を美しく並べるグリッド
-    const bestLayout = [
-        "grid-area: 1 / 1 / 5 / 3;", // 1位: 左 2/5 占有
-        "grid-area: 1 / 3 / 3 / 5;", // 2位: 中央上
-        "grid-area: 1 / 5 / 2 / 6;", // 3位: 右上
-        "grid-area: 2 / 5 / 3 / 6;", // 4位: 右中上
-        "grid-area: 3 / 3 / 5 / 4;", // 5位: 下中
-        "grid-area: 3 / 4 / 5 / 5;", // 6位: 下右中
-        "grid-area: 3 / 5 / 4 / 6;", // 7位: 右中下
-        "grid-area: 4 / 5 / 5 / 6;", // 8位: 右下
-        "grid-area: 3 / 1 / 5 / 3;", // (調整)
-    ];
-
-    // シンプルかつ確実な「右側4分割×2行」スタイル
-    for (let i = 1; i <= 10; i++) {
-        let style = "";
-        if (i === 1) style = "grid-area: 1 / 1 / 5 / 4;"; // 左側巨大
-        else if (i === 2) style = "grid-area: 1 / 4 / 2 / 5;";
-        else if (i === 3) style = "grid-area: 1 / 5 / 2 / 6;";
-        else if (i === 4) style = "grid-area: 2 / 4 / 3 / 5;";
-        else if (i === 5) style = "grid-area: 2 / 5 / 3 / 6;";
-        else if (i === 6) style = "grid-area: 3 / 4 / 4 / 5;";
-        else if (i === 7) style = "grid-area: 3 / 5 / 4 / 6;";
-        else if (i === 8) style = "grid-area: 4 / 4 / 5 / 5;";
-        else if (i === 9) style = "grid-area: 4 / 5 / 5 / 6;";
-        else if (i === 10) style = "grid-area: 4 / 1 / 5 / 4; height: 40px; align-self: end; background: rgba(0,0,0,0.3) !important; font-size: 10px;"; // 1位の下に帯状に配置
-
+    for (let i = 1; i <= 7; i++) { // 隙間なく埋まる精鋭7〜8枚に絞り込み
+        let style = layouts[i-1];
         let content = finalData[i-1];
         let bgColor = colormap[i-1];
-        let fontSize = i === 1 ? "46px" : (i <= 5 ? "16px" : "12px");
+        
+        // フォントサイズをパネルの大きさに合わせる
+        let fontSize = "13px";
+        if (i === 1) fontSize = "52px";
+        else if (i === 2) fontSize = "24px";
+        else if (i === 3) fontSize = "20px";
+
         let textColor = (i >= 3 && i <= 5) ? "rgba(0,0,0,0.8)" : "#fff";
 
         html += `<div class="trend-tile" style="${style} 
                     background-color: ${bgColor} !important;
-                    border: 0.5px solid rgba(255,255,255,0.1) !important;
+                    border: 1px solid rgba(255,255,255,0.05) !important;
                     display: flex; align-items: center; justify-content: center;
                     font-size: ${fontSize}; font-weight: ${i === 1 ? 900 : 600};
-                    color: ${textColor}; padding: 10px; text-align: center;
-                    text-transform: uppercase;">
+                    color: ${textColor}; padding: 15px; text-align: center;
+                    text-transform: uppercase; line-height: 1.1; overflow: hidden;">
                     ${content}
                  </div>`;
     }
     container.innerHTML = html;
 }
-
 function startHeatmapCycle() {
     if (window.trendTimer) clearInterval(window.trendTimer);
 
