@@ -583,76 +583,61 @@ body {
 .weather-data-line .sep { color: rgba(255, 255, 255, 0.1); margin: 0 2px; }
 
 
+/* 右上パネルコンテナ */
 .grid-item-tr {
-    display: flex;
-    flex-direction: column;
-    padding: 0 !important; /* パディングをゼロにして、ヒートマップを端まで広げる */
+    padding: 0 !important;
+    background: rgba(0, 0, 0, 0.2); /* 背景を少し暗くして発光を際立たせる */
 }
 
 #trend-fixed-content {
+    display: grid !important;
+    /* 6列×4行の細かい網目を作る */
+    grid-template-columns: repeat(6, 1fr) !important;
+    grid-template-rows: repeat(4, 1fr) !important;
+    gap: 2px !important; /* 画像のような細い境界線 */
+    padding: 4px !important;
     width: 100% !important;
     height: 100% !important;
-    display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
-    grid-template-rows: repeat(2, 1fr) !important;
-    gap: 5px !important; /* 隙間を少しタイトに */
-    padding: 8px !important; /* 外枠との微細な余白 */
     box-sizing: border-box !important;
 }
 
-/* ヒートマップ内の文字を完全に非表示 */
-.tile-rank, .tile-word {
-    display: none !important;
-}
-
-/* タイルそのもののデザインを強化 */
+/* タイルの基本：画像のような「枠線」と「透過」 */
 .trend-tile {
     position: relative !important;
-    background: rgba(0, 212, 255, 0.15) !important;
-    border: 1px solid rgba(0, 212, 255, 0.5) !important;
-    border-radius: 2px !important; /* 角を少し鋭利にして精密感を出す */
-    box-shadow: inset 0 0 15px rgba(0, 212, 255, 0.1);
-    /* 呼吸するようなアニメーションを追加 */
-    animation: tile-glow 4s infinite alternate ease-in-out;
+    border: 1px solid rgba(0, 212, 255, 0.6) !important;
+    transition: all 0.4s ease;
 }
 
-/* 1位・2位のタイルの存在感を圧倒的にする */
-.trend-tile:nth-child(1) { 
-    background: rgba(0, 212, 255, 0.4) !important; 
-    border: 2px solid #00d4ff !important;
-    box-shadow: 0 0 20px rgba(0, 212, 255, 0.2), inset 0 0 20px rgba(0, 212, 255, 0.2);
+/* --- 画像のレイアウトを再現 --- */
+
+/* 左上の巨大なシアン（1位） */
+.trend-tile:nth-child(1) {
+    grid-column: span 3;
+    grid-row: span 3;
+    background: #00e5ff !important; /* 強烈なシアン */
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.4);
 }
 
-.trend-tile:nth-child(2) { 
-    background: rgba(0, 212, 255, 0.25) !important; 
+/* その横の深いブルー（2位） */
+.trend-tile:nth-child(2) {
+    grid-column: span 2;
+    grid-row: span 2;
+    background: rgba(0, 100, 150, 0.8) !important; /* 濃い青 */
 }
 
-/* タイルが光るアニメーション */
-@keyframes tile-glow {
-    from { opacity: 0.6; }
-    to { opacity: 1; }
+/* 3位：右上の細長（画像右上） */
+.trend-tile:nth-child(3) {
+    grid-column: span 1;
+    grid-row: span 1;
+    background: rgba(0, 212, 255, 0.1) !important;
 }
 
-/* タイル内の文字 */
-.tile-rank {
-    font-size: 0.7rem;
-    color: #00d4ff;
-    font-weight: 900;
-    margin-bottom: 2px;
-}
-.tile-word {
-    font-size: 1.1rem;
-    font-weight: 900;
-    color: white;
-    text-align: center;
-    padding: 4px;
-    word-break: break-all;
-}
+/* 4位〜：下の段や右側の細かいタイル */
+.trend-tile:nth-child(4) { grid-column: span 1; grid-row: span 1; background: rgba(0, 212, 255, 0.05); }
+.trend-tile:nth-child(5) { grid-column: span 2; grid-row: span 1; background: rgba(0, 212, 255, 0.2); }
+.trend-tile:nth-child(6) { grid-column: span 1; grid-row: span 2; background: rgba(0, 212, 255, 0.15); }
 
-/* 粒子エフェクト実行中 */
+/* 粒子エフェクト（消え方もスタイリッシュに） */
 .trend-tile.exit {
     animation: particle-dissolve 3.5s forwards ease-out !important;
-    pointer-events: none;
 }
-
-
