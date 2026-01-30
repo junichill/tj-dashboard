@@ -441,70 +441,69 @@ async function fetchTrends() {
 function renderTrends(container, data) {
     if (!container) return;
     
-    // 親コンテナの設定：8列x4行の細かいグリッドで自由度を上げる
+    // 8x4のグリッドで、より緻密なパズルを構成
     container.style.display = "grid";
     container.style.gridTemplateColumns = "repeat(8, 1fr)";
     container.style.gridTemplateRows = "repeat(4, 1fr)";
     container.style.gap = "0px"; 
     container.style.padding = "0px";
-    container.style.width = "100%";
-    container.style.height = "100%";
 
-    const backupWords = ["REALTIME", "MARKET", "GLOBAL", "SIGNAL", "INDEX", "CORE", "API", "DATA", "LOG", "CLOUD"];
+    const backupWords = ["REALTIME", "MARKET", "GLOBAL", "SIGNAL", "INDEX", "CORE", "API", "DATA"];
     let trendData = data || [];
     const finalData = [];
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 8; i++) {
         finalData.push(trendData[i] || backupWords[i]);
     }
 
     let html = "";
 
-    // 青系重視のSpectralパレット（10段階）
+    // 青〜緑を強調したSpectralパレット
     const colormap = [
         "rgba(213, 62, 79, 0.95)", "rgba(253, 174, 97, 0.9)", "rgba(254, 224, 139, 0.85)",
-        "rgba(230, 245, 152, 0.8)", "rgba(171, 221, 164, 0.75)", "rgba(102, 194, 165, 0.7)",
-        "rgba(50, 136, 189, 0.65)", "rgba(40, 100, 170, 0.6)", "rgba(30, 60, 140, 0.55)", "rgba(20, 30, 100, 0.5)"
+        "rgba(171, 221, 164, 0.8)", "rgba(102, 194, 165, 0.75)", "rgba(50, 136, 189, 0.7)",
+        "rgba(35, 80, 160, 0.65)", "rgba(20, 30, 100, 0.6)"
     ];
 
-    // ★ センス良く配置するための「変則グリッド」座標設定（合計32マスを完璧に埋める）
+    // ★ 黄金比を意識した変則グリッド（左端の「棒」を解消）
+    // 1位を中央から左にかけて大きく取り、上下左右をパズルで固める
     const layouts = [
-        "grid-area: 1 / 1 / 5 / 5;", // 1位: 左側 4x4 (巨大)
-        "grid-area: 1 / 5 / 3 / 7;", // 2位: 右上中 2x2
-        "grid-area: 1 / 7 / 4 / 9;", // 3位: 右端縦長 2x3 (これで右端の隙間を埋める)
-        "grid-area: 3 / 5 / 5 / 6;", // 4位: 中下 1x2 (縦長)
-        "grid-area: 3 / 6 / 4 / 7;", // 5位: 小 1x1
-        "grid-area: 4 / 6 / 5 / 8;", // 6位: 下横長 2x1
-        "grid-area: 4 / 8 / 5 / 9;", // 7位: 右下隅 1x1
-        "grid-area: 1 / 1 / 2 / 2;", // (以下予備、重複しないよう8位以降は隠し気味に)
-        "grid-area: 1 / 1 / 2 / 2;",
-        "grid-area: 1 / 1 / 2 / 2;"
+        "grid-area: 1 / 1 / 4 / 6;", // 1位: メイン (5x3の巨大横長)
+        "grid-area: 1 / 6 / 3 / 9;", // 2位: 右上 (3x2の中型横長)
+        "grid-area: 3 / 6 / 5 / 8;", // 3位: 右下中 (2x2)
+        "grid-area: 3 / 8 / 5 / 9;", // 4位: 右端縦長 (1x2) - 隙間を殺す
+        "grid-area: 4 / 1 / 5 / 3;", // 5位: 左下小 (2x1)
+        "grid-area: 4 / 3 / 5 / 5;", // 6位: 下中小 (2x1)
+        "grid-area: 4 / 5 / 5 / 6;", // 7位: 下極小 (1x1)
+        "grid-area: 1 / 1 / 1 / 1;"  // 予備
     ];
 
-    for (let i = 1; i <= 7; i++) { // 隙間なく埋まる精鋭7〜8枚に絞り込み
+    for (let i = 1; i <= 7; i++) {
         let style = layouts[i-1];
         let content = finalData[i-1];
         let bgColor = colormap[i-1];
         
-        // フォントサイズをパネルの大きさに合わせる
-        let fontSize = "13px";
-        if (i === 1) fontSize = "52px";
-        else if (i === 2) fontSize = "24px";
-        else if (i === 3) fontSize = "20px";
+        // 面積に応じたフォントサイズ調整
+        let fontSize = "12px";
+        if (i === 1) fontSize = "58px"; // 横長を活かして最大級に
+        else if (i === 2) fontSize = "28px";
+        else if (i === 3) fontSize = "22px";
 
         let textColor = (i >= 3 && i <= 5) ? "rgba(0,0,0,0.8)" : "#fff";
 
         html += `<div class="trend-tile" style="${style} 
                     background-color: ${bgColor} !important;
-                    border: 1px solid rgba(255,255,255,0.05) !important;
+                    border: 0.5px solid rgba(255,255,255,0.1) !important;
                     display: flex; align-items: center; justify-content: center;
-                    font-size: ${fontSize}; font-weight: ${i === 1 ? 900 : 600};
-                    color: ${textColor}; padding: 15px; text-align: center;
-                    text-transform: uppercase; line-height: 1.1; overflow: hidden;">
+                    font-size: ${fontSize}; font-weight: ${i === 1 ? 900 : 700};
+                    color: ${textColor}; padding: 20px; text-align: center;
+                    text-transform: uppercase; line-height: 1; overflow: hidden;
+                    box-shadow: inset 0 0 50px rgba(0,0,0,0.1);">
                     ${content}
                  </div>`;
     }
     container.innerHTML = html;
 }
+
 function startHeatmapCycle() {
     if (window.trendTimer) clearInterval(window.trendTimer);
 
