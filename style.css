@@ -583,6 +583,53 @@ body {
 .weather-data-line .sep { color: rgba(255, 255, 255, 0.1); margin: 0 2px; }
 
 
+/* トレンドワード専用の配置設定 */
+#trend-fixed-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.trend-word {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    text-align: center;
+    font-size: 48px; /* 大きめに設定 */
+    font-weight: 900;
+    color: #fff;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1.5s ease-in;
+}
+
+.trend-word.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* 天気パネルと共通の粒子消去エフェクト */
+.trend-word.exit {
+    animation: particle-dissolve 3.5s forwards ease-out;
+    opacity: 1;
+}
+
+/* ラベルのスタイル（もし既にあれば不要です） */
+.card-label {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px;
+    opacity: 0.6;
+    letter-spacing: 2px;
+}
 
 
 
