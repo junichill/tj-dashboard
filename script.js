@@ -441,10 +441,10 @@ async function fetchTrends() {
 function renderTrends(container, data) {
     if (!container) return;
     
-    // 8x5のグリッドで、より黄金比に近い比率を構成
+    // 8x4グリッドで再構成
     container.style.display = "grid";
     container.style.gridTemplateColumns = "repeat(8, 1fr)";
-    container.style.gridTemplateRows = "repeat(5, 1fr)";
+    container.style.gridTemplateRows = "repeat(4, 1fr)";
     container.style.gap = "0px"; 
 
     const backupWords = ["REALTIME", "MARKET", "GLOBAL", "SIGNAL", "INDEX", "CORE", "API", "DATA"];
@@ -461,30 +461,28 @@ function renderTrends(container, data) {
         "rgba(35, 80, 160, 0.65)", "rgba(20, 30, 100, 0.6)"
     ];
 
-    // ★ 黄金比スパイラルに基づいた面積比 (8x5 = 40マスを完全に埋める)
+    // ★ 3位が正しく「4位より大きく、2位より小さい」面積を持つモザイク配置
     const layouts = [
-        "grid-area: 1 / 1 / 6 / 6;", // 1位: 5x5 (25マス) - 圧倒的メイン
-        "grid-area: 1 / 6 / 4 / 9;", // 2位: 3x3 (9マス)  - 右上
-        "grid-area: 4 / 6 / 6 / 8;", // 3位: 2x2 (4マス)  - 右下（2位より小さく、1x1より大きい）
-        "grid-area: 4 / 8 / 5 / 9;", // 4位: 1x1 (1マス)  - 隙間埋め
-        "grid-area: 5 / 8 / 6 / 9;", // 5位: 1x1 (1マス)  - 隙間埋め
-        "grid-area: 1 / 1 / 1 / 1;"  // 予備
+        "grid-area: 1 / 1 / 5 / 5;", // 1位: 4x4 (左半分)
+        "grid-area: 1 / 5 / 3 / 8;", // 2位: 3x2 (右上)
+        "grid-area: 1 / 8 / 3 / 9;", // 3位: 1x2 (右端縦)
+        "grid-area: 3 / 5 / 5 / 7;", // 4位: 2x2 (右下)
+        "grid-area: 3 / 7 / 5 / 8;", // 5位: 1x2 (小・縦長)
+        "grid-area: 3 / 8 / 5 / 9;", // 6位: 1x2 (小・右端下)
     ];
 
-    for (let i = 1; i <= 5; i++) { 
+    for (let i = 1; i <= 6; i++) {
         let style = layouts[i-1];
         let content = finalData[i-1];
         let bgColor = colormap[i-1];
         
-        // 面積に合わせたフォントサイズ
-        let fontSize = "12px";
-        if (i === 1) fontSize = "54px";
-        else if (i === 2) fontSize = "24px";
-        else if (i === 3) fontSize = "16px";
-
-        let textColor = (i === 4 || i === 5) ? "rgba(0,0,0,0.65)" : "#ffffff";
+        // フォント設定：太字を排した洗練された細身スタイル
+        let fontSize = i === 1 ? "46px" : (i === 2 ? "22px" : (i === 3 ? "16px" : "12px"));
+        let fontWeight = "200"; 
+        let letterSpacing = i === 1 ? "0.1em" : "0.05em";
+        let textColor = (i >= 4) ? "rgba(0,0,0,0.7)" : "#ffffff";
         
-        // 右下の数字（3位までに限定、サイズを少し大きく）
+        // 右下の数字演出（3位までに限定、サイズ感アップ）
         let valTag = "";
         if (i <= 3) {
             const randomVal = (Math.random() * 100).toFixed(1);
@@ -493,12 +491,12 @@ function renderTrends(container, data) {
 
         html += `<div class="trend-tile" style="${style} 
                     background-color: ${bgColor} !important;
-                    border: 0.5px solid rgba(255,255,255,0.1) !important;
+                    border: 0.5px solid rgba(255,255,255,0.08) !important;
                     position: relative;
                     display: flex; align-items: center; justify-content: center;
-                    font-size: ${fontSize}; font-weight: 200; /* 細身を維持 */
-                    letter-spacing: 0.08em; color: ${textColor}; 
-                    padding: 25px; text-align: center; text-transform: uppercase; 
+                    font-size: ${fontSize}; font-weight: ${fontWeight};
+                    letter-spacing: ${letterSpacing}; color: ${textColor}; 
+                    padding: 20px; text-align: center; text-transform: uppercase; 
                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                     overflow: hidden; cursor: pointer;"
                     onclick="window.open('https://www.google.com/search?q=${encodeURIComponent(content)}', '_blank')">
