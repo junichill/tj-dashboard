@@ -447,24 +447,19 @@ async function fetchTrends() {
 }
 
 function renderTrends(container) {
-    if (!trendItems || trendItems.length === 0) return;
+    if (!container) return;
 
-    // 画像のレイアウトを埋めるための構成
-    // 1(特大), 2(大), 3(横長緑), 残り(小)
+    // トレンドデータがなくても、ヒートマップの枠（12個）は常に表示する
     let html = "";
-    
-    for (let i = 1; i <= 12; i++) {
-        let rankClass = "rank-other";
-        if (i === 1) rankClass = "rank-1";
-        if (i === 2) rankClass = "rank-2";
-        if (i === 3) rankClass = "rank-3";
-        
-        html += `<div class="trend-tile ${rankClass}"></div>`;
+    for (let i = 0; i < 12; i++) {
+        // クラスはシンプルに "trend-tile" だけでOK
+        // CSSの nth-child(1), nth-child(2)... が自動的に色を割り当てます
+        html += `<div class="trend-tile"></div>`;
     }
     
     container.innerHTML = html;
     
-    // 既存の1つずつ回すタイマーを止めてヒートマップ用に
+    // サイクル開始
     startHeatmapCycle();
 }
 
