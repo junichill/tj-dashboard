@@ -449,9 +449,10 @@ async function fetchTrends() {
 function renderTrends(container) {
     if (!trendItems || trendItems.length === 0) return;
 
-    // ヒートマップを構成する5〜6個のワードを表示
+    // 上位6個のトレンドを使用
     const displayItems = trendItems.slice(0, 6);
     
+    // 中身をタイル構造で生成
     container.innerHTML = displayItems.map((word, i) => `
         <div class="trend-tile">
             <div class="tile-rank">#${i + 1}</div>
@@ -459,7 +460,7 @@ function renderTrends(container) {
         </div>
     `).join('');
     
-    // 以前の1個ずつ回すタイマーを完全に止めて、ヒートマップ用のタイマーを始動
+    // ヒートマップ用の更新タイマーを始動
     startHeatmapCycle();
 }
 
