@@ -449,27 +449,31 @@ async function fetchTrends() {
 function renderTrends(container) {
     if (!container) return;
     
-    // trendItemsが空でも箱だけは作る
     let html = "";
-    
-    // CSSの「.rank-1」「.rank-2」「.rank-other」という名前に合わせる
+    // 色の定義をJS側に持たせる（CSSの設定より優先される）
+    const rankStyles = {
+        1: { color: "#00e5ff", class: "rank-1" },     // シアン
+        2: { color: "rgba(0, 100, 150, 0.9)", class: "rank-2" }, // 濃い青
+        3: { color: "#2ecc71", class: "rank-3" }      // 緑
+    };
+
     for (let i = 1; i <= 12; i++) {
-        let rc = "rank-other"; // デフォルト（4位以降）
-        if (i === 1) rc = "rank-1"; // 1位（シアン）
-        if (i === 2) rc = "rank-2"; // 2位（青）
-        if (i === 3) rc = "rank-3"; // 3位（緑）
+        // 1〜3位は定義した色、それ以外は薄い青
+        const style = rankStyles[i] || { color: "rgba(0, 212, 255, 0.15)", class: "rank-other" };
         
-        // CSSの .trend-tile と .rank-X を両方付与
-        html += `<div class="trend-tile ${rc}"></div>`;
+        // style属性に直接 background-color を書き込む（!important付き）
+        // これでCSSファイル内のどんな記述よりも優先して色がつきます
+        html += `<div class="trend-tile ${style.class}" style="background-color: ${style.color} !important;"></div>`;
     }
     
     container.innerHTML = html;
-    
-    // 既存のタイマー処理などがあれば継続
+
+    // もし既存のサイクル関数があれば実行
     if (typeof startHeatmapCycle === 'function') {
         startHeatmapCycle();
     }
 }
+
 function startHeatmapCycle() {
     if (window.trendTimer) clearInterval(window.trendTimer);
 
