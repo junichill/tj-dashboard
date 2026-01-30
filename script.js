@@ -441,61 +441,73 @@ async function fetchTrends() {
 function renderTrends(container, data) {
     if (!container) return;
     
-    const trendData = data || [];
+    // 空白を埋めるためのプロフェッショナル・ワード
+    const backupWords = ["Market Cap", "Volatility", "Bullish", "SaaS", "Web3", "Semiconductor", "Liquidity", "Unicorn", "EBITDA", "Fintech", "Cloud", "Agile"];
+    
+    let trendData = data || [];
+    const finalData = [];
+    for (let i = 0; i < 12; i++) {
+        finalData.push(trendData[i] || backupWords[i]);
+    }
+
     let html = "";
 
-    for (let i = 1; i <= 12; i++) {
-        let rc = "rank-other";
-        let style = "";
-        let content = trendData[i-1] ? trendData[i-1] : ""; 
+    // MatplotlibのViridisに近いカラーシーケンス (1位=濃い紫〜12位=黄色、またはその逆)
+    // 今回は「1位を最も濃い深みのある色」に設定
+    const colormap = [
+        "rgba(68, 1, 84, 0.95)",   // 1位 (Deep Purple)
+        "rgba(72, 35, 116, 0.9)",  // 2位
+        "rgba(64, 67, 135, 0.85)", // 3位
+        "rgba(52, 94, 141, 0.8)",  // 4位
+        "rgba(41, 120, 142, 0.7)", // 5位
+        "rgba(32, 144, 140, 0.6)", // 6位
+        "rgba(34, 167, 132, 0.5)", // 7位
+        "rgba(68, 190, 112, 0.4)", // 8位
+        "rgba(121, 209, 81, 0.3)", // 9位
+        "rgba(189, 222, 38, 0.25)",// 10位
+        "rgba(253, 231, 36, 0.2)", // 11位
+        "rgba(253, 231, 36, 0.15)" // 12位
+    ];
 
-        // --- デザイン設定 ---
-        let fontSize = "12px";
-        let bgColor = "rgba(0, 229, 255, 0.1)"; // デフォルト（淡いシアン）
-        let fontWeight = "300";
+    for (let i = 1; i <= 12; i++) {
+        let style = "";
+        let content = finalData[i-1];
+        let bgColor = colormap[i-1];
+
+        // --- レイアウトと文字サイズの設定 ---
+        let fontSize = "11px";
+        let fontWeight = "400";
 
         if (i === 1) {
-            rc = "rank-1";
-            // 1位：最も濃いシアン、大きな文字
             style = "grid-area: 1 / 1 / 4 / 4 !important;";
-            bgColor = "rgba(0, 180, 216, 1)"; 
-            fontSize = "24px";
+            fontSize = "32px"; // 大幅にアップ
             fontWeight = "900";
         } else if (i === 2) {
-            rc = "rank-2";
-            // 2位：中間の濃さ、中くらいの文字
             style = "grid-area: 1 / 4 / 3 / 7 !important;";
-            bgColor = "rgba(0, 150, 199, 0.8)";
-            fontSize = "18px";
+            fontSize = "22px";
             fontWeight = "700";
         } else if (i === 3) {
-            rc = "rank-3";
-            // 3位：少し薄め
             style = "grid-area: 4 / 1 / 5 / 4 !important;";
-            bgColor = "rgba(0, 119, 182, 0.6)";
-            fontSize = "14px";
-            fontWeight = "500";
-        } else {
-            // その他：透明感のある背景
-            bgColor = "rgba(0, 229, 255, 0.15)";
+            fontSize = "18px";
+            fontWeight = "600";
         }
 
-        // 文字数が多い場合に省略する処理（1位は長く、他は短く）
-        const maxLen = i === 1 ? 40 : i <= 3 ? 20 : 10;
+        // 文字数調整
+        const maxLen = i === 1 ? 25 : i <= 3 ? 15 : 10;
         if (content.length > maxLen) {
-            content = content.substring(0, maxLen) + "...";
+            content = content.substring(0, maxLen) + "..";
         }
 
-        html += `<div class="trend-tile ${rc}" style="${style} 
+        html += `<div class="trend-tile" style="${style} 
                     background-color: ${bgColor} !important;
-                    border: 1px solid rgba(255,255,255,0.2) !important;
+                    border: 1px solid rgba(255,255,255,0.08) !important;
                     display: flex; align-items: center; justify-content: center;
                     font-size: ${fontSize}; font-weight: ${fontWeight};
-                    color: white; overflow: hidden; text-align: center;
-                    padding: 12px; box-sizing: border-box;
-                    backdrop-filter: blur(10px);
-                    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-                    letter-spacing: 0.05em; line-height: 1.3;">
+                    color: ${i > 8 ? '#111' : '#fff'}; /* 明るい色には黒文字を */
+                    overflow: hidden; text-align: center;
+                    padding: 10px; box-sizing: border-box;
+                    backdrop-filter: blur(5px);
+                    transition: all 0.3s ease;">
                     ${content}
                  </div>`;
     }
