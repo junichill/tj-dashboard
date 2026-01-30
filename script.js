@@ -441,58 +441,60 @@ async function fetchTrends() {
 function renderTrends(container, data) {
     if (!container) return;
     
-    const backupWords = ["LIVE FEED", "TRENDING", "MARKET", "TECH", "GLOBAL", "SIGNAL", "INDEX", "DATA", "CORE", "API", "LOG", "BIO"];
+    // 8パネル用の予備ワード
+    const backupWords = ["LIVE FEED", "MARKET", "GLOBAL", "SIGNAL", "INDEX", "CORE", "API", "CLOUD"];
     
     let trendData = data || [];
     const finalData = [];
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 8; i++) {
         finalData.push(trendData[i] || backupWords[i]);
     }
 
     let html = "";
 
-    // MatplotlibのSpectralにインスパイアされた配色（1位が赤、12位が青）
+    // 青系を増やしたSpectralパレット (赤を1枚に絞り、青・緑を豊かに)
     const colormap = [
-        "rgba(213, 62, 79, 0.95)",   // 1位: 赤 (Red)
-        "rgba(244, 109, 67, 0.9)",   // 2位: オレンジ
-        "rgba(253, 174, 97, 0.85)",  // 3位: 薄いオレンジ
-        "rgba(254, 224, 139, 0.8)",  // 4位: 黄
-        "rgba(230, 245, 152, 0.7)",  // 5位: 黄緑
-        "rgba(171, 221, 164, 0.6)",  // 6位: 緑
-        "rgba(102, 194, 165, 0.5)",  // 7位: エメラルド
-        "rgba(50, 136, 189, 0.45)",  // 8位: 青緑
-        "rgba(40, 100, 170, 0.4)",   // 9位: 青
-        "rgba(30, 70, 150, 0.35)",   // 10位: 深い青
-        "rgba(20, 40, 120, 0.3)",    // 11位: 紺
-        "rgba(10, 20, 80, 0.25)"     // 12位: ほぼ黒に近い紺
+        "rgba(213, 62, 79, 0.95)",   // 1位: 赤（アクセント）
+        "rgba(253, 174, 97, 0.9)",   // 2位: オレンジ
+        "rgba(230, 245, 152, 0.85)", // 3位: 黄緑（明るい）
+        "rgba(102, 194, 165, 0.8)",  // 4位: エメラルド
+        "rgba(50, 136, 189, 0.75)",  // 5位: 青緑
+        "rgba(40, 100, 170, 0.7)",   // 6位: 青
+        "rgba(30, 60, 140, 0.65)",   // 7位: 深い青
+        "rgba(20, 30, 100, 0.6)"      // 8位: 紺
     ];
 
-    for (let i = 1; i <= 12; i++) {
+    for (let i = 1; i <= 8; i++) {
         let style = "";
         let content = finalData[i-1];
         let bgColor = colormap[i-1];
 
-        // --- フォント設定 ---
-        let fontSize = "11px";
+        // --- レイアウト設定 (8枚用のグリッド) ---
+        let fontSize = "14px";
         let fontWeight = "400";
-        // 背景が明るい中間色（4,5,6位あたり）は黒文字で見やすく
-        let textColor = (i >= 4 && i <= 6) ? "rgba(0,0,0,0.8)" : "#fff";
+        let textColor = (i === 3 || i === 4) ? "rgba(0,0,0,0.8)" : "#fff";
 
         if (i === 1) {
-            style = "grid-area: 1 / 1 / 4 / 4 !important;";
-            fontSize = "42px";
+            // 左上の巨大メイン
+            style = "grid-area: 1 / 1 / 4 / 5 !important;";
+            fontSize = "46px"; 
             fontWeight = "900";
         } else if (i === 2) {
-            style = "grid-area: 1 / 4 / 3 / 7 !important;";
-            fontSize = "26px";
+            // 右上のサブメイン
+            style = "grid-area: 1 / 5 / 3 / 8 !important;";
+            fontSize = "28px";
             fontWeight = "800";
         } else if (i === 3) {
-            style = "grid-area: 4 / 1 / 5 / 4 !important;";
-            fontSize = "18px";
+            // 中段
+            style = "grid-area: 3 / 5 / 5 / 8 !important;";
+            fontSize = "20px";
             fontWeight = "700";
+        } else {
+            // 下段の小パネルたち
+            fontSize = "13px";
         }
 
-        const maxLen = i === 1 ? 25 : i <= 3 ? 15 : 12;
+        const maxLen = i === 1 ? 20 : i <= 3 ? 15 : 10;
         if (content.length > maxLen) {
             content = content.substring(0, maxLen) + "..";
         }
@@ -504,10 +506,9 @@ function renderTrends(container, data) {
                     font-size: ${fontSize}; font-weight: ${fontWeight};
                     color: ${textColor}; 
                     overflow: hidden; text-align: center;
-                    padding: 12px; box-sizing: border-box;
+                    padding: 15px; box-sizing: border-box;
                     backdrop-filter: blur(8px);
-                    text-transform: uppercase;
-                    transition: all 0.4s ease;">
+                    text-transform: uppercase;">
                     ${content}
                  </div>`;
     }
