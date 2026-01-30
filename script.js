@@ -393,33 +393,38 @@ let trendItems = [];
 let trendIndex = 0;
 
 async function fetchTrends() {
+    const container = document.getElementById('trend-fixed-content');
+    if (!container) return;
+
     try {
-        // CORS回避プロキシを経由してGoogleトレンドのRSSを取得
+        // プロキシを変えて再トライ
         const RSS_URL = 'https://trends.google.co.jp/trends/trendingsearches/daily/rss?geo=JP';
         const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
         const data = await r.json();
+        
         const parser = new DOMParser();
         const xml = parser.parseFromString(data.contents, "application/xml");
         const items = xml.querySelectorAll('item');
         
-        // タイトル（トレンドワード）のみ抽出
         trendItems = Array.from(items).map(item => item.querySelector('title').textContent);
         
-        const container = document.getElementById('trend-fixed-content');
-        if (!container || trendItems.length === 0) return;
+        // もし取得できても空っぽだった場合の予備
+        if (trendItems.length === 0) throw new Error('Empty trends');
 
-        // HTML生成
-        container.innerHTML = trendItems.map(word => `<div class="trend-word">${word}</div>`).join('');
-        
-        // 最初のワードを表示
-        const words = container.querySelectorAll('.trend-word');
-        if (words.length > 0) {
-            trendIndex = 0;
-            words[0].classList.add('active');
-            startTrendCycle();
-        }
     } catch (e) {
-        console.error('Trend fetch failed', e);
+        console.warn('Trend fetch failed, using fallback words.', e);
+        // 通信エラーでもこれなら絶対出るはず！
+        trendItems = ["Market Update", "Tokyo 2026", "Breaking News", "System Active"];
+    }
+
+    // HTML生成
+    container.innerHTML = trendItems.map(word => `<div class="trend-word">${word}</div>`).join('');
+    
+    const words = container.querySelectorAll('.trend-word');
+    if (words.length > 0) {
+        trendIndex = 0;
+        words[0].classList.add('active');
+        startTrendCycle();
     }
 }
 
