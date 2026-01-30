@@ -441,8 +441,8 @@ async function fetchTrends() {
 function renderTrends(container, data) {
     if (!container) return;
     
-    // 空白を埋めるためのプロフェッショナル・ワード
-    const backupWords = ["Market Cap", "Volatility", "Bullish", "SaaS", "Web3", "Semiconductor", "Liquidity", "Unicorn", "EBITDA", "Fintech", "Cloud", "Agile"];
+    // 空白を埋めるためのスマートなキーワード
+    const backupWords = ["AI MODEL", "QUANTUM", "CYBER", "STOCKS", "NEURAL", "BLOCKCHAIN", "SYSTEM", "DATA", "LOG", "CORE", "API", "CLOUD"];
     
     let trendData = data || [];
     const finalData = [];
@@ -452,21 +452,21 @@ function renderTrends(container, data) {
 
     let html = "";
 
-    // MatplotlibのViridisに近いカラーシーケンス (1位=濃い紫〜12位=黄色、またはその逆)
-    // 今回は「1位を最も濃い深みのある色」に設定
+    // センスを研ぎ澄ませた「ディープ・ハイコントラスト」パレット
+    // 1位: 深い藍色（情報の核）から、徐々に発光するような色彩へ
     const colormap = [
-        "rgba(68, 1, 84, 0.95)",   // 1位 (Deep Purple)
-        "rgba(72, 35, 116, 0.9)",  // 2位
-        "rgba(64, 67, 135, 0.85)", // 3位
-        "rgba(52, 94, 141, 0.8)",  // 4位
-        "rgba(41, 120, 142, 0.7)", // 5位
-        "rgba(32, 144, 140, 0.6)", // 6位
-        "rgba(34, 167, 132, 0.5)", // 7位
-        "rgba(68, 190, 112, 0.4)", // 8位
-        "rgba(121, 209, 81, 0.3)", // 9位
-        "rgba(189, 222, 38, 0.25)",// 10位
-        "rgba(253, 231, 36, 0.2)", // 11位
-        "rgba(253, 231, 36, 0.15)" // 12位
+        "rgba(10, 20, 50, 0.95)",   // 1位: 深淵なネイビー（最も重厚）
+        "rgba(20, 40, 90, 0.9)",    // 2位
+        "rgba(30, 60, 130, 0.85)",  // 3位
+        "rgba(0, 100, 180, 0.8)",   // 4位
+        "rgba(0, 130, 200, 0.75)",  // 5位
+        "rgba(0, 160, 220, 0.7)",   // 6位
+        "rgba(0, 190, 230, 0.65)",  // 7位
+        "rgba(0, 220, 240, 0.6)",   // 8位
+        "rgba(100, 240, 255, 0.5)", // 9位
+        "rgba(150, 250, 255, 0.4)", // 10位
+        "rgba(200, 255, 255, 0.3)", // 11位
+        "rgba(230, 255, 255, 0.2)"  // 12位
     ];
 
     for (let i = 1; i <= 12; i++) {
@@ -474,17 +474,19 @@ function renderTrends(container, data) {
         let content = finalData[i-1];
         let bgColor = colormap[i-1];
 
-        // --- レイアウトと文字サイズの設定 ---
+        // --- レイアウトとフォントの黄金比 ---
         let fontSize = "11px";
-        let fontWeight = "400";
+        let fontWeight = "300";
+        let letterSpacing = "0.05em";
 
         if (i === 1) {
             style = "grid-area: 1 / 1 / 4 / 4 !important;";
-            fontSize = "32px"; // 大幅にアップ
+            fontSize = "38px"; // 枠いっぱいのインパクト
             fontWeight = "900";
+            letterSpacing = "-0.02em";
         } else if (i === 2) {
             style = "grid-area: 1 / 4 / 3 / 7 !important;";
-            fontSize = "22px";
+            fontSize = "24px";
             fontWeight = "700";
         } else if (i === 3) {
             style = "grid-area: 4 / 1 / 5 / 4 !important;";
@@ -492,22 +494,24 @@ function renderTrends(container, data) {
             fontWeight = "600";
         }
 
-        // 文字数調整
-        const maxLen = i === 1 ? 25 : i <= 3 ? 15 : 10;
+        // 文字数調整（改行も考慮）
+        const maxLen = i === 1 ? 20 : i <= 3 ? 15 : 12;
         if (content.length > maxLen) {
             content = content.substring(0, maxLen) + "..";
         }
 
         html += `<div class="trend-tile" style="${style} 
                     background-color: ${bgColor} !important;
-                    border: 1px solid rgba(255,255,255,0.08) !important;
+                    border: 1px solid rgba(255,255,255,0.1) !important;
                     display: flex; align-items: center; justify-content: center;
                     font-size: ${fontSize}; font-weight: ${fontWeight};
-                    color: ${i > 8 ? '#111' : '#fff'}; /* 明るい色には黒文字を */
+                    color: ${i > 8 ? '#00e5ff' : '#fff'}; 
+                    letter-spacing: ${letterSpacing};
                     overflow: hidden; text-align: center;
-                    padding: 10px; box-sizing: border-box;
-                    backdrop-filter: blur(5px);
-                    transition: all 0.3s ease;">
+                    padding: 15px; box-sizing: border-box;
+                    backdrop-filter: blur(4px);
+                    box-shadow: inset 0 0 30px rgba(0,0,0,0.2);
+                    text-transform: uppercase;">
                     ${content}
                  </div>`;
     }
