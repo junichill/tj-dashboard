@@ -594,19 +594,18 @@ body {
     overflow: hidden;
 }
 
+.trend-word::before {
+    content: "# "; /* ワードの前にハッシュタグを強制付与 */
+    color: #1DA1F2; /* X（旧Twitter）のブランドカラー */
+    font-size: 0.8em;
+    margin-right: 5px;
+}
+
 .trend-word {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    text-align: center;
-    font-size: 48px; /* 大きめに設定 */
-    font-weight: 900;
-    color: #fff;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 1.5s ease-in;
+    /* フォントをよりSNSっぽくモダンに */
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    letter-spacing: -1px;
+    /* ...既存の centering/particle 設定... */
 }
 
 .trend-word.active {
@@ -630,6 +629,7 @@ body {
     opacity: 0.6;
     letter-spacing: 2px;
 }
+
 
 
 
