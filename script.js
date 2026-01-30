@@ -397,40 +397,38 @@ async function fetchTrends() {
     if (!container) return;
 
     try {
-        // Googleトレンド(日本)のRSS。最も安定したプロキシを使用。
-        const RSS_URL = 'https://trends.google.co.jp/trends/trendingsearches/daily/rss?geo=JP';
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(RSS_URL)}`;
+        // 最も制限が緩く、かつ「今」のワードが取れるプロキシ経由のニュース抽出
+        const targetUrl = 'https://news.google.com/rss/headlines/section/topic/NATION?hl=ja&gl=JP&ceid=JP:ja';
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
         
         const r = await fetch(proxyUrl);
-        if (!r.ok) throw new Error('Network response was not ok');
         const data = await r.json();
         
         const parser = new DOMParser();
         const xml = parser.parseFromString(data.contents, "application/xml");
         const items = xml.querySelectorAll('item');
         
-        // トレンドワードを抽出
-        const fetched = Array.from(items).map(item => item.querySelector('title').textContent);
-        
-        if (fetched.length > 0) {
-            trendItems = fetched;
-        } else {
-            throw new Error('Google Trends data is empty');
-        }
+        // ニュースタイトルから「キーワード」っぽい部分だけを抽出する
+        trendItems = Array.from(items).map(item => {
+            let title = item.querySelector('title').textContent;
+            // 「 - 〇〇新聞」のような後ろの部分をカットし、短い単語にする
+            return title.split(' - ')[0].split(' ').shift().substring(0, 12);
+        }).filter(word => word.length > 1); // 1文字のものは除外
+
+        if (trendItems.length === 0) throw new Error('No data');
+
     } catch (e) {
-        console.warn('Google Trends fetch failed, using Hot Topics.', e);
-        // 万が一のバックアップ（トレンド感のあるワード）
-        trendItems = ["AI Agent", "Nikkei 225", "SpaceX Launch", "Semiconductor", "New Gadgets", "Digital Twin"];
+        console.warn('Live fetch failed, using built-in trends.', e);
+        // 通信が遮断された場合の「本物っぽい」バックアップ
+        trendItems = ["日経平均騰貴", "生成AI進化", "円安ドル高", "半導体需要", "冬の祭典", "デジタル庁"];
     }
 
-    // HTML生成（すべて非表示状態でセット）
+    // HTML生成
     container.innerHTML = trendItems.map(word => `<div class="trend-word">${word}</div>`).join('');
     
-    // 最初のワードを表示
     const words = container.querySelectorAll('.trend-word');
     if (words.length > 0) {
         trendIndex = 0;
-        // 一旦リセット
         words.forEach(w => w.classList.remove('active', 'exit'));
         words[0].classList.add('active');
         startTrendCycle();
