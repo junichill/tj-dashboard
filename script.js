@@ -511,3 +511,42 @@ function startHeatmapCycle() {
 fetchTrends();
 // 1時間ごとに最新トレンドに更新
 setInterval(fetchTrends, 3600000);
+
+
+// 他のすべての処理を無視して、無理やりねじ込む
+(function() {
+    console.log("ヒートマップ強制起動開始");
+    const container = document.getElementById('trend-fixed-content');
+    
+    if (!container) {
+        console.error("エラー: #trend-fixed-content が見つかりません");
+        return;
+    }
+
+    // 親要素を「見える」状態にリセット
+    const parent = container.parentElement;
+    parent.style.opacity = "1";
+    parent.style.visibility = "visible";
+    parent.style.display = "block";
+    parent.style.minHeight = "400px";
+
+    // コンテナを強制整形
+    container.style.cssText = `
+        display: grid !important;
+        grid-template-columns: repeat(6, 1fr) !important;
+        grid-template-rows: repeat(4, 1fr) !important;
+        gap: 4px !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: red !important; /* 目立つように一時的に赤に */
+        z-index: 9999 !important;
+    `;
+
+    // テストタイルを作成
+    container.innerHTML = `
+        <div style="grid-area: span 3 / span 3; background: #00e5ff !important; color: black; display: flex; align-items: center; justify-content: center; font-weight: bold;">TEST 01</div>
+        <div style="grid-area: span 2 / span 3; background: #0050a0 !important; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">TEST 02</div>
+        <div style="grid-area: span 1 / span 3; background: #2ecc71 !important; color: black; display: flex; align-items: center; justify-content: center; font-weight: bold;">TEST 03</div>
+    `;
+    console.log("ヒートマップ強制描画完了");
+})();
