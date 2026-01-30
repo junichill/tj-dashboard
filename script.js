@@ -441,6 +441,7 @@ async function fetchTrends() {
 function renderTrends(container, data) {
     if (!container) return;
     
+    // 8x4グリッド設定
     container.style.display = "grid";
     container.style.gridTemplateColumns = "repeat(8, 1fr)";
     container.style.gridTemplateRows = "repeat(4, 1fr)";
@@ -475,30 +476,31 @@ function renderTrends(container, data) {
         let content = finalData[i-1];
         let bgColor = colormap[i-1];
         
-        // --- テック系タイポグラフィの再定義 ---
-        let fontSize = i === 1 ? "42px" : (i <= 3 ? "18px" : "11px");
-        let textColor = (i >= 3 && i <= 5) ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,1)";
+        let fontSize = i === 1 ? "44px" : (i <= 3 ? "20px" : "13px");
+        let textColor = (i >= 3 && i <= 5) ? "rgba(0,0,0,0.75)" : "#ffffff";
         
-        // 1位にはランク番号を添えて情報の密度を上げる
-        const rankTag = `<span style="position:absolute; top:8px; left:10px; font-size:10px; opacity:0.6; letter-spacing:0.2em;">RANK_0${i}</span>`;
-        // ランダムな数値をシミュレートして「動いている感」を出す
-        const valTag = `<span style="position:absolute; bottom:8px; right:10px; font-size:9px; opacity:0.5; font-family:monospace;">${(Math.random()*100).toFixed(2)}%</span>`;
+        // --- 右下の数字演出（4位まで） ---
+        let valTag = "";
+        if (i <= 4) {
+            // 文字を少し大きくし、不透明度を上げて「いい感じ」の存在感に
+            const randomVal = (Math.random() * 100).toFixed(1);
+            valTag = `<span style="position:absolute; bottom:12px; right:12px; font-size:13px; font-weight:400; font-family:monospace; opacity:0.8;">${randomVal}%</span>`;
+        }
 
         html += `<div class="trend-tile" style="${style} 
                     background-color: ${bgColor} !important;
-                    border: 0.5px solid rgba(255,255,255,0.1) !important;
+                    border: 0.5px solid rgba(255,255,255,0.08) !important;
                     position: relative;
-                    display: flex; flex-direction: column; align-items: center; justify-content: center;
+                    display: flex; align-items: center; justify-content: center;
                     font-size: ${fontSize}; 
                     font-weight: 300;
                     letter-spacing: 0.05em;
                     color: ${textColor}; 
-                    padding: 20px; text-align: center;
+                    padding: 25px; text-align: center;
                     text-transform: uppercase; 
-                    font-family: 'Courier New', Courier, monospace; /* ★ 等幅フォントでテック感を出す */
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                     overflow: hidden;">
-                    ${rankTag}
-                    <div style="width:100%; word-wrap: break-word;">${content}</div>
+                    <div style="width:100%; word-wrap: break-word; line-height:1.1;">${content}</div>
                     ${valTag}
                  </div>`;
     }
