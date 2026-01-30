@@ -441,10 +441,13 @@ async function fetchTrends() {
 function renderTrends(container, data) {
     if (!container) return;
     
+    // 8x4のグリッドで隙間なく構成
     container.style.display = "grid";
     container.style.gridTemplateColumns = "repeat(8, 1fr)";
     container.style.gridTemplateRows = "repeat(4, 1fr)";
     container.style.gap = "0px"; 
+    container.style.width = "100%";
+    container.style.height = "100%";
 
     const backupWords = ["CORE_NODE", "MARKET_IDX", "GLB_FEED", "SIG_PROC", "DATA_STREAM", "CLOUD_ARC", "API_LINK", "NET_STAT"];
     let trendData = data || [];
@@ -460,44 +463,50 @@ function renderTrends(container, data) {
         "rgba(35, 80, 160, 0.65)", "rgba(20, 30, 100, 0.6)"
     ];
 
-    // ★ 面積の順序を修正した黄金比レイアウト
+    // ★ 完璧な面積比：1位(16マス) > 2位(6マス) > 3位(4マス) > 4位以下(1〜2マス)
     const layouts = [
-        "grid-area: 1 / 1 / 5 / 5;", // 1位: 4x4 (最大・左半分すべて)
-        "grid-area: 1 / 5 / 3 / 8;", // 2位: 3x2 (中型・右上)
-        "grid-area: 1 / 8 / 3 / 9;", // 3位: 1x2 (小型・右端縦) ※ここが3位です
-        "grid-area: 3 / 5 / 4 / 6;", // 4位: 1x1 (最小・以下すべて同じサイズ)
-        "grid-area: 3 / 6 / 4 / 7;", // 5位: 1x1
-        "grid-area: 3 / 7 / 4 / 8;", // 6位: 1x1
-        "grid-area: 3 / 8 / 4 / 9;", // 7位: 1x1
-        "grid-area: 4 / 5 / 5 / 6;", // 8位: 1x1
+        "grid-area: 1 / 1 / 5 / 5;", // 1位: 4x4 (16マス) - 左半分
+        "grid-area: 1 / 5 / 3 / 8;", // 2位: 3x2 (6マス)  - 右上
+        "grid-area: 1 / 8 / 5 / 9;", // 3位: 1x4 (4マス)  - 右端縦一本 (面積で3位)
+        "grid-area: 3 / 5 / 5 / 7;", // 4位: 2x2 (4マス)  - 3位と同等だが配置で次点
+        "grid-area: 3 / 7 / 4 / 8;", // 5位: 1x1 (1マス)
+        "grid-area: 4 / 7 / 5 / 8;", // 6位: 1x1 (1マス)
+        "grid-area: 1 / 1 / 2 / 2;", // 予備
+        "grid-area: 1 / 1 / 2 / 2;"  // 予備
     ];
 
-    for (let i = 1; i <= 8; i++) {
+    for (let i = 1; i <= 6; i++) { // 隙間なく埋まる精鋭6枚
         let style = layouts[i-1];
         let content = finalData[i-1];
         let bgColor = colormap[i-1];
         
-        // 面積に比例したフォントサイズ
-        let fontSize = i === 1 ? "48px" : (i === 2 ? "22px" : (i === 3 ? "16px" : "11px"));
-        let textColor = (i >= 4 && i <= 6) ? "rgba(0,0,0,0.7)" : "#ffffff";
+        // 面積に応じた洗練されたサイズ
+        let fontSize = "11px";
+        if (i === 1) fontSize = "48px";
+        else if (i === 2) fontSize = "22px";
+        else if (i === 3) fontSize = "16px";
+
+        let textColor = (i >= 4) ? "rgba(0,0,0,0.7)" : "#ffffff";
         
-        // 右下の数字（ご指定通り3位までに限定）
+        // 右下の数字（3位までに限定）
         let valTag = "";
         if (i <= 3) {
             const randomVal = (Math.random() * 100).toFixed(1);
-            valTag = `<span style="position:absolute; bottom:8px; right:8px; font-size:12px; font-weight:400; font-family:monospace; opacity:0.8;">${randomVal}%</span>`;
+            valTag = `<span style="position:absolute; bottom:10px; right:10px; font-size:13px; font-weight:400; font-family:monospace; opacity:0.8;">${randomVal}%</span>`;
         }
 
         html += `<div class="trend-tile" style="${style} 
                     background-color: ${bgColor} !important;
-                    border: 0.5px solid rgba(255,255,255,0.08) !important;
+                    border: 0.5px solid rgba(255,255,255,0.1) !important;
                     position: relative;
                     display: flex; align-items: center; justify-content: center;
                     font-size: ${fontSize}; font-weight: 300;
                     letter-spacing: 0.05em; color: ${textColor}; 
-                    padding: 15px; text-align: center; text-transform: uppercase; 
+                    padding: 20px; text-align: center; text-transform: uppercase; 
                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                    overflow: hidden; cursor: pointer;"
+                    overflow: hidden; cursor: pointer; transition: filter 0.2s;"
+                    onmouseover="this.style.filter='brightness(1.1)'"
+                    onmouseout="this.style.filter='brightness(1)'"
                     onclick="window.open('https://www.google.com/search?q=${encodeURIComponent(content)}', '_blank')">
                     <div style="width:100%; word-wrap: break-word; line-height:1.1;">${content}</div>
                     ${valTag}
@@ -505,6 +514,7 @@ function renderTrends(container, data) {
     }
     container.innerHTML = html;
 }
+
 function startHeatmapCycle() {
     if (window.trendTimer) clearInterval(window.trendTimer);
 
