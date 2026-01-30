@@ -779,3 +779,40 @@ body {
 #trend-fixed-content .trend-tile.rank-other {
     background-color: rgba(0, 212, 255, 0.15) !important;
 }
+
+/* --- 最終警告：他の何よりも優先して色を出す --- */
+
+/* タイルが表示される器を「透明にさせない」 */
+.grid-item-tr, #trend-fixed-content {
+    opacity: 1 !important;
+    visibility: visible !important;
+    background: #111 !important; /* 背景を真っ黒に固定 */
+    overflow: visible !important;
+}
+
+/* ランク別タイルの色を「強制発光」させる */
+.trend-tile {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    box-sizing: border-box !important;
+}
+
+.trend-tile.rank-1 {
+    background-color: #00e5ff !important; /* 鮮やかなシアン */
+    background-image: none !important;
+}
+
+.trend-tile.rank-2 {
+    background-color: #0044ff !important; /* 鮮やかな青 */
+    background-image: none !important;
+}
+
+.trend-tile.rank-3 {
+    background-color: #00ff88 !important; /* 鮮やかな緑 */
+    background-image: none !important;
+}
+
+.trend-tile.rank-other {
+    background-color: #222 !important; /* その他は暗いグレー */
+}
