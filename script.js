@@ -441,7 +441,6 @@ async function fetchTrends() {
 function renderTrends(container, data) {
     if (!container) return;
     
-    // 8x4グリッド設定
     container.style.display = "grid";
     container.style.gridTemplateColumns = "repeat(8, 1fr)";
     container.style.gridTemplateRows = "repeat(4, 1fr)";
@@ -461,30 +460,32 @@ function renderTrends(container, data) {
         "rgba(35, 80, 160, 0.65)", "rgba(20, 30, 100, 0.6)"
     ];
 
+    // ★ 面積の順序を修正した黄金比レイアウト
     const layouts = [
-        "grid-area: 1 / 1 / 4 / 6;", // 1位
-        "grid-area: 1 / 6 / 3 / 9;", // 2位
-        "grid-area: 3 / 6 / 5 / 8;", // 3位
-        "grid-area: 3 / 8 / 5 / 9;", // 4位
-        "grid-area: 4 / 1 / 5 / 3;", // 5位
-        "grid-area: 4 / 3 / 5 / 5;", // 6位
-        "grid-area: 4 / 5 / 5 / 6;", // 7位
+        "grid-area: 1 / 1 / 5 / 5;", // 1位: 4x4 (最大・左半分すべて)
+        "grid-area: 1 / 5 / 3 / 8;", // 2位: 3x2 (中型・右上)
+        "grid-area: 1 / 8 / 3 / 9;", // 3位: 1x2 (小型・右端縦) ※ここが3位です
+        "grid-area: 3 / 5 / 4 / 6;", // 4位: 1x1 (最小・以下すべて同じサイズ)
+        "grid-area: 3 / 6 / 4 / 7;", // 5位: 1x1
+        "grid-area: 3 / 7 / 4 / 8;", // 6位: 1x1
+        "grid-area: 3 / 8 / 4 / 9;", // 7位: 1x1
+        "grid-area: 4 / 5 / 5 / 6;", // 8位: 1x1
     ];
 
-    for (let i = 1; i <= 7; i++) {
+    for (let i = 1; i <= 8; i++) {
         let style = layouts[i-1];
         let content = finalData[i-1];
         let bgColor = colormap[i-1];
         
-        let fontSize = i === 1 ? "44px" : (i <= 3 ? "20px" : "13px");
-        let textColor = (i >= 3 && i <= 5) ? "rgba(0,0,0,0.75)" : "#ffffff";
+        // 面積に比例したフォントサイズ
+        let fontSize = i === 1 ? "48px" : (i === 2 ? "22px" : (i === 3 ? "16px" : "11px"));
+        let textColor = (i >= 4 && i <= 6) ? "rgba(0,0,0,0.7)" : "#ffffff";
         
-        // --- 右下の数字演出（3位までに限定） ---
+        // 右下の数字（ご指定通り3位までに限定）
         let valTag = "";
         if (i <= 3) {
-            // 数字を際立たせ、情報の優先順位を視覚化
             const randomVal = (Math.random() * 100).toFixed(1);
-            valTag = `<span style="position:absolute; bottom:12px; right:12px; font-size:14px; font-weight:400; font-family:monospace; opacity:0.9;">${randomVal}%</span>`;
+            valTag = `<span style="position:absolute; bottom:8px; right:8px; font-size:12px; font-weight:400; font-family:monospace; opacity:0.8;">${randomVal}%</span>`;
         }
 
         html += `<div class="trend-tile" style="${style} 
@@ -492,15 +493,11 @@ function renderTrends(container, data) {
                     border: 0.5px solid rgba(255,255,255,0.08) !important;
                     position: relative;
                     display: flex; align-items: center; justify-content: center;
-                    font-size: ${fontSize}; 
-                    font-weight: 300;
-                    letter-spacing: 0.05em;
-                    color: ${textColor}; 
-                    padding: 25px; text-align: center;
-                    text-transform: uppercase; 
+                    font-size: ${fontSize}; font-weight: 300;
+                    letter-spacing: 0.05em; color: ${textColor}; 
+                    padding: 15px; text-align: center; text-transform: uppercase; 
                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                    overflow: hidden;
-                    cursor: pointer;"
+                    overflow: hidden; cursor: pointer;"
                     onclick="window.open('https://www.google.com/search?q=${encodeURIComponent(content)}', '_blank')">
                     <div style="width:100%; word-wrap: break-word; line-height:1.1;">${content}</div>
                     ${valTag}
@@ -508,7 +505,6 @@ function renderTrends(container, data) {
     }
     container.innerHTML = html;
 }
-
 function startHeatmapCycle() {
     if (window.trendTimer) clearInterval(window.trendTimer);
 
