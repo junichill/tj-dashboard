@@ -599,34 +599,37 @@ body {
     align-items: stretch !important;
 }
 
-/* 各タイル：株価ヒートマップ風の枠と背景 */
-.trend-tile {
-    position: relative !important;
-    background: rgba(0, 212, 255, 0.1) !important; /* 基本の色 */
-    border: 1px solid rgba(0, 212, 255, 0.4) !important; /* 枠線 */
-    border-radius: 4px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
-    overflow: hidden !important;
-    /* 以前の absolute 設定を無効化 */
-    top: auto !important;
-    left: auto !important;
-    transform: none !important;
-    opacity: 1;
+/* ヒートマップ内の文字を完全に非表示 */
+.tile-rank, .tile-word {
+    display: none !important;
 }
 
-/* 注目度が高いタイルの色付け（ヒートマップの重み付け） */
-.trend-tile:nth-child(1) { 
-    grid-column: span 2; 
-    grid-row: span 2; 
-    background: rgba(0, 212, 255, 0.3) !important; /* 1位は濃く */
-    border: 2px solid #00d4ff !important;
+/* タイルそのもののデザインを強化 */
+.trend-tile {
+    position: relative !important;
+    background: rgba(0, 212, 255, 0.15) !important;
+    border: 1px solid rgba(0, 212, 255, 0.5) !important;
+    border-radius: 2px !important; /* 角を少し鋭利にして精密感を出す */
+    box-shadow: inset 0 0 15px rgba(0, 212, 255, 0.1);
+    /* 呼吸するようなアニメーションを追加 */
+    animation: tile-glow 4s infinite alternate ease-in-out;
 }
+
+/* 1位・2位のタイルの存在感を圧倒的にする */
+.trend-tile:nth-child(1) { 
+    background: rgba(0, 212, 255, 0.4) !important; 
+    border: 2px solid #00d4ff !important;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.2), inset 0 0 20px rgba(0, 212, 255, 0.2);
+}
+
 .trend-tile:nth-child(2) { 
-    grid-column: span 2; 
-    background: rgba(0, 212, 255, 0.2) !important;
+    background: rgba(0, 212, 255, 0.25) !important; 
+}
+
+/* タイルが光るアニメーション */
+@keyframes tile-glow {
+    from { opacity: 0.6; }
+    to { opacity: 1; }
 }
 
 /* タイル内の文字 */
@@ -650,3 +653,4 @@ body {
     animation: particle-dissolve 3.5s forwards ease-out !important;
     pointer-events: none;
 }
+
