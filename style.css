@@ -583,10 +583,12 @@ body {
 .weather-data-line .sep { color: rgba(255, 255, 255, 0.1); margin: 0 2px; }
 
 
-/* 右上パネルコンテナ */
+/* ヒートマップの親のフィルターを無効化して中身を露出させる */
 .grid-item-tr {
-    padding: 0 !important;
-    background: rgba(0, 0, 0, 0.2); /* 背景を少し暗くして発光を際立たせる */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(0,0,0,0.3) !important;
+    z-index: 10 !important;
 }
 
 #trend-fixed-content {
@@ -709,4 +711,5 @@ body {
     outline: 1px solid yellow !important; /* タイルを黄枠で示す */
     min-height: 20px !important;
 }
+
 
