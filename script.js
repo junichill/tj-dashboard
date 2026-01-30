@@ -396,32 +396,38 @@ async function fetchTrends() {
     const container = document.getElementById('trend-fixed-content');
     if (!container) return;
 
+    // 最新のトレンドRSS URL候補（geo=JPを末尾にしっかり付ける）
+    const GOOGLE_TRENDS_RSS = 'https://trends.google.co.jp/trending/rss?geo=JP';
+    const HATENA_HOTENTRY = 'https://b.hatena.ne.jp/hotentry.rss'; // SNSでバズっている話題の宝庫
+
     try {
-        // SNSで話題のワードを収集している「ついラン」等の情報を反映しやすいフィードを選択
-        // 今回はCORSを突破しやすく、トレンド性が高い「はてなブックマークの関心ワード」や
-        // Googleトレンドの検索急上昇ワードの別ルートを試行します
-        const RSS_URL = 'https://trends.google.co.jp/trends/trendingsearches/daily/rss?geo=JP';
-        
-        // プロキシを「cors-anywhere」的な動作をする別のものに変更
-        const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(RSS_URL)}`);
+        // 1. まずGoogleトレンドの新URLを試す
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(GOOGLE_TRENDS_RSS)}`;
+        const r = await fetch(proxyUrl);
         const data = await r.json();
         
         const parser = new DOMParser();
         const xml = parser.parseFromString(data.contents, "application/xml");
         const items = xml.querySelectorAll('item');
-        
-        // タイトルのみ抽出。Xのトレンドに近い「短いワード」が並びます
-        trendItems = Array.from(items).map(item => item.querySelector('title').textContent);
 
-        if (trendItems.length === 0) throw new Error('Data Empty');
+        if (items.length > 0) {
+            trendItems = Array.from(items).map(item => item.querySelector('title').textContent);
+        } else {
+            // 2. Googleが404や空なら、SNSのバズ（はてブ）を拾う
+            console.log("Switching to Hatena Trends...");
+            const r2 = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(HATENA_HOTENTRY)}`);
+            const data2 = await r2.json();
+            const xml2 = parser.parseFromString(data2.contents, "application/xml");
+            const items2 = xml2.querySelectorAll('item');
+            trendItems = Array.from(items2).map(item => item.querySelector('title').textContent.substring(0, 20));
+        }
 
     } catch (e) {
-        console.warn('X-Trend fetch failed, using social simulation.', e);
-        // 通信が失敗した時のバックアップ（今どきのSNSトレンドっぽいワードをセット）
-        trendItems = ["#推しの子", "地震速報", "iPhone17", "Amazonセール", "新作ゲーム", "連休の過ごし方", "値上げラッシュ"];
+        console.warn('Fetch failed', e);
+        trendItems = ["#推しの子", "円安ドル高", "新作AI", "地震速報", "iPhone17", "Amazonセール"];
     }
 
-    // 画面への反映
+    // 画面反映（粒子エフェクト用の構造を維持）
     container.innerHTML = trendItems.map(word => `<div class="trend-word">${word}</div>`).join('');
     
     const words = container.querySelectorAll('.trend-word');
