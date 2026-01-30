@@ -513,24 +513,11 @@ fetchTrends();
 setInterval(fetchTrends, 3600000);
 
 
-// 他のすべての処理を無視して、無理やりねじ込む
 (function() {
-    console.log("ヒートマップ強制起動開始");
     const container = document.getElementById('trend-fixed-content');
-    
-    if (!container) {
-        console.error("エラー: #trend-fixed-content が見つかりません");
-        return;
-    }
+    if (!container) return;
 
-    // 親要素を「見える」状態にリセット
-    const parent = container.parentElement;
-    parent.style.opacity = "1";
-    parent.style.visibility = "visible";
-    parent.style.display = "block";
-    parent.style.minHeight = "400px";
-
-    // コンテナを強制整形
+    // 1. レイアウトの強制固定（赤を消して透明な黒に）
     container.style.cssText = `
         display: grid !important;
         grid-template-columns: repeat(6, 1fr) !important;
@@ -538,15 +525,38 @@ setInterval(fetchTrends, 3600000);
         gap: 4px !important;
         width: 100% !important;
         height: 100% !important;
-        background: red !important; /* 目立つように一時的に赤に */
-        z-index: 9999 !important;
+        padding: 8px !important;
+        box-sizing: border-box !important;
+        background: rgba(0, 0, 0, 0.3) !important;
     `;
 
-    // テストタイルを作成
-    container.innerHTML = `
-        <div style="grid-area: span 3 / span 3; background: #00e5ff !important; color: black; display: flex; align-items: center; justify-content: center; font-weight: bold;">TEST 01</div>
-        <div style="grid-area: span 2 / span 3; background: #0050a0 !important; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">TEST 02</div>
-        <div style="grid-area: span 1 / span 3; background: #2ecc71 !important; color: black; display: flex; align-items: center; justify-content: center; font-weight: bold;">TEST 03</div>
-    `;
-    console.log("ヒートマップ強制描画完了");
+    // 2. 本物のトレンド（仮）を流し込む
+    const trends = [
+        { name: "NASDAQ", color: "#00e5ff", area: "1 / 1 / 4 / 4" }, // 1位: 3x3
+        { name: "JPY/USD", color: "rgba(0, 80, 160, 0.9)", area: "1 / 4 / 3 / 7" }, // 2位: 3x2
+        { name: "Nikkei 225", color: "#2ecc71", area: "4 / 1 / 5 / 4" }  // 3位: 3x1
+    ];
+
+    let html = "";
+    // 1〜3位の配置
+    trends.forEach(t => {
+        html += `<div class="trend-tile" style="
+            grid-area: ${t.area} !important;
+            background-color: ${t.color} !important;
+            border: 1px solid rgba(255,255,255,0.2) !important;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: bold; color: white;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+        ">${t.name}</div>`;
+    });
+
+    // 残りの細かい隙間（9個）を埋める
+    for (let i = 0; i < 9; i++) {
+        html += `<div class="trend-tile" style="
+            background-color: rgba(0, 212, 255, 0.1) !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
+        "></div>`;
+    }
+
+    container.innerHTML = html;
 })();
