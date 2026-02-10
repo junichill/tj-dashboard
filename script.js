@@ -235,14 +235,37 @@ function initTradingViewWidgets() {
 
 function startForexVerticalSlide() {
     const wrapper = document.getElementById('forex-wrapper-v');
-    if (!wrapper) return;
+    const slides = document.querySelectorAll('.forex-slide-v');
+    if (!wrapper || slides.length === 0) return;
     
+    // 初期状態：最初のスライド以外を隠す
+    slides.forEach((s, i) => {
+        s.style.display = i === 0 ? 'block' : 'none';
+    });
+
     setInterval(() => {
-        forexVIndex = (forexVIndex + 1) % 3;
-        // 縦方向（Y軸）に155pxずつ移動
-        const offset = -forexVIndex * 155;
-        wrapper.style.transform = `translateY(${offset}px)`;
-    }, 10000); // 10秒ごとに切り替え
+        const currentSlide = slides[forexVIndex];
+        forexVIndex = (forexVIndex + 1) % slides.length;
+        const nextSlide = slides[forexVIndex];
+
+        // 1. 現在のスライドに回転アニメーションを付与
+        currentSlide.classList.add('roulette-active');
+
+        setTimeout(() => {
+            // 2. 回転の途中で表示を切り替える
+            currentSlide.style.display = 'none';
+            currentSlide.classList.remove('roulette-active');
+            
+            nextSlide.style.display = 'block';
+            nextSlide.classList.add('roulette-active');
+            
+            // 3. 次のスライドのアニメーションが終わったらクラスを削除
+            setTimeout(() => {
+                nextSlide.classList.remove('roulette-active');
+            }, 800);
+        }, 400); // アニメーションの中間地点でスイッチ
+        
+    }, 10000); // 10秒ごとに回転
 }
 
 function appendMiniWidget(containerId, config) {
