@@ -717,8 +717,7 @@ body {
     height: 60px; /* パネルの高さ */
     position: relative;
     transform-style: preserve-3d;
-    transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1); /* ゆっくり重厚に回る */
-}
+    transition: transform 2.5s cubic-bezier(0.65, 0, 0.35, 1);}
 
 .forex-slide-v {
     position: absolute;
@@ -751,3 +750,4 @@ body {
 .forex-slide-v:nth-child(1) { transform: rotateX(0deg) translateZ(35px); }
 .forex-slide-v:nth-child(2) { transform: rotateX(120deg) translateZ(35px); }
 .forex-slide-v:nth-child(3) { transform: rotateX(240deg) translateZ(35px); }
+
