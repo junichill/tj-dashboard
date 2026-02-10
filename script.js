@@ -233,21 +233,27 @@ function initTradingViewWidgets() {
     startForexVerticalSlide();
 }
 
-let forexRotationDegree = 0; // 回転角度を保持
+let forexTimer = null;
+let forexRotationDegree = 0;
 
 function startForexVerticalSlide() {
     const wrapper = document.getElementById('forex-wrapper-v');
     const slides = document.querySelectorAll('.forex-slide-v');
     if (!wrapper || slides.length === 0) return;
 
-    // 初期化: display:noneを解除して3D空間に配置
+    // --- 【修正点】既存のタイマーがあれば破棄する ---
+    if (forexTimer) {
+        clearInterval(forexTimer);
+    }
+
+    // 初期化: すべての面をflex表示にして3D配置を確定
     slides.forEach(s => s.style.display = 'flex');
 
-    setInterval(() => {
-        // 120度ずつマイナス方向に回転させることで「手前に回ってくる」動きにする
+    // 新しいタイマーを登録
+    forexTimer = setInterval(() => {
         forexRotationDegree -= 120;
         wrapper.style.transform = `rotateX(${forexRotationDegree}deg)`;
-    }, 8000); // 8秒ごとにゆっくり回転
+    }, 12000); // 12秒ごとに回転
 }
 
 function appendMiniWidget(containerId, config) {
