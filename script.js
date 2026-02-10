@@ -233,39 +233,21 @@ function initTradingViewWidgets() {
     startForexVerticalSlide();
 }
 
+let forexRotationDegree = 0; // 回転角度を保持
+
 function startForexVerticalSlide() {
     const wrapper = document.getElementById('forex-wrapper-v');
     const slides = document.querySelectorAll('.forex-slide-v');
     if (!wrapper || slides.length === 0) return;
-    
-    // 初期状態：最初のスライド以外を隠す
-    slides.forEach((s, i) => {
-        s.style.display = i === 0 ? 'block' : 'none';
-    });
+
+    // 初期化: display:noneを解除して3D空間に配置
+    slides.forEach(s => s.style.display = 'flex');
 
     setInterval(() => {
-        const currentSlide = slides[forexVIndex];
-        forexVIndex = (forexVIndex + 1) % slides.length;
-        const nextSlide = slides[forexVIndex];
-
-        // 1. 現在のスライドに回転アニメーションを付与
-        currentSlide.classList.add('roulette-active');
-
-        setTimeout(() => {
-            // 2. 回転の途中で表示を切り替える
-            currentSlide.style.display = 'none';
-            currentSlide.classList.remove('roulette-active');
-            
-            nextSlide.style.display = 'block';
-            nextSlide.classList.add('roulette-active');
-            
-            // 3. 次のスライドのアニメーションが終わったらクラスを削除
-            setTimeout(() => {
-                nextSlide.classList.remove('roulette-active');
-            }, 800);
-        }, 400); // アニメーションの中間地点でスイッチ
-        
-    }, 10000); // 10秒ごとに回転
+        // 120度ずつマイナス方向に回転させることで「手前に回ってくる」動きにする
+        forexRotationDegree -= 120;
+        wrapper.style.transform = `rotateX(${forexRotationDegree}deg)`;
+    }, 8000); // 8秒ごとにゆっくり回転
 }
 
 function appendMiniWidget(containerId, config) {
