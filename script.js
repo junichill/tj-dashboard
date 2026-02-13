@@ -347,37 +347,35 @@ const AUTO_INTERVAL = 11000, FETCH_INTERVAL = 10*60*1000;
 function createNews(index) {
     if (newsItems.length === 0) return;
 
-    // 現在のインデックスをメインとし、続く3件をサブにする
-    const main = newsItems[index];
-    const sub1 = newsItems[(index + 1) % newsItems.length];
-    const sub2 = newsItems[(index + 2) % newsItems.length];
-    const sub3 = newsItems[(index + 3) % newsItems.length];
+    // 1枚のパネルに表示する5つのニュースを準備
+    const main = newsItems[index]; // メイン
+    const sub1 = newsItems[(index + 1) % newsItems.length]; // サブ1
+    const sub2 = newsItems[(index + 2) % newsItems.length]; // サブ2
+    const sub3 = newsItems[(index + 3) % newsItems.length]; // サブ3
+    const sub4 = newsItems[(index + 4) % newsItems.length]; // サブ4
 
     const item = document.createElement('div');
     item.className = 'news-item';
     
-    // 既存の配色・クラスを継承し、1つのパネル内にリスト構造を構築
+    // HTML構造を「メイン1つ ＋ サブリスト」に完全固定
     item.innerHTML = `
-        <div class="news-link-wrapper">
-            <div class="news-mark"></div>
-            <div class="news-title" onclick="window.open('${main.link}', '_blank')">${main.title}</div>
-            <div class="news-description">${main.description}</div>
-            
-            <div class="news-sub-container" style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:15px; display:flex; flex-direction:column; gap:12px;">
-                <div class="news-sub-row" onclick="event.stopPropagation(); window.open('${sub1.link}', '_blank')" style="display:flex; align-items:center; cursor:pointer; opacity:0.8;">
-                    <div style="width:4px; height:4px; background:var(--accent); border-radius:50%; margin-right:12px; flex-shrink:0;"></div>
-                    <div style="font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1;">${sub1.title}</div>
-                </div>
-                <div class="news-sub-row" onclick="event.stopPropagation(); window.open('${sub2.link}', '_blank')" style="display:flex; align-items:center; cursor:pointer; opacity:0.8;">
-                    <div style="width:4px; height:4px; background:var(--accent); border-radius:50%; margin-right:12px; flex-shrink:0;"></div>
-                    <div style="font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1;">${sub2.title}</div>
-                </div>
-                <div class="news-sub-row" onclick="event.stopPropagation(); window.open('${sub3.link}', '_blank')" style="display:flex; align-items:center; cursor:pointer; opacity:0.8;">
-                    <div style="width:4px; height:4px; background:var(--accent); border-radius:50%; margin-right:12px; flex-shrink:0;"></div>
-                    <div style="font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1;">${sub3.title}</div>
-                </div>
+        <div class="news-link-wrapper" style="height:100%; display:flex; flex-direction:column;">
+            <div class="news-main-part" onclick="window.open('${main.link}', '_blank')" style="cursor:pointer; margin-bottom:20px;">
+                <div class="news-mark"></div>
+                <div class="news-title" style="font-size:24px !important; line-height:1.3; margin-bottom:8px;">${main.title}</div>
+                <div class="news-description" style="font-size:14px; color:rgba(255,255,255,0.7); line-height:1.5; -webkit-line-clamp:2; display:-webkit-box; -webkit-box-orient:vertical; overflow:hidden;">${main.description}</div>
+                <div class="news-date" style="margin-top:8px; font-size:12px; opacity:0.6;">${main.pubDate}</div>
             </div>
-            <div class="news-date">${main.pubDate}</div>
+
+            <div class="news-sub-list" style="border-top:1px solid rgba(255,255,255,0.1); padding-top:15px; display:flex; flex-direction:column; gap:12px;">
+                ${[sub1, sub2, sub3, sub4].map(sub => `
+                    <div class="news-sub-row" onclick="event.stopPropagation(); window.open('${sub.link}', '_blank')" 
+                         style="display:flex; align-items:center; cursor:pointer; opacity:0.8; transition:0.2s;">
+                        <div style="width:4px; height:4px; background:var(--accent); border-radius:50%; margin-right:12px; flex-shrink:0;"></div>
+                        <div style="font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1;">${sub.title}</div>
+                    </div>
+                `).join('')}
+            </div>
         </div>
     `;
     return item;
