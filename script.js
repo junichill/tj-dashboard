@@ -547,34 +547,35 @@ fetchTrends();
 // 1時間ごとに最新トレンドに更新
 setInterval(fetchTrends, 3600000);
 
-// --- 既存の renderNews を以下に差し替え ---
-function renderNews(container, articles) {
+// =========================
+// NEWS (一番右のパネル)
+// =========================
+const RSS_URL = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
+const newsCard = document.getElementById('news-card');
+let newsItems = [];
+const FETCH_INTERVAL = 10 * 60 * 1000;
+
+// レイアウト生成関数（トレンドヒートマップには影響しません）
+function renderNewsList(container, articles) {
     if (!container || !articles || articles.length === 0) return;
 
-    // ★重要: ヒートマップ用のグリッド表示をニュース用のフレックス表示に切り替える
-    container.style.display = "flex";
-    container.style.flexDirection = "column";
-    container.style.gridTemplateColumns = "none"; // グリッドを解除
-    container.style.gap = "0px";
-
-    // 1つ目のニュース（メイン：タイトル＋詳細）
+    // 1つ目のニュース（メイン：一番大きく表示）
     const main = articles[0];
     const mainHtml = `
-        <div class="news-main-card" onclick="window.open('${main.link}', '_blank')">
-            <div class="news-tag">TOP STORY</div>
-            <div class="news-main-title">${main.title}</div>
-            <div class="news-main-desc">${main.description || ''}</div>
+        <div class="news-main-card" onclick="window.open('${main.link}', '_blank')" style="cursor:pointer; margin-bottom:15px;">
+            <div class="news-tag" style="background:rgba(255,255,255,0.1); display:inline-block; padding:2px 8px; font-size:10px; margin-bottom:5px;">TOP STORY</div>
+            <div class="news-main-title" style="font-size:20px; font-weight:700; line-height:1.3; margin-bottom:8px;">${main.title}</div>
+            <div class="news-main-desc" style="font-size:13px; opacity:0.7; line-height:1.4; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">${main.description || ''}</div>
         </div>
     `;
 
     // 2〜4つ目のニュース（サブ：タイトルのみのリスト）
-    let subHtml = '<div class="news-sub-container">';
-    // 注：fetchNewsで取得しているプロパティ名(link)に合わせています
+    let subHtml = '<div class="news-sub-container" style="border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">';
     for (let i = 1; i < Math.min(articles.length, 4); i++) {
         subHtml += `
-            <div class="news-sub-row" onclick="window.open('${articles[i].link}', '_blank')">
-                <div class="news-sub-dot"></div>
-                <div class="news-sub-title">${articles[i].title}</div>
+            <div class="news-sub-row" onclick="window.open('${articles[i].link}', '_blank')" style="cursor:pointer; display:flex; align-items:flex-start; gap:10px; margin-bottom:10px; opacity:0.8;">
+                <div class="news-sub-dot" style="width:6px; height:6px; background:#fff; border-radius:50%; margin-top:6px; flex-shrink:0;"></div>
+                <div class="news-sub-title" style="font-size:14px; line-height:1.2;">${articles[i].title}</div>
             </div>
         `;
     }
@@ -582,3 +583,29 @@ function renderNews(container, articles) {
 
     container.innerHTML = mainHtml + subHtml;
 }
+
+async function fetchNews() {
+    try {
+        const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
+        const data = await r.json();
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(data.contents, "application/xml");
+        const items = xml.querySelectorAll('item');
+        
+        newsItems = Array.from(items).map(item => ({
+            title: item.querySelector('title')?.textContent,
+            link: item.querySelector('link')?.textContent,
+            description: item.querySelector('description')?.textContent
+        }));
+
+        if (newsItems.length > 0) {
+            renderNewsList(newsCard, newsItems);
+        }
+    } catch (e) { 
+        console.error('News fetch failed', e); 
+    }
+}
+
+// 初回実行と定期更新
+fetchNews();
+setInterval(fetchNews, FETCH_INTERVAL);
