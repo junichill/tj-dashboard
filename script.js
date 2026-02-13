@@ -423,19 +423,28 @@ async function fetchNews() {
 function renderNewsBoard(idx) {
     const newsCard = document.getElementById('news-card');
     
-    // 古いアイテムに退場アニメーション（exitクラス）を付与
-    const oldItem = newsCard.querySelector('.news-item');
+    // 1. 古い板を探し、退場アニメーションを付与して削除予約
+    const oldItem = newsCard.querySelector('.news-item.show');
     if (oldItem) {
         oldItem.classList.remove('show');
         oldItem.classList.add('exit');
-        // アニメーション終了後に削除
-        setTimeout(() => oldItem.remove(), 800);
+        // アニメーション完了後にDOMから削除
+        setTimeout(() => {
+            if (oldItem.parentNode === newsCard) {
+                oldItem.remove();
+            }
+        }, 1200); 
     }
 
-    // 新しい「板」を作成。中身は [idx, idx+1, idx+2...] の順
+    // 2. 新しい板を生成
     const newItem = createNews(idx);
-    newItem.classList.add('show');
+    // すでにCSSで .news-item が定義されているので、showを追加するだけでアニメーション開始
     newsCard.appendChild(newItem);
+    
+    // ブラウザの描画タイミングに合わせ、次のフレームでshowを付与
+    requestAnimationFrame(() => {
+        newItem.classList.add('show');
+    });
     
     newsIndex = idx;
 }
