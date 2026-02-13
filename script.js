@@ -344,15 +344,42 @@ let newsItems = [], newsEls = [], index = 0, newsT = null;
 let lastGoodNews = null;
 const AUTO_INTERVAL = 11000, FETCH_INTERVAL = 10*60*1000;
 
-function createNews() {
-  newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
-  newsEls = newsItems.map(n => {
-    const div = document.createElement('div');
-    div.className = 'news-item';
-    div.innerHTML = `<div class="news-mark"></div><a href="${n.link}" target="_blank" class="news-link-wrapper"><div class="news-title">${n.title}</div></a><div class="news-description">${n.description}</div><div class="news-date">${n.pubDate}</div>`;
-    newsCard.appendChild(div);
-    return div;
-  });
+function createNews(index) {
+    if (newsItems.length === 0) return;
+
+    const item = document.createElement('div');
+    item.className = 'news-item';
+    
+    // 背景画像の設定（元のunsplash画像を維持）
+    item.style.backgroundImage = "url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop')";
+
+    // 表示する5件のニュースを特定
+    const currentItems = [];
+    for (let i = 0; i < 5; i++) {
+        currentItems.push(newsItems[(index + i) % newsItems.length]);
+    }
+
+    item.innerHTML = `
+        <div class="news-link-wrapper">
+            <div class="news-mark"></div>
+            <div class="news-content-area">
+                <div class="main-container">
+                    <div class="news-title">${currentItems[0].title}</div>
+                    <div class="news-description">${currentItems[0].description || ''}</div>
+                    <div class="news-date">${currentItems[0].pubDate || ''}</div>
+                </div>
+                <div class="sub-list">
+                    ${currentItems.slice(1).map(sub => `
+                        <div class="sub-row">
+                            <div class="sub-dot"></div>
+                            <div class="sub-row-title">${sub.title}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+    `;
+    return item;
 }
 
 function showNews(next, init = false) {
