@@ -701,3 +701,60 @@ body {
 .forex-slide-v:nth-child(3) { transform: rotateX(240deg) translateZ(35px); }
 
 
+/* プロフェッショナル・トランジションの定義 */
+
+/* 1. 深度フェード（奥から手前へ） */
+@keyframes depth-in {
+    0% { opacity: 0; transform: scale(0.95) translateZ(-50px); filter: blur(10px); }
+    100% { opacity: 1; transform: scale(1) translateZ(0); filter: blur(0); }
+}
+
+@keyframes depth-out {
+    0% { opacity: 1; transform: scale(1) translateZ(0); filter: blur(0); }
+    100% { opacity: 0; transform: scale(1.05) translateZ(50px); filter: blur(15px); }
+}
+
+/* 2. トレンドタイルの「沈み込み」演出 */
+.trend-tile {
+    transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                opacity 1.2s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                filter 1.2s ease !important;
+}
+
+.trend-tile.exit-modern {
+    transform: scale(0.9);
+    opacity: 0;
+    filter: blur(20px) brightness(0.5);
+}
+
+.trend-tile.enter-modern {
+    animation: depth-in 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* ニュース・天気のスライド共通スタイル */
+.weather-slide, .news-item {
+    transition: none !important; /* JSで制御するため一度リセット */
+}
+
+.slide-active {
+    animation: depth-in 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.slide-exit {
+    animation: depth-out 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 3. グリッドの境界線に「光の走査」を入れる（高級感） */
+.glass-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 50%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+    animation: scan-light 8s infinite linear;
+}
+
+@keyframes scan-light {
+    0% { left: -100%; }
+    100% { left: 200%; }
+}
