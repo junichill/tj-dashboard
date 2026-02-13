@@ -409,24 +409,21 @@ async function fetchNews() {
             description: item.querySelector('description')?.textContent
         }));
 
-        if (fetched.length > 0) { 
-            newsItems = fetched; 
-            lastGoodNews = fetched; 
-        } else if (lastGoodNews) { 
-            newsItems = lastGoodNews; 
-        }
+       if (fetched.length > 0) { 
+    newsItems = fetched; 
+    lastGoodNews = fetched; 
+}
 
-        // --- 【ここが重要：プロの修正】 ---
-        // ニュース1件につき1つの「5件セットパネル」を作成する
-        // これにより、1つのパネル内には「1メイン+4サブ」しか存在しなくなります
-        newsEls = newsItems.map((_, i) => createNews(i));
+// プロの修正：1件ずつずらした「5枚セット」のパネルを全件分作成する
+// これにより「1がメイン→2がメイン→3がメイン...」と1つずつ昇格する切り替えになります
+newsEls = newsItems.map((_, i) => createNews(i));
 
-        const container = document.getElementById('news-card');
-        container.innerHTML = ''; 
-        newsEls.forEach(el => container.appendChild(el));
+const container = document.getElementById('news-card');
+container.innerHTML = ''; 
+newsEls.forEach(el => container.appendChild(el));
 
-        showNews(0, true);
-        if (newsItems.length > 1) startAutoNews();
+showNews(0, true);
+if (newsItems.length > 1) startAutoNews();
 
     } catch (e) { console.error('News fetch failed', e); }
 }
