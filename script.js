@@ -546,3 +546,39 @@ function startHeatmapCycle() {
 fetchTrends();
 // 1時間ごとに最新トレンドに更新
 setInterval(fetchTrends, 3600000);
+
+// --- 既存の renderNews を以下に差し替え ---
+function renderNews(container, articles) {
+    if (!container || !articles || articles.length === 0) return;
+
+    // ★重要: ヒートマップ用のグリッド表示をニュース用のフレックス表示に切り替える
+    container.style.display = "flex";
+    container.style.flexDirection = "column";
+    container.style.gridTemplateColumns = "none"; // グリッドを解除
+    container.style.gap = "0px";
+
+    // 1つ目のニュース（メイン：タイトル＋詳細）
+    const main = articles[0];
+    const mainHtml = `
+        <div class="news-main-card" onclick="window.open('${main.link}', '_blank')">
+            <div class="news-tag">TOP STORY</div>
+            <div class="news-main-title">${main.title}</div>
+            <div class="news-main-desc">${main.description || ''}</div>
+        </div>
+    `;
+
+    // 2〜4つ目のニュース（サブ：タイトルのみのリスト）
+    let subHtml = '<div class="news-sub-container">';
+    // 注：fetchNewsで取得しているプロパティ名(link)に合わせています
+    for (let i = 1; i < Math.min(articles.length, 4); i++) {
+        subHtml += `
+            <div class="news-sub-row" onclick="window.open('${articles[i].link}', '_blank')">
+                <div class="news-sub-dot"></div>
+                <div class="news-sub-title">${articles[i].title}</div>
+            </div>
+        `;
+    }
+    subHtml += '</div>';
+
+    container.innerHTML = mainHtml + subHtml;
+}
