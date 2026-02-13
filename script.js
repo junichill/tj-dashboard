@@ -395,26 +395,60 @@ function showNews(next, init = false) {
 function startAutoNews() { stopAutoNews(); newsT = setInterval(() => showNews((index+1)%newsEls.length), AUTO_INTERVAL); }
 function stopAutoNews() { if (newsT) clearInterval(newsT); }
 
+let newsIndex = 0;
+
 async function fetchNews() {
-  try {
-    const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
-    const data = await r.json();
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(data.contents, "application/xml");
-    const items = xml.querySelectorAll('item');
-    let fetched = Array.from(items).map(item => ({
-      title: item.querySelector('title')?.textContent,
-      link: item.querySelector('link')?.textContent,
-      pubDate: item.querySelector('pubDate')?.textContent,
-      description: item.querySelector('description')?.textContent
-    }));
-    if (fetched.length > 0) { newsItems = fetched; lastGoodNews = fetched; }
-    else if (lastGoodNews) { newsItems = lastGoodNews; }
-    createNews();
-    showNews(0, true);
-    if (newsItems.length > 1) startAutoNews();
-  } catch (e) { console.error('News fetch failed', e); }
+    try {
+        const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
+        const data = await r.json();
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(data.contents, "application/xml");
+        const items = xml.querySelectorAll('item');
+        
+        let fetched = Array.from(items).map(item => ({
+            title: item.querySelector('title')?.textContent,
+            pubDate: item.querySelector('pubDate')?.textContent,
+            description: item.querySelector('description')?.textContent
+        }));
+
+        if (fetched.length > 0) {
+            newsItems = fetched;
+            // 初期表示
+            renderNewsBoard(0);
+            startAutoNews();
+        }
+    } catch (e) { console.error('News fetch failed', e); }
 }
+
+function renderNewsBoard(idx) {
+    const newsCard = document.getElementById('news-card');
+    
+    // 古いアイテムに退場アニメーション（exitクラス）を付与
+    const oldItem = newsCard.querySelector('.news-item');
+    if (oldItem) {
+        oldItem.classList.remove('show');
+        oldItem.classList.add('exit');
+        // アニメーション終了後に削除
+        setTimeout(() => oldItem.remove(), 800);
+    }
+
+    // 新しい「板」を作成。中身は [idx, idx+1, idx+2...] の順
+    const newItem = createNews(idx);
+    newItem.classList.add('show');
+    newsCard.appendChild(newItem);
+    
+    newsIndex = idx;
+}
+
+function startAutoNews() {
+    if (newsT) clearInterval(newsT);
+    newsT = setInterval(() => {
+        // 次のインデックスへ（数珠つなぎの核：次は「今の2番目」が「1番目」になるようにidxを+1する）
+        const nextIdx = (newsIndex + 1) % newsItems.length;
+        renderNewsBoard(nextIdx);
+    }, AUTO_INTERVAL);
+}
+
 fetchNews();
 setInterval(fetchNews, FETCH_INTERVAL);
 
