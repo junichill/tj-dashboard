@@ -213,40 +213,49 @@ body {
 }
 
 .news-item {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 520px;
-  height: 640px; 
-  padding: 30px;
-  box-sizing: border-box;
-  background-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop');
-  background-size: cover;
-  background-position: center;
-  background-blend-mode: overlay;
-  background-color: rgba(10, 15, 25, 0.9); /* 5件の文字を読みやすくするため、やや濃く */
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 24px;
-  
-  /* 初期状態は透明で少し大きくしておく（フェードイン用） */
-  opacity: 0;
-  transform: scale(1.05);
-  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  
-  display: flex;
-  flex-direction: column;
-  pointer-events: none;
-  z-index: 1;
+    position: absolute;
+    top: 0; left: 0; width: 520px; height: 640px;
+    padding: 30px;
+    box-sizing: border-box;
+    background-color: rgba(10, 15, 25, 0.9);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 24px;
+    opacity: 0;
+    transition: opacity 0.4s ease; /* 板のフェードは短く */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
-/* 【重要】表示中のカード：1つずつズレる切り替えを美しく見せる */
 .news-item.show {
-  opacity: 1;
-  transform: scale(1);
-  z-index: 10;
-  pointer-events: auto;
+    opacity: 1;
+    z-index: 10;
+}
+
+/* --- 中身のアニメーション：ここがキモ --- */
+
+/* メインコンテンツ：下からふわっと浮き上がる */
+.news-item.show .news-main-content {
+    animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* サブリスト：1行ずつ時間差（--delay）でせり上がる */
+.news-item.show .news-sub-row {
+    opacity: 0;
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: calc(0.2s + var(--delay));
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* 【重要】消えていくカード：スッと上に抜ける */
@@ -280,20 +289,29 @@ body {
 }
 
 /* サブニュース（リスト部分）の調整 */
+/* サブニュースのデザイン微調整 */
 .news-sub-list {
-  border-top: 1px solid rgba(255,255,255,0.1);
-  padding-top: 15px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
 }
 
 .news-sub-row {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  opacity: 0.8;
-  transition: 0.2s;
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.sub-dot {
+    width: 4px; height: 4px; background: var(--accent);
+    border-radius: 50%; margin-right: 15px;
+}
+
+.sub-title {
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .news-sub-row:hover {
@@ -693,6 +711,7 @@ body {
 .forex-slide-v:nth-child(1) { transform: rotateX(0deg) translateZ(35px); }
 .forex-slide-v:nth-child(2) { transform: rotateX(120deg) translateZ(35px); }
 .forex-slide-v:nth-child(3) { transform: rotateX(240deg) translateZ(35px); }
+
 
 
 
