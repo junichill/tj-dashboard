@@ -344,15 +344,43 @@ let newsItems = [], newsEls = [], index = 0, newsT = null;
 let lastGoodNews = null;
 const AUTO_INTERVAL = 11000, FETCH_INTERVAL = 10*60*1000;
 
-function createNews() {
-  newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
-  newsEls = newsItems.map(n => {
-    const div = document.createElement('div');
-    div.className = 'news-item';
-    div.innerHTML = `<div class="news-mark"></div><a href="${n.link}" target="_blank" class="news-link-wrapper"><div class="news-title">${n.title}</div></a><div class="news-description">${n.description}</div><div class="news-date">${n.pubDate}</div>`;
-    newsCard.appendChild(div);
-    return div;
-  });
+function createNews(index) {
+    if (newsItems.length === 0) return;
+
+    // 現在のインデックスをメインとし、続く3件をサブにする
+    const main = newsItems[index];
+    const sub1 = newsItems[(index + 1) % newsItems.length];
+    const sub2 = newsItems[(index + 2) % newsItems.length];
+    const sub3 = newsItems[(index + 3) % newsItems.length];
+
+    const item = document.createElement('div');
+    item.className = 'news-item';
+    
+    // 既存の配色・クラスを継承し、1つのパネル内にリスト構造を構築
+    item.innerHTML = `
+        <div class="news-link-wrapper">
+            <div class="news-mark"></div>
+            <div class="news-title" onclick="window.open('${main.link}', '_blank')">${main.title}</div>
+            <div class="news-description">${main.description}</div>
+            
+            <div class="news-sub-container" style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:15px; display:flex; flex-direction:column; gap:12px;">
+                <div class="news-sub-row" onclick="event.stopPropagation(); window.open('${sub1.link}', '_blank')" style="display:flex; align-items:center; cursor:pointer; opacity:0.8;">
+                    <div style="width:4px; height:4px; background:var(--accent); border-radius:50%; margin-right:12px; flex-shrink:0;"></div>
+                    <div style="font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1;">${sub1.title}</div>
+                </div>
+                <div class="news-sub-row" onclick="event.stopPropagation(); window.open('${sub2.link}', '_blank')" style="display:flex; align-items:center; cursor:pointer; opacity:0.8;">
+                    <div style="width:4px; height:4px; background:var(--accent); border-radius:50%; margin-right:12px; flex-shrink:0;"></div>
+                    <div style="font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1;">${sub2.title}</div>
+                </div>
+                <div class="news-sub-row" onclick="event.stopPropagation(); window.open('${sub3.link}', '_blank')" style="display:flex; align-items:center; cursor:pointer; opacity:0.8;">
+                    <div style="width:4px; height:4px; background:var(--accent); border-radius:50%; margin-right:12px; flex-shrink:0;"></div>
+                    <div style="font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1;">${sub3.title}</div>
+                </div>
+            </div>
+            <div class="news-date">${main.pubDate}</div>
+        </div>
+    `;
+    return item;
 }
 
 function showNews(next, init = false) {
