@@ -344,41 +344,15 @@ let newsItems = [], newsEls = [], index = 0, newsT = null;
 let lastGoodNews = null;
 const AUTO_INTERVAL = 11000, FETCH_INTERVAL = 10*60*1000;
 
-function createNews(index) {
-    if (newsItems.length === 0) return;
-
-    // 1つずつずらした5つのニュースを特定
-    const main = newsItems[index];
-    const subs = [
-        newsItems[(index + 1) % newsItems.length],
-        newsItems[(index + 2) % newsItems.length],
-        newsItems[(index + 3) % newsItems.length],
-        newsItems[(index + 4) % newsItems.length]
-    ];
-
-    const item = document.createElement('div');
-    item.className = 'news-item';
-    
-    item.innerHTML = `
-        <div class="news-link-wrapper">
-            <div class="news-main-content">
-                <div class="news-mark"></div>
-                <div class="news-title">${main.title}</div>
-                <div class="news-description">${main.description}</div>
-                <div class="news-date">${main.pubDate}</div>
-            </div>
-
-            <div class="news-sub-list">
-                ${subs.map((sub, i) => `
-                    <div class="news-sub-row" style="--delay: ${i * 0.1}s">
-                        <div class="sub-dot"></div>
-                        <div class="sub-title">${sub.title}</div>
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-    `;
-    return item;
+function createNews() {
+  newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
+  newsEls = newsItems.map(n => {
+    const div = document.createElement('div');
+    div.className = 'news-item';
+    div.innerHTML = `<div class="news-mark"></div><a href="${n.link}" target="_blank" class="news-link-wrapper"><div class="news-title">${n.title}</div></a><div class="news-description">${n.description}</div><div class="news-date">${n.pubDate}</div>`;
+    newsCard.appendChild(div);
+    return div;
+  });
 }
 
 function showNews(next, init = false) {
@@ -395,39 +369,25 @@ function startAutoNews() { stopAutoNews(); newsT = setInterval(() => showNews((i
 function stopAutoNews() { if (newsT) clearInterval(newsT); }
 
 async function fetchNews() {
-    try {
-        const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
-        const data = await r.json();
-        const parser = new DOMParser();
-        const xml = parser.parseFromString(data.contents, "application/xml");
-        const items = xml.querySelectorAll('item');
-        
-        let fetched = Array.from(items).map(item => ({
-            title: item.querySelector('title')?.textContent,
-            link: item.querySelector('link')?.textContent,
-            pubDate: item.querySelector('pubDate')?.textContent,
-            description: item.querySelector('description')?.textContent
-        }));
-
-       if (fetched.length > 0) { 
-    newsItems = fetched; 
-    lastGoodNews = fetched; 
+  try {
+    const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
+    const data = await r.json();
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(data.contents, "application/xml");
+    const items = xml.querySelectorAll('item');
+    let fetched = Array.from(items).map(item => ({
+      title: item.querySelector('title')?.textContent,
+      link: item.querySelector('link')?.textContent,
+      pubDate: item.querySelector('pubDate')?.textContent,
+      description: item.querySelector('description')?.textContent
+    }));
+    if (fetched.length > 0) { newsItems = fetched; lastGoodNews = fetched; }
+    else if (lastGoodNews) { newsItems = lastGoodNews; }
+    createNews();
+    showNews(0, true);
+    if (newsItems.length > 1) startAutoNews();
+  } catch (e) { console.error('News fetch failed', e); }
 }
-
-// プロの修正：1件ずつずらした「5枚セット」のパネルを全件分作成する
-// これにより「1がメイン→2がメイン→3がメイン...」と1つずつ昇格する切り替えになります
-newsEls = newsItems.map((_, i) => createNews(i));
-
-const container = document.getElementById('news-card');
-container.innerHTML = ''; 
-newsEls.forEach(el => container.appendChild(el));
-
-showNews(0, true);
-if (newsItems.length > 1) startAutoNews();
-
-    } catch (e) { console.error('News fetch failed', e); }
-}
-
 fetchNews();
 setInterval(fetchNews, FETCH_INTERVAL);
 
