@@ -208,75 +208,12 @@ body {
    6. ニュース (右パネル)
    ========================================= */
 #news-card {
-    position: relative;
-    overflow: hidden;
-}
-
-/* 4件1セットを包むパネル */
-.news-group-panel {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    padding: 35px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.news-group-panel.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.news-group-panel.exit {
-    opacity: 0;
-    transform: translateY(-80px); /* 上へスライドアウト */
-}
-
-/* メイン（タイトル+本文+日付） */
-.news-main-card {
-    flex: 0 0 auto;
-    margin-bottom: 25px;
-    cursor: pointer;
-}
-
-/* サブ（タイトルのみ3件） */
-.news-sub-list {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding-top: 20px;
-}
-
-.news-sub-item {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    opacity: 0.8;
-    transition: opacity 0.2s;
-}
-
-.news-sub-item:hover { opacity: 1; }
-
-.news-sub-bullet {
-    width: 6px;
-    height: 6px;
-    background: var(--accent);
-    border-radius: 50%;
-    margin-right: 15px;
-    flex-shrink: 0;
-}
-
-.news-sub-title {
-    font-size: 16px;
-    line-height: 1.3;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  height: 100%;
+  padding: 0; /* paddingを一旦0にして、中のitemで調整 */
+  border: none;
+  background: transparent;
+  backdrop-filter: none;
+  box-shadow: none;
 }
 
 #news-card > div:last-child {
@@ -813,4 +750,3 @@ body {
 .forex-slide-v:nth-child(1) { transform: rotateX(0deg) translateZ(35px); }
 .forex-slide-v:nth-child(2) { transform: rotateX(120deg) translateZ(35px); }
 .forex-slide-v:nth-child(3) { transform: rotateX(240deg) translateZ(35px); }
-
