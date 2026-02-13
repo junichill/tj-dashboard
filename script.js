@@ -423,25 +423,22 @@ async function fetchNews() {
 function renderNewsBoard(idx) {
     const newsCard = document.getElementById('news-card');
     
-    // 1. 古い板を探し、退場アニメーションを付与して削除予約
+    // 1. 現在のメイン（ニュース1）を「上」へ押し出す
     const oldItem = newsCard.querySelector('.news-item.show');
     if (oldItem) {
         oldItem.classList.remove('show');
         oldItem.classList.add('exit');
-        // アニメーション完了後にDOMから削除
         setTimeout(() => {
-            if (oldItem.parentNode === newsCard) {
-                oldItem.remove();
-            }
+            if (oldItem.parentNode === newsCard) oldItem.remove();
         }, 1200); 
     }
 
-    // 2. 新しい板を生成
+    // 2. 次のニュースを生成して「下」から登場させる
     const newItem = createNews(idx);
-    // すでにCSSで .news-item が定義されているので、showを追加するだけでアニメーション開始
     newsCard.appendChild(newItem);
     
-    // ブラウザの描画タイミングに合わせ、次のフレームでshowを付与
+    // 少しだけ遅延させて実行することで、古いのが消え始めるのと同時に
+    // 下からググっと上がってくる「連動感」を出します
     requestAnimationFrame(() => {
         newItem.classList.add('show');
     });
