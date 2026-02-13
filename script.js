@@ -336,58 +336,95 @@ fetchWeather();
 setInterval(fetchWeather, 600000);
 
 // =========================
-// NEWS
+// NEWS (一番右のパネル)
 // =========================
 const RSS_URL = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
 const newsCard = document.getElementById('news-card');
-let newsItems = [], newsEls = [], index = 0, newsT = null;
-let lastGoodNews = null;
-const AUTO_INTERVAL = 11000, FETCH_INTERVAL = 10*60*1000;
-
-function createNews() {
-  newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
-  newsEls = newsItems.map(n => {
-    const div = document.createElement('div');
-    div.className = 'news-item';
-    div.innerHTML = `<div class="news-mark"></div><a href="${n.link}" target="_blank" class="news-link-wrapper"><div class="news-title">${n.title}</div></a><div class="news-description">${n.description}</div><div class="news-date">${n.pubDate}</div>`;
-    newsCard.appendChild(div);
-    return div;
-  });
-}
-
-function showNews(next, init = false) {
-  if (!newsEls[next]) return;
-  newsEls.forEach(el => el.classList.remove('show', 'next', 'exit'));
-  if (!init) { newsEls[index].classList.add('exit'); }
-  newsEls[next].classList.add('show');
-  const nxtIdx = (next + 1) % newsEls.length;
-  if (newsEls[nxtIdx]) newsEls[nxtIdx].classList.add('next');
-  index = next;
-}
-
-function startAutoNews() { stopAutoNews(); newsT = setInterval(() => showNews((index+1)%newsEls.length), AUTO_INTERVAL); }
-function stopAutoNews() { if (newsT) clearInterval(newsT); }
+let newsItems = []; 
+let newsIndex = 0;
+const FETCH_INTERVAL = 10 * 60 * 1000;
 
 async function fetchNews() {
-  try {
-    const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
-    const data = await r.json();
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(data.contents, "application/xml");
-    const items = xml.querySelectorAll('item');
-    let fetched = Array.from(items).map(item => ({
-      title: item.querySelector('title')?.textContent,
-      link: item.querySelector('link')?.textContent,
-      pubDate: item.querySelector('pubDate')?.textContent,
-      description: item.querySelector('description')?.textContent
-    }));
-    if (fetched.length > 0) { newsItems = fetched; lastGoodNews = fetched; }
-    else if (lastGoodNews) { newsItems = lastGoodNews; }
-    createNews();
-    showNews(0, true);
-    if (newsItems.length > 1) startAutoNews();
-  } catch (e) { console.error('News fetch failed', e); }
+    try {
+        const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
+        const data = await r.json();
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(data.contents, "application/xml");
+        const items = xml.querySelectorAll('item');
+        
+        // データを全件パース
+        const rawItems = Array.from(items).map(item => ({
+            title: item.querySelector('title')?.textContent,
+            link: item.querySelector('link')?.textContent,
+            description: item.querySelector('description')?.textContent,
+            pubDate: item.querySelector('pubDate')?.textContent
+        }));
+
+        // 4件1セットのグループ（メイン1 + サブ3）を複数作成する
+        newsItems = [];
+        for (let i = 0; i < rawItems.length; i += 4) {
+            if (rawItems[i]) {
+                newsItems.push({
+                    main: rawItems[i],
+                    subs: rawItems.slice(i + 1, i + 4)
+                });
+            }
+        }
+
+        if (newsItems.length > 0) {
+            renderNews();
+        }
+    } catch (e) { console.error('News fetch failed', e); }
 }
+
+function renderNews() {
+    if (newsItems.length === 0) return;
+    
+    const group = newsItems[newsIndex];
+    
+    // HTML構造を定義：メイン1件 + サブ3件のコンテナ
+    const mainHtml = `
+        <div class="news-main-card" onclick="window.open('${group.main.link}', '_blank')">
+            <div class="news-mark"></div>
+            <div class="news-title">${group.main.title}</div>
+            <div class="news-description">${group.main.description}</div>
+            <div class="news-date">${group.main.pubDate}</div>
+        </div>
+    `;
+
+    const subHtml = `
+        <div class="news-sub-list">
+            ${group.subs.map(s => `
+                <div class="news-sub-item" onclick="window.open('${s.link}', '_blank')">
+                    <span class="news-sub-bullet"></span>
+                    <span class="news-sub-title">${s.title}</span>
+                </div>
+            `).join('')}
+        </div>
+    `;
+
+    // 新しいニュース要素を作成
+    const newEl = document.createElement('div');
+    newEl.className = 'news-group-panel';
+    newEl.innerHTML = mainHtml + subHtml;
+
+    // スライド（上へ抜ける）アニメーションの適用
+    const oldEl = newsCard.querySelector('.news-group-panel.show');
+    if (oldEl) {
+        oldEl.classList.remove('show');
+        oldEl.classList.add('exit');
+        setTimeout(() => oldEl.remove(), 900);
+    }
+
+    newsCard.appendChild(newEl);
+    // 次のフレームで表示
+    requestAnimationFrame(() => newEl.classList.add('show'));
+
+    newsIndex = (newsIndex + 1) % newsItems.length;
+}
+
+// 既存のスライドタイマー（既存のコードに合わせて5000ms等に設定）
+setInterval(renderNews, 8000); 
 fetchNews();
 setInterval(fetchNews, FETCH_INTERVAL);
 
