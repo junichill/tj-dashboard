@@ -239,7 +239,7 @@ body {
     flex-direction: column;
 }
 
-/* ➀メインのフォント・位置崩れ防止 */
+/* ①メインのフォント・位置崩れ防止 */
 .news-title {
     font-size: 24px !important;
     font-weight: 600 !important;
@@ -699,4 +699,5 @@ body {
 .forex-slide-v:nth-child(1) { transform: rotateX(0deg) translateZ(35px); }
 .forex-slide-v:nth-child(2) { transform: rotateX(120deg) translateZ(35px); }
 .forex-slide-v:nth-child(3) { transform: rotateX(240deg) translateZ(35px); }
+
 
