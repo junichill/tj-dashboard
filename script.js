@@ -411,7 +411,15 @@ async function fetchNews() {
     }));
     if (fetched.length > 0) { newsItems = fetched; lastGoodNews = fetched; }
     else if (lastGoodNews) { newsItems = lastGoodNews; }
-    createNews();
+    
+    // 全データに対して、新しい形式のパネルを生成して配列に格納する
+    newsEls = newsItems.map((_, i) => createNews(i)); 
+    
+    // 最初のパネル（インデックス0）を表示
+    const container = document.getElementById('news-card');
+    container.innerHTML = ''; // 一旦クリア
+    newsEls.forEach(el => container.appendChild(el));
+    
     showNews(0, true);
     if (newsItems.length > 1) startAutoNews();
   } catch (e) { console.error('News fetch failed', e); }
