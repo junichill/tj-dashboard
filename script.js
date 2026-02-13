@@ -395,33 +395,42 @@ function startAutoNews() { stopAutoNews(); newsT = setInterval(() => showNews((i
 function stopAutoNews() { if (newsT) clearInterval(newsT); }
 
 async function fetchNews() {
-  try {
-    const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
-    const data = await r.json();
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(data.contents, "application/xml");
-    const items = xml.querySelectorAll('item');
-    let fetched = Array.from(items).map(item => ({
-      title: item.querySelector('title')?.textContent,
-      link: item.querySelector('link')?.textContent,
-      pubDate: item.querySelector('pubDate')?.textContent,
-      description: item.querySelector('description')?.textContent
-    }));
-    if (fetched.length > 0) { newsItems = fetched; lastGoodNews = fetched; }
-    else if (lastGoodNews) { newsItems = lastGoodNews; }
-    
-    // 全データに対して、新しい形式のパネルを生成して配列に格納する
-    newsEls = newsItems.map((_, i) => createNews(i)); 
-    
-    // 最初のパネル（インデックス0）を表示
-    const container = document.getElementById('news-card');
-    container.innerHTML = ''; // 一旦クリア
-    newsEls.forEach(el => container.appendChild(el));
-    
-    showNews(0, true);
-    if (newsItems.length > 1) startAutoNews();
-  } catch (e) { console.error('News fetch failed', e); }
+    try {
+        const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
+        const data = await r.json();
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(data.contents, "application/xml");
+        const items = xml.querySelectorAll('item');
+        
+        let fetched = Array.from(items).map(item => ({
+            title: item.querySelector('title')?.textContent,
+            link: item.querySelector('link')?.textContent,
+            pubDate: item.querySelector('pubDate')?.textContent,
+            description: item.querySelector('description')?.textContent
+        }));
+
+        if (fetched.length > 0) { 
+            newsItems = fetched; 
+            lastGoodNews = fetched; 
+        } else if (lastGoodNews) { 
+            newsItems = lastGoodNews; 
+        }
+
+        // --- 【ここが重要：プロの修正】 ---
+        // ニュース1件につき1つの「5件セットパネル」を作成する
+        // これにより、1つのパネル内には「1メイン+4サブ」しか存在しなくなります
+        newsEls = newsItems.map((_, i) => createNews(i));
+
+        const container = document.getElementById('news-card');
+        container.innerHTML = ''; 
+        newsEls.forEach(el => container.appendChild(el));
+
+        showNews(0, true);
+        if (newsItems.length > 1) startAutoNews();
+
+    } catch (e) { console.error('News fetch failed', e); }
 }
+
 fetchNews();
 setInterval(fetchNews, FETCH_INTERVAL);
 
