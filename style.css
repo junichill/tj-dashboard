@@ -749,3 +749,22 @@ body {
     0% { opacity: 0; transform: scale(0.95) translateY(50px) translateZ(-30px); filter: blur(10px); }
     100% { opacity: 1; transform: scale(1) translateY(0) translateZ(0); filter: blur(0); }
 }
+
+/* より力強い「せり上がり」アニメーション */
+@keyframes news-push-up-strong {
+    0% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    100% { opacity: 0; transform: translateY(-120px) scale(1.05); filter: blur(15px); }
+}
+
+@keyframes news-ascend-strong {
+    0% { opacity: 0; transform: translateY(80px) scale(0.95); filter: blur(10px); }
+    100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+.news-item.show {
+    animation: news-ascend-strong 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.news-item.exit {
+    animation: news-push-up-strong 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
