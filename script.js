@@ -364,18 +364,19 @@ item.innerHTML = `
             <div class="news-content-area">
                 <div class="main-container">
                     <a href="${currentItems[0].link || '#'}" target="_blank" class="news-main-link">
-                        <div class="news-title">${currentItems[0].title}</div>
+                     <div class="news-title">${currentItems[0].title}</div>
                     </a>
+
                     <div class="news-description">${currentItems[0].description || ''}</div>
                     <div class="news-date">${currentItems[0].pubDate || ''}</div>
                 </div>
                 <div class="sub-list">
                     ${currentItems.slice(1).map(sub => `
                         <a href="${sub.link || '#'}" target="_blank" class="news-sub-link">
-                            <div class="sub-row">
-                                <div class="sub-dot"></div>
-                                <div class="sub-row-title">${sub.title}</div>
-                            </div>
+                         <div class="sub-row">
+                         <div class="sub-dot"></div>
+                         <div class="sub-row-title">${sub.title}</div>
+                         </div>
                         </a>
                     `).join('')}
                 </div>
