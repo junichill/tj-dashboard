@@ -390,6 +390,14 @@ body {
     transition: transform 0.3s ease;
 }
 
+.news-sub-link {
+    text-decoration: none !important;
+    display: block;
+    width: 100%;
+    /* フェードインしながら現れるようにするとさらに綺麗 */
+    animation: fadeInSub 0.5s ease forwards;
+}
+
 /* --- ホバー時の演出（色は白のまま、光らせる） --- */
 .news-main-link:hover .news-title,
 .news-sub-link:hover .sub-row-title {
@@ -406,18 +414,23 @@ body {
 
 /* サブリスト */
 .sub-list {
+    position: relative;
+    height: 360px; /* 36px * 10件分 */
+    overflow: hidden; /* はみ出た要素を隠す */
+    margin-top: 20px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding-top: 15px; /* 20pxから15pxに短縮 */
-    margin-top: 10px;
+    padding-top: 10px;
 }
 
+/* 各ニュース行のスタイル */
 .sub-row {
+    height: 26px;      /* 文字の高さ */
+    margin-bottom: 10px; /* 下の間隔 = 合計36px */
     display: flex;
     align-items: center;
-    margin-bottom: 10px; /* 15pxから10pxに短縮 */
-    opacity: 0;
-    animation: slideUpSub 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    width: 100%;
 }
+
 .sub-row:nth-child(1) { animation-delay: 0.15s; }
 .sub-row:nth-child(2) { animation-delay: 0.20s; }
 .sub-row:nth-child(3) { animation-delay: 0.25s; }
@@ -431,16 +444,11 @@ body {
 .sub-row-title {
     color: #ffffff !important;
     font-size: 16px;
-    
-    /* 1行固定のための必須セット */
-    white-space: nowrap !important;   /* 改行を絶対に許さない */
-    overflow: hidden !important;      /* はみ出た分を隠す */
-    text-overflow: ellipsis !important; /* はみ出た分を ... にする */
-    
-    /* レイアウト崩れ防止 */
-    display: block !important;
-    flex: 1;                          /* 横幅いっぱいまで使わせる */
-    min-width: 0;                     /* flex内の文字省略を正常に機能させる */
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    flex: 1;
+    min-width: 0;
 }
 
 /* --- ニュースアニメーション定義 (重複解消・統合版) --- */
@@ -464,9 +472,15 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes fadeInSub {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
 /* その他パーツ（スケジュール等） */
 .panel-label { display: none; }
 .schedule-list { display: none; }
+
 
 
 
