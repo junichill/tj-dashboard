@@ -419,7 +419,7 @@ body {
     margin-top: 15px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding-top: 10px;
-    /* スライド用のアニメーション設定 */
+    transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1); /* これがスライドの滑らかさを作る */
     will-change: transform;
 }
 
@@ -491,6 +491,7 @@ body {
 /* その他パーツ（スケジュール等） */
 .panel-label { display: none; }
 .schedule-list { display: none; }
+
 
 
 
