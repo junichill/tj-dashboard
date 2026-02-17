@@ -1,10 +1,10 @@
 /* =========================================
-   1. CORE: 変数とリセット (重複を1つに統合)
+   1. 基本レイアウト & リセット (重複統合)
    ========================================= */
 :root {
   --glass-bg: rgba(255, 255, 255, 0.05);
   --glass-border: rgba(255, 255, 255, 0.12);
-  --blur: blur(25px);
+  --blur: blur(20px);
   --accent: #00d4ff;
 }
 
@@ -14,45 +14,50 @@ body {
   overflow: hidden; width: 100vw; height: 100vh;
 }
 
-/* =========================================
-   2. LAYOUT: メインコンテナ
-   ========================================= */
 #container {
-  width: 1920px; height: 720px; display: flex; padding: 40px;
-  box-sizing: border-box; gap: 30px; position: absolute;
-  top: 0; left: 0; transform-origin: top left;
+  width: 1920px; height: 720px;
+  display: flex; padding: 40px; box-sizing: border-box;
+  gap: 30px; position: absolute; top: 0; left: 0;
+  transform-origin: top left;
 }
 
 /* =========================================
-   3. CLOCK: 時計 (改行を阻止)
+   2. 時計 & 日付 (サイズ・位置を元コードに完全準拠)
    ========================================= */
+#date {
+  position: absolute;
+  top: 12px;
+  left: 55px;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+  z-index: 10;
+}
+
 .clock-container {
   height: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 350px; /* 幅を確保して改行を防ぐ */
 }
 
 .clock-scale {
   display: flex;
-  align-items: baseline; /* 数字の底辺を揃える */
-  gap: 10px;
-  white-space: nowrap; /* 絶対に改行させない */
+  align-items: baseline; /* flex-endから変更：数字の底辺を揃えて改行を防ぐ */
+  gap: 5px;
+  white-space: nowrap;  /* 改行を絶対禁止 */
 }
 
 .tick { 
-  font-size: 3.8rem; 
-  font-weight: 700; 
-  font-family: 'JetBrains Mono', monospace;
+  font-size: 3.2rem; /* 元のサイズを維持 */
   line-height: 1;
 }
 
 #seconds-static {
-  font-size: 2.5rem;
+  font-size: 2.8rem; /* 元のサイズを維持 */
   font-weight: 300;
+  margin-left: 10px;
   color: var(--accent);
-  font-family: 'JetBrains Mono', monospace;
   line-height: 1;
 }
 
@@ -717,5 +722,6 @@ body {
 .news-item.exit {
     animation: news-push-up-strong 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
 
 
