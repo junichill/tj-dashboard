@@ -399,7 +399,7 @@ let newsIndex = 0;
 
 async function fetchNews() {
     // 【重要】ここにステップ2でコピーしたURLを貼り付けてください
-    const MY_GAS_URL = "https://script.google.com/macros/s/AKfycbyWq0pZXLP2ZE2ptRr-1iAxD0fT6WzTFS1E1oCAMKba7AAroldDcCZcK_HRnjed-ua2/exec";
+    const MY_GAS_URL = "https://script.google.com/macros/s/AKfycbx6dVnRjptPeQouJM6Czl-GUBqQzxFq8Nj06POOVbqTEGb_w4Wx0rHm-M9_GgApEWnv/exec";
 
     try {
         // GAS経由で取得（GASがCORSを解決済みなのでそのまま呼べる）
@@ -483,31 +483,33 @@ async function fetchTrends() {
     const container = document.getElementById('trend-fixed-content');
     if (!container) return;
 
-    const GOOGLE_TRENDS_RSS = 'https://trends.google.co.jp/trending/rss?geo=JP';
-    const HATENA_HOTENTRY = 'https://b.hatena.ne.jp/hotentry.rss';
+    // あなたのGAS URLに「?type=trends」を付け足します
+    const MY_GAS_URL = "https://script.google.com/macros/s/AKfycbx6dVnRjptPeQouJM6Czl-GUBqQzxFq8Nj06POOVbqTEGb_w4Wx0rHm-M9_GgApEWnv/exec?type=trends";
 
     try {
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(GOOGLE_TRENDS_RSS)}`;
-        const r = await fetch(proxyUrl);
-        const data = await r.json();
-        
+        const r = await fetch(MY_GAS_URL);
+        const xmlText = await r.text();
         const parser = new DOMParser();
-        const xml = parser.parseFromString(data.contents, "application/xml");
+        const xml = parser.parseFromString(xmlText, "application/xml");
         const items = xml.querySelectorAll('item');
-
-        if (items.length > 0) {
-            trendItems = Array.from(items).map(item => item.querySelector('title').textContent);
-        } else {
-            const r2 = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(HATENA_HOTENTRY)}`);
-            const data2 = await r2.json();
-            const xml2 = parser.parseFromString(data2.contents, "application/xml");
-            const items2 = xml2.querySelectorAll('item');
-            trendItems = Array.from(items2).map(item => item.querySelector('title').textContent.substring(0, 20));
+        
+        // トレンドワードの抽出
+        const trendData = Array.from(items).map(item => item.querySelector('title').textContent);
+        
+        if (trendData.length > 0) {
+            // 既存タイルがあれば「沈み込み（exit-active）」アニメーション
+            const tiles = container.querySelectorAll('.trend-tile');
+            if (tiles.length > 0) {
+                tiles.forEach(t => t.classList.add('exit-active'));
+                setTimeout(() => renderTrends(container, trendData), 1200);
+            } else {
+                renderTrends(container, trendData);
+            }
         }
     } catch (e) {
-        console.warn('Fetch failed', e);
-        trendItems = ["#推しの子", "円安ドル高", "新作AI", "地震速報", "iPhone17", "Amazonセール"];
+        console.error('Trends fetch failed via GAS', e);
     }
+}
 
     // ★重要: ここで色付きパネルを描画する（これ以降に container.innerHTML を書かない）
     renderTrends(container, trendItems);
