@@ -391,9 +391,6 @@ function showNews(next, init = false) {
   index = next;
 }
 
-function startAutoNews() { stopAutoNews(); newsT = setInterval(() => showNews((index+1)%newsEls.length), AUTO_INTERVAL); }
-function stopAutoNews() { if (newsT) clearInterval(newsT); }
-
 let newsIndex = 0;
 
 async function fetchNews() {
