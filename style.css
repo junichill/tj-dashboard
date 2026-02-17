@@ -381,6 +381,21 @@ body {
   animation: slideUpMain 1.0s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* ニュースリンクのスタイル */
+.news-main-link, .news-sub-link {
+    text-decoration: none; /* 下線を消す */
+    color: inherit;        /* 文字色を継承 */
+    display: block;        /* クリック範囲を広げる */
+    transition: transform 0.2s ease;
+}
+
+/* ホバー時に少し右に動かす演出 */
+.news-main-link:hover .news-title,
+.news-sub-link:hover .sub-row-title {
+    color: var(--accent);
+    transform: translateX(5px);
+}
+
 /* サブリスト */
 .sub-list {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -431,6 +446,7 @@ body {
 /* その他パーツ（スケジュール等） */
 .panel-label { display: none; }
 .schedule-list { display: none; }
+
 
 
 
