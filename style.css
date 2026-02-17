@@ -140,69 +140,108 @@ body {
 }
 
 /* =========================================
-   5. スライドエリア (中央パネル)
+   5. 中央パネル：現在の天気 (整理・洗練版)
    ========================================= */
-.main-slide-card {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  overflow: hidden;
+
+/* --- 中央パネル内部のレイアウト (必須) --- */
+.center-grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 400px 250px; /* 上段400px、下段250pxの比率を厳守 */
+    gap: 20px;
+    height: 100%;
 }
 
-#forecast-viewport {
-  height: 250px; /* script.jsの移動量と一致させる */
-  overflow: hidden;
+.grid-item-tr {
+    width: 100%;
+    height: 400px;
+    position: relative;
+    overflow: hidden;
 }
 
-#forecast-wrapper {
-  /* スムーズなアニメーション設定 */
+.grid-item-bottom {
+    grid-column: span 2;
+    height: 250px;
+    padding: 0 !important;
+    overflow: hidden;
+}
+/* 親コンテナ：400pxの高さを厳守し、中身の重なりの基準にする */
+.grid-item-tl {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    overflow: hidden; /* パネル外への流出を物理的に防ぐ */
 }
 
-.day-group {
-  height: 250px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+#weather-fixed-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.day-group.inactive {
-  opacity: 0.1;
-  filter: blur(8px) scale(0.95);
+/* 視認性レイヤー（重複を統合） */
+#weather-fixed-content::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.8) 100%);
+    z-index: 0;
 }
 
-.day-label {
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.4em;
-  color: var(--accent);
-  margin-bottom: 20px;
-  text-transform: uppercase;
+/* --- 天気スライド本体：ここが崩れの原因 --- */
+.weather-slide {
+    position: absolute; /* 【必須】絶対配置で1箇所に重ねる */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* 完全に中央固定 */
+    width: 95%;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease; /* アニメーションをシンプルにして干渉を防ぐ */
+    z-index: 1;
 }
 
-.day-items {
-  display: flex;
-  gap: 15px;
-  justify-content: center;
+/* アクティブなスライドだけを表示 */
+.weather-slide.active {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 2;
 }
 
-/* 天気アイテムのデザイン */
-.forecast-item {
-  text-align: center;
-  width: 80px;
+/* 非アクティブ化する際も位置を固定したまま消す */
+.weather-slide.exit {
+    opacity: 0;
+    pointer-events: none;
 }
 
-.weather-icon {
-  width: 50px;
-  height: 50px;
-  margin: 10px auto;
+/* 内部パーツ（フォントサイズ等の整理） */
+.weather-slide-label {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 0.5em;
+    margin-bottom: 8px;
+    text-transform: uppercase;
 }
 
-.weather-sunny { color: #ffeb3b; }
-.weather-cloudy { color: #cfd8dc; }
-.weather-rainy { color: #4fc3f7; }
-.weather-snowy { color: #ffffff; }
+.weather-icon-large svg {
+    width: 100px;
+    height: 100px;
+    margin: 12px 0;
+}
+
+.weather-data-line {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 18px;
+    font-size: 3.8rem;
+    font-family: 'JetBrains Mono', sans-serif;
+    font-weight: 200;
+}
 
 /* =========================================
    6. ニュース (右パネル) 統合・ブラッシュアップ
@@ -322,3 +361,4 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
