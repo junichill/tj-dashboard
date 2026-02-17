@@ -1,5 +1,5 @@
 /* =========================================
-   1. 基本レイアウト & リセット
+   1. 基本レイアウト & 共通設定
    ========================================= */
 :root {
   --glass-bg: rgba(255, 255, 255, 0.05);
@@ -9,763 +9,108 @@
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  background: #000;
-  color: white;
+  margin: 0; padding: 0; background: #000; color: white;
   font-family: 'Roboto', 'JetBrains Mono', sans-serif;
-  overflow: hidden;
-  width: 100vw;
-  height: 100vh;
+  overflow: hidden; width: 100vw; height: 100vh;
 }
 
-/* 背景オーロラアニメーション */
 .aurora-bg {
-  position: fixed;
-  width: 200%;
-  height: 200%;
-  top: -50%;
-  left: -50%;
+  position: fixed; width: 200%; height: 200%; top: -50%; left: -50%;
   background: radial-gradient(circle at 20% 30%, #1a237e, transparent),
               radial-gradient(circle at 80% 70%, #4a148c, transparent),
               radial-gradient(circle at 50% 50%, #004d40, transparent);
-  filter: blur(80px);
-  opacity: 0.4;
-  animation: rotate-bg 60s linear infinite;
-  z-index: -1;
+  filter: blur(80px); opacity: 0.4;
+  animation: rotate-bg 60s linear infinite; z-index: -1;
 }
-@keyframes rotate-bg {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
+@keyframes rotate-bg { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
 #container {
-  width: 1920px;
-  height: 720px;
-  display: flex;
-  padding: 40px;
-  box-sizing: border-box;
-  gap: 30px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform-origin: top left;
+  width: 1920px; height: 720px; display: flex; padding: 40px;
+  box-sizing: border-box; gap: 30px; position: absolute;
+  top: 0; left: 0; transform-origin: top left;
 }
 
 /* =========================================
-   2. 各パネルの構成
+   2. 各パネル & 中央グリッド
    ========================================= */
 .glass-card {
-  background: var(--glass-bg);
-  backdrop-filter: var(--blur);
-  -webkit-backdrop-filter: var(--blur);
-  border: 1px solid var(--glass-border);
-  border-radius: 24px;
-  box-shadow: 0 15px 45px rgba(0,0,0,0.5);
+  background: var(--glass-bg); backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur); border: 1px solid var(--glass-border);
+  border-radius: 24px; box-shadow: 0 15px 45px rgba(0,0,0,0.5);
 }
 
-#left-panel {
-  flex: 0 0 440px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px; /* 要素間の適度な隙間 */
-}
+#left-panel { flex: 0 0 440px; display: flex; flex-direction: column; gap: 20px; }
+#center-panel { flex: 1; min-width: 0; }
+#right-panel { flex: 0 0 520px !important; position: relative; }
 
-/* 中央パネル: スライド(柔軟) */
-#center-panel {
-  flex: 1;
-  min-width: 0;
-}
-
-#right-panel {
-  flex: 0 0 520px !important; /* 幅を520pxに完全固定 */
-  position: relative;
-}
-
-/* =========================================
-   3. 時計 & 日付
-   ========================================= */
-#date {
-  position: absolute;
-  top: 12px;
-  left: 55px;
-  font-size: 14px;
-  letter-spacing: 0.1em;
-  opacity: 0.7;
-  z-index: 10;
-}
-
-.clock-container {
-  height: 150px; /* 時計も元のサイズ感を維持 */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.clock-scale {
-  display: flex;
-  align-items: flex-end;
-  gap: 5px;
-}
-
-.tick { font-size: 3.2rem; }
-#seconds-static {
-  font-size: 2.8rem;
-  font-weight: 300;
-  margin-left: 10px;
-  color: var(--accent);
-}
-
-/* =========================================
-   4. 固定指標 (左パネル)
-   ========================================= */
-#fixed-market-container {
-  display: flex;
-  flex-direction: column;
-  gap: 15px; /* 指標同士の隙間 */
-}
-
-.fixed-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.4em;
-  color: rgba(255,255,255,0.3);
-  text-align: center;
-  text-transform: uppercase;
-}
-
-.mini-widget-fixed {
-  height: 155px; /* ラベルを消した分、高さを確保 */
-  overflow: hidden;
-}
-
-/* =========================================
-   5. スライドエリア (中央パネル)
-   ========================================= */
-.main-slide-card {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  overflow: hidden;
-}
-
-#forecast-viewport {
-  height: 250px; /* script.jsの移動量と一致させる */
-  overflow: hidden;
-}
-
-#forecast-wrapper {
-  /* スムーズなアニメーション設定 */
-}
-
-.day-group {
-  height: 250px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.day-group.inactive {
-  opacity: 0.1;
-  filter: blur(8px) scale(0.95);
-}
-
-.day-label {
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.4em;
-  color: var(--accent);
-  margin-bottom: 20px;
-  text-transform: uppercase;
-}
-
-.day-items {
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-}
-
-/* 天気アイテムのデザイン */
-.forecast-item {
-  text-align: center;
-  width: 80px;
-}
-
-.weather-icon {
-  width: 50px;
-  height: 50px;
-  margin: 10px auto;
-}
-
-.weather-sunny { color: #ffeb3b; }
-.weather-cloudy { color: #cfd8dc; }
-.weather-rainy { color: #4fc3f7; }
-.weather-snowy { color: #ffffff; }
-
-/* --- 6. ニュース (右パネル) 決定版 --- */
-#news-card {
-    height: 100%;
-    position: relative;
-    overflow: hidden;
-}
-
-.news-item {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 640px;
-    padding: 30px;
-    box-sizing: border-box;
-    background-size: cover;
-    background-position: center;
-    background-blend-mode: overlay;
-    background-color: rgba(10, 15, 25, 0.88);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 24px;
-    display: flex;
-    flex-direction: column;
-    opacity: 0;
-    transition: opacity 0.6s ease;
-}
-
-/* 表示・非表示の基本 */
-.news-item.show { opacity: 1; z-index: 10; }
-.news-item.exit { opacity: 0; z-index: 5; }
-
-/* 内部コンテンツの昇格アニメーション */
-.news-content-area {
-    display: flex;
-    flex-direction: column;
-}
-
-/* ①メインのフォント・位置崩れ防止 */
-.news-title {
-    font-size: 24px !important;
-    font-weight: 600 !important;
-    color: var(--accent);
-    line-height: 1.4;
-    margin-bottom: 10px;
-    animation: slideUpMain 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.news-description {
-    font-size: 15px;
-    color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 15px;
-    animation: slideUpMain 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.news-date {
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.5);
-    margin-bottom: 25px;
-    animation: slideUpMain 1.0s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* サブリストの昇格アニメーション */
-.sub-list {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding-top: 20px;
-}
-
-.sub-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-    opacity: 0;
-    animation: slideUpSub 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* 2番目が1番目へ移動するような「突き上げ感」を出すディレイ */
-.sub-row:nth-child(1) { animation-delay: 0.2s; }
-.sub-row:nth-child(2) { animation-delay: 0.3s; }
-.sub-row:nth-child(3) { animation-delay: 0.4s; }
-.sub-row:nth-child(4) { animation-delay: 0.5s; }
-
-@keyframes slideUpMain {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideUpSub {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.sub-dot {
-    width: 6px; height: 6px; 
-    background: var(--accent);
-    border-radius: 50%;
-    margin-right: 15px;
-}
-
-.sub-row-title {
-    font-size: 16px;
-    color: white;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* --- 経済スケジュール専用スタイル --- */
-.schedule-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: 600px; /* スライド幅に合わせる */
-  margin: 0 auto;
-}
-
-.schedule-item {
-  display: flex;
-  align-items: center;
-  font-family: 'JetBrains Mono', sans-serif;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 8px;
-}
-
-.sch-time { width: 80px; color: var(--accent); font-size: 18px; }
-.sch-country { width: 80px; color: rgba(255,255,255,0.6); font-size: 14px; }
-.sch-name { flex: 1; text-align: left; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sch-star { width: 80px; color: #ffca28; text-align: right; }
-
-
-#tv-economic-calendar {
-    margin-top: 10px;
-    border-radius: 12px;
-    overflow: hidden;
-    mask-image: linear-gradient(to bottom, black 80%, transparent 100%); /* 下部を少しフェードアウト */
-}
-
-/* カレンダー内のフォントサイズを調整（ウィジェット内のスタイルを上書きできない場合が多いですが、コンテナを整えます） */
-.schedule-list {
-    display: none; /* 古いRSS用のリスト表示は不要なので隠します */
-}
-
-/* 中央パネル全体のグリッド定義 */
 .center-grid-layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  /* 上段と下段の比率を明示的に固定（400px : 250px + 隙間） */
-  grid-template-rows: 400px 250px; 
-  gap: 20px; /* パネル間の明確な距離 */
-  height: 100%;
-  width: 100%;
-  box-sizing: border-box;
+  display: grid; grid-template-columns: 1fr 1fr;
+  grid-template-rows: 400px 250px; gap: 20px; height: 100%;
 }
 
-/* 上段パネル：正方形を解除し、400pxの高さにフィットさせる */
-.grid-item-tl, .grid-item-tr {
-  width: 100%;
-  height: 400px; /* 明示的に高さを指定 */
-  min-height: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
+.grid-item-tl, .grid-item-tr { height: 400px; overflow: hidden; position: relative; }
+.grid-item-bottom { grid-column: span 2; height: 250px; overflow: hidden; }
 
-/* 下段パネル：スライド移動量(250px)に完全に合わせる */
-.grid-item-bottom {
-  grid-column: span 2;
-  height: 250px; /* 高さを固定 */
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  padding: 0 !important;
-}
+/* =========================================
+   3. ニュース (右パネル) 決定版アニメーション
+   ========================================= */
+#news-card { height: 100%; position: relative; overflow: hidden; }
 
-/* スライド表示領域 */
-#forecast-viewport {
-  height: 250px;
-  width: 100%;
-  overflow: hidden;
-}
-
-/* パネル内のコンテンツがはみ出さないように制御 */
-#weather-fixed-content, #trend-fixed-content {
-  width: 100%;
-  height: 100%;
-}
-
-/* ラベルは非表示を維持 */
-.panel-label {
-  display: none;
-}
-
-#weather-fixed-content {
-    position: relative; /* 子要素の基準点にする */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    height: 100%; /* 親の高さに合わせる */
-}
-
-/* 文字の視認性を100%確保するレイヤー */
-#weather-fixed-content::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    /* 背景画像の上から、中央だけ少し明るいグラデーションを被せる */
-    background: radial-gradient(
-        circle at 50% 50%, 
-        rgba(0, 0, 0, 0.4) 0%, 
-        rgba(0, 0, 0, 0.8) 100%
-    );
-    z-index: 0;
-}
-
-/* 粒子の集まりがバラバラに散っていくアニメーション */
-@keyframes particle-dissolve {
-    0% {
-        mask-image: radial-gradient(circle, #000 100%, #000 100%);
-        mask-size: 100% 100%;
-        opacity: 1;
-    }
-    50% {
-        /* ここで粒子（ノイズ）を混ぜ始める */
-        mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-        mask-size: 150% 150%;
-        opacity: 0.8;
-    }
-    100% {
-        /* 粒子を巨大化させてスカスカにする */
-        mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-        mask-size: 600% 600%;
-        opacity: 0;
-    }
-}
-
-.weather-slide {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 95%;
-    text-align: center;
-    opacity: 0;
-    pointer-events: none;
-    /* 現れるときはシンプルにふわっと */
-    transition: opacity 1.5s ease-in;
-}
-
-.weather-slide.active {
-    opacity: 1;
-    pointer-events: auto;
-    mask-image: none;
-}
-
-/* 消える時専用：粒子アニメーションを強制発動 */
-.weather-slide.exit {
-    animation: particle-dissolve 3.5s forwards ease-out;
-    opacity: 1; /* アニメーション中はopacityが勝手に消えないように固定 */
-}
-
-/* 「今」「今日」「明日」のラベル */
-.weather-slide-label {
-    font-size: 1.2rem;
-    font-weight: 300; /* 細身に */
-    color: rgba(255, 255, 255, 0.4);
-    margin-bottom: 8px;
-    letter-spacing: 0.5em; /* 文字間隔を広げて高級感を出す */
-    text-transform: uppercase;
-}
-
-.weather-sub-info {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    font-size: 1.2rem;
-    font-weight: 200;
-    color: rgba(255, 255, 255, 0.3);
-    margin-bottom: 8px;
-    letter-spacing: 0.1em;
-}
-
-.drop-icon { width: 20px; height: 20px; vertical-align: middle; }
-
-/* 天気アイコン */
-.weather-icon-large svg {
-    width: 100px; 
-    height: 100px;
-    margin: 12px 0;
-    opacity: 0.9;
-}
-
-/* 気温・前日差ライン */
-.weather-data-line {
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    gap: 18px;
-    font-size: 3.8rem; /* 少しサイズを落として洗練させる */
-    font-weight: 200;  /* 【重要】細いウェイトに変更 */
-    white-space: nowrap;
-    font-family: 'JetBrains Mono', sans-serif; /* 数字が綺麗に見える等幅フォント */
-}
-
-.weather-data-line .hi { color: #ff5252; text-shadow: 0 0 15px rgba(255, 82, 82, 0.3); } /* 最高（赤） */
-.weather-data-line .lo { color: #448aff; text-shadow: 0 0 15px rgba(68, 138, 255, 0.3); } /* 最低（青） */
-.weather-data-line .pop { color: rgba(255, 255, 255, 0.8); font-weight: 300; } /* 降水確率 */
-.weather-data-line .sep { color: rgba(255, 255, 255, 0.15); font-weight: 200; } /* セパレーター */
-
-/* 前日差の小文字スタイル */
-.diff-plus { font-size: 1.5rem; color: #ff5252; margin-left: 4px; vertical-align: top; }
-.diff-minus { font-size: 1.5rem; color: #448aff; margin-left: 4px; vertical-align: top; }
-.diff-zero { font-size: 1.5rem; color: #888; margin-left: 4px; vertical-align: top; }
-
-.weather-data-line .hi { color: #ff5252; }
-.weather-data-line .lo { color: #448aff; }
-.weather-data-line .sep { color: rgba(255,255,255,0.2); margin: 0 5px; }
-
-.diff-plus, .diff-minus, .diff-zero {
-    font-size: 1.1rem;
-    font-weight: 400;
-    margin-left: 6px;
-    vertical-align: super;
-}
-
-.weather-data-line .hi { color: #ff5252; opacity: 0.9; }
-.weather-data-line .lo { color: #448aff; opacity: 0.9; }
-.weather-data-line .sep { color: rgba(255, 255, 255, 0.1); margin: 0 2px; }
-
-
-.grid-item-tr {
-    padding: 0 !important;
-    overflow: hidden !important;
-    display: block !important;
-}
-
-#trend-fixed-content {
-    /* JSで指定するので最小限でOK */
-    overflow: hidden;
-}
-
-/* タイルの基本：画像のような「枠線」と「透過」 */
-.trend-tile {
-    position: relative !important;
-    border: 1px solid rgba(0, 212, 255, 0.6) !important;
-    transition: all 0.4s ease;
-}
-
-/* --- 画像のレイアウトを再現 --- */
-
-/* 左上の巨大なシアン（1位） */
-.trend-tile:nth-child(1) {
-    grid-column: span 3;
-    grid-row: span 3;
-    background: #00e5ff !important; /* 強烈なシアン */
-    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.4);
-}
-
-/* その横の深いブルー（2位） */
-.trend-tile:nth-child(2) {
-    grid-column: span 2;
-    grid-row: span 2;
-    background: rgba(0, 100, 150, 0.8) !important; /* 濃い青 */
-}
-
-/* 3位：右上の細長（画像右上） */
-.trend-tile:nth-child(3) {
-    grid-column: span 1;
-    grid-row: span 1;
-    background: rgba(0, 212, 255, 0.1) !important;
-}
-
-/* 4位〜：下の段や右側の細かいタイル */
-.trend-tile:nth-child(4) { grid-column: span 1; grid-row: span 1; background: rgba(0, 212, 255, 0.05); }
-.trend-tile:nth-child(5) { grid-column: span 2; grid-row: span 1; background: rgba(0, 212, 255, 0.2); }
-.trend-tile:nth-child(6) { grid-column: span 1; grid-row: span 2; background: rgba(0, 212, 255, 0.15); }
-
-/* 粒子エフェクト（消え方もスタイリッシュに） */
-.trend-tile.exit {
-    animation: particle-dissolve 3.5s forwards ease-out !important;
-}
-
-/* ヒートマップ専用：強制カラー適用 */
-#trend-fixed-content {
-    display: grid !important;
-    grid-template-columns: repeat(6, 1fr) !important;
-    grid-template-rows: repeat(4, 1fr) !important;
-    gap: 3px !important;
-    padding: 5px !important;
-    background: rgba(0, 0, 0, 0.4) !important; /* パネル自体を暗くして色を立たせる */
-}
-
-.trend-tile {
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    position: relative !important;
-    transition: all 0.5s ease;
-}
-
-/* 1位：巨大なシアン（画像左上） */
-.trend-tile.rank-1 {
-    grid-column: span 3 !important;
-    grid-row: span 3 !important;
-    background-color: #00e5ff !important; /* 強制シアン */
-    box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.5) !important;
-}
-
-/* 2位：濃い青（画像中央上） */
-.trend-tile.rank-2 {
-    grid-column: span 3 !important;
-    grid-row: span 2 !important;
-    background-color: rgba(0, 80, 160, 0.9) !important;
-}
-
-/* 3位：画像左下の「緑」（上昇トレンド風） */
-.trend-tile.rank-3 {
-    grid-column: span 3 !important;
-    grid-row: span 1 !important;
-    background-color: #2ecc71 !important; /* 強制グリーン */
-    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2) !important;
-}
-
-/* その他：画像右側の細かいタイル群 */
-.trend-tile.rank-other {
-    background-color: rgba(0, 212, 255, 0.1) !important;
-    border: 1px solid rgba(0, 212, 255, 0.3) !important;
-}
-
-/* 粒子化アニメーション */
-.trend-tile.exit {
-    animation: particle-dissolve 3.5s forwards ease-out !important;
-    background-color: transparent !important;
-    border: none !important;
-}
-
-/* デバッグ：存在確認用 */
-#trend-fixed-content {
-    outline: 5px solid red !important; /* コンテナの場所を赤枠で示す */
-    min-height: 300px !important;    /* 高さを強制確保 */
-    z-index: 9999 !important;        /* 最前面へ */
-    display: grid !important;
-    position: relative !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
-.trend-tile {
-    outline: 1px solid yellow !important; /* タイルを黄枠で示す */
-    min-height: 20px !important;
-}
-
-
-/* --- ルーレット（スロット）回転アニメーション --- */
-@keyframes roulette-spin {
-    0% { transform: rotateX(0deg) translateY(0); opacity: 1; }
-    20% { transform: rotateX(-90deg) translateY(-20px); opacity: 0; }
-    21% { transform: rotateX(90deg) translateY(20px); opacity: 0; }
-    100% { transform: rotateX(0deg) translateY(0); opacity: 1; }
-}
-
-#forex-wrapper-v {
-    width: 100%;
-    height: 60px; /* パネルの高さ */
-    position: relative;
-    transform-style: preserve-3d;
-    transition: transform 2.5s cubic-bezier(0.65, 0, 0.35, 1);}
-
-.forex-slide-v {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    left: 0;
-    top: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backface-visibility: hidden; /* 裏側は見せない */
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 1.1rem;
-}
-
-.roulette-active {
-    animation: roulette-spin 0.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
-}
-
-/* --- 3D三角柱ルーレットの設定 --- */
-#forex-viewport-v {
-    perspective: 800px;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* 3つの面を正三角形に配置 (高さ60pxの場合、半径は約35px) */
-.forex-slide-v:nth-child(1) { transform: rotateX(0deg) translateZ(35px); }
-.forex-slide-v:nth-child(2) { transform: rotateX(120deg) translateZ(35px); }
-.forex-slide-v:nth-child(3) { transform: rotateX(240deg) translateZ(35px); }
-
-
-/* --- ニュース専用：深度フェード演出 --- */
-
-/* 1. アニメーション定義 */
-@keyframes news-depth-in {
-    0% { opacity: 0; transform: scale(0.92) translateZ(-50px); filter: blur(15px); }
-    100% { opacity: 1; transform: scale(1) translateZ(0); filter: blur(0); }
-}
-
-@keyframes news-depth-out {
-    0% { opacity: 1; transform: scale(1) translateZ(0); filter: blur(0); }
-    100% { opacity: 0; transform: scale(1.1) translateZ(50px); filter: blur(20px); }
-}
-
-/* 2. ニュースアイテムのベース状態 */
 .news-item {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    will-change: transform, opacity, filter;
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    padding: 30px; box-sizing: border-box;
+    background-color: rgba(10, 15, 25, 0.88); backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 24px;
+    display: flex; flex-direction: column; opacity: 0;
+    will-change: transform, opacity;
 }
 
-/* 3. 状態クラス */
-/* 登場：下からせり上がる */
-.news-item.show {
-    animation: news-push-in 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    z-index: 2;
-}
+.news-item.show { animation: news-ascend 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; z-index: 10; }
+.news-item.exit { animation: news-push-out 1.0s cubic-bezier(0.16, 1, 0.3, 1) forwards; z-index: 5; }
 
-/* 退場：上へ押し出される */
-.news-item.exit {
-    animation: news-push-out 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    z-index: 1;
-}
-
-/* --- ニュース専用：立体押し出し（Push & Depth）演出 --- */
-
-/* 1. 上へ押し出されながら奥へ消える（古いニュース用） */
-@keyframes news-push-out {
-    0% { opacity: 1; transform: scale(1) translateY(0) translateZ(0); filter: blur(0); }
-    100% { opacity: 0; transform: scale(1.1) translateY(-50px) translateZ(50px); filter: blur(20px); }
-}
-
-/* 2. 下からせり上がって定位置へ（新しいニュース用） */
-@keyframes news-push-in {
-    0% { opacity: 0; transform: scale(0.95) translateY(50px) translateZ(-30px); filter: blur(10px); }
-    100% { opacity: 1; transform: scale(1) translateY(0) translateZ(0); filter: blur(0); }
-}
-
-/* より力強い「せり上がり」アニメーション */
-@keyframes news-push-up-strong {
-    0% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-    100% { opacity: 0; transform: translateY(-120px) scale(1.05); filter: blur(15px); }
-}
-
-@keyframes news-ascend-strong {
-    0% { opacity: 0; transform: translateY(80px) scale(0.95); filter: blur(10px); }
+@keyframes news-ascend {
+    0% { opacity: 0; transform: translateY(50px) scale(0.98); filter: blur(10px); }
     100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
 }
-
-.news-item.show {
-    animation: news-ascend-strong 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+@keyframes news-push-out {
+    0% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-80px) scale(1.05); filter: blur(15px); }
 }
 
-.news-item.exit {
-    animation: news-push-up-strong 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+/* =========================================
+   4. トレンド・ヒートマップ (中央右)
+   ========================================= */
+#trend-fixed-content {
+    display: grid !important; grid-template-columns: repeat(6, 1fr) !important;
+    grid-template-rows: repeat(4, 1fr) !important; gap: 4px !important;
+    padding: 10px !important; height: 100%; box-sizing: border-box;
 }
 
+.trend-tile { border: 1px solid rgba(255,255,255,0.1); transition: all 0.5s ease; position: relative; }
+.trend-tile.rank-1 { grid-column: span 3; grid-row: span 3; background: #00e5ff !important; box-shadow: inset 0 0 20px rgba(255,255,255,0.3); }
+.trend-tile.rank-2 { grid-column: span 3; grid-row: span 2; background: rgba(0, 80, 160, 0.9) !important; }
+.trend-tile.rank-3 { grid-column: span 3; grid-row: span 1; background: #2ecc71 !important; }
+.trend-tile.rank-other { background: rgba(0, 212, 255, 0.1); }
+
+/* =========================================
+   5. 粒子(Dissolve) & 共通アニメーション
+   ========================================= */
+@keyframes particle-dissolve {
+    0% { mask-image: radial-gradient(circle, #000 100%, #000 100%); mask-size: 100% 100%; opacity: 1; }
+    100% { 
+        mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        mask-size: 600% 600%; opacity: 0; 
+    }
+}
+
+.weather-slide.exit, .trend-tile.exit {
+    animation: particle-dissolve 2.5s forwards ease-out !important;
+}
+
+/* =========================================
+   6. 時計・その他
+   ========================================= */
+.clock-container { height: 150px; display: flex; align-items: center; justify-content: center; }
+.tick { font-size: 3.2rem; }
+#seconds-static { font-size: 2.8rem; color: var(--accent); margin-left: 10px; }
+#date { position: absolute; top: 12px; left: 55px; font-size: 14px; opacity: 0.7; }
