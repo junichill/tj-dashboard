@@ -429,9 +429,18 @@ body {
 .sub-row:nth-child(9) { animation-delay: 0.55s; }
 .sub-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; margin-right: 15px; }
 .sub-row-title {
-    color: #ffffff !important; /* 強制的に白 */
+    color: #ffffff !important;
     font-size: 16px;
-    text-decoration: none;
+    
+    /* 1行固定のための必須セット */
+    white-space: nowrap !important;   /* 改行を絶対に許さない */
+    overflow: hidden !important;      /* はみ出た分を隠す */
+    text-overflow: ellipsis !important; /* はみ出た分を ... にする */
+    
+    /* レイアウト崩れ防止 */
+    display: block !important;
+    flex: 1;                          /* 横幅いっぱいまで使わせる */
+    min-width: 0;                     /* flex内の文字省略を正常に機能させる */
 }
 
 /* --- ニュースアニメーション定義 (重複解消・統合版) --- */
@@ -458,6 +467,7 @@ body {
 /* その他パーツ（スケジュール等） */
 .panel-label { display: none; }
 .schedule-list { display: none; }
+
 
 
 
