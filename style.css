@@ -390,14 +390,6 @@ body {
     transition: transform 0.3s ease;
 }
 
-.news-sub-link {
-    text-decoration: none !important;
-    display: block;
-    width: 100%;
-    /* フェードインしながら現れるようにするとさらに綺麗 */
-    animation: fadeInSub 0.5s ease forwards;
-}
-
 /* --- ホバー時の演出（色は白のまま、光らせる） --- */
 .news-main-link:hover .news-title,
 .news-sub-link:hover .sub-row-title {
@@ -412,32 +404,20 @@ body {
     box-shadow: 0 0 10px var(--accent);
 }
 
+/* サブリスト */
 .sub-list {
-    position: relative;
-    height: 360px; /* 36px * 10行分 */
-    overflow: hidden; /* はみ出たニュースを隠す（重要） */
-    margin-top: 15px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding-top: 10px;
-    transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1); /* これがスライドの滑らかさを作る */
-    will-change: transform;
+    padding-top: 15px; /* 20pxから15pxに短縮 */
+    margin-top: 10px;
 }
 
-/* --- 各ニュース行（子） --- */
 .sub-row {
-    height: 26px;      /* 文字の高さ */
-    margin-bottom: 10px; /* 下の間隔（26+10=36pxが1行の単位） */
     display: flex;
     align-items: center;
-    width: 100%;
-    /* 新しく現れる時のフェードイン */
-    animation: fadeInSub 0.5s ease forwards;
+    margin-bottom: 10px; /* 15pxから10pxに短縮 */
+    opacity: 0;
+    animation: slideUpSub 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-
-.sub-row.exit-up {
-    animation: fadeOutUp 0.6s ease forwards;
-}
-
 .sub-row:nth-child(1) { animation-delay: 0.15s; }
 .sub-row:nth-child(2) { animation-delay: 0.20s; }
 .sub-row:nth-child(3) { animation-delay: 0.25s; }
@@ -451,11 +431,16 @@ body {
 .sub-row-title {
     color: #ffffff !important;
     font-size: 16px;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    flex: 1;
-    min-width: 0;
+    
+    /* 1行固定のための必須セット */
+    white-space: nowrap !important;   /* 改行を絶対に許さない */
+    overflow: hidden !important;      /* はみ出た分を隠す */
+    text-overflow: ellipsis !important; /* はみ出た分を ... にする */
+    
+    /* レイアウト崩れ防止 */
+    display: block !important;
+    flex: 1;                          /* 横幅いっぱいまで使わせる */
+    min-width: 0;                     /* flex内の文字省略を正常に機能させる */
 }
 
 /* --- ニュースアニメーション定義 (重複解消・統合版) --- */
@@ -479,20 +464,9 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes fadeOutUp {
-    to { opacity: 0; transform: translateY(-10px); }
-}
-
-@keyframes fadeInSub {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
 /* その他パーツ（スケジュール等） */
 .panel-label { display: none; }
 .schedule-list { display: none; }
-
-
 
 
 
