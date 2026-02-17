@@ -353,9 +353,8 @@ function createNews(index) {
     // 背景画像の設定（元のunsplash画像を維持）
     item.style.backgroundImage = "url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop')";
 
-    // 表示する5件のニュースを特定
     const currentItems = [];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 10; i++) {
         currentItems.push(newsItems[(index + i) % newsItems.length]);
     }
 
