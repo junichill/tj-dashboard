@@ -398,66 +398,26 @@ function stopAutoNews() { if (newsT) clearInterval(newsT); }
 let newsIndex = 0;
 
 async function fetchNews() {
-    // 最新のNHK RSS URL（最近はこちらの方が安定しています）
-    const RSS_URL = 'https://www3.nhk.or.jp/rss/news/cat0.xml';
+    try {
+        const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
+        const data = await r.json();
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(data.contents, "application/xml");
+        const items = xml.querySelectorAll('item');
+        
+        let fetched = Array.from(items).map(item => ({
+            title: item.querySelector('title')?.textContent,
+            pubDate: item.querySelector('pubDate')?.textContent,
+            description: item.querySelector('description')?.textContent
+        }));
 
-    // Redditで推奨されていたプロキシリストを優先順に配置
-    const PROXIES = [
-        url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-        url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
-        url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-        url => `https://cors.lol/?${encodeURIComponent(url)}`
-    ];
-
-    for (const proxyFn of PROXIES) {
-        try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 4000); // 各4秒でタイムアウト
-
-            const r = await fetch(proxyFn(RSS_URL), { signal: controller.signal });
-            if (!r.ok) throw new Error('Network response was not ok');
-
-            const data = await r.json();
-            
-            // alloriginsは.contentsの中にXMLが入るが、他は直接テキストで返る場合がある
-            let xmlText = data.contents || data;
-            
-            // 万が一オブジェクトで返ってきた場合のケア（一部のプロキシ用）
-            if (typeof xmlText !== 'string') {
-                xmlText = new XMLSerializer().serializeToString(data);
-            }
-
-            const parser = new DOMParser();
-            const xml = parser.parseFromString(xmlText, "application/xml");
-            const items = xml.querySelectorAll('item');
-            
-            let fetched = Array.from(items).map(item => ({
-                title: item.querySelector('title')?.textContent,
-                pubDate: item.querySelector('pubDate')?.textContent,
-                description: item.querySelector('description')?.textContent
-            })).slice(0, 15); // 最新15件に絞る
-
-            if (fetched.length > 0) {
-                newsItems = fetched;
-                renderNewsBoard(0);
-                startAutoNews(); // 自動ループ開始
-                clearTimeout(timeoutId);
-                console.log(`✅ Success using: ${proxyFn.toString().split('`')[1].split('?')[0]}`);
-                return; // 成功したらループを抜ける
-            }
-        } catch (e) {
-            console.warn(`⚠️ Proxy failed, trying next...`, e);
-            continue; // 失敗したら次のプロキシへ
+        if (fetched.length > 0) {
+            newsItems = fetched;
+            // 初期表示
+            renderNewsBoard(0);
+            startAutoNews();
         }
-    }
-
-    // すべてのプロキシが失敗した場合の最終手段（フォールバック）
-    showFallbackNews();
-}
-
-function showFallbackNews() {
-    newsItems = [{ title: "ニュースを取得できませんでした", description: "接続エラーが発生しています。しばらく待つか、再読み込みしてください。" }];
-    renderNewsBoard(0);
+    } catch (e) { console.error('News fetch failed', e); }
 }
 
 function renderNewsBoard(idx) {
