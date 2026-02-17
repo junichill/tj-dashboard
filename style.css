@@ -367,7 +367,7 @@ body {
 .news-title {
    font-size: 22px !important; /* 少しだけ小さくしてスペースを捻出 */
    font-weight: 600 !important;
-   color: var(--accent);
+   color: #ffffff !important; /* 強制的に白 */
    line-height: 1.3;
    margin-bottom: 10px;
    animation: slideUpMain 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -382,19 +382,20 @@ body {
 }
 
 /* ニュースリンクの基本スタイル：文字色は白(inherit)で統一 */
+/* リンク（aタグ）自体の色設定 */
 .news-main-link, .news-sub-link {
-    text-decoration: none; 
-    color: inherit;        /* 親要素の白を継承 */
-    display: block;        
-    transition: all 0.3s ease;
+    text-decoration: none !important;
+    color: #ffffff !important;
+    display: block;
+    transition: transform 0.3s ease;
 }
 
-/* ホバー時の演出：文字色は白のまま、少し光らせて右に動かす */
+/* --- ホバー時の演出（色は白のまま、光らせる） --- */
 .news-main-link:hover .news-title,
 .news-sub-link:hover .sub-row-title {
-    color: #fff;           /* 白色を維持 */
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* ぼんやり光らせる */
-    transform: translateX(8px); /* 右にスライド */
+    color: #ffffff !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8); /* 白く光る */
+    transform: translateX(8px);
 }
 
 /* ホバー時にドットだけアクセントカラーにする */
@@ -427,7 +428,11 @@ body {
 .sub-row:nth-child(8) { animation-delay: 0.50s; }
 .sub-row:nth-child(9) { animation-delay: 0.55s; }
 .sub-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; margin-right: 15px; }
-.sub-row-title { font-size: 16px; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sub-row-title {
+    color: #ffffff !important; /* 強制的に白 */
+    font-size: 16px;
+    text-decoration: none;
+}
 
 /* --- ニュースアニメーション定義 (重複解消・統合版) --- */
 @keyframes news-ascend-strong {
@@ -453,6 +458,7 @@ body {
 /* その他パーツ（スケジュール等） */
 .panel-label { display: none; }
 .schedule-list { display: none; }
+
 
 
 
