@@ -479,11 +479,14 @@ adjustScale();
 let trendItems = [];
 let trendIndex = 0;
 
+// =========================
+// TRENDS (Google Trends via GAS)
+// =========================
 async function fetchTrends() {
     const container = document.getElementById('trend-fixed-content');
     if (!container) return;
 
-    // あなたのGAS URLに「?type=trends」を付け足します
+    // あなたのGAS URL
     const MY_GAS_URL = "https://script.google.com/macros/s/AKfycbx6dVnRjptPeQouJM6Czl-GUBqQzxFq8Nj06POOVbqTEGb_w4Wx0rHm-M9_GgApEWnv/exec?type=trends";
 
     try {
@@ -497,26 +500,22 @@ async function fetchTrends() {
         const trendData = Array.from(items).map(item => item.querySelector('title').textContent);
         
         if (trendData.length > 0) {
-            // 既存タイルがあれば「沈み込み（exit-active）」アニメーション
             const tiles = container.querySelectorAll('.trend-tile');
+            // すでにタイルがある場合は「沈み込み」演出をしてから描き替え
             if (tiles.length > 0) {
-                tiles.forEach(t => t.classList.add('exit-active'));
-                setTimeout(() => renderTrends(container, trendData), 1200);
+                tiles.forEach(t => {
+                    t.classList.remove('enter-active'); // 念のため削除
+                    t.classList.add('exit-active');
+                });
+                setTimeout(() => {
+                    renderTrends(container, trendData);
+                }, 1200);
             } else {
                 renderTrends(container, trendData);
             }
         }
     } catch (e) {
         console.error('Trends fetch failed via GAS', e);
-    }
-}
-
-    // ★重要: ここで色付きパネルを描画する（これ以降に container.innerHTML を書かない）
-    renderTrends(container, trendItems);
-    
-    // サイクル処理を起動
-    if (typeof startHeatmapCycle === 'function') {
-        startHeatmapCycle();
     }
 }
 
@@ -530,13 +529,12 @@ function renderTrends(container, data) {
     container.style.gap = "0px"; 
 
     const backupWords = ["CORE_NODE", "MARKET_IDX", "GLB_FEED", "SIG_PROC", "DATA_STREAM", "CLOUD_ARC", "API_LINK", "NET_STAT"];
-    let trendData = data || [];
-    const finalData = [];
+    let finalData = [];
     for (let i = 0; i < 8; i++) {
-        finalData.push(trendData[i] || backupWords[i]);
+        finalData.push(data[i] || backupWords[i]);
     }
 
-    // --- 3位と4位のワードを入れ替え ---
+    // 順位入れ替え（デザイン上のアクセント）
     const temp = finalData[2];
     finalData[2] = finalData[3];
     finalData[3] = temp;
@@ -562,11 +560,9 @@ function renderTrends(container, data) {
         let style = layouts[i-1];
         let content = finalData[i-1];
         let bgColor = colormap[i-1];
-        
         let fontSize = i === 1 ? "44px" : (i <= 3 ? "20px" : "13px");
         let textColor = (i >= 3 && i <= 5) ? "rgba(0,0,0,0.75)" : "#ffffff";
         
-        // --- 右下の数字演出（1位と2位のみに限定） ---
         let valTag = "";
         if (i <= 2) {
             const randomVal = (Math.random() * 100).toFixed(1);
@@ -586,34 +582,35 @@ function renderTrends(container, data) {
                     text-transform: uppercase; 
                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                     overflow: hidden;
-                    cursor: pointer;"
+                    cursor: pointer;
+                    opacity: 0;"
                     onclick="window.open('https://www.google.com/search?q=${encodeURIComponent(content)}', '_blank')">
                     <div style="width:100%; word-wrap: break-word; line-height:1.1;">${content}</div>
                     ${valTag}
                  </div>`;
     }
     container.innerHTML = html;
+
+    // 描き出し直後にスタッガー登場アニメーション
+    const newTiles = container.querySelectorAll('.trend-tile');
+    newTiles.forEach((tile, i) => {
+        setTimeout(() => {
+            tile.classList.add('enter-active');
+        }, i * 60); 
+    });
+
+    // サイクルタイマーを再起動
+    startHeatmapCycle();
 }
 
 function startHeatmapCycle() {
     if (window.trendTimer) clearInterval(window.trendTimer);
-
     window.trendTimer = setInterval(() => {
-        const tiles = document.querySelectorAll('.trend-tile');
-        if (tiles.length === 0) return;
-
-        // 全タイルを一斉に粒子化
-        tiles.forEach(tile => tile.classList.add('exit'));
-
-        // 粒子化が終わるのを待ってからデータを再取得・再描画
-        setTimeout(() => {
-            fetchTrends(); 
-        }, 5500);
-
+        fetchTrends();
     }, 20000); 
 }
 
 // 起動時に実行
 fetchTrends();
-// 1時間ごとに最新トレンドに更新
+// 1時間ごとに最新トレンドに全取得更新
 setInterval(fetchTrends, 3600000);
