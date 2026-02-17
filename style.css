@@ -1,17 +1,17 @@
 /* =========================================
-   1. 共通基盤 & レイアウト
+   1. CORE LAYOUT & VARIABLES
    ========================================= */
 :root {
-  --glass-bg: rgba(255, 255, 255, 0.06);
+  --glass-bg: rgba(255, 255, 255, 0.05);
   --glass-border: rgba(255, 255, 255, 0.12);
-  --blur: blur(25px);
+  --blur: blur(20px);
   --accent: #00d4ff;
 }
 
 body {
   margin: 0; padding: 0; background: #000; color: white;
-  font-family: 'Roboto', 'Inter', sans-serif; overflow: hidden;
-  width: 100vw; height: 100vh;
+  font-family: 'Roboto', 'JetBrains Mono', sans-serif;
+  overflow: hidden; width: 100vw; height: 100vh;
 }
 
 #container {
@@ -20,120 +20,128 @@ body {
   top: 0; left: 0; transform-origin: top left;
 }
 
+.aurora-bg {
+  position: fixed; width: 200%; height: 200%; top: -50%; left: -50%;
+  background: radial-gradient(circle at 20% 30%, #1a237e, transparent),
+              radial-gradient(circle at 80% 70%, #4a148c, transparent),
+              radial-gradient(circle at 50% 50%, #004d40, transparent);
+  filter: blur(80px); opacity: 0.4; animation: rotate-bg 60s linear infinite; z-index: -1;
+}
+@keyframes rotate-bg { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* =========================================
+   2. PANELS & GRID SYSTEM
+   ========================================= */
 .glass-card {
   background: var(--glass-bg); backdrop-filter: var(--blur);
   -webkit-backdrop-filter: var(--blur); border: 1px solid var(--glass-border);
   border-radius: 24px; box-shadow: 0 15px 45px rgba(0,0,0,0.5);
 }
 
-/* パネル比率固定 */
 #left-panel { flex: 0 0 440px; display: flex; flex-direction: column; gap: 20px; }
 #center-panel { flex: 1; min-width: 0; }
 #right-panel { flex: 0 0 520px !important; position: relative; }
 
+.center-grid-layout {
+  display: grid; grid-template-columns: 1fr 1fr;
+  grid-template-rows: 400px 250px; gap: 20px; height: 100%;
+}
+
+.grid-item-tl, .grid-item-tr { height: 400px; overflow: hidden; position: relative; }
+.grid-item-bottom { grid-column: span 2; height: 250px; overflow: hidden; }
+
 /* =========================================
-   2. 時計 (改行を絶対禁止)
+   3. CLOCK & DATE (改行防止)
    ========================================= */
-.clock-container {
-  height: 150px; display: flex; align-items: center; justify-content: center;
-  position: relative; overflow: hidden;
-}
-
-.clock-scale {
-  display: flex; 
-  align-items: baseline; 
-  justify-content: center;
-  gap: 12px;
-  width: 100%; /* 全幅確保 */
-  white-space: nowrap; /* 改行を強制禁止 */
-}
-
-.tick { 
-  font-size: 4.2rem; 
-  font-weight: 700; 
-  font-family: 'JetBrains Mono', monospace; 
-  letter-spacing: -2px;
-  line-height: 1;
-}
-
-#seconds-static { 
-  font-size: 2.8rem; 
-  color: var(--accent); 
-  font-weight: 300; 
-  font-family: 'JetBrains Mono', monospace;
-  line-height: 1;
-}
-
-#date { 
-  position: absolute; top: 15px; left: 30px; 
-  font-size: 14px; opacity: 0.6; letter-spacing: 0.2em; 
-}
+#date { position: absolute; top: 12px; left: 55px; font-size: 14px; letter-spacing: 0.1em; opacity: 0.7; z-index: 10; }
+.clock-container { height: 150px; display: flex; align-items: center; justify-content: center; }
+.clock-scale { display: flex; align-items: baseline; gap: 8px; white-space: nowrap; }
+.tick { font-size: 3.5rem; font-weight: 700; line-height: 1; }
+#seconds-static { font-size: 2.8rem; font-weight: 300; color: var(--accent); line-height: 1; }
 
 /* =========================================
-   3. 為替 3Dルーレット (Vertical Prism)
+   4. FOREX 3D ROULETTE (為替ルーレット)
    ========================================= */
 #forex-viewport-v {
-  perspective: 1200px; height: 60px; width: 100%; position: relative;
+  perspective: 1000px; height: 60px; display: flex; align-items: center; justify-content: center;
 }
-
 #forex-wrapper-v {
-  width: 100%; height: 100%; position: relative;
-  transform-style: preserve-3d;
+  width: 100%; height: 100%; position: relative; transform-style: preserve-3d;
   transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1);
 }
-
 .forex-slide-v {
-  position: absolute; width: 100%; height: 100%;
-  left: 0; top: 0; display: flex; align-items: center; justify-content: center;
-  backface-visibility: hidden; font-family: 'JetBrains Mono', monospace;
-  font-size: 1.2rem;
+  position: absolute; width: 100%; height: 100%; display: flex;
+  align-items: center; justify-content: center; backface-visibility: hidden;
+  font-family: 'JetBrains Mono', monospace; font-size: 1.1rem;
 }
-
-/* 3面を正三角形に配置 (半径35px) */
 .forex-slide-v:nth-child(1) { transform: rotateX(0deg) translateZ(35px); }
 .forex-slide-v:nth-child(2) { transform: rotateX(120deg) translateZ(35px); }
 .forex-slide-v:nth-child(3) { transform: rotateX(240deg) translateZ(35px); }
 
 /* =========================================
-   4. 天気 & ニュース (構造と書式の厳格化)
+   5. WEATHER (スライド・アイコンサイズ制限)
    ========================================= */
-.center-grid-layout { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 400px 250px; gap: 20px; height: 100%; }
-.grid-item-bottom { grid-column: span 2; height: 250px; overflow: hidden; }
-
-/* アイコンサイズ固定 */
-.forecast-item { text-align: center; width: 85px; }
-.weather-icon { width: 50px; height: 50px; margin: 10px auto; }
-.weather-icon svg { width: 100%; height: 100%; display: block; }
-.weather-icon-large svg { width: 130px; height: 130px; margin: 0 auto; }
-
-/* ニュースカード */
-.news-item {
-  position: absolute; inset: 0; padding: 40px; box-sizing: border-box;
-  display: flex; flex-direction: column; background: rgba(12, 18, 28, 0.95);
-  opacity: 0; pointer-events: none; transition: opacity 0.6s ease;
+.weather-slide {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 95%; text-align: center; opacity: 0; transition: opacity 1s;
 }
-.news-item.show { opacity: 1; z-index: 10; pointer-events: auto; }
+.weather-slide.active { opacity: 1; }
+.weather-icon-large svg { width: 100px; height: 100px; margin: 10px 0; }
+.weather-data-line { display: flex; align-items: baseline; justify-content: center; gap: 15px; font-size: 3.5rem; font-weight: 200; font-family: 'JetBrains Mono'; }
+.weather-data-line .hi { color: #ff5252; }
+.weather-data-line .lo { color: #448aff; }
 
-.news-title { font-size: 26px; font-weight: 700; color: var(--accent); margin-bottom: 15px; line-height: 1.4; }
-.news-description { font-size: 16px; color: rgba(255,255,255,0.85); line-height: 1.6; margin-bottom: 25px; }
+/* 週間予報アイテム */
+.forecast-item { text-align: center; width: 80px; }
+.weather-icon { width: 45px; height: 45px; margin: 8px auto; }
+.weather-icon svg { width: 100%; height: 100%; }
 
-/* ニュース・サブリスト */
-.sub-list { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
+/* =========================================
+   6. TREND HEATMAP (トレンド)
+   ========================================= */
+#trend-fixed-content {
+  display: grid !important; grid-template-columns: repeat(6, 1fr) !important;
+  grid-template-rows: repeat(4, 1fr) !important; gap: 4px !important;
+  padding: 10px !important; background: rgba(0,0,0,0.2) !important;
+}
+.trend-tile { border: 1px solid rgba(255, 255, 255, 0.1) !important; transition: all 0.5s; }
+.trend-tile.rank-1 { grid-column: span 3 !important; grid-row: span 3 !important; background: #00e5ff !important; box-shadow: inset 0 0 20px rgba(255,255,255,0.4); }
+.trend-tile.rank-2 { grid-column: span 3 !important; grid-row: span 2 !important; background: rgba(0, 80, 160, 0.9) !important; }
+.trend-tile.rank-3 { grid-column: span 3 !important; grid-row: span 1 !important; background: #2ecc71 !important; }
+.trend-tile.rank-other { background: rgba(0, 212, 255, 0.1) !important; }
+
+/* =========================================
+   7. NEWS (右パネル決定版)
+   ========================================= */
+#news-card { height: 100%; position: relative; overflow: hidden; }
+.news-item {
+  position: absolute; inset: 0; padding: 30px; box-sizing: border-box;
+  background-color: rgba(10, 15, 25, 0.92); backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 24px;
+  display: flex; flex-direction: column; opacity: 0;
+}
+.news-item.show { animation: news-push-in 1.2s forwards; z-index: 10; }
+.news-item.exit { animation: news-push-out 1.0s forwards; z-index: 5; }
+
+@keyframes news-push-in {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes news-push-out {
+  to { opacity: 0; transform: translateY(-40px); }
+}
+
+.news-title { font-size: 24px; font-weight: 700; color: var(--accent); margin-bottom: 12px; }
+.news-description { font-size: 15px; color: rgba(255, 255, 255, 0.8); line-height: 1.5; margin-bottom: 20px; }
 .sub-row { display: flex; align-items: center; margin-bottom: 12px; }
 .sub-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; margin-right: 15px; flex-shrink: 0; }
 .sub-row-title { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* =========================================
-   5. 背景 & エフェクト
+   8. COMMON ANIMATIONS
    ========================================= */
-.aurora-bg {
-  position: fixed; inset: -50%; background: radial-gradient(circle at 20% 30%, #1a237e, transparent), radial-gradient(circle at 80% 70%, #4a148c, transparent), radial-gradient(circle at 50% 50%, #004d40, transparent);
-  filter: blur(80px); opacity: 0.35; animation: rotate-bg 60s linear infinite; z-index: -1;
-}
-@keyframes rotate-bg { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
 @keyframes particle-dissolve {
   0% { mask-image: radial-gradient(circle, #000 100%, #000 100%); opacity: 1; }
   100% { mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); mask-size: 600% 600%; opacity: 0; }
 }
-.exit { animation: particle-dissolve 2s forwards ease-out !important; }
+.exit { animation: particle-dissolve 2.5s forwards ease-out !important; }
