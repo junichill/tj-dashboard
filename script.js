@@ -489,9 +489,8 @@ async function slideNextNews() {
 function startAutoNews() {
     if (newsT) clearInterval(newsT);
     newsT = setInterval(() => {
-        // 次のインデックスへ（数珠つなぎの核：次は「今の2番目」が「1番目」になるようにidxを+1する）
-        const nextIdx = (newsIndex + 1) % newsItems.length;
-        renderNewsBoard(nextIdx);
+        // renderNewsBoardではなく、直接スライド関数を呼ぶ
+        slideNextNews();
     }, AUTO_INTERVAL);
 }
 
