@@ -430,11 +430,12 @@ async function fetchNews() {
 // newsItemsには常に最新の20件程度が入っている前提
 let newsDisplayIndex = 0;
 
+// 【修正後】
 function renderNewsBoard(idx) {
     const subList = document.querySelector('.sub-list');
     if (!subList) return;
 
-    // 初回実行時、またはリストが空の時に中身を充填
+    // 初回実行時：10件の初期データを表示
     if (subList.children.length === 0) {
         let initialHtml = "";
         for (let i = 0; i < 10; i++) {
@@ -442,10 +443,10 @@ function renderNewsBoard(idx) {
             initialHtml += createSubRowHtml(item);
         }
         subList.innerHTML = initialHtml;
+        
+        // 初回描画時のインデックスを同期
+        newsDisplayIndex = idx + 9; 
     }
-
-    // スライド演出の開始
-    slideNextNews();
 }
 
 function createSubRowHtml(item) {
