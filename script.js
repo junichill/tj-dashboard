@@ -398,26 +398,34 @@ function stopAutoNews() { if (newsT) clearInterval(newsT); }
 let newsIndex = 0;
 
 async function fetchNews() {
+    // NHKのURLを、より公式で安定しているものに変更
+    const RSS_URL = 'https://www3.nhk.or.jp/rss/news/cat0.xml';
+    // corsproxy.io を使用（?の後にURLを繋げるだけ）
+    const PROXY_URL = 'https://corsproxy.io/?' + encodeURIComponent(RSS_URL);
+
     try {
-        const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
-        const data = await r.json();
+        const r = await fetch(PROXY_URL);
+        if (!r.ok) throw new Error('Proxy error');
+        
+        const xmlText = await r.text(); // alloriginsと違い、ここはtext()でOK
         const parser = new DOMParser();
-        const xml = parser.parseFromString(data.contents, "application/xml");
+        const xml = parser.parseFromString(xmlText, "application/xml");
         const items = xml.querySelectorAll('item');
         
-        let fetched = Array.from(items).map(item => ({
+        newsItems = Array.from(items).map(item => ({
             title: item.querySelector('title')?.textContent,
             pubDate: item.querySelector('pubDate')?.textContent,
             description: item.querySelector('description')?.textContent
         }));
 
-        if (fetched.length > 0) {
-            newsItems = fetched;
-            // 初期表示
+        if (newsItems.length > 0) {
             renderNewsBoard(0);
             startAutoNews();
         }
-    } catch (e) { console.error('News fetch failed', e); }
+    } catch (e) {
+        console.error('ニュース取得に失敗:', e);
+        // 失敗した時のために、画面に「再試行中」などのメッセージを出すとプロっぽい
+    }
 }
 
 function renderNewsBoard(idx) {
