@@ -480,7 +480,7 @@ let trendItems = [];
 let trendIndex = 0;
 
 // =========================
-// TRENDS (Google Trends via GAS)
+// TRENDS (Google Trends via GAS) - 修正版
 // =========================
 async function fetchTrends() {
     const container = document.getElementById('trend-fixed-content');
@@ -488,34 +488,45 @@ async function fetchTrends() {
 
     // あなたのGAS URL
     const MY_GAS_URL = "https://script.google.com/macros/s/AKfycbx6dVnRjptPeQouJM6Czl-GUBqQzxFq8Nj06POOVbqTEGb_w4Wx0rHm-M9_GgApEWnv/exec?type=trends";
+    
+    let trendData = [];
 
     try {
         const r = await fetch(MY_GAS_URL);
         const xmlText = await r.text();
+        
+        // XMLパース処理
         const parser = new DOMParser();
         const xml = parser.parseFromString(xmlText, "application/xml");
         const items = xml.querySelectorAll('item');
         
-        // トレンドワードの抽出
-        const trendData = Array.from(items).map(item => item.querySelector('title').textContent);
-        
-        if (trendData.length > 0) {
-            const tiles = container.querySelectorAll('.trend-tile');
-            // すでにタイルがある場合は「沈み込み」演出をしてから描き替え
-            if (tiles.length > 0) {
-                tiles.forEach(t => {
-                    t.classList.remove('enter-active'); // 念のため削除
-                    t.classList.add('exit-active');
-                });
-                setTimeout(() => {
-                    renderTrends(container, trendData);
-                }, 1200);
-            } else {
-                renderTrends(container, trendData);
-            }
+        // データの抽出
+        if (items.length > 0) {
+            trendData = Array.from(items).map(item => item.querySelector('title')?.textContent || "");
+        } else {
+            console.warn("Trends data extraction failed or empty.");
         }
     } catch (e) {
-        console.error('Trends fetch failed via GAS', e);
+        console.error('Trends fetch failed via GAS:', e);
+        // エラー時はtrendDataは空配列のまま進む
+    }
+
+    // 【重要】成功・失敗に関わらず描画を実行する
+    // （データが空の場合は renderTrends 内でバックアップワードが使われる）
+    const tiles = container.querySelectorAll('.trend-tile');
+    
+    if (tiles.length > 0) {
+        // 既存タイルがある場合は沈み込み演出を入れてから更新
+        tiles.forEach(t => {
+            t.classList.remove('enter-active');
+            t.classList.add('exit-active'); // CSSで未定義なら無視されるだけなので安全
+        });
+        setTimeout(() => {
+            renderTrends(container, trendData);
+        }, 800);
+    } else {
+        // 初回描画
+        renderTrends(container, trendData);
     }
 }
 
