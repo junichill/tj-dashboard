@@ -427,26 +427,23 @@ async function fetchNews() {
 
 function renderNewsBoard(idx) {
     const newsCard = document.getElementById('news-card');
-    
-    // 1. 現在のメイン（ニュース1）を「上」へ押し出す
     const oldItem = newsCard.querySelector('.news-item.show');
+    
+    // 1. 旧ニュースを上に弾き飛ばす
     if (oldItem) {
         oldItem.classList.remove('show');
         oldItem.classList.add('exit');
-        setTimeout(() => {
-            if (oldItem.parentNode === newsCard) oldItem.remove();
-        }, 1200); 
+        setTimeout(() => oldItem.remove(), 1200);
     }
 
-    // 2. 次のニュースを生成して「下」から登場させる
+    // 2. 新ニュースを生成（GASから取得した最新データを使用）
     const newItem = createNews(idx);
     newsCard.appendChild(newItem);
     
-    // 少しだけ遅延させて実行することで、古いのが消え始めるのと同時に
-    // 下からググっと上がってくる「連動感」を出します
-    requestAnimationFrame(() => {
+    // 3. 50msだけ遅らせることで「押し出された隙間に滑り込む」質感を出す
+    setTimeout(() => {
         newItem.classList.add('show');
-    });
+    }, 50);
     
     newsIndex = idx;
 }
