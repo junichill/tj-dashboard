@@ -399,7 +399,7 @@ let newsIndex = 0;
 
 async function fetchNews() {
     // NHKのURLを、より公式で安定しているものに変更
-    const RSS_URL = 'https://www3.nhk.or.jp/rss/news/cat0.xml';
+    const RSS_URL = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
     // corsproxy.io を使用（?の後にURLを繋げるだけ）
     const PROXY_URL = 'https://corsproxy.io/?' + encodeURIComponent(RSS_URL);
 
