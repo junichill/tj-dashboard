@@ -427,71 +427,35 @@ async function fetchNews() {
     }
 }
 
-// newsItemsには常に最新の20件程度が入っている前提
-let newsDisplayIndex = 0;
-
-// 【修正後】
 function renderNewsBoard(idx) {
-    const subList = document.querySelector('.sub-list');
-    if (!subList) return;
-
-    // 初回実行時：10件の初期データを表示
-    if (subList.children.length === 0) {
-        let initialHtml = "";
-        for (let i = 0; i < 10; i++) {
-            const item = newsItems[(idx + i) % newsItems.length];
-            initialHtml += createSubRowHtml(item);
-        }
-        subList.innerHTML = initialHtml;
-        
-        // 初回描画時のインデックスを同期
-        newsDisplayIndex = idx + 9; 
+    const newsCard = document.getElementById('news-card');
+    const oldItem = newsCard.querySelector('.news-item.show');
+    
+    // 1. 旧ニュースを上に弾き飛ばす
+    if (oldItem) {
+        oldItem.classList.remove('show');
+        oldItem.classList.add('exit');
+        setTimeout(() => oldItem.remove(), 1200);
     }
-}
 
-function createSubRowHtml(item) {
-    return `
-        <a href="${item.link || '#'}" target="_blank" class="news-sub-link">
-            <div class="sub-row">
-                <div class="sub-dot"></div>
-                <div class="sub-row-title">${item.title}</div>
-            </div>
-        </a>`;
-}
-
-async function slideNextNews() {
-    const subList = document.querySelector('.sub-list');
-    const firstItem = subList.firstElementChild;
-    if (!firstItem) return;
-
-    // 1. 次に表示すべきニュースのインデックスを更新
-    newsDisplayIndex = (newsDisplayIndex + 1) % newsItems.length;
-    // 10件表示しているので、次に「新しく下から出てくる」のは index + 9 のデータ
-    const nextNewsData = newsItems[(newsDisplayIndex + 9) % newsItems.length];
-
-    // 2. 一番下に新しいニュースを準備（まだ見えない状態）
-    const newItemHtml = createSubRowHtml(nextNewsData);
-    subList.insertAdjacentHTML('beforeend', newItemHtml);
-
-    // 3. アニメーション：全体を上に1行分ずらす
-    const rowHeight = 36; // CSSで指定する sub-row の高さ + margin
-    subList.style.transition = "transform 0.8s cubic-bezier(0.65, 0, 0.35, 1)";
-    subList.style.transform = `translateY(-${rowHeight}px)`;
-
-    // 4. アニメーション完了後に要素を整理
+    // 2. 新ニュースを生成（GASから取得した最新データを使用）
+    const newItem = createNews(idx);
+    newsCard.appendChild(newItem);
+    
+    // 3. 50msだけ遅らせることで「押し出された隙間に滑り込む」質感を出す
     setTimeout(() => {
-        subList.style.transition = "none";
-        subList.style.transform = "translateY(0)";
-        // 先頭（一番上）だった要素を削除
-        if (subList.firstElementChild) subList.firstElementChild.remove();
-    }, 800);
+        newItem.classList.add('show');
+    }, 50);
+    
+    newsIndex = idx;
 }
 
 function startAutoNews() {
     if (newsT) clearInterval(newsT);
     newsT = setInterval(() => {
-        // renderNewsBoardではなく、直接スライド関数を呼ぶ
-        slideNextNews();
+        // 次のインデックスへ（数珠つなぎの核：次は「今の2番目」が「1番目」になるようにidxを+1する）
+        const nextIdx = (newsIndex + 1) % newsItems.length;
+        renderNewsBoard(nextIdx);
     }, AUTO_INTERVAL);
 }
 
