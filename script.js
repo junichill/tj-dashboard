@@ -411,9 +411,10 @@ async function fetchNews() {
         const items = xml.querySelectorAll('item');
         
         newsItems = Array.from(items).map(item => ({
-            title: item.querySelector('title')?.textContent,
-            pubDate: item.querySelector('pubDate')?.textContent,
-            description: item.querySelector('description')?.textContent
+         title: item.querySelector('title')?.textContent,
+         link: item.querySelector('link')?.textContent, // これが必要！
+         pubDate: item.querySelector('pubDate')?.textContent,
+         description: item.querySelector('description')?.textContent
         }));
 
         if (newsItems.length > 0) {
