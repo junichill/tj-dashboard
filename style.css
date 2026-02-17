@@ -1,5 +1,5 @@
 /* =========================================
-   1. 基本レイアウト & リセット (重複排除)
+   1. 基本レイアウト & リセット
    ========================================= */
 :root {
   --glass-bg: rgba(255, 255, 255, 0.05);
@@ -21,7 +21,7 @@ body {
 }
 
 /* =========================================
-   2. 各パネルの構成 (サイズ厳守)
+   2. 各パネルの構成
    ========================================= */
 .glass-card {
   background: var(--glass-bg); backdrop-filter: var(--blur);
@@ -34,71 +34,73 @@ body {
 #center-panel { flex: 1; min-width: 0; }
 #right-panel { flex: 0 0 520px !important; position: relative; }
 
-/* 中央パネル全体のグリッド定義 */
+/* 中央グリッド：上段380px、下段250px（週間天気用） */
 .center-grid-layout {
   display: grid; grid-template-columns: 1fr 1fr;
-  grid-template-rows: 380px 240px; gap: 20px; height: 100%;
+  grid-template-rows: 380px 250px; gap: 20px; height: 100%;
 }
 
 .grid-item-tl, .grid-item-tr { height: 380px; position: relative; }
-.grid-item-bottom { grid-column: span 2; height: 240px; position: relative; }
+.grid-item-bottom { grid-column: span 2; height: 250px; position: relative; padding: 0 !important; }
 
 /* =========================================
-   3. 時計 & 為替 (左パネルの重なり防止)
+   3. 時計 & 日付 (位置修正)
    ========================================= */
-.clock-container { height: 130px; display: flex; align-items: center; justify-content: center; }
+.clock-container { 
+  height: 150px; display: flex; flex-direction: column; 
+  align-items: center; justify-content: center; position: relative;
+}
+
+/* 年月日を時計のすぐ上に配置 */
+#date {
+  font-size: 14px; letter-spacing: 0.15em; opacity: 0.7;
+  margin-bottom: 5px; /* 時計との間隔 */
+}
+
 .clock-scale { display: flex; align-items: baseline; gap: 8px; white-space: nowrap; }
 .tick { font-size: 3.2rem; font-weight: 700; line-height: 1; }
 #seconds-static { font-size: 2.8rem; font-weight: 300; color: var(--accent); }
 
-#fixed-market-container { flex: 1; display: flex; flex-direction: column; gap: 10px; }
-.mini-widget-fixed { height: 160px; overflow: hidden; }
-
 /* =========================================
-   4. 天気 (巨大な雲を縮小・中央配置)
+   4. 週間天気 (スライド表示の修正)
    ========================================= */
-#weather-fixed-content { height: 100%; display: flex; align-items: center; justify-content: center; }
-.weather-slide { width: 100%; text-align: center; }
-
-/* 天気アイコンのサイズを厳格に制限 */
-.weather-icon-large svg, 
-#weather-fixed-content svg {
-  width: 120px !important; height: 120px !important; 
-  max-width: 120px; max-height: 120px;
-  margin: 10px auto; display: block;
+#forecast-viewport {
+  width: 100%; height: 250px; overflow: hidden; position: relative;
 }
 
-.weather-data-line { 
-  display: flex; align-items: baseline; justify-content: center; 
-  gap: 15px; font-size: 3.5rem; font-family: 'JetBrains Mono'; 
+.day-group {
+  height: 250px; display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
 }
-.weather-data-line .hi { color: #ff5252; }
-.weather-data-line .lo { color: #448aff; }
+
+.weather-icon { width: 50px; height: 50px; margin: 10px auto; }
 
 /* =========================================
-   5. トレンドワード (ヒートマップ復元)
+   5. ニュース (表示崩れを元通りに修復)
+   ========================================= */
+#news-card { height: 100%; position: relative; }
+
+.news-item {
+  position: absolute; inset: 0; padding: 30px; box-sizing: border-box;
+  background-color: rgba(10, 15, 25, 0.9); border-radius: 24px;
+  display: flex; flex-direction: column; opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.news-item.show { opacity: 1; z-index: 10; }
+.news-item.exit { opacity: 0; z-index: 5; }
+
+.news-title { font-size: 24px; font-weight: 600; color: var(--accent); margin-bottom: 15px; line-height: 1.4; }
+.news-description { font-size: 15px; color: rgba(255, 255, 255, 0.8); line-height: 1.6; }
+
+/* =========================================
+   6. トレンドタイル
    ========================================= */
 #trend-fixed-content {
   display: grid !important; grid-template-columns: repeat(6, 1fr) !important;
-  grid-template-rows: repeat(4, 1fr) !important; gap: 4px !important;
-  padding: 10px !important; height: 100%; box-sizing: border-box;
+  grid-template-rows: repeat(4, 1fr) !important; gap: 4px;
+  padding: 10px; height: 100%; box-sizing: border-box;
 }
-.trend-tile { border: 1px solid rgba(255, 255, 255, 0.1) !important; position: relative; }
-.trend-tile.rank-1 { grid-column: span 3 !important; grid-row: span 3 !important; background: #00e5ff !important; }
-.trend-tile.rank-2 { grid-column: span 3 !important; grid-row: span 2 !important; background: rgba(0, 80, 160, 0.9) !important; }
-.trend-tile.rank-3 { grid-column: span 3 !important; grid-row: span 1 !important; background: #2ecc71 !important; }
-
-/* =========================================
-   6. ニュース (右パネル)
-   ========================================= */
-#news-card { height: 100%; position: relative; }
-.news-item {
-  position: absolute; inset: 0; padding: 30px; box-sizing: border-box;
-  background: rgba(10, 15, 25, 0.95); display: flex; flex-direction: column;
-  opacity: 0; transition: opacity 0.8s;
-}
-.news-item.show { opacity: 1; z-index: 10; animation: slideUp 0.8s forwards; }
-@keyframes slideUp { from { transform: translateY(20px); } to { transform: translateY(0); } }
-
-.news-title { font-size: 24px; font-weight: 700; color: var(--accent); margin-bottom: 12px; }
-.news-description { font-size: 15px; color: rgba(255,255,255,0.8); line-height: 1.6; }
+.trend-tile { border: 1px solid rgba(255, 255, 255, 0.1); }
+.trend-tile.rank-1 { grid-column: span 3; grid-row: span 3; background: #00e5ff; }
+.trend-tile.rank-2 { grid-column: span 3; grid-row: span 2; background: rgba(0, 80, 160, 0.9); }
