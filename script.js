@@ -358,27 +358,31 @@ function createNews(index) {
         currentItems.push(newsItems[(index + i) % newsItems.length]);
     }
 
-    item.innerHTML = `
+item.innerHTML = `
         <div class="news-link-wrapper">
             <div class="news-mark"></div>
             <div class="news-content-area">
                 <div class="main-container">
-                    <div class="news-title">${currentItems[0].title}</div>
+                    <a href="${currentItems[0].link || '#'}" target="_blank" class="news-main-link">
+                        <div class="news-title">${currentItems[0].title}</div>
+                    </a>
                     <div class="news-description">${currentItems[0].description || ''}</div>
                     <div class="news-date">${currentItems[0].pubDate || ''}</div>
                 </div>
                 <div class="sub-list">
                     ${currentItems.slice(1).map(sub => `
-                        <div class="sub-row">
-                            <div class="sub-dot"></div>
-                            <div class="sub-row-title">${sub.title}</div>
-                        </div>
+                        <a href="${sub.link || '#'}" target="_blank" class="news-sub-link">
+                            <div class="sub-row">
+                                <div class="sub-dot"></div>
+                                <div class="sub-row-title">${sub.title}</div>
+                            </div>
+                        </a>
                     `).join('')}
                 </div>
             </div>
         </div>
     `;
-    return item;
+  return item;
 }
 
 function showNews(next, init = false) {
