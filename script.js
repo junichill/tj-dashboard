@@ -398,16 +398,14 @@ function stopAutoNews() { if (newsT) clearInterval(newsT); }
 let newsIndex = 0;
 
 async function fetchNews() {
-    // NHKのURLを、より公式で安定しているものに変更
-    const RSS_URL = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
-    // corsproxy.io を使用（?の後にURLを繋げるだけ）
-    const PROXY_URL = 'https://corsproxy.io/?' + encodeURIComponent(RSS_URL);
+    // 【重要】ここにステップ2でコピーしたURLを貼り付けてください
+    const MY_GAS_URL = "https://script.google.com/macros/s/AKfycbyWq0pZXLP2ZE2ptRr-1iAxD0fT6WzTFS1E1oCAMKba7AAroldDcCZcK_HRnjed-ua2/exec";
 
     try {
-        const r = await fetch(PROXY_URL);
-        if (!r.ok) throw new Error('Proxy error');
+        // GAS経由で取得（GASがCORSを解決済みなのでそのまま呼べる）
+        const r = await fetch(MY_GAS_URL);
+        const xmlText = await r.text();
         
-        const xmlText = await r.text(); // alloriginsと違い、ここはtext()でOK
         const parser = new DOMParser();
         const xml = parser.parseFromString(xmlText, "application/xml");
         const items = xml.querySelectorAll('item');
@@ -419,12 +417,11 @@ async function fetchNews() {
         }));
 
         if (newsItems.length > 0) {
-            renderNewsBoard(0);
-            startAutoNews();
+            renderNewsBoard(0); // せり上がり演出のボードを表示
+            startAutoNews();    // 自動ループ開始
         }
     } catch (e) {
-        console.error('ニュース取得に失敗:', e);
-        // 失敗した時のために、画面に「再試行中」などのメッセージを出すとプロっぽい
+        console.error('GAS経由の取得に失敗しました', e);
     }
 }
 
