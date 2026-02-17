@@ -412,23 +412,30 @@ body {
     box-shadow: 0 0 10px var(--accent);
 }
 
-/* サブリスト */
 .sub-list {
     position: relative;
-    height: 360px; /* 36px * 10件分 */
-    overflow: hidden; /* はみ出た要素を隠す */
-    margin-top: 20px;
+    height: 360px; /* 36px * 10行分 */
+    overflow: hidden; /* はみ出たニュースを隠す（重要） */
+    margin-top: 15px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding-top: 10px;
+    /* スライド用のアニメーション設定 */
+    will-change: transform;
 }
 
-/* 各ニュース行のスタイル */
+/* --- 各ニュース行（子） --- */
 .sub-row {
     height: 26px;      /* 文字の高さ */
-    margin-bottom: 10px; /* 下の間隔 = 合計36px */
+    margin-bottom: 10px; /* 下の間隔（26+10=36pxが1行の単位） */
     display: flex;
     align-items: center;
     width: 100%;
+    /* 新しく現れる時のフェードイン */
+    animation: fadeInSub 0.5s ease forwards;
+}
+
+.sub-row.exit-up {
+    animation: fadeOutUp 0.6s ease forwards;
 }
 
 .sub-row:nth-child(1) { animation-delay: 0.15s; }
@@ -472,14 +479,19 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes fadeOutUp {
+    to { opacity: 0; transform: translateY(-10px); }
+}
+
 @keyframes fadeInSub {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* その他パーツ（スケジュール等） */
 .panel-label { display: none; }
 .schedule-list { display: none; }
+
 
 
 
