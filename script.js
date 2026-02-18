@@ -238,9 +238,18 @@ function initLeftPrisms() {
         const container = document.getElementById(conf.targetId);
         if (!container) return;
 
-        // 表題(label)は一切出力せず、ウィジェット構造のみ生成
-        // symbolsが4つの場合も考慮し、面の数を動的に対応
-        const facesHtml = conf.symbols.map((_, sIdx) => `<div class="prism-face" id="f-${idx}-${sIdx}"></div>`).join('');
+        const count = conf.symbols.length;
+        const step = 360 / count; // 3面なら120度、4面なら90度
+
+        // 各面を正しい角度で配置するためのスタイルを生成
+        const facesHtml = conf.symbols.map((_, sIdx) => {
+            // rotateX(${sIdx * step}deg) で各面を重ならないように展開し、
+            // translateZ で中心から外側に押し出す（4面の場合は高さの半分程度）
+            const translateZ = count === 4 ? "65px" : "45px"; 
+            return `<div class="prism-face" id="f-${idx}-${sIdx}" 
+                         style="transform: rotateX(${sIdx * step}deg) translateZ(${translateZ});">
+                    </div>`;
+        }).join('');
 
         container.innerHTML = `
             <div class="mini-widget-fixed">
@@ -265,11 +274,12 @@ function initLeftPrisms() {
         // 回転の実行
         setTimeout(() => {
             let angle = 0;
-            const step = 360 / conf.symbols.length; // シンボル数に合わせて回転角を計算
             setInterval(() => {
                 angle -= step;
                 const stage = document.getElementById(`prism-stage-${idx}`);
-                if (stage) stage.style.transform = `rotateX(${angle}deg)`;
+                if (stage) {
+                    stage.style.transform = `rotateX(${angle}deg)`;
+                }
             }, 15000); 
         }, conf.delay);
     });
