@@ -241,16 +241,17 @@ function initLeftPrisms() {
         const count = conf.symbols.length;
         const step = 360 / count; 
         
-        // 重なり防止: 面の数が多いほど中心から外側に離す (4面なら60px, 3面なら40px程度)
+        // 重なり防止：4面(90度)と3面(120度)で奥行きを調整
         const translateZ = count === 4 ? "60px" : "40px";
 
-        // 各面を初期状態で回転・配置させて重なりを解消
+        // 各面をあらかじめ回転・配置させて重なりを解消
         const facesHtml = conf.symbols.map((_, sIdx) => {
             return `<div class="prism-face" id="f-${idx}-${sIdx}" 
                          style="transform: rotateX(${sIdx * step}deg) translateZ(${translateZ});">
                     </div>`;
         }).join('');
 
+        // 表題（Currency等）は一切入れず、構造のみ生成
         container.innerHTML = `
             <div class="mini-widget-fixed">
                 <div class="prism-stage" id="prism-stage-${idx}">
@@ -258,7 +259,7 @@ function initLeftPrisms() {
                 </div>
             </div>`;
 
-        // TradingViewウィジェットの埋め込み
+        // TradingViewウィジェット埋め込み
         conf.symbols.forEach((sym, sIdx) => {
             const script = document.createElement('script');
             script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
