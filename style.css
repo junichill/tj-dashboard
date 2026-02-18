@@ -303,7 +303,7 @@ body {
 .weather-snowy { color: #ffffff; }
 
 /* =========================================
-   6. ニュース (右パネル) - ストリームアニメーション版
+   6. ニュース (右パネル) - ストリームアニメーション・完全修正版
    ========================================= */
 #news-card {
   height: 100%;
@@ -319,53 +319,35 @@ body {
   top: 0; left: 0; width: 100%; height: 100%;
   padding: 30px;
   box-sizing: border-box;
-  background-color: rgba(10, 15, 25, 0.9);
+  background-color: rgba(10, 15, 25, 0.88);
   backdrop-filter: blur(15px);
   display: flex;
   flex-direction: column;
 }
 
-/* --- メイン表示エリア --- */
 .news-main-area {
   margin-bottom: 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
   padding-bottom: 15px;
   min-height: 180px;
   position: relative;
-  overflow: hidden; /* アニメーションのはみ出しをカット */
+  overflow: hidden;
 }
 
-/* アニメーションさせるためのラッパー */
 .news-main-wrapper {
   display: flex;
   flex-direction: column;
   justify-content: center;
   height: 100%;
-  /* アニメーションの基本設定 */
   transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.6s ease;
   will-change: transform, opacity;
 }
 
-/* 状態1: 通常（表示中） */
-.news-anim-idle {
-  transform: translateY(0);
-  opacity: 1;
-}
+.news-anim-idle { transform: translateY(0); opacity: 1; }
+.news-anim-exit { transform: translateY(-40px) scale(0.95); opacity: 0; filter: blur(5px); }
+.news-anim-enter-prepare { transform: translateY(60px) scale(0.95); opacity: 0; }
 
-/* 状態2: 上へ退出（古いニュース） */
-.news-anim-exit {
-  transform: translateY(-40px) scale(0.95); /* 上に移動しながら少し奥へ */
-  opacity: 0;
-  filter: blur(5px);
-}
-
-/* 状態3: 下から待機（新しいニュースの準備位置） */
-.news-anim-enter-prepare {
-  transform: translateY(60px) scale(0.95); /* 下から登場する準備 */
-  opacity: 0;
-}
-
-/* タイトル等のスタイル */
+/* 元のスタイルを厳守 */
 .news-title {
   font-size: 22px !important;
   font-weight: 600 !important;
@@ -374,7 +356,6 @@ body {
   margin-bottom: 10px;
   text-decoration: none !important;
   display: block;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 
 .news-description {
@@ -387,42 +368,29 @@ body {
   overflow: hidden;
 }
 
+/* 色を元の 0.5 不透明度に戻しました */
 .news-date {
   font-size: 13px;
-  color: var(--accent);
-  font-weight: bold;
-  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.5);
 }
 
-/* --- サブリストエリア --- */
 .news-sub-window {
   flex: 1;
   overflow: hidden;
   position: relative;
-  /* 上下のフェードマスク（特に上はメインとつながるように） */
   mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
 }
 
-.news-sub-track {
-  display: flex;
-  flex-direction: column;
-  will-change: transform;
-  /* トラック自体の動きもJSで制御 */
-}
+.news-sub-track { display: flex; flex-direction: column; will-change: transform; }
 
 .news-sub-item {
   height: 50px;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding: 0 10px;
   text-decoration: none !important;
   color: #ffffff !important;
-  transition: background 0.3s;
-}
-
-.news-sub-item:hover {
-  background: rgba(255, 255, 255, 0.05);
 }
 
 .sub-dot {
@@ -430,7 +398,6 @@ body {
   background: var(--accent);
   border-radius: 50%;
   margin-right: 15px;
-  box-shadow: 0 0 8px var(--accent);
 }
 
 .sub-row-title {
@@ -438,7 +405,7 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  opacity: 0.9;
+  flex: 1;
 }
 
 /* ホバー時の発光演出（維持） */
@@ -450,4 +417,5 @@ body {
 /* その他パーツ（スケジュール等） */
 .panel-label { display: none; }
 .schedule-list { display: none; }
+
 
