@@ -319,8 +319,10 @@ body {
   top: 0; left: 0; width: 100%; height: 100%;
   padding: 30px;
   box-sizing: border-box;
-  background-color: rgba(10, 15, 25, 0.88);
-  backdrop-filter: blur(15px);
+  /* 透明度を 0.6 (60%) 程度に下げると、背景が綺麗に透けます */
+  background-color: rgba(10, 15, 25, 0.6); 
+  /* ぼかし具合（blur）も少し下げると、より背景の形が見えるようになります */
+  backdrop-filter: blur(8px); 
   display: flex;
   flex-direction: column;
 }
@@ -417,5 +419,6 @@ body {
 /* その他パーツ（スケジュール等） */
 .panel-label { display: none; }
 .schedule-list { display: none; }
+
 
 
