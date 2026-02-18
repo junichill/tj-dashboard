@@ -193,4 +193,484 @@ async function fetchWeather() {
 
         weatherFixed.innerHTML = `
             <div id="weather-fixed-wrapper">
-                ${createSlide("今日", getWeatherType(today.weather[0].id), Math.max(...dayTemps), Math.min(...dayTemps), today.pop || 0,
+                ${createSlide("今日", getWeatherType(today.weather[0].id), Math.max(...dayTemps), Math.min(...dayTemps), today.pop || 0, null, null)}
+                ${createSlide("明日", getWeatherType(tomorrowList[0].weather[0].id), Math.max(...tomorrowList.map(v=>v.main.temp)), Math.min(...tomorrowList.map(v=>v.main.temp)), tomorrowList[0].pop || 0, Math.max(...dayTemps), Math.min(...dayTemps))}
+            </div>`;
+
+        if (today && today.weather[0]) updateWeatherBackground(today.weather[0].id);
+
+        const slides = weatherFixed.querySelectorAll('.weather-slide');
+        if(slides.length > 0) slides[0].classList.add('active'); 
+        startFixedWeatherCycle();
+    }
+    startWeatherCycle();
+  } catch (err) { console.error('Weather/Market Fetch Error:', err); }
+}
+
+let forexVIndex = 0;
+
+
+
+let forexTimer = null;
+let forexRotationDegree = 0;
+
+// --- [新] 左パネルの3D回転設定 ---
+const LEFT_CONFIG = [
+    {
+        targetId: "forex-viewport-v", // 為替パネル
+        symbols: ["FX:USDJPY", "FX:EURJPY", "FX:EURUSD"],
+        delay: 0
+    },
+    {
+        targetId: "tv-n225-fixed", 
+        symbols: ["OSE:NK2251!", "TVC:NI225", "TVC:TOPIX"],
+        delay: 5000
+    },
+    {
+        targetId: "tv-nasdaq-fixed", // 米国・コモディティ（指定シンボル）
+        symbols: ["CAPITALCOM:US100", "CAPITALCOM:US500", "TVC:GOLD", "CAPITALCOM:OIL_CRUDE"],
+        delay: 10000
+    }
+];
+
+function initLeftPrisms() {
+    LEFT_CONFIG.forEach((conf, idx) => {
+        const container = document.getElementById(conf.targetId);
+        if (!container) return;
+
+        const count = conf.symbols.length;
+        const step = 360 / count; 
+        
+        // 重なり防止：4面(90度)と3面(120度)で奥行きを調整
+        const translateZ = count === 4 ? "60px" : "40px";
+
+        // 各面をあらかじめ回転・配置させて重なりを解消
+        const facesHtml = conf.symbols.map((_, sIdx) => {
+            return `<div class="prism-face" id="f-${idx}-${sIdx}" 
+                         style="transform: rotateX(${sIdx * step}deg) translateZ(${translateZ});">
+                    </div>`;
+        }).join('');
+
+        // 表題（Currency等）は一切入れず、構造のみ生成
+        container.innerHTML = `
+            <div class="mini-widget-fixed">
+                <div class="prism-stage" id="prism-stage-${idx}">
+                    ${facesHtml}
+                </div>
+            </div>`;
+
+        // TradingViewウィジェット埋め込み
+        conf.symbols.forEach((sym, sIdx) => {
+            const script = document.createElement('script');
+            script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
+            script.async = true;
+            script.innerHTML = JSON.stringify({
+                "symbol": sym, "width": "100%", "height": "100%", "locale": "ja",
+                "dateRange": "1D", "colorTheme": "dark", "isTransparent": true
+            });
+            const face = document.getElementById(`f-${idx}-${sIdx}`);
+            if (face) face.appendChild(script);
+        });
+
+        // 回転処理
+        setTimeout(() => {
+            let angle = 0;
+            setInterval(() => {
+                angle -= step;
+                const stage = document.getElementById(`prism-stage-${idx}`);
+                if (stage) stage.style.transform = `rotateX(${angle}deg)`;
+            }, 15000); 
+        }, conf.delay);
+    });
+}
+
+function appendMiniWidget(containerId, config) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = ''; 
+    const script = document.createElement('script');
+    script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
+    script.async = true;
+    script.innerHTML = JSON.stringify(config);
+    container.appendChild(script);
+}
+
+function startWeatherCycle() {
+  if (weatherTimer) clearInterval(weatherTimer);
+  const wrapper = document.getElementById('forecast-wrapper');
+  weatherTimer = setInterval(() => {
+    const groups = wrapper.querySelectorAll('.day-group');
+    if (groups.length === 0) return;
+    const nextIndex = (weatherSlideIndex + 1) % groups.length;
+    if (nextIndex === 0) {
+      wrapper.style.transition = 'opacity 1.5s ease-in, filter 1.5s ease-in, transform 1.5s ease-in';
+      wrapper.style.opacity = '0';
+      wrapper.style.filter = 'blur(15px)';
+      wrapper.style.transform = `translateY(${weatherSlideIndex * -250}px) scale(0.92)`;
+      setTimeout(() => {
+        weatherSlideIndex = 0;
+        wrapper.style.transition = 'none';
+        wrapper.style.transform = `translateY(0px) scale(0.92)`;
+        groups.forEach((g, i) => g.classList.toggle('inactive', i !== 0));
+        wrapper.offsetHeight; 
+        wrapper.style.transition = 'opacity 1.8s ease-out, filter 1.8s ease-out, transform 1.8s ease-out';
+        wrapper.style.opacity = '1';
+        wrapper.style.filter = 'blur(0)';
+        wrapper.style.transform = `translateY(0px) scale(1)`;
+      }, 1500);
+    } else {
+      weatherSlideIndex = nextIndex;
+      wrapper.style.transition = 'transform 1.2s cubic-bezier(0.65, 0, 0.35, 1), opacity 1.2s ease';
+      wrapper.style.transform = `translateY(${weatherSlideIndex * -250}px) scale(1)`;
+      groups.forEach((group, index) => { group.classList.toggle('inactive', index !== weatherSlideIndex); });
+    }
+  }, 9000);
+}
+
+let fixedWeatherIndex = 0;
+function startFixedWeatherCycle() {
+    const slides = document.querySelectorAll('.weather-slide');
+    if (slides.length === 0) return;
+
+    if (window.fixedWeatherTimer) clearInterval(window.fixedWeatherTimer);
+    
+    fixedWeatherIndex = 0;
+
+    window.fixedWeatherTimer = setInterval(() => {
+        const currentSlides = document.querySelectorAll('.weather-slide');
+        if (currentSlides.length < 2) return;
+
+        // 1. 今のスライドに「粒子消去」クラスをつける
+        currentSlides[fixedWeatherIndex].classList.remove('active');
+        currentSlides[fixedWeatherIndex].classList.add('exit');
+
+  // 2. 消え去る粒子(3.5秒)を見せた後、さらに「無」の時間を足して待つ
+        const particleTime = 3500; // 粒子が消えるのにかかる時間
+        const silentTime = 2000;   // 背景だけを見せたい時間（2秒）
+
+        setTimeout(() => {
+            // クリーンアップ
+            currentSlides[fixedWeatherIndex].classList.remove('exit');
+
+            // 3. 完全に消えた後に、インデックスを進めて次を表示
+            fixedWeatherIndex = (fixedWeatherIndex + 1) % currentSlides.length;
+            currentSlides[fixedWeatherIndex].classList.add('active');
+            
+        }, particleTime + silentTime); // ここで合計の待ち時間を指定
+    }, 12000); // 12秒おきに切り替え
+}
+
+fetchWeather();
+initLeftPrisms(); // ←ここに書くことで、起動時に1回だけ実行されるようになります
+setInterval(fetchWeather, 600000);
+
+
+// =========================
+// NEWS - 修正版（2行目が1行目にスライドする形式）
+// =========================
+let newsData = [];
+let newsCursor = 0;
+const NEWS_FETCH_INTERVAL = 10 * 60 * 1000; // 10分
+const NEWS_SLIDE_INTERVAL = 11000; // 11秒
+
+async function fetchNews() {
+    const MY_GAS_URL = "https://script.google.com/macros/s/AKfycbx6dVnRjptPeQouJM6Czl-GUBqQzxFq8Nj06POOVbqTEGb_w4Wx0rHm-M9_GgApEWnv/exec";
+
+    try {
+        const r = await fetch(MY_GAS_URL);
+        const xmlText = await r.text();
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(xmlText, "application/xml");
+        const items = xml.querySelectorAll('item');
+
+        newsData = Array.from(items).map(item => ({
+            title: item.querySelector('title')?.textContent || "",
+            link: item.querySelector('link')?.textContent || "#",
+            pubDate: item.querySelector('pubDate')?.textContent || "",
+            description: item.querySelector('description')?.textContent || ""
+        }));
+
+        if (newsData.length > 0) {
+            // まだ初期化されていなければ初期化、あればデータ更新のみ
+            const card = document.getElementById('news-card');
+            if (!card.querySelector('.news-container-overlay')) {
+                initNewsSystem();
+            }
+        }
+    } catch (e) {
+        console.error('GAS News Fetch Error:', e);
+    }
+}
+
+function initNewsSystem() {
+    const card = document.getElementById('news-card');
+    
+    // スライド式の新しい構造を生成
+    card.innerHTML = `
+        <div class="news-container-overlay">
+            <div class="news-main-area" id="news-main-display">
+                </div>
+            
+            <div class="news-sub-window">
+                <div class="news-sub-track" id="news-track">
+                    </div>
+            </div>
+        </div>
+    `;
+
+    // 初期表示処理
+    updateNewsDisplay();
+
+    // スライドタイマー開始
+    setInterval(slideNewsNext, NEWS_SLIDE_INTERVAL);
+}
+
+function updateNewsDisplay() {
+    const mainDisplay = document.getElementById('news-main-display');
+    const track = document.getElementById('news-track');
+    
+    if (!mainDisplay || !track || newsData.length === 0) return;
+
+    // --- メイン表示の更新 ---
+    const mainItem = newsData[newsCursor % newsData.length];
+    
+    // フェード効果のために一度opacityを下げる
+    mainDisplay.style.opacity = '0';
+    
+    setTimeout(() => {
+        mainDisplay.innerHTML = `
+            <a href="${mainItem.link}" target="_blank" class="news-title">${mainItem.title}</a>
+            <div class="news-description">${mainItem.description}</div>
+            <div class="news-date">${mainItem.pubDate}</div>
+        `;
+        mainDisplay.style.opacity = '1';
+    }, 500); // 0.5秒で切り替え
+
+    // --- サブリストの初期構築 ---
+    // 現在のcursorの「次」からリストを作成
+    renderSubTrack();
+}
+
+function renderSubTrack() {
+    const track = document.getElementById('news-track');
+    let html = '';
+    // リストに表示する件数（画面高さに合わせて適宜調整、例: 8件）
+    for (let i = 1; i <= 8; i++) {
+        const subItem = newsData[(newsCursor + i) % newsData.length];
+        html += `
+            <a href="${subItem.link}" target="_blank" class="news-sub-item">
+                <div class="sub-dot"></div>
+                <div class="sub-row-title">${subItem.title}</div>
+            </a>
+        `;
+    }
+    track.innerHTML = html;
+}
+
+function slideNewsNext() {
+    const track = document.getElementById('news-track');
+    if (!track) return;
+
+    // 1. トラック全体を上にスライド (1行の高さ: 50px + border: 1px = 51px)
+    // CSS側で height: 50px と border-bottom: 1px を指定しているため
+    const rowHeight = 51; 
+
+    track.style.transition = 'transform 1.0s cubic-bezier(0.2, 1, 0.3, 1)';
+    track.style.transform = `translateY(-${rowHeight}px)`;
+
+    // 2. アニメーション完了後の処理
+    setTimeout(() => {
+        // カーソルを進める（＝メインが次のニュースになる）
+        newsCursor++;
+        
+        // メイン表示を更新
+        const mainDisplay = document.getElementById('news-main-display');
+        const nextMainItem = newsData[newsCursor % newsData.length];
+        
+        // メイン部分の書き換え（フェードなしで即時反映、吸い込まれた直後の状態）
+        mainDisplay.innerHTML = `
+            <a href="${nextMainItem.link}" target="_blank" class="news-title">${nextMainItem.title}</a>
+            <div class="news-description">${nextMainItem.description}</div>
+            <div class="news-date">${nextMainItem.pubDate}</div>
+        `;
+        
+        // トラックの位置を瞬時にリセット (0pxに戻す)
+        track.style.transition = 'none';
+        track.style.transform = 'translateY(0)';
+        
+        // トラックの中身を再描画（先頭が消え、末尾に新しいのが追加された状態にする）
+        renderSubTrack();
+        
+    }, 1000); // transitionと同じ時間待つ
+}
+
+// 初回実行
+fetchNews();
+setInterval(fetchNews, NEWS_FETCH_INTERVAL);
+
+
+// =========================
+// SCALING
+// =========================
+function adjustScale() {
+    const container = document.getElementById('container');
+    if (!container) return;
+    const baseWidth = 1920, baseHeight = 720;
+    const sW = window.innerWidth, sH = window.innerHeight;
+    let scale = Math.min(sW / baseWidth, sH / baseHeight);
+    container.style.transform = `scale(${scale})`;
+}
+window.addEventListener('resize', adjustScale);
+window.addEventListener('load', adjustScale);
+adjustScale();
+
+
+let trendItems = [];
+let trendIndex = 0;
+
+// =========================
+// TRENDS (Google Trends via GAS) - 修正版
+// =========================
+async function fetchTrends() {
+    const container = document.getElementById('trend-fixed-content');
+    if (!container) return;
+
+    // あなたのGAS URL
+    const MY_GAS_URL = "https://script.google.com/macros/s/AKfycbx6dVnRjptPeQouJM6Czl-GUBqQzxFq8Nj06POOVbqTEGb_w4Wx0rHm-M9_GgApEWnv/exec?type=trends";
+    
+    let trendData = [];
+
+    try {
+        const r = await fetch(MY_GAS_URL);
+        const xmlText = await r.text();
+        
+        // XMLパース処理
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(xmlText, "application/xml");
+        const items = xml.querySelectorAll('item');
+        
+        // データの抽出
+        if (items.length > 0) {
+            trendData = Array.from(items).map(item => item.querySelector('title')?.textContent || "");
+        } else {
+            console.warn("Trends data extraction failed or empty.");
+        }
+    } catch (e) {
+        console.error('Trends fetch failed via GAS:', e);
+        // エラー時はtrendDataは空配列のまま進む
+    }
+
+    // 【重要】成功・失敗に関わらず描画を実行する
+    // （データが空の場合は renderTrends 内でバックアップワードが使われる）
+    const tiles = container.querySelectorAll('.trend-tile');
+    
+    if (tiles.length > 0) {
+        // 既存タイルがある場合は沈み込み演出を入れてから更新
+        tiles.forEach(t => {
+            t.classList.remove('enter-active');
+            t.classList.add('exit-active'); // CSSで未定義なら無視されるだけなので安全
+        });
+        setTimeout(() => {
+            renderTrends(container, trendData);
+        }, 800);
+    } else {
+        // 初回描画
+        renderTrends(container, trendData);
+    }
+}
+
+function renderTrends(container, data) {
+    if (!container) return;
+    
+    // 8x4グリッド設定
+    container.style.display = "grid";
+    container.style.gridTemplateColumns = "repeat(8, 1fr)";
+    container.style.gridTemplateRows = "repeat(4, 1fr)";
+    container.style.gap = "0px"; 
+
+    const backupWords = ["CORE_NODE", "MARKET_IDX", "GLB_FEED", "SIG_PROC", "DATA_STREAM", "CLOUD_ARC", "API_LINK", "NET_STAT"];
+    let finalData = [];
+    for (let i = 0; i < 8; i++) {
+        finalData.push(data[i] || backupWords[i]);
+    }
+
+    // 順位入れ替え（デザイン上のアクセント）
+    const temp = finalData[2];
+    finalData[2] = finalData[3];
+    finalData[3] = temp;
+
+    let html = "";
+    const colormap = [
+        "rgba(213, 62, 79, 0.95)", "rgba(244, 109, 67, 0.9)", "rgba(253, 174, 97, 0.85)",
+        "rgba(171, 221, 164, 0.8)", "rgba(102, 194, 165, 0.75)", "rgba(50, 136, 189, 0.7)",
+        "rgba(35, 80, 160, 0.65)", "rgba(20, 30, 100, 0.6)"
+    ];
+
+    const layouts = [
+        "grid-area: 1 / 1 / 4 / 6;", // 1位
+        "grid-area: 1 / 6 / 3 / 9;", // 2位
+        "grid-area: 3 / 6 / 5 / 8;", // 3位
+        "grid-area: 3 / 8 / 5 / 9;", // 4位
+        "grid-area: 4 / 1 / 5 / 3;", // 5位
+        "grid-area: 4 / 3 / 5 / 5;", // 6位
+        "grid-area: 4 / 5 / 5 / 6;", // 7位
+    ];
+
+    for (let i = 1; i <= 7; i++) {
+        let style = layouts[i-1];
+        let content = finalData[i-1];
+        let bgColor = colormap[i-1];
+        let fontSize = i === 1 ? "44px" : (i <= 3 ? "20px" : "13px");
+        let textColor = (i >= 3 && i <= 5) ? "rgba(0,0,0,0.75)" : "#ffffff";
+        
+        let valTag = "";
+        if (i <= 2) {
+            const randomVal = (Math.random() * 100).toFixed(1);
+            valTag = `<span style="position:absolute; bottom:12px; right:12px; font-size:14px; font-weight:400; font-family:monospace; opacity:0.9;">${randomVal}%</span>`;
+        }
+
+        html += `<div class="trend-tile" style="${style} 
+                    background-color: ${bgColor} !important;
+                    border: 0.5px solid rgba(255,255,255,0.08) !important;
+                    position: relative;
+                    display: flex; align-items: center; justify-content: center;
+                    font-size: ${fontSize}; 
+                    font-weight: 300;
+                    letter-spacing: 0.05em;
+                    color: ${textColor}; 
+                    padding: 25px; text-align: center;
+                    text-transform: uppercase; 
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                    overflow: hidden;
+                    cursor: pointer;
+                    opacity: 0;"
+                    onclick="window.open('https://www.google.com/search?q=${encodeURIComponent(content)}', '_blank')">
+                    <div style="width:100%; word-wrap: break-word; line-height:1.1;">${content}</div>
+                    ${valTag}
+                 </div>`;
+    }
+    container.innerHTML = html;
+
+    // 描き出し直後にスタッガー登場アニメーション
+    const newTiles = container.querySelectorAll('.trend-tile');
+    newTiles.forEach((tile, i) => {
+        setTimeout(() => {
+            tile.classList.add('enter-active');
+        }, i * 60); 
+    });
+
+    // サイクルタイマーを再起動
+    startHeatmapCycle();
+}
+
+function startHeatmapCycle() {
+    if (window.trendTimer) clearInterval(window.trendTimer);
+    window.trendTimer = setInterval(() => {
+        fetchTrends();
+    }, 20000); 
+}
+
+// 起動時に実行
+fetchTrends();
+// 1時間ごとに最新トレンドに全取得更新
+setInterval(fetchTrends, 3600000);
