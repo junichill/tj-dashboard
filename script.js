@@ -154,7 +154,6 @@ async function fetchWeather() {
                         mktHtml("tv-eur-usd", "EUR/USD") +
                         economicScheduleHtml;
 
-    initTradingViewWidgets();
     weatherSlideIndex = 0;
     wrapper.style.transform = `translateY(0px)`;
 
@@ -210,50 +209,71 @@ async function fetchWeather() {
 
 let forexVIndex = 0;
 
-function initTradingViewWidgets() {
-    const conf = { "width": "100%", "height": 155, "locale": "ja", "dateRange": "1D", "colorTheme": "dark", "isTransparent": true, "interval": "5" };
-    
-    // スライド用3通貨（IDを変更）
-    appendMiniWidget("slide-usd-jpy", { ...conf, "symbol": "FX:USDJPY" });
-    appendMiniWidget("slide-eur-jpy", { ...conf, "symbol": "FX:EURJPY" });
-    appendMiniWidget("slide-eur-usd", { ...conf, "symbol": "FX:EURUSD" });
 
-    // 固定2指標（元のまま）
-    appendMiniWidget("tv-n225-fixed",    { ...conf, "symbol": "OSE:NK2251!" });
-    appendMiniWidget("tv-nasdaq-fixed",  { ...conf, "symbol": "CAPITALCOM:US100" });
-
-    // その他中央パネル用
-    appendMiniWidget("tv-sp500",   { ...conf, "symbol": "CAPITALCOM:US500" });
-    appendMiniWidget("tv-gold",    { ...conf, "symbol": "TVC:GOLD" });
-    appendMiniWidget("tv-oil",     { ...conf, "symbol": "CAPITALCOM:OIL_CRUDE" });
-    appendMiniWidget("tv-eur-jpy", { ...conf, "symbol": "FX:EURJPY" });
-    appendMiniWidget("tv-eur-usd", { ...conf, "symbol": "FX:EURUSD" });
-
-    // 縦スライド開始
-    startForexVerticalSlide();
-}
 
 let forexTimer = null;
 let forexRotationDegree = 0;
 
-function startForexVerticalSlide() {
-    const wrapper = document.getElementById('forex-wrapper-v');
-    const slides = document.querySelectorAll('.forex-slide-v');
-    if (!wrapper || slides.length === 0) return;
-
-    // --- 【修正点】既存のタイマーがあれば破棄する ---
-    if (forexTimer) {
-        clearInterval(forexTimer);
+// --- [新] 左パネルの3D回転設定 ---
+const LEFT_CONFIG = [
+    {
+        targetId: "forex-viewport-v", // 為替パネル
+        label: "CURRENCY / FX",
+        symbols: ["FX:USDJPY", "FX:EURJPY", "FX:EURUSD"],
+        delay: 0
+    },
+    {
+        targetId: "tv-n225-fixed", // 日本株パネル
+        label: "JAPAN INDICES",
+        symbols: ["TVC:NI225", "OSE:NK2251!", "OSE:TPX1!"],
+        delay: 5000 // 5秒ずらして回転
+    },
+    {
+        targetId: "tv-nasdaq-fixed", // 米国・原油パネル
+        label: "US / COMMODITIES",
+        symbols: ["CME:NQ1!", "CME_MINI:ES1!", "TVC:USOIL"],
+        delay: 10000 // 10秒ずらして回転
     }
+];
 
-    // 初期化: すべての面をflex表示にして3D配置を確定
-    slides.forEach(s => s.style.display = 'flex');
+function initLeftPrisms() {
+    LEFT_CONFIG.forEach((conf, idx) => {
+        const container = document.getElementById(conf.targetId);
+        if (!container) return;
 
-    // 新しいタイマーを登録
-    forexTimer = setInterval(() => {
-        forexRotationDegree -= 120;
-        wrapper.style.transform = `rotateX(${forexRotationDegree}deg)`;
-    }, 12000); // 12秒ごとに回転
+        // 3D用のHTML構造を生成
+        container.innerHTML = `
+            <div class="fixed-label">${conf.label}</div>
+            <div class="mini-widget-fixed">
+                <div class="prism-stage" id="prism-stage-${idx}">
+                    <div class="prism-face" id="f-${idx}-0"></div>
+                    <div class="prism-face" id="f-${idx}-1"></div>
+                    <div class="prism-face" id="f-${idx}-2"></div>
+                </div>
+            </div>`;
+
+        // TradingViewウィジェットを各面に埋め込む
+        conf.symbols.forEach((sym, sIdx) => {
+            const script = document.createElement('script');
+            script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
+            script.async = true;
+            script.innerHTML = JSON.stringify({
+                "symbol": sym, "width": "100%", "height": "100%", "locale": "ja",
+                "dateRange": "1D", "colorTheme": "dark", "isTransparent": true
+            });
+            document.getElementById(`f-${idx}-${sIdx}`).appendChild(script);
+        });
+
+        // 回転の実行
+        setTimeout(() => {
+            let angle = 0;
+            setInterval(() => {
+                angle -= 120;
+                const stage = document.getElementById(`prism-stage-${idx}`);
+                if (stage) stage.style.transform = `rotateX(${angle}deg)`;
+            }, 15000); // 15秒ごとに回転
+        }, conf.delay);
+    });
 }
 
 function appendMiniWidget(containerId, config) {
@@ -333,6 +353,7 @@ function startFixedWeatherCycle() {
 }
 
 fetchWeather();
+initLeftPrisms(); // ←ここに書くことで、起動時に1回だけ実行されるようになります
 setInterval(fetchWeather, 600000);
 
 // =========================
