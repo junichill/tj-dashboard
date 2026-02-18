@@ -366,12 +366,12 @@ setInterval(fetchWeather, 600000);
 
 
 // =========================
-// NEWS - 修正版（2行目が1行目にスライドする形式）
+// NEWS - シンクロ・スライド方式 (修正完全版)
 // =========================
 let newsData = [];
 let newsCursor = 0;
 const NEWS_FETCH_INTERVAL = 10 * 60 * 1000; // 10分
-const NEWS_SLIDE_INTERVAL = 11000; // 11秒
+const NEWS_SLIDE_INTERVAL = 8000; // 8秒間隔 (少し早めてリズムを作る)
 
 async function fetchNews() {
     const MY_GAS_URL = "https://script.google.com/macros/s/AKfycbx6dVnRjptPeQouJM6Czl-GUBqQzxFq8Nj06POOVbqTEGb_w4Wx0rHm-M9_GgApEWnv/exec";
@@ -391,8 +391,8 @@ async function fetchNews() {
         }));
 
         if (newsData.length > 0) {
-            // まだ初期化されていなければ初期化、あればデータ更新のみ
             const card = document.getElementById('news-card');
+            // まだ構造がなければ作成
             if (!card.querySelector('.news-container-overlay')) {
                 initNewsSystem();
             }
@@ -405,11 +405,13 @@ async function fetchNews() {
 function initNewsSystem() {
     const card = document.getElementById('news-card');
     
-    // スライド式の新しい構造を生成
+    // HTML構造: メインエリアの中に「wrapper」を追加
     card.innerHTML = `
         <div class="news-container-overlay">
-            <div class="news-main-area" id="news-main-display">
-                </div>
+            <div class="news-main-area">
+                <div class="news-main-wrapper" id="news-main-wrapper">
+                    </div>
+            </div>
             
             <div class="news-sub-window">
                 <div class="news-sub-track" id="news-track">
@@ -418,44 +420,38 @@ function initNewsSystem() {
         </div>
     `;
 
-    // 初期表示処理
+    // 初期表示
     updateNewsDisplay();
 
-    // スライドタイマー開始
+    // スライドタイマー
     setInterval(slideNewsNext, NEWS_SLIDE_INTERVAL);
 }
 
+// 初期表示用（アニメーションなしで即座に表示）
 function updateNewsDisplay() {
-    const mainDisplay = document.getElementById('news-main-display');
-    const track = document.getElementById('news-track');
-    
-    if (!mainDisplay || !track || newsData.length === 0) return;
+    const wrapper = document.getElementById('news-main-wrapper');
+    if (!wrapper || newsData.length === 0) return;
 
-    // --- メイン表示の更新 ---
     const mainItem = newsData[newsCursor % newsData.length];
     
-    // フェード効果のために一度opacityを下げる
-    mainDisplay.style.opacity = '0';
+    wrapper.innerHTML = `
+        <a href="${mainItem.link}" target="_blank" class="news-title">${mainItem.title}</a>
+        <div class="news-description">${mainItem.description}</div>
+        <div class="news-date">${mainItem.pubDate}</div>
+    `;
     
-    setTimeout(() => {
-        mainDisplay.innerHTML = `
-            <a href="${mainItem.link}" target="_blank" class="news-title">${mainItem.title}</a>
-            <div class="news-description">${mainItem.description}</div>
-            <div class="news-date">${mainItem.pubDate}</div>
-        `;
-        mainDisplay.style.opacity = '1';
-    }, 500); // 0.5秒で切り替え
+    // クラスを初期状態（idle）に
+    wrapper.className = 'news-main-wrapper news-anim-idle';
 
-    // --- サブリストの初期構築 ---
-    // 現在のcursorの「次」からリストを作成
     renderSubTrack();
 }
 
+// リスト描画用
 function renderSubTrack() {
     const track = document.getElementById('news-track');
     let html = '';
-    // リストに表示する件数（画面高さに合わせて適宜調整、例: 8件）
-    for (let i = 1; i <= 8; i++) {
+    // 次の項目から8件ほど表示
+    for (let i = 1; i <= 10; i++) {
         const subItem = newsData[(newsCursor + i) % newsData.length];
         html += `
             <a href="${subItem.link}" target="_blank" class="news-sub-item">
@@ -467,41 +463,59 @@ function renderSubTrack() {
     track.innerHTML = html;
 }
 
+// ★ここが「かっこいい切り替え」の核となる関数
 function slideNewsNext() {
+    const wrapper = document.getElementById('news-main-wrapper');
     const track = document.getElementById('news-track');
-    if (!track) return;
+    if (!wrapper || !track) return;
 
-    // 1. トラック全体を上にスライド (1行の高さ: 50px + border: 1px = 51px)
-    // CSS側で height: 50px と border-bottom: 1px を指定しているため
-    const rowHeight = 51; 
+    // アニメーション時間設定 (CSSと合わせる: 0.6s)
+    const animDuration = 600; 
+    const rowHeight = 51; // CSSで設定した高さ(50px) + border(1px)
 
-    track.style.transition = 'transform 1.0s cubic-bezier(0.2, 1, 0.3, 1)';
+    // 1. 【始動】
+    // メイン: 上にスライドアウトして消える
+    wrapper.className = 'news-main-wrapper news-anim-exit';
+    
+    // リスト: 全体が上に1行分スライド
+    track.style.transition = `transform ${animDuration}ms cubic-bezier(0.2, 0.8, 0.2, 1)`;
     track.style.transform = `translateY(-${rowHeight}px)`;
 
-    // 2. アニメーション完了後の処理
+    // 2. 【入れ替え】(アニメーション完了後)
     setTimeout(() => {
-        // カーソルを進める（＝メインが次のニュースになる）
+        // データインデックスを進める
         newsCursor++;
-        
-        // メイン表示を更新
-        const mainDisplay = document.getElementById('news-main-display');
+
+        // 次のメイン記事を取得
         const nextMainItem = newsData[newsCursor % newsData.length];
-        
-        // メイン部分の書き換え（フェードなしで即時反映、吸い込まれた直後の状態）
-        mainDisplay.innerHTML = `
+
+        // --- 瞬間移動のトリック ---
+        // メインの中身を書き換える
+        wrapper.innerHTML = `
             <a href="${nextMainItem.link}" target="_blank" class="news-title">${nextMainItem.title}</a>
             <div class="news-description">${nextMainItem.description}</div>
             <div class="news-date">${nextMainItem.pubDate}</div>
         `;
+
+        // メイン: 一瞬で「下」に移動させ、不透明度0にする（準備状態）
+        // トランジションを一旦切らないと、下への移動が見えてしまうため注意
+        wrapper.style.transition = 'none';
+        wrapper.className = 'news-main-wrapper news-anim-enter-prepare';
         
-        // トラックの位置を瞬時にリセット (0pxに戻す)
+        // リスト: 位置を0に戻す（中身を書き換えるので見た目は変わらない）
         track.style.transition = 'none';
         track.style.transform = 'translateY(0)';
-        
-        // トラックの中身を再描画（先頭が消え、末尾に新しいのが追加された状態にする）
-        renderSubTrack();
-        
-    }, 1000); // transitionと同じ時間待つ
+        renderSubTrack(); // リストの中身を更新（先頭を削除、末尾に追加）
+
+        // ブラウザに描画更新を強制（リフロー）させる
+        void wrapper.offsetWidth; 
+
+        // 3. 【登場】
+        // メイン: 下から定位置(0)へスライドイン（リストから吸い上げられたように見える）
+        wrapper.style.transition = `transform ${animDuration}ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity ${animDuration}ms ease`;
+        wrapper.className = 'news-main-wrapper news-anim-idle';
+
+    }, animDuration); 
 }
 
 // 初回実行
