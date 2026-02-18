@@ -223,7 +223,7 @@ const LEFT_CONFIG = [
     },
     {
         targetId: "tv-n225-fixed", 
-        symbols: ["OSE:NK2251!", "TVC:NI225", "TVC:TOPIX"],
+        symbols: ["OSE:NK2251!", "OSE:NK225M1!", "OSE:TPX1!"],
         delay: 5000
     },
     {
