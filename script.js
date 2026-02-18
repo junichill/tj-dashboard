@@ -218,19 +218,16 @@ let forexRotationDegree = 0;
 const LEFT_CONFIG = [
     {
         targetId: "forex-viewport-v", // 為替パネル
-        label: "CURRENCY / FX",
         symbols: ["FX:USDJPY", "FX:EURJPY", "FX:EURUSD"],
         delay: 0
     },
     {
         targetId: "tv-n225-fixed", // 日本株パネル
-        label: "JAPAN INDICES",
         symbols: ["TVC:NI225", "OSE:NK2251!", "OSE:TPX1!"],
         delay: 5000 // 5秒ずらして回転
     },
     {
         targetId: "tv-nasdaq-fixed", // 米国・原油パネル
-        label: "US / COMMODITIES",
         symbols: ["CME:NQ1!", "CME_MINI:ES1!", "TVC:USOIL"],
         delay: 10000 // 10秒ずらして回転
     }
@@ -241,9 +238,8 @@ function initLeftPrisms() {
         const container = document.getElementById(conf.targetId);
         if (!container) return;
 
-        // 3D用のHTML構造を生成
+        // タイトルラベル用のHTMLを削除し、ウィジェット本体のみを表示
         container.innerHTML = `
-            <div class="fixed-label">${conf.label}</div>
             <div class="mini-widget-fixed">
                 <div class="prism-stage" id="prism-stage-${idx}">
                     <div class="prism-face" id="f-${idx}-0"></div>
@@ -271,7 +267,7 @@ function initLeftPrisms() {
                 angle -= 120;
                 const stage = document.getElementById(`prism-stage-${idx}`);
                 if (stage) stage.style.transform = `rotateX(${angle}deg)`;
-            }, 15000); // 15秒ごとに回転
+            }, 15000); 
         }, conf.delay);
     });
 }
