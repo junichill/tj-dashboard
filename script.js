@@ -222,9 +222,9 @@ const LEFT_CONFIG = [
         delay: 0
     },
     {
-        targetId: "tv-n225-fixed", // 日本株パネル
-        symbols: ["TVC:NI225", "OSE:NK2251!", "OSE:TPX1!"],
-        delay: 5000 // 5秒ずらして回転
+        targetId: "tv-n225-fixed", 
+        symbols: ["TVC:NI225", "TVC:TOPIX", "TVC:JPX400"],
+        delay: 5000
     },
     {
         targetId: "tv-nasdaq-fixed", // 米国・コモディティ（指定シンボル）
@@ -239,13 +239,13 @@ function initLeftPrisms() {
         if (!container) return;
 
         const count = conf.symbols.length;
-        const step = 360 / count; // 3面なら120度、4面なら90度
+        const step = 360 / count; 
+        
+        // 重なり防止: 面の数が多いほど中心から外側に離す (4面なら60px, 3面なら40px程度)
+        const translateZ = count === 4 ? "60px" : "40px";
 
-        // 各面を正しい角度で配置するためのスタイルを生成
+        // 各面を初期状態で回転・配置させて重なりを解消
         const facesHtml = conf.symbols.map((_, sIdx) => {
-            // rotateX(${sIdx * step}deg) で各面を重ならないように展開し、
-            // translateZ で中心から外側に押し出す（4面の場合は高さの半分程度）
-            const translateZ = count === 4 ? "65px" : "45px"; 
             return `<div class="prism-face" id="f-${idx}-${sIdx}" 
                          style="transform: rotateX(${sIdx * step}deg) translateZ(${translateZ});">
                     </div>`;
@@ -258,7 +258,7 @@ function initLeftPrisms() {
                 </div>
             </div>`;
 
-        // TradingViewウィジェットを各面に埋め込む
+        // TradingViewウィジェットの埋め込み
         conf.symbols.forEach((sym, sIdx) => {
             const script = document.createElement('script');
             script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
@@ -271,15 +271,13 @@ function initLeftPrisms() {
             if (face) face.appendChild(script);
         });
 
-        // 回転の実行
+        // 回転処理
         setTimeout(() => {
             let angle = 0;
             setInterval(() => {
                 angle -= step;
                 const stage = document.getElementById(`prism-stage-${idx}`);
-                if (stage) {
-                    stage.style.transform = `rotateX(${angle}deg)`;
-                }
+                if (stage) stage.style.transform = `rotateX(${angle}deg)`;
             }, 15000); 
         }, conf.delay);
     });
