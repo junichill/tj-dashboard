@@ -227,9 +227,9 @@ const LEFT_CONFIG = [
         delay: 5000 // 5秒ずらして回転
     },
     {
-        targetId: "tv-nasdaq-fixed", // 米国・原油パネル
-        symbols: ["CME:NQ1!", "CME_MINI:ES1!", "TVC:USOIL"],
-        delay: 10000 // 10秒ずらして回転
+        targetId: "tv-nasdaq-fixed", // 米国・コモディティ（指定シンボル）
+        symbols: ["CAPITALCOM:US100", "CAPITALCOM:US500", "TVC:GOLD", "CAPITALCOM:OIL_CRUDE"],
+        delay: 10000
     }
 ];
 
@@ -238,13 +238,14 @@ function initLeftPrisms() {
         const container = document.getElementById(conf.targetId);
         if (!container) return;
 
-        // タイトルラベル用のHTMLを削除し、ウィジェット本体のみを表示
+        // 表題(label)は一切出力せず、ウィジェット構造のみ生成
+        // symbolsが4つの場合も考慮し、面の数を動的に対応
+        const facesHtml = conf.symbols.map((_, sIdx) => `<div class="prism-face" id="f-${idx}-${sIdx}"></div>`).join('');
+
         container.innerHTML = `
             <div class="mini-widget-fixed">
                 <div class="prism-stage" id="prism-stage-${idx}">
-                    <div class="prism-face" id="f-${idx}-0"></div>
-                    <div class="prism-face" id="f-${idx}-1"></div>
-                    <div class="prism-face" id="f-${idx}-2"></div>
+                    ${facesHtml}
                 </div>
             </div>`;
 
@@ -257,14 +258,16 @@ function initLeftPrisms() {
                 "symbol": sym, "width": "100%", "height": "100%", "locale": "ja",
                 "dateRange": "1D", "colorTheme": "dark", "isTransparent": true
             });
-            document.getElementById(`f-${idx}-${sIdx}`).appendChild(script);
+            const face = document.getElementById(`f-${idx}-${sIdx}`);
+            if (face) face.appendChild(script);
         });
 
         // 回転の実行
         setTimeout(() => {
             let angle = 0;
+            const step = 360 / conf.symbols.length; // シンボル数に合わせて回転角を計算
             setInterval(() => {
-                angle -= 120;
+                angle -= step;
                 const stage = document.getElementById(`prism-stage-${idx}`);
                 if (stage) stage.style.transform = `rotateX(${angle}deg)`;
             }, 15000); 
