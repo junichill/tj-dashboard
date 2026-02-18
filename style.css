@@ -1,347 +1,114 @@
 /* =========================================
-   1. 基本レイアウト & リセット
+   1. 基本レイアウト & リセット (維持)
    ========================================= */
 :root {
-  --glass-bg: rgba(20, 24, 35, 0.6); /* 少し濃くして視認性アップ */
-  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-bg: rgba(20, 24, 30, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.1);
   --blur: blur(20px);
   --accent: #00d4ff;
-  --text-main: #ffffff;
-  --text-sub: rgba(255, 255, 255, 0.7);
 }
 
 body {
-  margin: 0;
-  padding: 0;
+  margin: 0; padding: 0;
   background: #000;
-  color: var(--text-main);
-  font-family: 'Roboto', 'Noto Sans JP', sans-serif; /* 日本語フォント優先 */
+  color: white;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
   overflow: hidden;
-  width: 100vw;
-  height: 100vh;
-}
-
-/* 背景オーロラ (変更なし) */
-.aurora-bg {
-  position: fixed;
-  width: 200%;
-  height: 200%;
-  top: -50%;
-  left: -50%;
-  background: radial-gradient(circle at 20% 30%, #1a237e, transparent),
-              radial-gradient(circle at 80% 70%, #4a148c, transparent),
-              radial-gradient(circle at 50% 50%, #004d40, transparent);
-  filter: blur(80px);
-  opacity: 0.4;
-  animation: rotate-bg 60s linear infinite;
-  z-index: -1;
-}
-@keyframes rotate-bg {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  width: 100vw; height: 100vh;
 }
 
 #container {
-  width: 1920px;
-  height: 720px;
-  display: flex;
-  padding: 40px;
-  box-sizing: border-box;
-  gap: 30px;
-  position: absolute;
-  top: 0;
-  left: 0;
+  width: 1920px; height: 720px;
+  display: flex; padding: 40px; box-sizing: border-box; gap: 30px;
+  position: absolute; top: 0; left: 0;
   transform-origin: top left;
 }
 
-/* パネル共通 */
+/* =========================================
+   2. パネル構成 (既存の大きさを厳守)
+   ========================================= */
 .glass-card {
   background: var(--glass-bg);
   backdrop-filter: var(--blur);
-  -webkit-backdrop-filter: var(--blur);
   border: 1px solid var(--glass-border);
   border-radius: 24px;
   box-shadow: 0 15px 45px rgba(0,0,0,0.5);
-  overflow: hidden;
-  position: relative;
 }
 
-/* =========================================
-   2. 左パネル (時計 & 3段プリズム)
-   ========================================= */
-#left-panel {
-  flex: 0 0 440px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+#left-panel { flex: 0 0 440px; display: flex; flex-direction: column; gap: 20px; }
+#center-panel { flex: 1; min-width: 0; }
+.center-grid-layout {
+  display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 400px 250px;
+  gap: 20px; height: 100%; width: 100%;
 }
+.grid-item-tl, .grid-item-tr { width: 100%; height: 400px; position: relative; overflow: hidden; }
+.grid-item-bottom { grid-column: span 2; height: 250px; overflow: hidden; position: relative; }
+#right-panel { flex: 0 0 520px !important; position: relative; }
 
 /* 時計 */
-.clock-container {
-  height: 140px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.tick { font-size: 3.2rem; }
-#date {
-  position: absolute;
-  top: 15px; left: 30px;
-  font-size: 14px; opacity: 0.7; letter-spacing: 0.1em;
-}
+.clock-container { height: 140px; display: flex; align-items: center; justify-content: center; position: relative; }
+#date { position: absolute; top: 12px; left: 55px; font-size: 14px; opacity: 0.7; }
+.tick { font-size: 3rem; }
+#seconds-static { font-size: 2.5rem; color: var(--accent); margin-left: 10px; }
 
-/* --- 汎用3Dプリズム (共通クラス化) --- */
-.prism-container {
-  height: 160px; /* ウィジェットの高さ */
-  position: relative;
-  perspective: 1000px;
-  margin-bottom: 0; /* JSで隙間調整するため0 */
-}
-
+/* =========================================
+   3. 左パネル: 3D回転 (ゆっくり)
+   ========================================= */
+.mini-widget-fixed { height: 155px; perspective: 1000px; position: relative; }
 .prism-stage {
-  width: 100%;
-  height: 100%;
-  position: absolute;
+  width: 100%; height: 100%; position: absolute;
   transform-style: preserve-3d;
-  transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1); /* 加減速をスムーズに */
+  transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 .prism-face {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: rgba(30, 35, 45, 0.8);
-  border: 1px solid rgba(255,255,255,0.05);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: absolute; width: 100%; height: 100%;
   backface-visibility: hidden;
 }
-
-/* 三角柱の配置計算 (高さ160px / 2 / tan(30deg) ≒ 138px → 余裕を持って奥へ) */
-/* 実際は回転軸中心からの距離(translateZ)を調整 */
-.prism-face:nth-child(1) { transform: rotateX(0deg) translateZ(46px); }
-.prism-face:nth-child(2) { transform: rotateX(120deg) translateZ(46px); }
-.prism-face:nth-child(3) { transform: rotateX(240deg) translateZ(46px); }
-
-.market-label {
-    position: absolute;
-    top: 5px;
-    left: 15px;
-    font-size: 10px;
-    color: var(--accent);
-    font-weight: bold;
-    letter-spacing: 1px;
-    z-index: 10;
-}
+.prism-face:nth-child(1) { transform: rotateX(0deg) translateZ(40px); }
+.prism-face:nth-child(2) { transform: rotateX(120deg) translateZ(40px); }
+.prism-face:nth-child(3) { transform: rotateX(240deg) translateZ(40px); }
+.fixed-label { font-size: 11px; letter-spacing: 0.3em; color: var(--accent); text-align: center; margin-bottom: 8px; opacity: 0.8; }
 
 /* =========================================
-   3. 中央パネル (天気・トレンド・下部)
+   4. 中央パネル: トレンド & 天気
    ========================================= */
-#center-panel {
-  flex: 1;
-  min-width: 0;
-}
-
-.center-grid-layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 400px 250px;
-  gap: 20px;
-  height: 100%;
-  width: 100%;
-}
-
-/* --- 天気 (Yahoo天気風スタイリッシュ) --- */
-.weather-yahoo-style {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 30px;
-  height: 100%;
-  box-sizing: border-box;
-  background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0));
-}
-
-.wy-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; margin-bottom: 10px; }
-.wy-title { font-size: 24px; font-weight: bold; }
-.wy-date { font-size: 16px; opacity: 0.8; }
-
-.wy-main { display: flex; align-items: center; justify-content: space-around; flex: 1; }
-.wy-icon-area svg { width: 140px; height: 140px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.3)); }
-.wy-temp-area { display: flex; flex-direction: column; align-items: flex-end; }
-.wy-high { font-size: 56px; font-weight: 300; color: #ff6b6b; line-height: 1; }
-.wy-low { font-size: 36px; font-weight: 300; color: #4ecdc4; line-height: 1; margin-top: 10px; }
-.wy-label { font-size: 12px; opacity: 0.6; margin-right: 5px; }
-
-.wy-rain {
-    background: rgba(0,0,0,0.3);
-    border-radius: 12px;
-    padding: 10px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.wy-rain-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.wy-rain-val { font-size: 16px; font-weight: bold; color: var(--accent); }
-.wy-rain-time { font-size: 11px; opacity: 0.6; }
-
-
-/* --- トレンド (Google Trends Year in Search風) --- */
-/* グリッドレイアウトはJSで制御するため、ここではベーススタイルのみ */
+/* トレンド (4x2の綺麗なタイル) */
 #trend-fixed-content {
-  width: 100%; height: 100%;
-  padding: 10px;
-  box-sizing: border-box;
-  background: #000; /* 黒背景で色を引き立てる */
+  display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr);
+  gap: 2px; width: 100%; height: 100%; padding: 0;
 }
-
 .trend-tile {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 15px;
-  font-weight: 700;
-  line-height: 1.1;
-  cursor: pointer;
-  transition: transform 0.2s;
-  overflow: hidden;
-  position: relative;
-  color: #fff;
-}
-.trend-tile:hover { transform: scale(0.98); filter: brightness(1.1); }
-.trend-rank {
-    position: absolute;
-    top: 6px; left: 8px;
-    font-size: 12px; opacity: 0.6;
-    font-family: 'JetBrains Mono', monospace;
-}
-.trend-val {
-    position: absolute;
-    bottom: 6px; right: 8px;
-    font-size: 10px; opacity: 0.5;
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  padding: 10px; font-size: 16px; font-weight: 700; color: #fff;
+  transition: opacity 1s; word-break: break-all;
 }
 
-/* --- 下部パネル (3分割固定) --- */
-.bottom-split-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    height: 100%;
-    width: 100%;
+/* 中央下 (スライド) */
+.slide-group {
+  position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center;
+  opacity: 0; transform: translateY(20px); transition: all 1.5s ease;
 }
-.bottom-section {
-    border-right: 1px solid var(--glass-border);
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.bottom-section:last-child { border-right: none; }
-.bottom-label {
-    font-size: 12px; color: var(--accent); margin-bottom: 10px; letter-spacing: 2px; text-transform: uppercase;
-}
-.bottom-content {
-    flex: 1; width: 100%; display: flex; justify-content: center; align-items: center;
-}
-
-/* 3時間天気用 */
-.three-hour-row { display: flex; gap: 10px; }
-.th-item { display: flex; flex-direction: column; align-items: center; font-size: 12px; }
-.th-time { opacity: 0.6; margin-bottom: 4px; }
-.th-icon svg { width: 32px; height: 32px; margin-bottom: 4px; }
-.th-temp { font-weight: bold; }
-
-/* 週間天気用 */
-.weekly-row { display: flex; gap: 8px; width: 100%; justify-content: space-around; }
-.wk-item { display: flex; flex-direction: column; align-items: center; }
-.wk-date { font-size: 11px; opacity: 0.6; margin-bottom: 2px; }
-.wk-icon svg { width: 24px; height: 24px; margin-bottom: 2px; }
-.wk-hl { font-size: 10px; display: flex; gap: 2px; }
-.wk-h { color: #ff6b6b; } .wk-l { color: #4ecdc4; }
+.slide-group.active { opacity: 1; transform: translateY(0); }
+.day-label { font-size: 14px; letter-spacing: 0.4em; color: var(--accent); text-align: center; margin-bottom: 20px; }
 
 /* =========================================
-   4. 右パネル (ニュース - 数珠つなぎスライド)
+   5. 右パネル: ニュース (はみ出し防止 & 踏襲)
    ========================================= */
-#right-panel {
-  flex: 0 0 520px;
-}
+#news-card { height: 100%; overflow: hidden; background-color: rgba(10,15,25,0.9); }
+.news-overlay { padding: 30px; display: flex; flex-direction: column; height: 100%; box-sizing: border-box; }
 
-.news-container {
-    padding: 30px;
-    height: 100%;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
+.news-main-area {
+  height: 180px; border-bottom: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 20px; display: flex; flex-direction: column; justify-content: center;
 }
+.news-main-title { font-size: 24px; font-weight: bold; line-height: 1.4; color: #fff; margin-bottom: 10px; }
+.news-main-desc { font-size: 14px; color: rgba(255,255,255,0.6); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-/* ヘッダー（固定） */
-.news-header {
-    margin-bottom: 20px;
-    border-bottom: 2px solid var(--accent);
-    padding-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
+.news-sub-window { flex: 1; overflow: hidden; }
+.news-sub-track { display: flex; flex-direction: column; transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
+.news-sub-item {
+  height: 55px; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05);
+  white-space: nowrap; overflow: hidden;
 }
-.news-header-title { font-size: 20px; font-weight: bold; color: var(--accent); }
-.news-header-source { font-size: 12px; opacity: 0.6; }
-
-/* スライドエリア（窓） */
-.news-viewport {
-    flex: 1;
-    overflow: hidden; /* はみ出しを隠す */
-    position: relative;
-    mask-image: linear-gradient(to bottom, black 85%, transparent 100%); /* 下の方を少しぼかす */
-}
-
-/* リスト本体 */
-.news-list {
-    display: flex;
-    flex-direction: column;
-    /* transitionはJSで制御するが、初期値として設定 */
-    will-change: transform;
-}
-
-/* 各ニュース行 */
-.news-row {
-    height: 85px; /* 1行の高さ固定 */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    padding: 0 10px;
-    box-sizing: border-box;
-    transition: background 0.3s;
-}
-.news-row:first-child {
-    /* 1行目だけ強調 */
-    background: rgba(255,255,255,0.05);
-    border-left: 4px solid var(--accent);
-}
-
-.news-row-title {
-    font-size: 18px;
-    font-weight: 500;
-    margin-bottom: 6px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: #fff;
-    text-decoration: none;
-}
-.news-row:first-child .news-row-title { font-size: 22px; font-weight: 700; color: var(--accent); }
-
-.news-row-meta {
-    font-size: 12px;
-    color: rgba(255,255,255,0.5);
-    display: flex;
-    justify-content: space-between;
-}
-.news-row-desc {
-    font-size: 13px;
-    color: rgba(255,255,255,0.7);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
+.news-sub-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; margin-right: 15px; flex-shrink: 0; }
+.news-sub-text { font-size: 16px; color: rgba(255,255,255,0.8); text-overflow: ellipsis; overflow: hidden; }
