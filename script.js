@@ -34,7 +34,7 @@ updateDate();
 setInterval(updateDate, 60000);
 
 // =========================
-// WEATHER 設定 & アイコン
+// WEATHER 設定 & アイコン (Yahoo風・曇時々晴追加)
 // =========================
 const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
 const LAT = 35.6895;
@@ -43,40 +43,57 @@ const LON = 139.6917;
 const WEATHER_ICONS = {
   sunny: `
     <svg viewBox="0 0 64 64">
-      <circle class="sun-body" cx="32" cy="32" r="12" stroke-width="2"/>
+      <circle class="sun-body" cx="32" cy="32" r="14" stroke-width="2"/>
       <g class="sun-rays" stroke-width="4" stroke-linecap="round">
-        <line x1="32" y1="8" x2="32" y2="16"/><line x1="32" y1="48" x2="32" y2="56"/>
-        <line x1="8" y1="32" x2="16" y2="32"/><line x1="48" y1="32" x2="56" y2="32"/>
-        <line x1="15" y1="15" x2="20.6" y2="20.6"/><line x1="43.4" y1="43.4" x2="49" y2="49"/>
-        <line x1="15" y1="49" x2="20.6" y2="43.4"/><line x1="43.4" y1="20.6" x2="49" y2="15"/>
+        <line x1="32" y1="6" x2="32" y2="12"/><line x1="32" y1="52" x2="32" y2="58"/>
+        <line x1="6" y1="32" x2="12" y2="32"/><line x1="52" y1="32" x2="58" y2="32"/>
+        <line x1="13.6" y1="13.6" x2="17.8" y2="17.8"/><line x1="46.2" y1="46.2" x2="50.4" y2="50.4"/>
+        <line x1="13.6" y1="50.4" x2="17.8" y2="46.2"/><line x1="46.2" y1="17.8" x2="50.4" y2="13.6"/>
       </g>
+    </svg>`,
+  partly_cloudy: `
+    <svg viewBox="0 0 64 64">
+      <g transform="translate(18, -4) scale(0.75)">
+        <circle class="sun-body" cx="32" cy="32" r="14" stroke-width="2"/>
+        <g class="sun-rays" stroke-width="4" stroke-linecap="round">
+          <line x1="32" y1="6" x2="32" y2="12"/><line x1="32" y1="52" x2="32" y2="58"/>
+          <line x1="6" y1="32" x2="12" y2="32"/><line x1="52" y1="32" x2="58" y2="32"/>
+          <line x1="13.6" y1="13.6" x2="17.8" y2="17.8"/><line x1="46.2" y1="46.2" x2="50.4" y2="50.4"/>
+          <line x1="13.6" y1="50.4" x2="17.8" y2="46.2"/><line x1="46.2" y1="17.8" x2="50.4" y2="13.6"/>
+        </g>
+      </g>
+      <path class="cloud-body" d="M46,42a10,10,0,0,0,0-20,14,14,0,0,0-27-4,10,10,0,0,0,1,24Z" stroke-width="2" stroke-linejoin="round"/>
     </svg>`,
   cloudy: `
     <svg viewBox="0 0 64 64">
-      <path class="cloud-body" d="M46,40a10,10,0,0,0,0-20,14,14,0,0,0-27-4,10,10,0,0,0,1,24Z" stroke-width="2" stroke-linejoin="round"/>
+      <path class="cloud-dark" d="M46,42a10,10,0,0,0,0-20,14,14,0,0,0-27-4,10,10,0,0,0,1,24Z" stroke-width="2" stroke-linejoin="round"/>
     </svg>`,
   rainy: `
     <svg viewBox="0 0 64 64">
-      <path class="rain-umbrella" d="M12,38a20,20,0,0,1,40,0Z" />
-      <path class="rain-umbrella" d="M32,38V50a4,4,0,0,1-8,0" fill="none" stroke-width="3" stroke-linecap="round"/>
-      <line class="rain-drops" x1="45" y1="45" x2="45" y2="52" stroke-width="3" stroke-linecap="round" />
-      <line class="rain-drops" x1="52" y1="42" x2="52" y2="49" stroke-width="3" stroke-linecap="round" />
+      <path class="cloud-dark" d="M46,36a10,10,0,0,0,0-20,14,14,0,0,0-27-4,10,10,0,0,0,1,24Z" stroke-width="2" stroke-linejoin="round"/>
+      <g transform="translate(15, 12) scale(0.75)">
+        <path class="rain-umbrella" d="M12,38a20,20,0,0,1,40,0Z" stroke-width="2"/>
+        <path class="rain-umbrella" d="M32,38V50a4,4,0,0,1-8,0" fill="none" stroke-width="3" stroke-linecap="round"/>
+      </g>
     </svg>`,
   snowy: `
     <svg viewBox="0 0 64 64">
-      <circle class="snow-body" cx="32" cy="25" r="10" stroke-width="2"/>
-      <circle class="snow-body" cx="32" cy="45" r="13" stroke-width="2"/>
-      <path d="M28,22l1,0m6,0l1,0" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+      <path class="cloud-dark" d="M46,38a10,10,0,0,0,0-20,14,14,0,0,0-27-4,10,10,0,0,0,1,24Z" stroke-width="2" stroke-linejoin="round"/>
+      <circle class="snow-body" cx="24" cy="48" r="4" stroke-width="1"/>
+      <circle class="snow-body" cx="40" cy="48" r="4" stroke-width="1"/>
+      <circle class="snow-body" cx="32" cy="54" r="4" stroke-width="1"/>
     </svg>`
 };
 
 function getWeatherType(id) {
   if (id >= 200 && id < 600) return 'rainy';
   if (id >= 600 && id < 700) return 'snowy';
-  if (id >= 801) return 'cloudy';
+  if (id === 800) return 'sunny';
+  // 801(雲11-25%), 802(雲25-50%) の場合に「曇り時々晴れ」を適用
+  if (id === 801 || id === 802) return 'partly_cloudy';
+  if (id >= 803) return 'cloudy';
   return 'sunny';
 }
-
 // =========================
 // WEATHER 背景更新
 // =========================
