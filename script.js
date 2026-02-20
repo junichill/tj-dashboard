@@ -41,10 +41,33 @@ const LAT = 35.6895;
 const LON = 139.6917;
 
 const WEATHER_ICONS = {
-  sunny: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4"><circle cx="32" cy="32" r="12"/><line x1="32" y1="2" x2="32" y2="14"/><line x1="32" y1="50" x2="32" y2="62"/><line x1="2" y1="32" x2="14" y2="32"/><line x1="50" y1="32" x2="62" y2="32"/><line x1="10" y1="10" x2="18" y2="18"/><line x1="46" y1="46" x2="54" y2="54"/><line x1="46" y1="18" x2="54" y2="10"/><line x1="10" y1="54" x2="18" y2="46"/></svg>`,
-  cloudy: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 44h26a10 10 0 0 0 0-20 14 14 0 0 0-27-4A10 10 0 0 0 20 44z"/></svg>`,
-  rainy: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 36c0-11 9-20 20-20s20 9 20 20H12z" /><line x1="32" y1="16" x2="32" y2="12" /><path d="M32 36v12c0 4-3 7-7 7s-7-3-7-7" /></svg>`,
-  snowy: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="46" r="14" /><circle cx="32" cy="22" r="10" /><circle cx="28" cy="20" r="0.5" fill="currentColor" stroke="none" /><circle cx="36" cy="20" r="0.5" fill="currentColor" stroke="none" /><line x1="20" y1="40" x2="12" y2="32" /><line x1="44" y1="40" x2="52" y2="32" /></svg>`,
+  sunny: `
+    <svg viewBox="0 0 64 64">
+      <circle class="sun-body" cx="32" cy="32" r="12" stroke-width="2"/>
+      <g class="sun-rays" stroke-width="4" stroke-linecap="round">
+        <line x1="32" y1="8" x2="32" y2="16"/><line x1="32" y1="48" x2="32" y2="56"/>
+        <line x1="8" y1="32" x2="16" y2="32"/><line x1="48" y1="32" x2="56" y2="32"/>
+        <line x1="15" y1="15" x2="20.6" y2="20.6"/><line x1="43.4" y1="43.4" x2="49" y2="49"/>
+        <line x1="15" y1="49" x2="20.6" y2="43.4"/><line x1="43.4" y1="20.6" x2="49" y2="15"/>
+      </g>
+    </svg>`,
+  cloudy: `
+    <svg viewBox="0 0 64 64">
+      <path class="cloud-body" d="M46,40a10,10,0,0,0,0-20,14,14,0,0,0-27-4,10,10,0,0,0,1,24Z" stroke-width="2" stroke-linejoin="round"/>
+    </svg>`,
+  rainy: `
+    <svg viewBox="0 0 64 64">
+      <path class="rain-umbrella" d="M12,38a20,20,0,0,1,40,0Z" />
+      <path class="rain-umbrella" d="M32,38V50a4,4,0,0,1-8,0" fill="none" stroke-width="3" stroke-linecap="round"/>
+      <line class="rain-drops" x1="45" y1="45" x2="45" y2="52" stroke-width="3" stroke-linecap="round" />
+      <line class="rain-drops" x1="52" y1="42" x2="52" y2="49" stroke-width="3" stroke-linecap="round" />
+    </svg>`,
+  snowy: `
+    <svg viewBox="0 0 64 64">
+      <circle class="snow-body" cx="32" cy="25" r="10" stroke-width="2"/>
+      <circle class="snow-body" cx="32" cy="45" r="13" stroke-width="2"/>
+      <path d="M28,22l1,0m6,0l1,0" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    </svg>`
 };
 
 function getWeatherType(id) {
