@@ -204,7 +204,7 @@ async function fetchWeather() {
                 <div class="weather-slide-label">${title} ${dateStr}</div>
                 <div class="weather-icon-large weather-${iconType}">${WEATHER_ICONS[iconType]}</div>
                 <div class="weather-sub-info">
-                    <span>${iconType === 'sunny' ? '晴れ' : iconType === 'cloudy' ? '曇り' : '雨'}</span>
+                    <span>${{sunny:'晴れ', partly_cloudy:'曇時々晴', cloudy:'曇り', rainy:'雨', snowy:'雪'}[iconType] || '晴れ'}</span>
                     <span><svg class="drop-icon" viewBox="0 0 24 24" fill="#4fc3f7" width="16"><path d="M12,2C12,2 6,8.19 6,12.5C6,15.78 8.42,18.5 12,18.5C15.58,18.5 18,15.78 18,12.5C18,8.19 12,2 12,2Z"/></svg>${Math.round(pop * 100)}%</span>
                 </div>
                 <div class="weather-data-line">
