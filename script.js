@@ -144,21 +144,43 @@ async function fetchWeather() {
 
     const wrapper = document.getElementById('forecast-wrapper');
     const todayHtml = createForecastGroupHtml(d.list.slice(0, 8), "Today's Forecast");
+    
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowStr = tomorrow.toLocaleDateString();
     const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr).slice(0, 8);
     const tomorrowHtml = createForecastGroupHtml(tomorrowList, "Tomorrow's Plan");
 
-    // 経済指標用のHTMLブロック（中身は後からスクリプトで注入）
+    // --- 追加：週間天気データ生成（各日のお昼のデータまたは最初のデータを抽出） ---
+    const dailyList = [];
+    const seenDates = new Set();
+    d.list.forEach(item => {
+        const dateStr = new Date(item.dt * 1000).toLocaleDateString();
+        if (!seenDates.has(dateStr)) {
+            const noonItem = d.list.find(x => new Date(x.dt * 1000).toLocaleDateString() === dateStr && new Date(x.dt * 1000).getHours() === 12);
+            dailyList.push(noonItem || item);
+            seenDates.add(dateStr);
+        }
+    });
+    const weekItemsHtml = dailyList.slice(0, 6).map(item => {
+        const date = new Date(item.dt * 1000);
+        const dayStr = (date.getMonth() + 1) + "/" + date.getDate();
+        const temp = Math.round(item.main.temp);
+        const type = getWeatherType(item.weather[0].id);
+        return `<div class="forecast-item"><div class="forecast-time">${dayStr}</div><div class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</div><div class="forecast-temp">${temp}℃</div></div>`;
+    }).join('');
+    const weekHtml = `<div class="day-group"><div class="day-label">— Weekly Forecast —</div><div class="day-items">${weekItemsHtml}</div></div>`;
+    // -------------------------------------------------------------
+
+    // 経済指標用のHTMLブロック
     const economicScheduleHtml = `
       <div class="day-group">
         <div class="day-label">— Economic Calendar —</div>
         <div id="tv-economic-calendar" style="width:100%; height:200px;"></div>
       </div>`;
 
-    // 週間天気やその他マーケットを削除し、この3つだけを設定
-    wrapper.innerHTML = todayHtml + tomorrowHtml + economicScheduleHtml;
+    // 4項目を結合して表示にセット（今日の天気 ＋ 明日の天気 ＋ 週間天気 ＋ 経済指標）
+    wrapper.innerHTML = todayHtml + tomorrowHtml + weekHtml + economicScheduleHtml;
 
     // TradingView 経済指標カレンダーのスクリプトを注入
     const ecoContainer = document.getElementById('tv-economic-calendar');
@@ -204,7 +226,7 @@ async function fetchWeather() {
                 <div class="weather-slide-label">${title} ${dateStr}</div>
                 <div class="weather-icon-large weather-${iconType}">${WEATHER_ICONS[iconType]}</div>
                 <div class="weather-sub-info">
-                    <span>${{sunny:'晴れ', partly_cloudy:'曇時々晴', cloudy:'曇り', rainy:'雨', snowy:'雪'}[iconType] || '晴れ'}</span>
+                    <span>${iconType === 'sunny' ? '晴れ' : iconType === 'cloudy' ? '曇り' : '雨'}</span>
                     <span><svg class="drop-icon" viewBox="0 0 24 24" fill="#4fc3f7" width="16"><path d="M12,2C12,2 6,8.19 6,12.5C6,15.78 8.42,18.5 12,18.5C15.58,18.5 18,15.78 18,12.5C18,8.19 12,2 12,2Z"/></svg>${Math.round(pop * 100)}%</span>
                 </div>
                 <div class="weather-data-line">
