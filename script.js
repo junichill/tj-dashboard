@@ -90,38 +90,6 @@ function createForecastGroupHtml(list, label) {
   return `<div class="day-group"><div class="day-label">— ${label} —</div><div class="day-items">${itemsHtml}</div></div>`;
 }
 
-function createWeeklyForecastHtml(list) {
-  const dailyData = {};
-  list.forEach(item => {
-    const dateObj = new Date(item.dt * 1000);
-    const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
-    const dayNum = dateObj.getDate();
-    const dateKey = `${dayName} ${dayNum}`;
-    if (!dailyData[dateKey]) dailyData[dateKey] = { temps: [], ids: [] };
-    dailyData[dateKey].temps.push(item.main.temp);
-    dailyData[dateKey].ids.push(item.weather[0].id);
-  });
-  let itemsHtml = '';
-  Object.keys(dailyData).slice(1, 6).forEach(date => {
-    const day = dailyData[date];
-    const maxTemp = Math.round(Math.max(...day.temps));
-    const minTemp = Math.round(Math.min(...day.temps));
-    const midId = day.ids[Math.floor(day.ids.length / 2)];
-    const type = getWeatherType(midId);
-    itemsHtml += `<div class="forecast-item weekly-item"><div class="forecast-time">${date}</div><div class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</div><div class="forecast-temp weekly-temp"><span class="max">${maxTemp}</span><span class="separator">/</span><span class="min">${minTemp}</span></div></div>`;
-  });
-  return `<div class="day-group"><div class="day-label">— Weekly Outlook —</div><div class="day-items">${itemsHtml}</div></div>`;
-}
-
-let economicScheduleHtml = ""; 
-async function fetchEconomicSchedule() {
-  economicScheduleHtml = `
-    <div class="day-group">
-      <div class="day-label">— Economic Calendar —</div>
-      <div id="tv-economic-calendar" style="width:100%; height:200px;"></div>
-    </div>`;
-}
-
 // =========================
 // WEATHER & MARKET メイン表示
 // =========================
@@ -130,7 +98,6 @@ let weatherTimer = null;
 
 async function fetchWeather() {
   try {
-    await fetchEconomicSchedule();
     const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=ja`);
     const d = await r.json();
     if (!d || !d.list) return;
@@ -142,17 +109,34 @@ async function fetchWeather() {
     const tomorrowStr = tomorrow.toLocaleDateString();
     const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr).slice(0, 8);
     const tomorrowHtml = createForecastGroupHtml(tomorrowList, "Tomorrow's Plan");
-    const weeklyHtml = createWeeklyForecastHtml(d.list);
 
-    const mktHtml = (id, label) => `<div class="day-group"><div class="day-label">— ${label} —</div><div id="${id}" style="width:700px; height:130px;"></div></div>`;
+    // 経済指標用のHTMLブロック（中身は後からスクリプトで注入）
+    const economicScheduleHtml = `
+      <div class="day-group">
+        <div class="day-label">— Economic Calendar —</div>
+        <div id="tv-economic-calendar" style="width:100%; height:200px;"></div>
+      </div>`;
 
-    wrapper.innerHTML = todayHtml + tomorrowHtml + weeklyHtml + 
-                        mktHtml("tv-sp500", "S&P 500 Futures") +
-                        mktHtml("tv-gold", "Gold Spot") +
-                        mktHtml("tv-oil", "WTI Crude Oil") +
-                        mktHtml("tv-eur-jpy", "EUR/JPY") +
-                        mktHtml("tv-eur-usd", "EUR/USD") +
-                        economicScheduleHtml;
+    // 週間天気やその他マーケットを削除し、この3つだけを設定
+    wrapper.innerHTML = todayHtml + tomorrowHtml + economicScheduleHtml;
+
+    // TradingView 経済指標カレンダーのスクリプトを注入
+    const ecoContainer = document.getElementById('tv-economic-calendar');
+    if (ecoContainer && ecoContainer.childElementCount === 0) {
+        const script = document.createElement('script');
+        script.src = "https://s3.tradingview.com/external-embedding/embed-widget-events.js";
+        script.async = true;
+        script.innerHTML = JSON.stringify({
+          "colorTheme": "dark",
+          "isTransparent": true,
+          "width": "100%",
+          "height": "100%",
+          "locale": "ja",
+          "importanceFilter": "-1,0,1",
+          "currencyFilter": "JPY,USD,EUR"
+        });
+        ecoContainer.appendChild(script);
+    }
 
     weatherSlideIndex = 0;
     wrapper.style.transform = `translateY(0px)`;
@@ -208,13 +192,10 @@ async function fetchWeather() {
 }
 
 let forexVIndex = 0;
-
-
-
 let forexTimer = null;
 let forexRotationDegree = 0;
 
-// --- [新] 左パネルの3D回転設定 ---
+// --- 左パネルの3D回転設定 ---
 const LEFT_CONFIG = [
     {
         targetId: "forex-viewport-v", // 為替パネル
@@ -340,38 +321,32 @@ function startFixedWeatherCycle() {
         const currentSlides = document.querySelectorAll('.weather-slide');
         if (currentSlides.length < 2) return;
 
-        // 1. 今のスライドに「粒子消去」クラスをつける
         currentSlides[fixedWeatherIndex].classList.remove('active');
         currentSlides[fixedWeatherIndex].classList.add('exit');
 
-  // 2. 消え去る粒子(3.5秒)を見せた後、さらに「無」の時間を足して待つ
-        const particleTime = 3500; // 粒子が消えるのにかかる時間
-        const silentTime = 2000;   // 背景だけを見せたい時間（2秒）
+        const particleTime = 3500; 
+        const silentTime = 2000;   
 
         setTimeout(() => {
-            // クリーンアップ
             currentSlides[fixedWeatherIndex].classList.remove('exit');
-
-            // 3. 完全に消えた後に、インデックスを進めて次を表示
             fixedWeatherIndex = (fixedWeatherIndex + 1) % currentSlides.length;
             currentSlides[fixedWeatherIndex].classList.add('active');
-            
-        }, particleTime + silentTime); // ここで合計の待ち時間を指定
-    }, 12000); // 12秒おきに切り替え
+        }, particleTime + silentTime); 
+    }, 12000); 
 }
 
 fetchWeather();
-initLeftPrisms(); // ←ここに書くことで、起動時に1回だけ実行されるようになります
+initLeftPrisms(); 
 setInterval(fetchWeather, 600000);
 
 
 // =========================
-// NEWS - シンクロ・スライド方式 (修正完全版)
+// NEWS - シンクロ・スライド方式
 // =========================
 let newsData = [];
 let newsCursor = 0;
-const NEWS_FETCH_INTERVAL = 10 * 60 * 1000; // 10分
-const NEWS_SLIDE_INTERVAL = 8000; // 8秒間隔 (少し早めてリズムを作る)
+const NEWS_FETCH_INTERVAL = 10 * 60 * 1000; 
+const NEWS_SLIDE_INTERVAL = 8000; 
 
 async function fetchNews() {
     const MY_GAS_URL = "https://script.google.com/macros/s/AKfycbx6dVnRjptPeQouJM6Czl-GUBqQzxFq8Nj06POOVbqTEGb_w4Wx0rHm-M9_GgApEWnv/exec";
@@ -392,7 +367,6 @@ async function fetchNews() {
 
         if (newsData.length > 0) {
             const card = document.getElementById('news-card');
-            // まだ構造がなければ作成
             if (!card.querySelector('.news-container-overlay')) {
                 initNewsSystem();
             }
@@ -405,7 +379,6 @@ async function fetchNews() {
 function initNewsSystem() {
     const card = document.getElementById('news-card');
     
-    // HTML構造: メインエリアの中に「wrapper」を追加
     card.innerHTML = `
         <div class="news-container-overlay">
             <div class="news-main-area">
@@ -420,14 +393,10 @@ function initNewsSystem() {
         </div>
     `;
 
-    // 初期表示
     updateNewsDisplay();
-
-    // スライドタイマー
     setInterval(slideNewsNext, NEWS_SLIDE_INTERVAL);
 }
 
-// 初期表示用（アニメーションなしで即座に表示）
 function updateNewsDisplay() {
     const wrapper = document.getElementById('news-main-wrapper');
     if (!wrapper || newsData.length === 0) return;
@@ -440,17 +409,13 @@ function updateNewsDisplay() {
         <div class="news-date">${mainItem.pubDate}</div>
     `;
     
-    // クラスを初期状態（idle）に
     wrapper.className = 'news-main-wrapper news-anim-idle';
-
     renderSubTrack();
 }
 
-// リスト描画用
 function renderSubTrack() {
     const track = document.getElementById('news-track');
     let html = '';
-    // 次の項目から8件ほど表示
     for (let i = 1; i <= 10; i++) {
         const subItem = newsData[(newsCursor + i) % newsData.length];
         html += `
@@ -463,65 +428,46 @@ function renderSubTrack() {
     track.innerHTML = html;
 }
 
-// ★ここが「かっこいい切り替え」の核となる関数
 function slideNewsNext() {
     const wrapper = document.getElementById('news-main-wrapper');
     const track = document.getElementById('news-track');
     if (!wrapper || !track) return;
 
-    // アニメーション時間設定 (CSSと合わせる: 0.6s)
     const animDuration = 600; 
-    const rowHeight = 51; // CSSで設定した高さ(50px) + border(1px)
+    const rowHeight = 51; 
 
-    // 1. 【始動】
-    // メイン: 上にスライドアウトして消える
     wrapper.className = 'news-main-wrapper news-anim-exit';
     
-    // リスト: 全体が上に1行分スライド
     track.style.transition = `transform ${animDuration}ms cubic-bezier(0.2, 0.8, 0.2, 1)`;
     track.style.transform = `translateY(-${rowHeight}px)`;
 
-    // 2. 【入れ替え】(アニメーション完了後)
     setTimeout(() => {
-        // データインデックスを進める
         newsCursor++;
-
-        // 次のメイン記事を取得
         const nextMainItem = newsData[newsCursor % newsData.length];
 
-        // --- 瞬間移動のトリック ---
-        // メインの中身を書き換える
         wrapper.innerHTML = `
             <a href="${nextMainItem.link}" target="_blank" class="news-title">${nextMainItem.title}</a>
             <div class="news-description">${nextMainItem.description}</div>
             <div class="news-date">${nextMainItem.pubDate}</div>
         `;
 
-        // メイン: 一瞬で「下」に移動させ、不透明度0にする（準備状態）
-        // トランジションを一旦切らないと、下への移動が見えてしまうため注意
         wrapper.style.transition = 'none';
         wrapper.className = 'news-main-wrapper news-anim-enter-prepare';
         
-        // リスト: 位置を0に戻す（中身を書き換えるので見た目は変わらない）
         track.style.transition = 'none';
         track.style.transform = 'translateY(0)';
-        renderSubTrack(); // リストの中身を更新（先頭を削除、末尾に追加）
+        renderSubTrack(); 
 
-        // ブラウザに描画更新を強制（リフロー）させる
         void wrapper.offsetWidth; 
 
-        // 3. 【登場】
-        // メイン: 下から定位置(0)へスライドイン（リストから吸い上げられたように見える）
         wrapper.style.transition = `transform ${animDuration}ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity ${animDuration}ms ease`;
         wrapper.className = 'news-main-wrapper news-anim-idle';
 
     }, animDuration); 
 }
 
-// 初回実行
 fetchNews();
 setInterval(fetchNews, NEWS_FETCH_INTERVAL);
-
 
 // =========================
 // SCALING
@@ -538,18 +484,16 @@ window.addEventListener('resize', adjustScale);
 window.addEventListener('load', adjustScale);
 adjustScale();
 
-
 let trendItems = [];
 let trendIndex = 0;
 
 // =========================
-// TRENDS (Google Trends via GAS) - 修正版
+// TRENDS (Google Trends via GAS)
 // =========================
 async function fetchTrends() {
     const container = document.getElementById('trend-fixed-content');
     if (!container) return;
 
-    // あなたのGAS URL
     const MY_GAS_URL = "https://script.google.com/macros/s/AKfycbx6dVnRjptPeQouJM6Czl-GUBqQzxFq8Nj06POOVbqTEGb_w4Wx0rHm-M9_GgApEWnv/exec?type=trends";
     
     let trendData = [];
@@ -558,12 +502,10 @@ async function fetchTrends() {
         const r = await fetch(MY_GAS_URL);
         const xmlText = await r.text();
         
-        // XMLパース処理
         const parser = new DOMParser();
         const xml = parser.parseFromString(xmlText, "application/xml");
         const items = xml.querySelectorAll('item');
         
-        // データの抽出
         if (items.length > 0) {
             trendData = Array.from(items).map(item => item.querySelector('title')?.textContent || "");
         } else {
@@ -571,24 +513,19 @@ async function fetchTrends() {
         }
     } catch (e) {
         console.error('Trends fetch failed via GAS:', e);
-        // エラー時はtrendDataは空配列のまま進む
     }
 
-    // 【重要】成功・失敗に関わらず描画を実行する
-    // （データが空の場合は renderTrends 内でバックアップワードが使われる）
     const tiles = container.querySelectorAll('.trend-tile');
     
     if (tiles.length > 0) {
-        // 既存タイルがある場合は沈み込み演出を入れてから更新
         tiles.forEach(t => {
             t.classList.remove('enter-active');
-            t.classList.add('exit-active'); // CSSで未定義なら無視されるだけなので安全
+            t.classList.add('exit-active');
         });
         setTimeout(() => {
             renderTrends(container, trendData);
         }, 800);
     } else {
-        // 初回描画
         renderTrends(container, trendData);
     }
 }
@@ -596,7 +533,6 @@ async function fetchTrends() {
 function renderTrends(container, data) {
     if (!container) return;
     
-    // 8x4グリッド設定
     container.style.display = "grid";
     container.style.gridTemplateColumns = "repeat(8, 1fr)";
     container.style.gridTemplateRows = "repeat(4, 1fr)";
@@ -608,7 +544,6 @@ function renderTrends(container, data) {
         finalData.push(data[i] || backupWords[i]);
     }
 
-    // 順位入れ替え（デザイン上のアクセント）
     const temp = finalData[2];
     finalData[2] = finalData[3];
     finalData[3] = temp;
@@ -621,13 +556,13 @@ function renderTrends(container, data) {
     ];
 
     const layouts = [
-        "grid-area: 1 / 1 / 4 / 6;", // 1位
-        "grid-area: 1 / 6 / 3 / 9;", // 2位
-        "grid-area: 3 / 6 / 5 / 8;", // 3位
-        "grid-area: 3 / 8 / 5 / 9;", // 4位
-        "grid-area: 4 / 1 / 5 / 3;", // 5位
-        "grid-area: 4 / 3 / 5 / 5;", // 6位
-        "grid-area: 4 / 5 / 5 / 6;", // 7位
+        "grid-area: 1 / 1 / 4 / 6;", 
+        "grid-area: 1 / 6 / 3 / 9;", 
+        "grid-area: 3 / 6 / 5 / 8;", 
+        "grid-area: 3 / 8 / 5 / 9;", 
+        "grid-area: 4 / 1 / 5 / 3;", 
+        "grid-area: 4 / 3 / 5 / 5;", 
+        "grid-area: 4 / 5 / 5 / 6;", 
     ];
 
     for (let i = 1; i <= 7; i++) {
@@ -665,7 +600,6 @@ function renderTrends(container, data) {
     }
     container.innerHTML = html;
 
-    // 描き出し直後にスタッガー登場アニメーション
     const newTiles = container.querySelectorAll('.trend-tile');
     newTiles.forEach((tile, i) => {
         setTimeout(() => {
@@ -673,7 +607,6 @@ function renderTrends(container, data) {
         }, i * 60); 
     });
 
-    // サイクルタイマーを再起動
     startHeatmapCycle();
 }
 
@@ -684,7 +617,5 @@ function startHeatmapCycle() {
     }, 20000); 
 }
 
-// 起動時に実行
 fetchTrends();
-// 1時間ごとに最新トレンドに全取得更新
 setInterval(fetchTrends, 3600000);
