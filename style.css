@@ -426,18 +426,20 @@ body {
 
 
 /* --- Yahoo天気風アイコンカラー --- */
-.weather-icon svg {
-  width: 50px;
-  height: 50px;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); /* 少し立体感を出す */
+.weather-icon svg, .weather-icon-large svg {
+  filter: drop-shadow(0 3px 5px rgba(0,0,0,0.4)); /* 全体に少し立体感を出す */
+  opacity: 1 !important; /* 強制的にSVG元の色を表示 */
 }
 
-/* 太陽: オレンジ×黄色 */
-.sun-body { fill: #ff8c00; stroke: #ff4500; }
-.sun-rays { stroke: #ff8c00; }
+/* 太陽: オレンジ×イエロー */
+.sun-body { fill: #f1c40f; stroke: #e67e22; }
+.sun-rays { stroke: #e67e22; }
 
-/* 雲: グレーのグラデーション */
-.cloud-body { fill: #bdc3c7; stroke: #95a5a6; }
+/* 雲(明るめ): 曇時々晴などに使用 */
+.cloud-body { fill: #ecf0f1; stroke: #bdc3c7; }
+
+/* 雲(暗め): 曇りや雨に使用 */
+.cloud-dark { fill: #bdc3c7; stroke: #95a5a6; }
 
 /* 雨・傘: 鮮やかな青 */
 .rain-umbrella { fill: #3498db; stroke: #2980b9; }
@@ -445,5 +447,4 @@ body {
 
 /* 雪: 白 */
 .snow-body { fill: #ffffff; stroke: #ecf0f1; }
-
 
