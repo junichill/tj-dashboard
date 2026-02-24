@@ -448,3 +448,63 @@ body {
 /* 雪: 白 */
 .snow-body { fill: #ffffff; stroke: #ecf0f1; }
 
+/* =========================================
+   7. TSE Monitor (日経平均パネル・右上ローテーション用)
+   ========================================= */
+#tse-wrapper {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  display: flex; justify-content: center; align-items: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 1.5s ease-in-out;
+  background: rgba(0, 0, 0, 0.4);
+}
+#tse-wrapper.active {
+  opacity: 1; pointer-events: auto;
+}
+
+/* トレンドパネルのフェードアウト用 */
+#trend-fixed-content {
+  transition: opacity 1.5s ease-in-out;
+}
+
+.tse-monitor-container {
+  /* 親パネル(約440x400)に収まるように1024x576を縮小 */
+  transform: scale(0.42);
+  transform-origin: center;
+  width: 1024px; height: 576px;
+  background-color: #0055D4; color: white;
+  padding: 40px 50px; box-sizing: border-box;
+  box-shadow: 0 15px 45px rgba(0,0,0,0.5);
+  border-radius: 16px;
+}
+
+.tse-header { display: flex; align-items: baseline; border-bottom: 2px solid rgba(255,255,255,0.3); margin-bottom: 30px; }
+.tse-main-content { display: flex; justify-content: space-between; }
+.tse-labels { width: 280px; }
+.tse-label-group { height: 110px; margin-bottom: 25px; display: flex; flex-direction: column; justify-content: center; }
+.tse-jp-text { font-size: 48px; font-weight: bold; }
+.tse-en-text { font-size: 24px; color: #cbdfff; }
+.tse-data-area { flex-grow: 1; display: flex; flex-direction: column; align-items: flex-end; }
+.tse-price-box, .tse-change-box {
+  background-color: #003688; color: #fff;
+  display: flex; justify-content: flex-end; align-items: center;
+  padding: 0 25px; box-sizing: border-box;
+}
+.tse-price-box { width: 620px; height: 110px; margin-bottom: 20px; }
+.tse-change-box { width: 500px; height: 80px; margin-bottom: 30px; }
+.tse-price-num { font-size: 95px; font-weight: bold; font-family: Arial, sans-serif; }
+.tse-change-num { font-size: 55px; font-weight: bold; font-family: Arial, sans-serif; }
+.tse-sub-stats-table { background-color: #003688; width: 500px; padding: 10px 0; }
+.tse-stat-row { display: flex; justify-content: space-between; padding: 5px 25px; font-size: 28px; font-weight: bold; }
+.tse-stat-val { font-family: Arial, sans-serif; font-size: 36px; }
+
+/* パカパカ点滅アニメーション */
+@keyframes tse-anim-white {
+  0% { background-color: #FFFFFF; color: #000; }
+  100% { background-color: #003688; color: #fff; }
+}
+@keyframes tse-anim-red {
+  0% { background-color: #D00000; }
+  100% { background-color: #003688; }
+}
