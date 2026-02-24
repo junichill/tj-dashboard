@@ -80,7 +80,7 @@ body {
 .center-grid-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 400px 250px; /* 上段400px、下段250px固定 */
+  grid-template-rows: 250px 370px; /* 上段をTSEボードに合わせて250pxに圧縮 */
   gap: 20px;
   height: 100%;
   width: 100%;
@@ -89,7 +89,7 @@ body {
 
 .grid-item-tl, .grid-item-tr {
   width: 100%;
-  height: 400px;
+  height: 100%; /* 元の 400px を 100% に変更 */
   min-height: 0;
   position: relative;
   overflow: hidden;
@@ -244,15 +244,10 @@ body {
   display: flex; align-items: center; gap: 20px; font-size: 1.2rem; font-weight: 200;
   color: rgba(255, 255, 255, 0.3); margin-bottom: 8px; letter-spacing: 0.1em;
 }
-.weather-icon-large svg {
-  width: 100px;
-  height: 100px;
-  margin: 12px 0;
-  opacity: 1; /* currentColorに依存せず、SVG内の色を表示 */
-}
+.weather-icon-large svg { width: 70px; height: 70px; margin: 5px 0; opacity: 0.9; }
 .weather-data-line {
   display: flex; align-items: baseline; justify-content: center; gap: 18px;
-  font-size: 3.8rem; font-weight: 200; white-space: nowrap; font-family: 'JetBrains Mono', sans-serif;
+  font-size: 2.8rem; font-weight: 200; white-space: nowrap; font-family: 'JetBrains Mono', sans-serif;
 }
 .weather-data-line .hi { color: #ff5252; text-shadow: 0 0 15px rgba(255, 82, 82, 0.3); opacity: 0.9; }
 .weather-data-line .lo { color: #448aff; text-shadow: 0 0 15px rgba(68, 138, 255, 0.3); opacity: 0.9; }
@@ -508,3 +503,4 @@ body {
   0% { background-color: #D00000; }
   100% { background-color: #003688; }
 }
+
