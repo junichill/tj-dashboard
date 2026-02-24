@@ -292,10 +292,45 @@ body {
 #forecast-viewport { height: 250px; width: 100%; overflow: hidden; }
 .day-group { height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
 .day-group.inactive { opacity: 0.1; filter: blur(8px) scale(0.95); }
-.day-label { font-size: 14px; font-weight: 700; letter-spacing: 0.4em; color: var(--accent); margin-bottom: 20px; text-transform: uppercase; }
-.day-items { display: flex; gap: 15px; justify-content: center; }
-.forecast-item { text-align: center; width: 80px; }
-.weather-icon { width: 50px; height: 50px; margin: 10px auto; }
+/* --- 週間天気パネル内のサイズ調整 --- */
+.day-label {
+  font-size: 28px; /* 大きく */
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  color: var(--accent);
+  margin-bottom: 25px;
+}
+
+.day-items {
+  display: flex;
+  gap: 35px; /* アイテム間の隙間を広く */
+  justify-content: center;
+  align-items: center;
+}
+
+.forecast-item {
+  text-align: center;
+  width: 110px; /* アイテム1つの幅を広げる */
+}
+
+.forecast-time {
+  font-size: 22px; /* 時刻を大きく */
+  margin-bottom: 8px;
+  opacity: 0.8;
+}
+
+.forecast-temp {
+  font-size: 26px; /* 気温を大きく */
+  font-weight: bold;
+  margin-top: 8px;
+}
+
+.weather-icon {
+  width: 80px;  /* アイコンを巨大化 */
+  height: 80px;
+  margin: 10px auto;
+}
+
 .weather-sunny { color: #ffeb3b; }
 .weather-cloudy { color: #cfd8dc; }
 .weather-rainy { color: #4fc3f7; }
@@ -503,4 +538,5 @@ body {
   0% { background-color: #D00000; }
   100% { background-color: #003688; }
 }
+
 
