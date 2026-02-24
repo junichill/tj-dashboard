@@ -411,7 +411,7 @@ const NEWS_FETCH_INTERVAL = 10 * 60 * 1000;
 const NEWS_SLIDE_INTERVAL = 8000; 
 
 async function fetchNews() {
-    const MY_GAS_URL = "https://script.google.com/macros/s/AKfycbx6dVnRjptPeQouJM6Czl-GUBqQzxFq8Nj06POOVbqTEGb_w4Wx0rHm-M9_GgApEWnv/exec";
+    const MY_GAS_URL = "https://script.google.com/macros/s/AKfycbyWq0pZXLP2ZE2ptRr-1iAxD0fT6WzTFS1E1oCAMKba7AAroldDcCZcK_HRnjed-ua2/exec";
 
     try {
         const r = await fetch(MY_GAS_URL);
