@@ -80,10 +80,18 @@ body {
 .center-grid-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 250px 1fr;  gap: 20px;
+  grid-template-rows: 250px 1fr;
+  gap: 20px;
   height: 100%;
   width: 100%;
   box-sizing: border-box;
+}
+
+.grid-item-bc {
+  width: 100%;
+  height: 100%; /* 固定値（370pxなど）がもし書いてあれば 100% に書き換えてください */
+  min-height: 0; /* grid内での崩れ防止 */
+  /* ...その他のスタイル（background等）はそのままでOK ... */
 }
 
 .grid-item-tl, .grid-item-tr {
@@ -502,5 +510,6 @@ body {
   0% { background-color: #D00000; }
   100% { background-color: #003688; }
 }
+
 
 
