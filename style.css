@@ -289,13 +289,15 @@ body {
 }
 
 /* --- 週間天気 (下段) --- */
-#forecast-viewport { height: 250px; width: 100%; overflow: hidden; }
-.day-group { height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+#forecast-viewport { height: 100%; width: 100%; overflow: hidden; }
+.day-group { height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; }
 .day-group.inactive { opacity: 0.1; filter: blur(8px) scale(0.95); }
-.day-label { font-size: 14px; font-weight: 700; letter-spacing: 0.4em; color: var(--accent); margin-bottom: 20px; text-transform: uppercase; }
-.day-items { display: flex; gap: 15px; justify-content: center; }
-.forecast-item { text-align: center; width: 80px; }
-.weather-icon { width: 50px; height: 50px; margin: 10px auto; }
+.day-label { font-size: 22px; font-weight: 700; letter-spacing: 0.4em; color: var(--accent); margin-bottom: 30px; text-transform: uppercase; }
+.day-items { display: flex; gap: 30px; justify-content: center; align-items: center; }
+.forecast-item { text-align: center; width: 110px; }
+.forecast-time { font-size: 22px; margin-bottom: 5px; opacity: 0.8; font-family: 'JetBrains Mono', sans-serif; }
+.forecast-temp { font-size: 28px; font-weight: bold; margin-top: 5px; font-family: 'JetBrains Mono', sans-serif; }
+.weather-icon { width: 85px; height: 85px; margin: 15px auto; }
 .weather-sunny { color: #ffeb3b; }
 .weather-cloudy { color: #cfd8dc; }
 .weather-rainy { color: #4fc3f7; }
@@ -503,6 +505,7 @@ body {
   0% { background-color: #D00000; }
   100% { background-color: #003688; }
 }
+
 
 
 
