@@ -562,33 +562,39 @@ let realNikkeiData = {
 
 // --- 1. GASから日経平均データ取得 ---
 async function fetchNikkei() {
-    // ※↓あなたのGASのURLです（末尾が ?type=nikkei になります）
-    const MY_GAS_URL = "https://script.google.com/macros/s/AKfycbx6dVnRjptPeQouJM6Czl-GUBqQzxFq8Nj06POOVbqTEGb_w4Wx0rHm-M9_GgApEWnv/exec?type=nikkei";
+    // あなたのGASのURL（末尾に ?type=nikkei を忘れないように）
+    const MY_GAS_URL = "https://script.google.com/macros/s/あなたのGASのID/exec?type=nikkei";
     
     try {
         const r = await fetch(MY_GAS_URL);
         const d = await r.json();
         
+        // Yahoo Financeの深い階層からデータを抽出
         if (d.chart && d.chart.result && d.chart.result.length > 0) {
             const res = d.chart.result[0];
             const meta = res.meta;
             const quote = res.indicators.quote[0];
             
-            // 本物の数値をセット
+            // 1. 現在値と前日比をセット
             realNikkeiData.price = meta.regularMarketPrice;
             realNikkeiData.change = meta.regularMarketPrice - meta.chartPreviousClose;
             
+            // 2. 始値・高値・安値をセット（配列の最後の値を取得）
             const lastIdx = quote.open.length - 1;
-            realNikkeiData.open = quote.open[lastIdx] || meta.regularMarketPrice;
-            realNikkeiData.high = quote.high[lastIdx] || meta.regularMarketPrice;
-            realNikkeiData.low = quote.low[lastIdx] || meta.regularMarketPrice;
+            realNikkeiData.open = quote.open[lastIdx];
+            realNikkeiData.high = quote.high[lastIdx];
+            realNikkeiData.low = quote.low[lastIdx];
 
-            // サブデータを即時反映
+            // 3. サブデータ（始値・高値・安値）を即時画面に反映
             document.getElementById('tse-open').innerText = realNikkeiData.open.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('tse-high').innerText = realNikkeiData.high.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('tse-low').innerText = realNikkeiData.low.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            
+            console.log("Nikkei data updated:", realNikkeiData.price);
         }
-    } catch(e) { console.error("Nikkei fetch error via GAS:", e); }
+    } catch(e) { 
+        console.error("Nikkei fetch error:", e); 
+    }
 }
 
 // --- 2. トレンド取得（パディングを高さに合わせて調整） ---
