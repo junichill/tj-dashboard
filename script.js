@@ -143,12 +143,12 @@ async function fetchWeather() {
     if (!d || !d.list) return;
 
     const wrapper = document.getElementById('forecast-wrapper');
-    const todayHtml = createForecastGroupHtml(d.list.slice(0, 8), "Today's Forecast");
-    
+    const todayHtml = createForecastGroupHtml(d.list.slice(0, 6), "Today's Forecast");
+
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowStr = tomorrow.toLocaleDateString();
-    const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr).slice(0, 8);
+    const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr).slice(0, 6);
     const tomorrowHtml = createForecastGroupHtml(tomorrowList, "Tomorrow's Plan");
 
     // --- 追加：週間天気データ生成（各日のお昼のデータまたは最初のデータを抽出） ---
@@ -162,7 +162,7 @@ async function fetchWeather() {
             seenDates.add(dateStr);
         }
     });
-    const weekItemsHtml = dailyList.slice(0, 6).map(item => {
+        const weekItemsHtml = dailyList.slice(0, 6).map(item => {
         const date = new Date(item.dt * 1000);
         const dayStr = (date.getMonth() + 1) + "/" + date.getDate();
         const temp = Math.round(item.main.temp);
@@ -344,12 +344,16 @@ function startWeatherCycle() {
   weatherTimer = setInterval(() => {
     const groups = wrapper.querySelectorAll('.day-group');
     if (groups.length === 0) return;
+    
+    // 現在の親パネルの高さを自動取得
+    const slideH = wrapper.parentElement.clientHeight; 
+    
     const nextIndex = (weatherSlideIndex + 1) % groups.length;
     if (nextIndex === 0) {
       wrapper.style.transition = 'opacity 1.5s ease-in, filter 1.5s ease-in, transform 1.5s ease-in';
       wrapper.style.opacity = '0';
       wrapper.style.filter = 'blur(15px)';
-      wrapper.style.transform = `translateY(${weatherSlideIndex * -250}px) scale(0.92)`;
+      wrapper.style.transform = `translateY(${weatherSlideIndex * -slideH}px) scale(0.92)`;
       setTimeout(() => {
         weatherSlideIndex = 0;
         wrapper.style.transition = 'none';
@@ -364,7 +368,7 @@ function startWeatherCycle() {
     } else {
       weatherSlideIndex = nextIndex;
       wrapper.style.transition = 'transform 1.2s cubic-bezier(0.65, 0, 0.35, 1), opacity 1.2s ease';
-      wrapper.style.transform = `translateY(${weatherSlideIndex * -250}px) scale(1)`;
+      wrapper.style.transform = `translateY(${weatherSlideIndex * -slideH}px) scale(1)`;
       groups.forEach((group, index) => { group.classList.toggle('inactive', index !== weatherSlideIndex); });
     }
   }, 9000);
