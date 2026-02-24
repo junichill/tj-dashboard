@@ -547,11 +547,51 @@ window.addEventListener('load', adjustScale);
 adjustScale();
 
 // =========================
-// TRENDS & TSE MONITOR (Right-Top Panel Rotation)
+// TRENDS & TSE MONITOR (Real-time via GAS)
 // =========================
 let isShowingTrends = true;
-let baseNikkeiPrice = 40797.00; // 初期基準値（必要に応じてGAS等から取得可能）
 
+// 取得した本物のデータを保持する変数
+let realNikkeiData = {
+    price: 40000.00,
+    change: 0.00,
+    open: 40000.00,
+    high: 40000.00,
+    low: 40000.00
+};
+
+// --- 1. GASから日経平均データ取得 ---
+async function fetchNikkei() {
+    // ※↓あなたのGASのURLです（末尾が ?type=nikkei になります）
+    const MY_GAS_URL = "https://script.google.com/macros/s/AKfycbx6dVnRjptPeQouJM6Czl-GUBqQzxFq8Nj06POOVbqTEGb_w4Wx0rHm-M9_GgApEWnv/exec?type=nikkei";
+    
+    try {
+        const r = await fetch(MY_GAS_URL);
+        const d = await r.json();
+        
+        if (d.chart && d.chart.result && d.chart.result.length > 0) {
+            const res = d.chart.result[0];
+            const meta = res.meta;
+            const quote = res.indicators.quote[0];
+            
+            // 本物の数値をセット
+            realNikkeiData.price = meta.regularMarketPrice;
+            realNikkeiData.change = meta.regularMarketPrice - meta.chartPreviousClose;
+            
+            const lastIdx = quote.open.length - 1;
+            realNikkeiData.open = quote.open[lastIdx] || meta.regularMarketPrice;
+            realNikkeiData.high = quote.high[lastIdx] || meta.regularMarketPrice;
+            realNikkeiData.low = quote.low[lastIdx] || meta.regularMarketPrice;
+
+            // サブデータを即時反映
+            document.getElementById('tse-open').innerText = realNikkeiData.open.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('tse-high').innerText = realNikkeiData.high.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('tse-low').innerText = realNikkeiData.low.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+    } catch(e) { console.error("Nikkei fetch error via GAS:", e); }
+}
+
+// --- 2. トレンド取得（パディングを高さに合わせて調整） ---
 async function fetchTrends() {
     const container = document.getElementById('trend-fixed-content');
     if (!container) return;
@@ -607,9 +647,10 @@ function renderTrends(container, data) {
         let style = layouts[i-1]; let content = finalData[i-1]; let bgColor = colormap[i-1];
         let fontSize = i === 1 ? "44px" : (i <= 3 ? "20px" : "13px");
         let textColor = (i >= 3 && i <= 5) ? "rgba(0,0,0,0.75)" : "#ffffff";
-        let valTag = i <= 2 ? `<span style="position:absolute; bottom:12px; right:12px; font-size:14px; font-weight:400; font-family:monospace; opacity:0.9;">${(Math.random() * 100).toFixed(1)}%</span>` : "";
+        let valTag = i <= 2 ? `<span style="position:absolute; bottom:8px; right:8px; font-size:12px; font-weight:400; font-family:monospace; opacity:0.9;">${(Math.random() * 100).toFixed(1)}%</span>` : "";
 
-        html += `<div class="trend-tile" style="${style} background-color: ${bgColor} !important; border: 0.5px solid rgba(255,255,255,0.08) !important; position: relative; display: flex; align-items: center; justify-content: center; font-size: ${fontSize}; font-weight: 300; letter-spacing: 0.05em; color: ${textColor}; padding: 25px; text-align: center; text-transform: uppercase; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; overflow: hidden; cursor: pointer; opacity: 0;" onclick="window.open('https://www.google.com/search?q=${encodeURIComponent(content)}', '_blank')"> <div style="width:100%; word-wrap: break-word; line-height:1.1;">${content}</div>${valTag}</div>`;
+        // パディングを10pxに減らして狭い縦幅に対応
+        html += `<div class="trend-tile" style="${style} background-color: ${bgColor} !important; border: 0.5px solid rgba(255,255,255,0.08) !important; position: relative; display: flex; align-items: center; justify-content: center; font-size: ${fontSize}; font-weight: 300; letter-spacing: 0.05em; color: ${textColor}; padding: 10px; text-align: center; text-transform: uppercase; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; overflow: hidden; cursor: pointer; opacity: 0;" onclick="window.open('https://www.google.com/search?q=${encodeURIComponent(content)}', '_blank')"> <div style="width:100%; word-wrap: break-word; line-height:1.1;">${content}</div>${valTag}</div>`;
     }
     container.innerHTML = html;
 
@@ -617,15 +658,13 @@ function renderTrends(container, data) {
     newTiles.forEach((tile, i) => { setTimeout(() => { tile.classList.add('enter-active'); }, i * 60); });
 }
 
-// === TSE Monitor & Rotation Logic ===
+// --- 3. UI構築とローテーション ---
 function initTopRightPanel() {
     const trendEl = document.getElementById('trend-fixed-content');
     if (!trendEl) return;
     
-    // 1. トレンドのアニメーション用
     trendEl.style.opacity = "1";
     
-    // 2. TSEモニターのDOMを注入
     const parent = trendEl.parentElement;
     const tseWrapper = document.createElement('div');
     tseWrapper.id = "tse-wrapper";
@@ -641,12 +680,12 @@ function initTopRightPanel() {
                     <div class="tse-label-group"><span class="tse-jp-text">前日比</span><span class="tse-en-text">Change</span></div>
                 </div>
                 <div class="tse-data-area">
-                    <div class="tse-price-box" id="tse-priceBox"><span class="tse-price-num" id="tse-pNum">40,797.00</span></div>
-                    <div class="tse-change-box" id="tse-changeBox"><span class="tse-change-num" id="tse-cNum">+1,022.08</span></div>
+                    <div class="tse-price-box" id="tse-priceBox"><span class="tse-price-num" id="tse-pNum">--</span></div>
+                    <div class="tse-change-box" id="tse-changeBox"><span class="tse-change-num" id="tse-cNum">--</span></div>
                     <div class="tse-sub-stats-table">
-                        <div class="tse-stat-row"><span>始値 Open</span><span class="tse-stat-val" id="tse-open">40,189.18</span></div>
-                        <div class="tse-stat-row"><span>高値 High</span><span class="tse-stat-val" id="tse-high">40,797.00</span></div>
-                        <div class="tse-stat-row"><span>安値 Low</span><span class="tse-stat-val" id="tse-low">40,087.86</span></div>
+                        <div class="tse-stat-row"><span>始値 Open</span><span class="tse-stat-val" id="tse-open">--</span></div>
+                        <div class="tse-stat-row"><span>高値 High</span><span class="tse-stat-val" id="tse-high">--</span></div>
+                        <div class="tse-stat-row"><span>安値 Low</span><span class="tse-stat-val" id="tse-low">--</span></div>
                     </div>
                 </div>
             </div>
@@ -654,13 +693,17 @@ function initTopRightPanel() {
     `;
     parent.appendChild(tseWrapper);
 
-    // 3. パカパカのフェイク更新（3秒ごと）
-    setInterval(updateTSEFakeTicker, 3000);
-    
-    // 4. 初回のトレンド取得
+    // 起動時のデータ取得
+    fetchNikkei();
     fetchTrends();
 
-    // 5. ローテーション開始（15秒ごとに切り替え）
+    // 5分おきに本物の日経データを再取得
+    setInterval(fetchNikkei, 300000);
+
+    // 3秒おきにパカパカ点滅＆微小な数値の揺らぎ（フェイク）
+    setInterval(updateTSEFakeTicker, 3000);
+    
+    // 15秒ごとのローテーション
     if (window.topRightTimer) clearInterval(window.topRightTimer);
     window.topRightTimer = setInterval(toggleTopRightPanel, 15000);
 }
@@ -671,36 +714,40 @@ function toggleTopRightPanel() {
     if (!trendEl || !tseEl) return;
 
     if (isShowingTrends) {
-        // トレンド → TSEパネルへ
         trendEl.style.opacity = "0";
         trendEl.style.pointerEvents = "none";
         tseEl.classList.add('active');
         isShowingTrends = false;
     } else {
-        // TSEパネル → トレンドへ
         tseEl.classList.remove('active');
         trendEl.style.opacity = "1";
         trendEl.style.pointerEvents = "auto";
         isShowingTrends = true;
-        // トレンドが再表示されるタイミングで最新取得
         fetchTrends();
     }
 }
 
+// --- 4. パカパカ演出（本物データ ±10円のリアルなブレ） ---
 function updateTSEFakeTicker() {
     const pBox = document.getElementById('tse-priceBox');
     const cBox = document.getElementById('tse-changeBox');
     const pNum = document.getElementById('tse-pNum');
-    if (!pBox || !cBox || !pNum) return;
+    const cNum = document.getElementById('tse-cNum');
+    if (!pBox || !cBox || !pNum || !cNum || realNikkeiData.price === 40000.00) return;
 
-    // ±30円の範囲でランダムに揺らがせる
-    baseNikkeiPrice += (Math.random() - 0.5) * 60;
-    pNum.innerText = baseNikkeiPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    // 実際の価格を中心に ±10円 でランダムに揺らして「動いている感」を出す
+    let jitterPrice = realNikkeiData.price + (Math.random() - 0.5) * 20;
+    let jitterChange = jitterPrice - (realNikkeiData.price - realNikkeiData.change);
+
+    pNum.innerText = jitterPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    
+    let sign = jitterChange >= 0 ? "+" : "";
+    cNum.innerText = sign + jitterChange.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
     // CSSアニメーションの再トリガー
     pBox.style.animation = 'none';
     cBox.style.animation = 'none';
-    void pBox.offsetWidth; // リフロー強制
+    void pBox.offsetWidth; 
     pBox.style.animation = 'tse-anim-white 0.5s ease-out';
     cBox.style.animation = 'tse-anim-red 0.5s ease-out';
 }
