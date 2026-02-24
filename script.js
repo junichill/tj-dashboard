@@ -143,12 +143,12 @@ async function fetchWeather() {
     if (!d || !d.list) return;
 
     const wrapper = document.getElementById('forecast-wrapper');
-    const todayHtml = createForecastGroupHtml(d.list.slice(0, 8), "Today's Forecast");
+    const todayHtml = createForecastGroupHtml(d.list.slice(0, 6), "Today's Forecast");
     
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowStr = tomorrow.toLocaleDateString();
-    const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr).slice(0, 8);
+    const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr).slice(0, 6);
     const tomorrowHtml = createForecastGroupHtml(tomorrowList, "Tomorrow's Plan");
 
     // --- 追加：週間天気データ生成（各日のお昼のデータまたは最初のデータを抽出） ---
