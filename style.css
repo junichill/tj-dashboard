@@ -292,43 +292,51 @@ body {
 #forecast-viewport { height: 250px; width: 100%; overflow: hidden; }
 .day-group { height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
 .day-group.inactive { opacity: 0.1; filter: blur(8px) scale(0.95); }
+
 /* --- 週間天気パネル内のサイズ調整 --- */
 .day-label {
-  font-size: 28px; /* 大きく */
+  font-size: 28px;
   font-weight: 700;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.25em; /* 少し字間を詰めてソリッドに */
   color: var(--accent);
-  margin-bottom: 25px;
+  margin-bottom: 20px; /* 見出しとアイコン群の距離を詰める */
 }
 
 .day-items {
   display: flex;
-  gap: 35px; /* アイテム間の隙間を広く */
+  gap: 15px; /* ここを大幅に縮小（35px -> 15px）して一体感を出す */
   justify-content: center;
   align-items: center;
+  padding: 0 20px; /* 両端の余白を確保して中央に寄せる */
 }
 
 .forecast-item {
   text-align: center;
-  width: 110px; /* アイテム1つの幅を広げる */
+  width: 90px; /* 横幅を絞り、情報密度を上げる */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .forecast-time {
-  font-size: 22px; /* 時刻を大きく */
-  margin-bottom: 8px;
-  opacity: 0.8;
+  font-size: 20px; /* 少しだけ小さくして上品に */
+  margin-bottom: 2px; /* アイコンとの隙間を詰める */
+  opacity: 0.85;
+  font-family: 'JetBrains Mono', sans-serif; /* 時計とフォントを合わせる */
 }
 
 .forecast-temp {
-  font-size: 26px; /* 気温を大きく */
-  font-weight: bold;
-  margin-top: 8px;
+  font-size: 24px;
+  font-weight: 700;
+  margin-top: 2px; /* アイコンとの隙間を詰める */
+  font-family: 'JetBrains Mono', sans-serif;
 }
 
 .weather-icon {
-  width: 80px;  /* アイコンを巨大化 */
-  height: 80px;
-  margin: 10px auto;
+  width: 75px;  /* アイコンサイズを枠に合わせて微調整 */
+  height: 75px;
+  margin: 5px auto; /* 上下マージンを最小限に */
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); /* アイコンを少し浮かせて高級感を出す */
 }
 
 .weather-sunny { color: #ffeb3b; }
@@ -538,5 +546,6 @@ body {
   0% { background-color: #D00000; }
   100% { background-color: #003688; }
 }
+
 
 
