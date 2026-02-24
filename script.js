@@ -563,7 +563,7 @@ let realNikkeiData = {
 // --- 1. GASから日経平均データ取得 ---
 async function fetchNikkei() {
     // あなたのGASのURL（末尾に ?type=nikkei を忘れないように）
-    const MY_GAS_URL = "https://script.google.com/macros/s/あなたのGASのID/exec?type=nikkei";
+    const MY_GAS_URL = "https://script.google.com/macros/s/AKfycbyWq0pZXLP2ZE2ptRr-1iAxD0fT6WzTFS1E1oCAMKba7AAroldDcCZcK_HRnjed-ua2/exec?type=nikkei";
     
     try {
         const r = await fetch(MY_GAS_URL);
