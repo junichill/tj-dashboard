@@ -338,49 +338,55 @@ function appendMiniWidget(containerId, config) {
     container.appendChild(script);
 }
 
-// --- 修正版：startWeatherCycle ---
+let weatherSlideIndex = 0;
 function startWeatherCycle() {
-  if (window.weatherTimer) clearInterval(window.weatherTimer);
-  const wrapper = document.getElementById('forecast-wrapper');
-  
-  window.weatherTimer = setInterval(() => {
-    // 修正箇所：.day-groupだけでなく、経済スケジュールも含めた「直下の子要素すべて」を対象にする
-    const groups = Array.from(wrapper.children);
-    if (groups.length === 0) return;
+    if (window.weatherTimer) clearInterval(window.weatherTimer);
+    const wrapper = document.getElementById('forecast-wrapper');
     
-    // 現在の親パネルの高さを自動取得
-    const slideH = wrapper.parentElement.clientHeight; 
-    
-    const nextIndex = (weatherSlideIndex + 1) % groups.length;
-    if (nextIndex === 0) {
-      wrapper.style.transition = 'opacity 1.5s ease-in, filter 1.5s ease-in, transform 1.5s ease-in';
-      wrapper.style.opacity = '0';
-      wrapper.style.filter = 'blur(15px)';
-      wrapper.style.transform = `translateY(${weatherSlideIndex * -slideH}px) scale(0.92)`;
-      setTimeout(() => {
-        weatherSlideIndex = 0;
-        wrapper.style.transition = 'none';
-        wrapper.style.transform = `translateY(0px) scale(0.92)`;
-        groups.forEach((g, i) => {
-            if(g.classList) g.classList.toggle('inactive', i !== 0);
-        });
-        wrapper.offsetHeight; 
-        wrapper.style.transition = 'opacity 1.8s ease-out, filter 1.8s ease-out, transform 1.8s ease-out';
-        wrapper.style.opacity = '1';
-        wrapper.style.filter = 'blur(0)';
-        wrapper.style.transform = `translateY(0px) scale(1)`;
-      }, 1500);
-    } else {
-      weatherSlideIndex = nextIndex;
-      wrapper.style.transition = 'transform 1.2s cubic-bezier(0.65, 0, 0.35, 1), opacity 1.2s ease';
-      wrapper.style.transform = `translateY(${weatherSlideIndex * -slideH}px) scale(1)`;
-      groups.forEach((group, index) => { 
-          if(group.classList) group.classList.toggle('inactive', index !== weatherSlideIndex); 
-      });
-    }
-  }, 9000); // 9秒おきにスライド
-}
+    // アニメーションを滑らかにするための設定
+    wrapper.style.transition = 'transform 1.2s cubic-bezier(0.65, 0, 0.35, 1)';
 
+    window.weatherTimer = setInterval(() => {
+        const groups = Array.from(wrapper.children);
+        if (groups.length === 0) return;
+
+        // 枠の高さを動的に取得
+        const slideH = wrapper.parentElement.clientHeight;
+        
+        // 次のインデックスへ
+        weatherSlideIndex++;
+
+        if (weatherSlideIndex >= groups.length) {
+            // 最後まで行ったらフェードアウトして最初に戻る
+            wrapper.style.transition = 'opacity 1s ease, filter 1s ease';
+            wrapper.style.opacity = '0';
+            wrapper.style.filter = 'blur(20px)';
+
+            setTimeout(() => {
+                weatherSlideIndex = 0;
+                wrapper.style.transition = 'none';
+                wrapper.style.transform = `translateY(0px)`;
+                // 全パネルの非アクティブ状態をリセット
+                groups.forEach((g, i) => g.classList.toggle('inactive', i !== 0));
+                
+                wrapper.offsetHeight; // 強制リフロー
+                
+                wrapper.style.transition = 'opacity 1.2s ease, filter 1.2s ease';
+                wrapper.style.opacity = '1';
+                wrapper.style.filter = 'blur(0)';
+            }, 1000);
+        } else {
+            // 通常のスライド（3時間 → 明日 → 経済）
+            wrapper.style.transition = 'transform 1.2s cubic-bezier(0.65, 0, 0.35, 1)';
+            wrapper.style.transform = `translateY(${-weatherSlideIndex * slideH}px)`;
+            
+            // 非アクティブなパネルをぼかす処理
+            groups.forEach((g, i) => {
+                if(g.classList) g.classList.toggle('inactive', i !== weatherSlideIndex);
+            });
+        }
+    }, 8000); // 8秒周期
+}
 
 let fixedWeatherIndex = 0;
 function startFixedWeatherCycle() {
