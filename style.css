@@ -80,8 +80,7 @@ body {
 .center-grid-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 250px 370px; /* 上段をTSEボードに合わせて250pxに圧縮 */
-  gap: 20px;
+  grid-template-rows: 250px 1fr;  gap: 20px;
   height: 100%;
   width: 100%;
   box-sizing: border-box;
@@ -503,4 +502,5 @@ body {
   0% { background-color: #D00000; }
   100% { background-color: #003688; }
 }
+
 
