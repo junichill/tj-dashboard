@@ -87,13 +87,6 @@ body {
   box-sizing: border-box;
 }
 
-.grid-item-bc {
-  width: 100%;
-  height: 100%; /* 固定値（370pxなど）がもし書いてあれば 100% に書き換えてください */
-  min-height: 0; /* grid内での崩れ防止 */
-  /* ...その他のスタイル（background等）はそのままでOK ... */
-}
-
 .grid-item-tl, .grid-item-tr {
   width: 100%;
   height: 100%; /* 元の 400px を 100% に変更 */
@@ -107,7 +100,7 @@ body {
 
 .grid-item-bottom {
   grid-column: span 2;
-  height: 250px;
+  height: 100%;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -510,6 +503,7 @@ body {
   0% { background-color: #D00000; }
   100% { background-color: #003688; }
 }
+
 
 
 
