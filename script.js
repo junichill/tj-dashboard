@@ -546,47 +546,34 @@ window.addEventListener('resize', adjustScale);
 window.addEventListener('load', adjustScale);
 adjustScale();
 
-let trendItems = [];
-let trendIndex = 0;
+// =========================
+// TRENDS & TSE MONITOR (Right-Top Panel Rotation)
+// =========================
+let isShowingTrends = true;
+let baseNikkeiPrice = 40797.00; // 初期基準値（必要に応じてGAS等から取得可能）
 
-// =========================
-// TRENDS (Google Trends via GAS)
-// =========================
 async function fetchTrends() {
     const container = document.getElementById('trend-fixed-content');
     if (!container) return;
 
     const MY_GAS_URL = "https://script.google.com/macros/s/AKfycbx6dVnRjptPeQouJM6Czl-GUBqQzxFq8Nj06POOVbqTEGb_w4Wx0rHm-M9_GgApEWnv/exec?type=trends";
-    
     let trendData = [];
 
     try {
         const r = await fetch(MY_GAS_URL);
         const xmlText = await r.text();
-        
         const parser = new DOMParser();
         const xml = parser.parseFromString(xmlText, "application/xml");
         const items = xml.querySelectorAll('item');
-        
         if (items.length > 0) {
             trendData = Array.from(items).map(item => item.querySelector('title')?.textContent || "");
-        } else {
-            console.warn("Trends data extraction failed or empty.");
         }
-    } catch (e) {
-        console.error('Trends fetch failed via GAS:', e);
-    }
+    } catch (e) { console.error('Trends fetch failed via GAS:', e); }
 
     const tiles = container.querySelectorAll('.trend-tile');
-    
     if (tiles.length > 0) {
-        tiles.forEach(t => {
-            t.classList.remove('enter-active');
-            t.classList.add('exit-active');
-        });
-        setTimeout(() => {
-            renderTrends(container, trendData);
-        }, 800);
+        tiles.forEach(t => { t.classList.remove('enter-active'); t.classList.add('exit-active'); });
+        setTimeout(() => renderTrends(container, trendData), 800);
     } else {
         renderTrends(container, trendData);
     }
@@ -594,7 +581,6 @@ async function fetchTrends() {
 
 function renderTrends(container, data) {
     if (!container) return;
-    
     container.style.display = "grid";
     container.style.gridTemplateColumns = "repeat(8, 1fr)";
     container.style.gridTemplateRows = "repeat(4, 1fr)";
@@ -602,13 +588,9 @@ function renderTrends(container, data) {
 
     const backupWords = ["CORE_NODE", "MARKET_IDX", "GLB_FEED", "SIG_PROC", "DATA_STREAM", "CLOUD_ARC", "API_LINK", "NET_STAT"];
     let finalData = [];
-    for (let i = 0; i < 8; i++) {
-        finalData.push(data[i] || backupWords[i]);
-    }
+    for (let i = 0; i < 8; i++) { finalData.push(data[i] || backupWords[i]); }
 
-    const temp = finalData[2];
-    finalData[2] = finalData[3];
-    finalData[3] = temp;
+    const temp = finalData[2]; finalData[2] = finalData[3]; finalData[3] = temp;
 
     let html = "";
     const colormap = [
@@ -616,68 +598,112 @@ function renderTrends(container, data) {
         "rgba(171, 221, 164, 0.8)", "rgba(102, 194, 165, 0.75)", "rgba(50, 136, 189, 0.7)",
         "rgba(35, 80, 160, 0.65)", "rgba(20, 30, 100, 0.6)"
     ];
-
     const layouts = [
-        "grid-area: 1 / 1 / 4 / 6;", 
-        "grid-area: 1 / 6 / 3 / 9;", 
-        "grid-area: 3 / 6 / 5 / 8;", 
-        "grid-area: 3 / 8 / 5 / 9;", 
-        "grid-area: 4 / 1 / 5 / 3;", 
-        "grid-area: 4 / 3 / 5 / 5;", 
-        "grid-area: 4 / 5 / 5 / 6;", 
+        "grid-area: 1 / 1 / 4 / 6;", "grid-area: 1 / 6 / 3 / 9;", "grid-area: 3 / 6 / 5 / 8;", 
+        "grid-area: 3 / 8 / 5 / 9;", "grid-area: 4 / 1 / 5 / 3;", "grid-area: 4 / 3 / 5 / 5;", "grid-area: 4 / 5 / 5 / 6;", 
     ];
 
     for (let i = 1; i <= 7; i++) {
-        let style = layouts[i-1];
-        let content = finalData[i-1];
-        let bgColor = colormap[i-1];
+        let style = layouts[i-1]; let content = finalData[i-1]; let bgColor = colormap[i-1];
         let fontSize = i === 1 ? "44px" : (i <= 3 ? "20px" : "13px");
         let textColor = (i >= 3 && i <= 5) ? "rgba(0,0,0,0.75)" : "#ffffff";
-        
-        let valTag = "";
-        if (i <= 2) {
-            const randomVal = (Math.random() * 100).toFixed(1);
-            valTag = `<span style="position:absolute; bottom:12px; right:12px; font-size:14px; font-weight:400; font-family:monospace; opacity:0.9;">${randomVal}%</span>`;
-        }
+        let valTag = i <= 2 ? `<span style="position:absolute; bottom:12px; right:12px; font-size:14px; font-weight:400; font-family:monospace; opacity:0.9;">${(Math.random() * 100).toFixed(1)}%</span>` : "";
 
-        html += `<div class="trend-tile" style="${style} 
-                    background-color: ${bgColor} !important;
-                    border: 0.5px solid rgba(255,255,255,0.08) !important;
-                    position: relative;
-                    display: flex; align-items: center; justify-content: center;
-                    font-size: ${fontSize}; 
-                    font-weight: 300;
-                    letter-spacing: 0.05em;
-                    color: ${textColor}; 
-                    padding: 25px; text-align: center;
-                    text-transform: uppercase; 
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                    overflow: hidden;
-                    cursor: pointer;
-                    opacity: 0;"
-                    onclick="window.open('https://www.google.com/search?q=${encodeURIComponent(content)}', '_blank')">
-                    <div style="width:100%; word-wrap: break-word; line-height:1.1;">${content}</div>
-                    ${valTag}
-                 </div>`;
+        html += `<div class="trend-tile" style="${style} background-color: ${bgColor} !important; border: 0.5px solid rgba(255,255,255,0.08) !important; position: relative; display: flex; align-items: center; justify-content: center; font-size: ${fontSize}; font-weight: 300; letter-spacing: 0.05em; color: ${textColor}; padding: 25px; text-align: center; text-transform: uppercase; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; overflow: hidden; cursor: pointer; opacity: 0;" onclick="window.open('https://www.google.com/search?q=${encodeURIComponent(content)}', '_blank')"> <div style="width:100%; word-wrap: break-word; line-height:1.1;">${content}</div>${valTag}</div>`;
     }
     container.innerHTML = html;
 
     const newTiles = container.querySelectorAll('.trend-tile');
-    newTiles.forEach((tile, i) => {
-        setTimeout(() => {
-            tile.classList.add('enter-active');
-        }, i * 60); 
-    });
-
-    startHeatmapCycle();
+    newTiles.forEach((tile, i) => { setTimeout(() => { tile.classList.add('enter-active'); }, i * 60); });
 }
 
-function startHeatmapCycle() {
-    if (window.trendTimer) clearInterval(window.trendTimer);
-    window.trendTimer = setInterval(() => {
+// === TSE Monitor & Rotation Logic ===
+function initTopRightPanel() {
+    const trendEl = document.getElementById('trend-fixed-content');
+    if (!trendEl) return;
+    
+    // 1. トレンドのアニメーション用
+    trendEl.style.opacity = "1";
+    
+    // 2. TSEモニターのDOMを注入
+    const parent = trendEl.parentElement;
+    const tseWrapper = document.createElement('div');
+    tseWrapper.id = "tse-wrapper";
+    tseWrapper.innerHTML = `
+        <div class="tse-monitor-container">
+            <div class="tse-header">
+                <span style="font-size: 52px; font-weight: bold; margin-right: 20px;">日経平均株価</span>
+                <span style="font-size: 32px;">Nikkei 225</span>
+            </div>
+            <div class="tse-main-content">
+                <div class="tse-labels">
+                    <div class="tse-label-group"><span class="tse-jp-text">現在値</span><span class="tse-en-text">Current</span></div>
+                    <div class="tse-label-group"><span class="tse-jp-text">前日比</span><span class="tse-en-text">Change</span></div>
+                </div>
+                <div class="tse-data-area">
+                    <div class="tse-price-box" id="tse-priceBox"><span class="tse-price-num" id="tse-pNum">40,797.00</span></div>
+                    <div class="tse-change-box" id="tse-changeBox"><span class="tse-change-num" id="tse-cNum">+1,022.08</span></div>
+                    <div class="tse-sub-stats-table">
+                        <div class="tse-stat-row"><span>始値 Open</span><span class="tse-stat-val" id="tse-open">40,189.18</span></div>
+                        <div class="tse-stat-row"><span>高値 High</span><span class="tse-stat-val" id="tse-high">40,797.00</span></div>
+                        <div class="tse-stat-row"><span>安値 Low</span><span class="tse-stat-val" id="tse-low">40,087.86</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    parent.appendChild(tseWrapper);
+
+    // 3. パカパカのフェイク更新（3秒ごと）
+    setInterval(updateTSEFakeTicker, 3000);
+    
+    // 4. 初回のトレンド取得
+    fetchTrends();
+
+    // 5. ローテーション開始（15秒ごとに切り替え）
+    if (window.topRightTimer) clearInterval(window.topRightTimer);
+    window.topRightTimer = setInterval(toggleTopRightPanel, 15000);
+}
+
+function toggleTopRightPanel() {
+    const trendEl = document.getElementById('trend-fixed-content');
+    const tseEl = document.getElementById('tse-wrapper');
+    if (!trendEl || !tseEl) return;
+
+    if (isShowingTrends) {
+        // トレンド → TSEパネルへ
+        trendEl.style.opacity = "0";
+        trendEl.style.pointerEvents = "none";
+        tseEl.classList.add('active');
+        isShowingTrends = false;
+    } else {
+        // TSEパネル → トレンドへ
+        tseEl.classList.remove('active');
+        trendEl.style.opacity = "1";
+        trendEl.style.pointerEvents = "auto";
+        isShowingTrends = true;
+        // トレンドが再表示されるタイミングで最新取得
         fetchTrends();
-    }, 20000); 
+    }
 }
 
-fetchTrends();
-setInterval(fetchTrends, 3600000);
+function updateTSEFakeTicker() {
+    const pBox = document.getElementById('tse-priceBox');
+    const cBox = document.getElementById('tse-changeBox');
+    const pNum = document.getElementById('tse-pNum');
+    if (!pBox || !cBox || !pNum) return;
+
+    // ±30円の範囲でランダムに揺らがせる
+    baseNikkeiPrice += (Math.random() - 0.5) * 60;
+    pNum.innerText = baseNikkeiPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+    // CSSアニメーションの再トリガー
+    pBox.style.animation = 'none';
+    cBox.style.animation = 'none';
+    void pBox.offsetWidth; // リフロー強制
+    pBox.style.animation = 'tse-anim-white 0.5s ease-out';
+    cBox.style.animation = 'tse-anim-red 0.5s ease-out';
+}
+
+// 起動！
+initTopRightPanel();
