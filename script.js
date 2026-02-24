@@ -338,11 +338,14 @@ function appendMiniWidget(containerId, config) {
     container.appendChild(script);
 }
 
+// --- 修正版：startWeatherCycle ---
 function startWeatherCycle() {
-  if (weatherTimer) clearInterval(weatherTimer);
+  if (window.weatherTimer) clearInterval(window.weatherTimer);
   const wrapper = document.getElementById('forecast-wrapper');
-  weatherTimer = setInterval(() => {
-    const groups = wrapper.querySelectorAll('.day-group');
+  
+  window.weatherTimer = setInterval(() => {
+    // 修正箇所：.day-groupだけでなく、経済スケジュールも含めた「直下の子要素すべて」を対象にする
+    const groups = Array.from(wrapper.children);
     if (groups.length === 0) return;
     
     // 現在の親パネルの高さを自動取得
@@ -358,7 +361,9 @@ function startWeatherCycle() {
         weatherSlideIndex = 0;
         wrapper.style.transition = 'none';
         wrapper.style.transform = `translateY(0px) scale(0.92)`;
-        groups.forEach((g, i) => g.classList.toggle('inactive', i !== 0));
+        groups.forEach((g, i) => {
+            if(g.classList) g.classList.toggle('inactive', i !== 0);
+        });
         wrapper.offsetHeight; 
         wrapper.style.transition = 'opacity 1.8s ease-out, filter 1.8s ease-out, transform 1.8s ease-out';
         wrapper.style.opacity = '1';
@@ -369,10 +374,13 @@ function startWeatherCycle() {
       weatherSlideIndex = nextIndex;
       wrapper.style.transition = 'transform 1.2s cubic-bezier(0.65, 0, 0.35, 1), opacity 1.2s ease';
       wrapper.style.transform = `translateY(${weatherSlideIndex * -slideH}px) scale(1)`;
-      groups.forEach((group, index) => { group.classList.toggle('inactive', index !== weatherSlideIndex); });
+      groups.forEach((group, index) => { 
+          if(group.classList) group.classList.toggle('inactive', index !== weatherSlideIndex); 
+      });
     }
-  }, 9000);
+  }, 9000); // 9秒おきにスライド
 }
+
 
 let fixedWeatherIndex = 0;
 function startFixedWeatherCycle() {
