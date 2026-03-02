@@ -546,139 +546,201 @@ window.addEventListener('resize', adjustScale);
 window.addEventListener('load', adjustScale);
 adjustScale();
 
-// ==========================================
-// 1. 日経平均ボード（右上）のロジック
-// ==========================================
+// =========================
+// TRENDS & TSE MONITOR (Real-time via GAS - Pro Market Mode)
+// =========================
 let isShowingTrends = true;
-let realNikkeiData = { price: 0, change: 0, open: 0, high: 0, low: 0 };
 
+// 取得した本物のデータを保持する変数
+let realNikkeiData = {
+    price: 0,
+    change: 0,
+    open: 0,
+    high: 0,
+    low: 0
+};
+
+// --- 市場判定：平日 9:00-11:30 / 12:30-15:30 ---
 function isMarketOpen() {
     const now = new Date();
     const day = now.getDay();
-    if (day === 0 || day === 6) return false;
+    if (day === 0 || day === 6) return false; // 土日は休み
+
     const time = now.getHours() * 100 + now.getMinutes();
-    return (time >= 900 && time <= 1130) || (time >= 1230 && time <= 1530);
+    if ((time >= 900 && time <= 1130) || (time >= 1230 && time <= 1530)) {
+        return true;
+    }
+    return false;
 }
 
+// --- 1. GASから日経平均データ取得（本物のみ） ---
 async function fetchNikkei() {
+    // 【重要】ここにあなたのGASのURLを正確に入れてください
     const MY_GAS_URL = "https://script.google.com/macros/s/AKfycbyWq0pZXLP2ZE2ptRr-1iAxD0fT6WzTFS1E1oCAMKba7AAroldDcCZcK_HRnjed-ua2/exec?type=nikkei";
+    
     try {
         const r = await fetch(MY_GAS_URL);
         const d = await r.json();
+        
         if (d.chart && d.chart.result && d.chart.result.length > 0) {
             const res = d.chart.result[0];
             const meta = res.meta;
             const quote = res.indicators.quote[0];
+            
             const newPrice = meta.regularMarketPrice;
+            const newChange = meta.regularMarketPrice - meta.chartPreviousClose;
             const lastIdx = quote.open.length - 1;
 
             const pBox = document.getElementById('tse-priceBox');
             const cBox = document.getElementById('tse-changeBox');
-            if (pBox && realNikkeiData.price !== newPrice && realNikkeiData.price !== 0) {
-                pBox.style.animation = 'none'; void pBox.offsetWidth;
-                pBox.style.animation = 'tse-anim-white 0.5s ease-out';
+            const pNum = document.getElementById('tse-pNum');
+            const cNum = document.getElementById('tse-cNum');
+
+            if (pNum && cNum) {
+                // 価格に変動があった時だけパカッと光らせる
+                if (realNikkeiData.price !== newPrice && realNikkeiData.price !== 0) {
+                    pBox.style.animation = 'none';
+                    cBox.style.animation = 'none';
+                    void pBox.offsetWidth; // リフロー
+                    pBox.style.animation = 'tse-anim-white 0.5s ease-out';
+                    cBox.style.animation = 'tse-anim-red 0.5s ease-out';
+                }
+
+                realNikkeiData.price = newPrice;
+                realNikkeiData.change = newChange;
+                realNikkeiData.open = quote.open[lastIdx];
+                realNikkeiData.high = quote.high[lastIdx];
+                realNikkeiData.low = quote.low[lastIdx];
+
+                pNum.innerText = realNikkeiData.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                let sign = realNikkeiData.change >= 0 ? "+" : "";
+                cNum.innerText = sign + realNikkeiData.change.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             }
 
-            realNikkeiData.price = newPrice;
-            realNikkeiData.change = meta.regularMarketPrice - meta.chartPreviousClose;
-            realNikkeiData.open = quote.open[lastIdx];
-            realNikkeiData.high = quote.high[lastIdx];
-            realNikkeiData.low = quote.low[lastIdx];
-
-            document.getElementById('tse-pNum').innerText = realNikkeiData.price.toLocaleString('en-US', {minimumFractionDigits: 2});
-            let sign = realNikkeiData.change >= 0 ? "+" : "";
-            document.getElementById('tse-cNum').innerText = sign + realNikkeiData.change.toLocaleString('en-US', {minimumFractionDigits: 2});
-            document.getElementById('tse-open').innerText = realNikkeiData.open.toLocaleString('en-US', {minimumFractionDigits: 2});
-            document.getElementById('tse-high').innerText = realNikkeiData.high.toLocaleString('en-US', {minimumFractionDigits: 2});
-            document.getElementById('tse-low').innerText = realNikkeiData.low.toLocaleString('en-US', {minimumFractionDigits: 2});
+            // サブデータ反映
+            document.getElementById('tse-open').innerText = realNikkeiData.open.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('tse-high').innerText = realNikkeiData.high.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('tse-low').innerText = realNikkeiData.low.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
         }
-    } catch(e) { console.error("Nikkei Error:", e); }
+    } catch(e) { 
+        console.error("Nikkei fetch error:", e); 
+    }
 }
 
+// --- 2. トレンド取得 ---
 async function fetchTrends() {
     const container = document.getElementById('trend-fixed-content');
     if (!container) return;
     const MY_GAS_URL = "https://script.google.com/macros/s/AKfycbx6dVnRjptPeQouJM6Czl-GUBqQzxFq8Nj06POOVbqTEGb_w4Wx0rHm-M9_GgApEWnv/exec?type=trends";
+    let trendData = [];
     try {
         const r = await fetch(MY_GAS_URL);
         const xmlText = await r.text();
         const parser = new DOMParser();
         const xml = parser.parseFromString(xmlText, "application/xml");
         const items = xml.querySelectorAll('item');
-        const trendData = Array.from(items).map(item => item.querySelector('title')?.textContent || "");
+        if (items.length > 0) {
+            trendData = Array.from(items).map(item => item.querySelector('title')?.textContent || "");
+        }
+    } catch (e) { console.error('Trends fetch failed:', e); }
+
+    const tiles = container.querySelectorAll('.trend-tile');
+    if (tiles.length > 0) {
+        tiles.forEach(t => { t.classList.remove('enter-active'); t.classList.add('exit-active'); });
+        setTimeout(() => renderTrends(container, trendData), 800);
+    } else {
         renderTrends(container, trendData);
-    } catch (e) { console.error('Trends Error:', e); }
+    }
 }
 
 function renderTrends(container, data) {
+    if (!container) return;
+    container.style.display = "grid";
+    container.style.gridTemplateColumns = "repeat(8, 1fr)";
+    container.style.gridTemplateRows = "repeat(4, 1fr)";
+    container.style.gap = "0px"; 
+
+    const backupWords = ["CORE_NODE", "MARKET_IDX", "GLB_FEED", "SIG_PROC", "DATA_STREAM", "CLOUD_ARC", "API_LINK", "NET_STAT"];
+    let finalData = [];
+    for (let i = 0; i < 8; i++) { finalData.push(data[i] || backupWords[i]); }
+    const temp = finalData[2]; finalData[2] = finalData[3]; finalData[3] = temp;
+
     let html = "";
+    const colormap = ["rgba(213,62,79,0.95)", "rgba(244,109,67,0.9)", "rgba(253,174,97,0.85)", "rgba(171,221,164,0.8)", "rgba(102,194,165,0.75)", "rgba(50,136,189,0.7)", "rgba(35,80,160,0.65)", "rgba(20,30,100,0.6)"];
     const layouts = ["grid-area: 1/1/4/6;", "grid-area: 1/6/3/9;", "grid-area: 3/6/5/8;", "grid-area: 3/8/5/9;", "grid-area: 4/1/5/3;", "grid-area: 4/3/5/5;", "grid-area: 4/5/5/6;"];
-    for (let i = 0; i < 7; i++) {
-        let content = data[i] || "DATA_STREAM";
-        html += `<div class="trend-tile" style="${layouts[i]} opacity: 1;">${content}</div>`;
+
+    for (let i = 1; i <= 7; i++) {
+        let style = layouts[i-1]; let content = finalData[i-1]; let bgColor = colormap[i-1];
+        let fontSize = i === 1 ? "44px" : (i <= 3 ? "20px" : "13px");
+        let textColor = (i >= 3 && i <= 5) ? "rgba(0,0,0,0.75)" : "#ffffff";
+        html += `<div class="trend-tile" style="${style} background-color: ${bgColor} !important; position: relative; display: flex; align-items: center; justify-content: center; font-size: ${fontSize}; font-weight: 300; color: ${textColor}; padding: 10px; text-align: center; text-transform: uppercase; opacity: 0;" onclick="window.open('https://www.google.com/search?q=${encodeURIComponent(content)}', '_blank')"> <div style="width:100%; word-wrap: break-word;">${content}</div></div>`;
     }
     container.innerHTML = html;
+    container.querySelectorAll('.trend-tile').forEach((tile, i) => { setTimeout(() => { tile.classList.add('enter-active'); }, i * 60); });
 }
 
-// ==========================================
-// 2. 初期化と一括起動（ここが重要！）
-// ==========================================
-function initAllPanels() {
-    // A. 為替・市場プリズム（左側）の起動
-    if (typeof initLeftPrisms === "function") {
-        initLeftPrisms();
-    }
-
-    // B. 天気予報（右下）の起動
-    if (typeof fetchWeather === "function") {
-        fetchWeather();
-    }
-
-    // C. 日経平均ボード（右上）の構築
+// --- 3. UI構築とループ設定 ---
+function initTopRightPanel() {
     const trendEl = document.getElementById('trend-fixed-content');
-    if (trendEl) {
-        const tseWrapper = document.createElement('div');
-        tseWrapper.id = "tse-wrapper";
-        tseWrapper.innerHTML = `
-            <div class="tse-monitor-container">
-                <div class="tse-header"><span style="font-size: 52px; font-weight: bold; margin-right: 20px;">日経平均株価</span><span>Nikkei 225</span></div>
-                <div class="tse-main-content">
-                    <div class="tse-labels">
-                        <div class="tse-label-group"><span class="tse-jp-text">現在値</span><span class="tse-en-text">Current</span></div>
-                        <div class="tse-label-group"><span class="tse-jp-text">前日比</span><span class="tse-en-text">Change</span></div>
-                    </div>
-                    <div class="tse-data-area">
-                        <div class="tse-price-box" id="tse-priceBox"><span class="tse-price-num" id="tse-pNum">--</span></div>
-                        <div class="tse-change-box" id="tse-changeBox"><span class="tse-change-num" id="tse-cNum">--</span></div>
-                        <div class="tse-sub-stats-table">
-                            <div class="tse-stat-row"><span>始値 Open</span><span class="tse-stat-val" id="tse-open">--</span></div>
-                            <div class="tse-stat-row"><span>高値 High</span><span class="tse-stat-val" id="tse-high">--</span></div>
-                            <div class="tse-stat-row"><span>安値 Low</span><span class="tse-stat-val" id="tse-low">--</span></div>
-                        </div>
+    if (!trendEl) return;
+    
+    const parent = trendEl.parentElement;
+    const tseWrapper = document.createElement('div');
+    tseWrapper.id = "tse-wrapper";
+    tseWrapper.innerHTML = `
+        <div class="tse-monitor-container">
+            <div class="tse-header"><span style="font-size: 52px; font-weight: bold; margin-right: 20px;">日経平均株価</span><span style="font-size: 32px;">Nikkei 225</span></div>
+            <div class="tse-main-content">
+                <div class="tse-labels">
+                    <div class="tse-label-group"><span class="tse-jp-text">現在値</span><span class="tse-en-text">Current</span></div>
+                    <div class="tse-label-group"><span class="tse-jp-text">前日比</span><span class="tse-en-text">Change</span></div>
+                </div>
+                <div class="tse-data-area">
+                    <div class="tse-price-box" id="tse-priceBox"><span class="tse-price-num" id="tse-pNum">--</span></div>
+                    <div class="tse-change-box" id="tse-changeBox"><span class="tse-change-num" id="tse-cNum">--</span></div>
+                    <div class="tse-sub-stats-table">
+                        <div class="tse-stat-row"><span>始値 Open</span><span class="tse-stat-val" id="tse-open">--</span></div>
+                        <div class="tse-stat-row"><span>高値 High</span><span class="tse-stat-val" id="tse-high">--</span></div>
+                        <div class="tse-stat-row"><span>安値 Low</span><span class="tse-stat-val" id="tse-low">--</span></div>
                     </div>
                 </div>
             </div>
-        `;
-        trendEl.parentElement.appendChild(tseWrapper);
-    }
+        </div>
+    `;
+    parent.appendChild(tseWrapper);
 
-    // 初回実行
     fetchNikkei();
     fetchTrends();
 
-    // ループ設定
-    setInterval(() => { if (isMarketOpen()) fetchNikkei(); }, 5000); // 日経は5秒（市場中のみ）
+    // 5秒おきに市場が開いているかチェックして取得
     setInterval(() => {
-        const trendEl = document.getElementById('trend-fixed-content');
-        const tseEl = document.getElementById('tse-wrapper');
-        if (isShowingTrends) {
-            trendEl.style.opacity = "0"; tseEl.classList.add('active'); isShowingTrends = false;
-        } else {
-            tseEl.classList.remove('active'); trendEl.style.opacity = "1"; isShowingTrends = true;
-            fetchTrends();
+        if (isMarketOpen()) {
+            fetchNikkei();
+            console.log("Market is open: Fetching Nikkei...");
         }
-    }, 15000); // 15秒でトレンドと切替
+    }, 5000); 
+
+    if (window.topRightTimer) clearInterval(window.topRightTimer);
+    window.topRightTimer = setInterval(toggleTopRightPanel, 15000);
 }
 
-// 最後にすべての機能を一斉起動！
-initAllPanels();
+function toggleTopRightPanel() {
+    const trendEl = document.getElementById('trend-fixed-content');
+    const tseEl = document.getElementById('tse-wrapper');
+    if (!trendEl || !tseEl) return;
+
+    if (isShowingTrends) {
+        trendEl.style.opacity = "0";
+        trendEl.style.pointerEvents = "none";
+        tseEl.classList.add('active');
+        isShowingTrends = false;
+    } else {
+        tseEl.classList.remove('active');
+        trendEl.style.opacity = "1";
+        trendEl.style.pointerEvents = "auto";
+        isShowingTrends = true;
+        fetchTrends();
+    }
+}
+
+initTopRightPanel();
