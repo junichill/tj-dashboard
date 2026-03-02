@@ -261,7 +261,7 @@ let forexRotationDegree = 0;
 const LEFT_CONFIG = [
     {
         targetId: "forex-viewport-v", // 為替パネル
-        symbols: ["FX:USDJPY", "FX:EURJPY", "FX:EURUSD"],
+        symbols: ["FX_IDC:USDJPY", "FX_IDC:EURJPY", "FX_IDC:EURUSD"],
         delay: 0
     },
     {
