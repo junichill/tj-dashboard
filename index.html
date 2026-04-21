@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Elite Digital Dashboard - Glassmorphism Edition</title>
+  <title>Elite Digital Dashboard</title>
   
   <link rel="stylesheet" href="flip.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;700;900&family=JetBrains+Mono:wght@300&display=swap" rel="stylesheet">
@@ -18,67 +18,61 @@
   
   <div id="date"></div>
 
-<div id="left-panel">
-  <div class="clock-container glass-card">
-    <div class="clock-scale">
-      <div class="tick" data-did-init="handleTickInit">
-        <span data-view="flip" data-key="hours1" class="tick-flip"></span>
-        <span data-view="flip" data-key="hours2" class="tick-flip"></span>
-        <span class="tick-text-inline">:</span>
-        <span data-view="flip" data-key="minutes1" class="tick-flip"></span>
-        <span data-view="flip" data-key="minutes2" class="tick-flip"></span>
+  <div id="left-panel">
+    <div class="clock-container glass-card">
+      <div class="clock-scale">
+        <div class="tick" data-did-init="handleTickInit">
+          <span data-view="flip" data-key="hours1" class="tick-flip"></span>
+          <span data-view="flip" data-key="hours2" class="tick-flip"></span>
+          <span class="tick-text-inline">:</span>
+          <span data-view="flip" data-key="minutes1" class="tick-flip"></span>
+          <span data-view="flip" data-key="minutes2" class="tick-flip"></span>
+        </div>
+        <span id="seconds-static">00</span>
       </div>
-      <span id="seconds-static">00</span>
     </div>
-  </div>
 
-<div id="fixed-market-container">
-    <div class="glass-card mini-widget-fixed">
-      <div id="forex-viewport-v">
-        <div id="forex-wrapper-v">
-          <div id="slide-usd-jpy" class="forex-slide-v"></div>
-          <div id="slide-eur-jpy" class="forex-slide-v"></div>
-          <div id="slide-eur-usd" class="forex-slide-v"></div>
+    <div id="fixed-market-container">
+      <div class="glass-card mini-widget-fixed">
+        <div id="forex-viewport-v">
+          <div id="forex-wrapper-v">
+            <div id="slide-usd-jpy" class="forex-slide-v"></div>
+            <div id="slide-eur-jpy" class="forex-slide-v"></div>
+            <div id="slide-eur-usd" class="forex-slide-v"></div>
+          </div>
         </div>
       </div>
+      <div id="tv-n225-fixed" class="glass-card mini-widget-fixed"></div>
+      <div id="tv-nasdaq-fixed" class="glass-card mini-widget-fixed"></div>
     </div>
-
-    <div id="tv-n225-fixed" class="glass-card mini-widget-fixed"></div>
-    <div id="tv-nasdaq-fixed" class="glass-card mini-widget-fixed"></div>
   </div>
-</div>
 
-<div id="center-panel">
-  <div class="center-grid-layout">
-    <div class="glass-card grid-item-tl">
-      <div id="weather-fixed-content"></div>
+  <div id="center-panel">
+    <div class="center-grid-layout">
+      <div class="glass-card grid-item-tl">
+        <div id="weather-fixed-content"></div>
+      </div>
+      <div class="glass-card grid-item-tr">
+        <div id="trend-fixed-content"></div>
+      </div>
+      <div class="glass-card grid-item-bc">
+        <div id="news-container"></div>
+      </div>
     </div>
-<div class="glass-card grid-item-tr">
-    <div id="trend-fixed-content"></div>
-</div>
-    <div class="glass-card grid-item-bottom">
+  </div>
+
+  <div id="right-panel">
+    <div class="glass-card news-card">
       <div id="forecast-viewport">
         <div id="forecast-wrapper"></div>
       </div>
     </div>
   </div>
-</div>
-  
-  <div id="right-panel">
-    <div id="news-card" class="glass-card">
-      </div>
-  </div>
 
 </div>
 
 <script src="flip.min.js"></script>
+<script src="https://s3.tradingview.com/tv.js"></script>
 <script src="script.js"></script>
-
 </body>
-
 </html>
-
-
-
-
-
