@@ -77,7 +77,7 @@ body {
   min-width: 0;
 }
 
-/* --- 中央パネル: グリッドレイアウト定義（配置を固定） --- */
+/* --- 中央パネル: グリッドレイアウト定義 --- */
 .center-grid-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -88,30 +88,27 @@ body {
   box-sizing: border-box;
 }
 
-/* 真ん中上：今日の天気（左側） */
+/* 真ん中上左：今日の天気 */
 .grid-item-tl {
   grid-area: 1 / 1 / 2 / 2;
-  visibility: visible !important;
 }
 
-/* 今日の天気の右側：ワード（トレンド） */
+/* 真ん中上右：トレンド（ワード） */
 .grid-item-tr {
   grid-area: 1 / 2 / 2 / 3;
+}
+
+/* 真ん中下：パネル（枠）のみを表示 */
+.grid-item-bottom {
+  grid-area: 2 / 1 / 3 / 3; /* 下段を横いっぱいに使う */
   visibility: visible !important;
 }
 
-/* 真ん中下：何も表示がないパネル */
-.grid-item-bottom {
-  grid-area: 2 / 1 / 3 / 2; /* 左下の位置を指定 */
-  visibility: hidden !important; /* パネル自体は存在するが中身は見えない */
+/* 真ん中下パネルの中身（ニュース等）を完全に消す */
+.grid-item-bottom > * {
+  display: none !important;
 }
 
-/* 真ん中下の右側：空白 */
-/* 新しく「空白」を定義して配置を固定します */
-.grid-item-bottom-right {
-  grid-area: 2 / 2 / 3 / 3;
-  visibility: hidden !important;
-}
 #right-panel {
   flex: 0 0 520px !important;
   position: relative;
