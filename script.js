@@ -439,18 +439,20 @@ async function fetchNews() {
 }
 
 function initNewsSystem() {
-    const card = document.getElementById('news-card');
+    // 中央下パネルの中にあるコンテナを指定します
+    const card = document.querySelector('.grid-item-bottom'); 
     
+    // 中身を注入（構造はそのまま）
     card.innerHTML = `
         <div class="news-container-overlay">
             <div class="news-main-area">
                 <div class="news-main-wrapper" id="news-main-wrapper">
-                    </div>
+                </div>
             </div>
             
             <div class="news-sub-window">
                 <div class="news-sub-track" id="news-track">
-                    </div>
+                </div>
             </div>
         </div>
     `;
