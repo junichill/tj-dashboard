@@ -60,17 +60,21 @@
       <div id="news-card" class="glass-card">
       </div>
       <div id="seismo-card" class="glass-card">
-        <iframe
-          id="seismo-iframe"
-          src="https://kwatch-24h.net/2sec_alm_t.html#"
-          scrolling="no"
-          frameborder="0"
-          allowtransparency="true"
-        ></iframe>
-        <div id="seismo-blocked-msg">
-          <span>⚠️ iframeがブロックされています</span>
-          <a href="https://kwatch-24h.net/2sec_alm_t.html#" target="_blank">別タブで開く →</a>
+        <!-- ベース地図 -->
+        <img id="seismo-basemap"
+          src="http://www.kmoni.bosai.go.jp/realtimemap/tile/jmamap/map.jma.png"
+          alt="Japan basemap" crossorigin="anonymous" />
+        <!-- リアルタイム震度レイヤー -->
+        <img id="seismo-layer" alt="Seismic intensity" crossorigin="anonymous" />
+        <!-- EEW情報オーバーレイ -->
+        <div id="seismo-eew-overlay">
+          <div id="seismo-status">
+            <span id="seismo-dot"></span>
+            <span id="seismo-label">受信中...</span>
+          </div>
+          <div id="seismo-eew-info"></div>
         </div>
+        <div id="seismo-credit">Data: 防災科研 強震モニタ (NIED)</div>
       </div>
     </div>
   </div>

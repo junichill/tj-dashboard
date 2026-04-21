@@ -744,35 +744,98 @@ function toggleTopRightPanel() {
 }
 
 initTopRightPanel();
-// =========================
-// SEISMO IFRAME フォールバック検知
-// =========================
-(function() {
-  const iframe = document.getElementById('seismo-iframe');
-  const msg = document.getElementById('seismo-blocked-msg');
-  if (!iframe || !msg) return;
 
-  // ロード後にコンテンツにアクセスできなければブロックとみなす
-  iframe.addEventListener('load', () => {
+// =========================
+// 強震モニタ - 防災科研 NIED API リアルタイム表示
+// =========================
+(function () {
+  const LATEST_URL = 'http://www.kmoni.bosai.go.jp/webservice/server/pros/latest.json';
+  const EEW_BASE   = 'http://www.kmoni.bosai.go.jp/webservice/hypo/eew/';
+  // リアルタイム震度マップ画像 (acmap = リアルタイム震度、半透明PNG)
+  const MAP_BASE   = 'http://www.kmoni.bosai.go.jp/realtimemap/tile/acmap/';
+
+  const layerImg  = document.getElementById('seismo-layer');
+  const dot       = document.getElementById('seismo-dot');
+  const label     = document.getElementById('seismo-label');
+  const eewInfo   = document.getElementById('seismo-eew-info');
+
+  if (!layerImg) return;
+
+  // タイムスタンプ文字列を生成 (YYYYMMDDHHmmss)
+  function toTS(dateObj) {
+    const p = n => String(n).padStart(2, '0');
+    return (
+      dateObj.getFullYear() +
+      p(dateObj.getMonth() + 1) +
+      p(dateObj.getDate()) +
+      p(dateObj.getHours()) +
+      p(dateObj.getMinutes()) +
+      p(dateObj.getSeconds())
+    );
+  }
+
+  // 日付部分 (YYYYMMDD)
+  function toDate(ts) { return ts.slice(0, 8); }
+
+  let lastEewId = '';
+  let fetchActive = false;
+
+  async function tick() {
+    if (fetchActive) return;
+    fetchActive = true;
     try {
-      // 同一オリジンならアクセスできる。クロスオリジンならエラーが出る
-      const doc = iframe.contentDocument || iframe.contentWindow.document;
-      if (!doc || doc.body.innerHTML === '') throw new Error('empty');
+      // 1. サーバー時刻を取得（2秒前を使う）
+      const latRes = await fetch(LATEST_URL + '?_=' + Date.now());
+      const latJson = await latRes.json();
+      // "2026/04/21 12:34:56" → Date
+      const srvTime = new Date(latJson.latest_time.replace(
+        /(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}):(\d{2})/,
+        '$1-$2-$3T$4:$5:$6+09:00'
+      ));
+      srvTime.setSeconds(srvTime.getSeconds() - 2); // 2秒前
+      const ts = toTS(srvTime);
+      const dateStr = toDate(ts);
+
+      // 2. 震度マップ画像を更新
+      const mapUrl = `${MAP_BASE}${dateStr}/${ts}.acmap.jma.gif?_=${Date.now()}`;
+      layerImg.src = mapUrl;
+
+      // 3. EEW情報を取得
+      const eewRes = await fetch(`${EEW_BASE}${ts}.json?_=${Date.now()}`);
+      const eew = await eewRes.json();
+
+      if (eew.result && eew.result.message === '' && eew.report_id && eew.report_id !== lastEewId) {
+        // 地震発生
+        lastEewId = eew.report_id;
+        dot.classList.add('alert');
+        label.textContent = '⚠ 緊急地震速報';
+        label.style.color = '#ff5500';
+
+        eewInfo.innerHTML = `
+          <div class="eew-title">第${eew.report_num}報 ${eew.is_final ? '【最終報】' : ''}</div>
+          <div class="eew-region">${eew.region_name}</div>
+          <div class="eew-detail">
+            M${eew.magunitude} 深さ${eew.depth}
+            最大震度: <strong>${eew.calcintensity}</strong>
+          </div>`;
+      } else if (!eew.report_id) {
+        // 平常時
+        dot.classList.remove('alert');
+        label.textContent = 'K-NET LIVE';
+        label.style.color = 'rgba(255,255,255,0.75)';
+        eewInfo.innerHTML = '';
+        lastEewId = '';
+      }
+
     } catch (e) {
-      // X-Frame-Options / CSP でブロックされている場合
-      iframe.style.display = 'none';
-      msg.style.display = 'flex';
+      // 取得失敗時は静かに無視
+      console.warn('Seismo fetch error:', e);
+    } finally {
+      fetchActive = false;
     }
-  });
+  }
 
-  // タイムアウト保険（5秒後に何もロードされていなければ表示）
-  setTimeout(() => {
-    try {
-      const doc = iframe.contentDocument || iframe.contentWindow.document;
-      if (!doc || doc.URL === 'about:blank') throw new Error('timeout');
-    } catch(e) {
-      iframe.style.display = 'none';
-      msg.style.display = 'flex';
-    }
-  }, 5000);
+  // 起動時に即実行し、以降1秒ごとに更新
+  tick();
+  setInterval(tick, 1000);
 })();
