@@ -759,56 +759,48 @@ initTopRightPanel();
   const eewInfo  = document.getElementById('seismo-eew-info');
   if (!layerImg) return;
 
-  const p = n => String(n).padStart(2, '0');
-
-  // JSTタイムスタンプ生成
-  function toTS(d) {
-    const jst = new Date(d.getTime() + (d.getTimezoneOffset() + 540) * 60000);
-    return (
-      jst.getFullYear() +
-      p(jst.getMonth() + 1) +
-      p(jst.getDate()) +
-      p(jst.getHours()) +
-      p(jst.getMinutes()) +
-      p(jst.getSeconds())
-    );
+  // latest_timeの文字列を直接数字化してオフセットを引く
+  function tsTminus(baseStr, offsetSec) {
+    // baseStr = "20260422083500" (サーバーJST時刻をそのまま数字化したもの)
+    const y = baseStr.slice(0,4), mo = baseStr.slice(4,6), d = baseStr.slice(6,8);
+    const h = baseStr.slice(8,10), mi = baseStr.slice(10,12), s = baseStr.slice(12,14);
+    const dt = new Date(`${y}-${mo}-${d}T${h}:${mi}:${s}+09:00`);
+    dt.setSeconds(dt.getSeconds() - offsetSec);
+    // JSTで文字列化
+    const jst = new Date(dt.getTime() + 9*60*60*1000);
+    const p = n => String(n).padStart(2,'0');
+    return jst.getUTCFullYear()+p(jst.getUTCMonth()+1)+p(jst.getUTCDate())+
+           p(jst.getUTCHours())+p(jst.getUTCMinutes())+p(jst.getUTCSeconds());
   }
 
-  let serverTimeDiff = 0; // ローカル時刻とサーバー時刻のずれ(ms)
+  let baseTS = '';
   let synced = false;
+  let syncedAt = 0;
 
-  // 起動時にサーバー時刻を同期
   async function syncTime() {
     try {
       const res = await fetch(`${WORKER_URL}/latest?_=${Date.now()}`);
       const json = await res.json();
-      // "2026/04/21 12:34:56" → JST Date
-      const srvTime = new Date(json.latest_time.replace(
-        /(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}):(\d{2})/,
-        '$1-$2-$3T$4:$5:$6+09:00'
-      ));
-      serverTimeDiff = srvTime.getTime() - Date.now();
+      baseTS = json.latest_time.replace(/[^0-9]/g, '');
+      syncedAt = Date.now();
       synced = true;
-      dot.classList.remove('alert');
       dot.style.background = '#00ff88';
       dot.style.boxShadow = '0 0 6px #00ff88';
       label.style.color = 'rgba(255,255,255,0.75)';
-      console.log('Seismo: time synced, diff =', serverTimeDiff, 'ms');
     } catch (e) {
       console.warn('Seismo: time sync failed', e);
-      // 同期失敗でもローカル時刻で続行
       synced = true;
     }
   }
 
   // 1秒ごとに画像URLを更新
   function updateMapImage() {
-    if (!synced) return;
-    // サーバー補正済み時刻の2秒前
-    const t = new Date(Date.now() + serverTimeDiff - 2000);
-    const ts = toTS(t);
-    const dateStr = ts.slice(0, 8);
-    const url = `${WORKER_URL}/img/${dateStr}/${ts}.acmap.jma.gif?_=${Date.now()}`;
+    if (!synced || !baseTS) return;
+    // サーバー時刻基準で経過時間分を加算し、2秒前を使う
+    const elapsed = Math.floor((Date.now() - syncedAt) / 1000);
+    const ts = tsTminus(baseTS, 2 - elapsed);
+    const date = ts.slice(0, 8);
+    const url = `${WORKER_URL}/img/${date}/${ts}.acmap.jma.gif?_=${Date.now()}`;
     layerImg.src = url;
     label.textContent = 'K-NET  ' + ts.slice(8,10) + ':' + ts.slice(10,12) + ':' + ts.slice(12,14);
   }
