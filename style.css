@@ -71,6 +71,7 @@ body {
   gap: 20px;
 }
 
+/* 中央パネル: グリッドレイアウト定義 */
 #center-panel {
   flex: 1;
   min-width: 0;
@@ -79,47 +80,36 @@ body {
 .center-grid-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 250px 1fr; /* 上段250px、下段(ニュース)が残り全部 */
+  grid-template-rows: 250px 1fr; /* 上段をTSEボードに合わせて250pxに圧縮 */
   gap: 20px;
   height: 100%;
-}
-
-.grid-item-tl { grid-area: 1 / 1 / 2 / 2; } /* 左上：現在の天気 */
-.grid-item-tr { grid-area: 1 / 2 / 2 / 3; } /* 右上：空（または廃止要素） */
-
-.grid-item-bc { 
-  grid-area: 2 / 1 / 3 / 3; /* 下段を横いっぱいに結合 */
-  display: flex;
-  flex-direction: column; /* ニュースを上から順に並べる */
-  overflow: hidden;
-  padding: 20px !important; /* ニュースの文字が枠に当たらないよう余白を追加 */
-}
-
-/* ニュースコンテナのサイズを固定 */
-#news-container {
   width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+  box-sizing: border-box;
 }
 
-/* 右パネル（天気スライダー用）の調整 */
+.grid-item-tl, .grid-item-tr {
+  width: 100%;
+  height: 100%; /* 元の 400px を 100% に変更 */
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grid-item-bottom {
+  grid-column: span 2;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  padding: 0 !important;
+}
+
 #right-panel {
-  flex: 0 0 440px; /* 左パネルと同じ幅に設定 */
-  display: flex;
-  flex-direction: column;
-}
-
-#right-panel .news-card {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-#forecast-viewport {
-  height: 100%;
-  width: 100%;
+  flex: 0 0 520px !important;
+  position: relative;
 }
 
 /* =========================================
