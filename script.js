@@ -745,77 +745,160 @@ function toggleTopRightPanel() {
 
 initTopRightPanel();
 
+
 // =========================
-// 強震モニタ - Cloudflare Worker プロキシ経由でHTTPS表示
-// ★ WORKER_URL は自分のWorkerのURLに変更してください
+// 地震情報パネル - P2P地震情報 + Wolfx EEW
 // =========================
 (function () {
-  // ↓ デプロイ後にご自身のWorker URLに書き換えてください
-  const WORKER_URL = 'https://kmoni-proxy.ilovehawks777.workers.dev';
+  const P2P_API   = 'https://api.p2pquake.net/v2/history?codes=551&limit=5';
+  const dot       = document.getElementById('seismo-dot');
+  const label     = document.getElementById('seismo-label');
+  const eewBanner = document.getElementById('eew-banner');
+  const eewBody   = document.getElementById('eew-banner-body');
+  const itemsEl   = document.getElementById('seismo-items');
+  const markersEl = document.getElementById('eq-markers');
 
-  const layerImg = document.getElementById('seismo-layer');
-  const dot      = document.getElementById('seismo-dot');
-  const label    = document.getElementById('seismo-label');
-  const eewInfo  = document.getElementById('seismo-eew-info');
-  if (!layerImg) return;
+  if (!dot) return;
 
-  // latest_timeの文字列を直接数字化してオフセットを引く
-  function tsTminus(baseStr, offsetSec) {
-    // baseStr = "20260422083500" (サーバーJST時刻をそのまま数字化したもの)
-    const y = baseStr.slice(0,4), mo = baseStr.slice(4,6), d = baseStr.slice(6,8);
-    const h = baseStr.slice(8,10), mi = baseStr.slice(10,12), s = baseStr.slice(12,14);
-    const dt = new Date(`${y}-${mo}-${d}T${h}:${mi}:${s}+09:00`);
-    dt.setSeconds(dt.getSeconds() - offsetSec);
-    // JSTで文字列化
-    const jst = new Date(dt.getTime() + 9*60*60*1000);
-    const p = n => String(n).padStart(2,'0');
-    return jst.getUTCFullYear()+p(jst.getUTCMonth()+1)+p(jst.getUTCDate())+
-           p(jst.getUTCHours())+p(jst.getUTCMinutes())+p(jst.getUTCSeconds());
+  // --- 震度文字列 → CSSクラス ---
+  function intensityClass(v) {
+    const map = {'1':'int-1','2':'int-2','3':'int-3','4':'int-4',
+                 '5-':'int-5l','5弱':'int-5l','5+':'int-5u','5強':'int-5u',
+                 '6-':'int-6l','6弱':'int-6l','6+':'int-6u','6強':'int-6u','7':'int-7'};
+    return map[String(v)] || 'int-0';
   }
 
-  let baseTS = '';
-  let synced = false;
-  let syncedAt = 0;
+  // --- 震度ラベル整形 ---
+  function intensityLabel(v) {
+    const map = {'5-':'5弱','5+':'5強','6-':'6弱','6+':'6強'};
+    return map[String(v)] || String(v);
+  }
 
-  async function syncTime() {
-    try {
-      const res = await fetch(`${WORKER_URL}/latest?_=${Date.now()}`);
-      const json = await res.json();
-      baseTS = json.latest_time.replace(/[^0-9]/g, '');
-      syncedAt = Date.now();
-      synced = true;
-      dot.style.background = '#00ff88';
-      dot.style.boxShadow = '0 0 6px #00ff88';
-      label.style.color = 'rgba(255,255,255,0.75)';
-    } catch (e) {
-      console.warn('Seismo: time sync failed', e);
-      synced = true;
+  // --- 緯度経度 → SVGのx,y座標（viewBox 450x520、日本周辺を大まかにマッピング）---
+  function latLonToXY(lat, lon) {
+    // 日本: 緯度 24〜46、経度 122〜148 をSVGにマッピング
+    const x = ((lon - 122) / (148 - 122)) * 430 + 10;
+    const y = ((46 - lat)  / (46 - 24))   * 490 + 15;
+    return { x: Math.round(x), y: Math.round(y) };
+  }
+
+  // --- 震度 → マーカー色 ---
+  function intensityColor(v) {
+    const s = String(v);
+    if (s==='7')  return '#ff00ff';
+    if (s==='6+' || s==='6強') return '#ff0000';
+    if (s==='6-' || s==='6弱') return '#ff4444';
+    if (s==='5+' || s==='5強') return '#ff7f2a';
+    if (s==='5-' || s==='5弱') return '#ffb347';
+    if (s==='4')  return '#ffe94d';
+    if (s==='3')  return '#a0e060';
+    if (s==='2')  return '#7ecef4';
+    if (s==='1')  return '#7ecef4';
+    return '#888';
+  }
+
+  // --- 震源マーカーをSVGに追加 ---
+  let markerCount = 0;
+  function addMarker(lat, lon, intensity, isNew) {
+    if (!markersEl || !lat || !lon) return;
+    const {x, y} = latLonToXY(lat, lon);
+    const color = intensityColor(intensity);
+    const r = isNew ? 5 : 3.5;
+    const id = 'mk' + (markerCount++);
+
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.innerHTML = `
+      <circle class="eq-marker-dot" cx="${x}" cy="${y}" r="${r}"
+              fill="${color}" fill-opacity="0.9"
+              stroke="rgba(255,255,255,0.6)" stroke-width="0.8"/>
+      ${isNew ? `<circle class="eq-marker-ring" cx="${x}" cy="${y}" r="5" stroke="${color}"/>` : ''}
+    `;
+    markersEl.appendChild(g);
+
+    // 古いマーカーが増えすぎないよう5個まで
+    while (markersEl.children.length > 5) {
+      markersEl.removeChild(markersEl.firstChild);
     }
   }
 
-  // 1秒ごとに画像URLを更新
-  function updateMapImage() {
-    if (!synced || !baseTS) return;
-    // サーバー時刻基準で経過時間分を加算し、2秒前を使う
-    const elapsed = Math.floor((Date.now() - syncedAt) / 1000);
-    const ts = tsTminus(baseTS, 2 - elapsed);
-    const date = ts.slice(0, 8);
-    const url = `${WORKER_URL}/img/${date}/${ts}.acmap.jma.gif?_=${Date.now()}`;
-    layerImg.src = url;
-    label.textContent = 'K-NET  ' + ts.slice(8,10) + ':' + ts.slice(10,12) + ':' + ts.slice(12,14);
+  // --- 日時フォーマット ---
+  function formatTime(iso) {
+    const d = new Date(iso);
+    return (d.getMonth()+1) + '/' + d.getDate() + ' ' +
+           String(d.getHours()).padStart(2,'0') + ':' +
+           String(d.getMinutes()).padStart(2,'0');
   }
 
-  layerImg.onerror = () => { layerImg.src = ''; };
+  // --- P2P地震情報を取得して表示 ---
+  let lastEventId = '';
+  async function fetchEarthquakes() {
+    try {
+      const res = await fetch(P2P_API);
+      const list = await res.json();
+      if (!list || !list.length) return;
 
-  // 起動
-  syncTime().then(() => {
-    updateMapImage();
-    setInterval(updateMapImage, 1000);
-    // 5分ごとに時刻を再同期
-    setInterval(syncTime, 5 * 60 * 1000);
-  });
+      // 最新イベントが新しければ点滅
+      const newest = list[0];
+      const isNew = newest.id !== lastEventId;
+      lastEventId = newest.id;
 
-  // --- Wolfx WebSocket で EEW をリアルタイム受信 ---
+      // マーカーをリセット
+      if (markersEl) markersEl.innerHTML = '';
+
+      // リストを構築（最大4件）
+      if (itemsEl) {
+        itemsEl.innerHTML = '';
+        list.slice(0, 4).forEach((eq, i) => {
+          const h = eq.earthquake?.hypocenter || {};
+          const intensity = eq.earthquake?.maxScale;
+          // maxScale: 10=1, 20=2, 30=3, 40=4, 45=5弱, 50=5強, 55=6弱, 60=6強, 70=7
+          const intensityStr = scaleToStr(intensity);
+          const mag = h.magnitude || '-';
+          const depth = h.depth != null ? h.depth + 'km' : '-';
+          const region = h.name || '不明';
+          const time = eq.earthquake?.time ? formatTime(eq.earthquake.time) : '-';
+
+          const cls = intensityClass(intensityStr);
+          const isNewItem = i === 0 && isNew;
+
+          const div = document.createElement('div');
+          div.className = 'eq-item' + (isNewItem ? ' eq-item-new' : '');
+          div.innerHTML = `
+            <div class="eq-item-top">
+              <span class="eq-item-region">${region}</span>
+              <span class="eq-item-intensity ${cls}">${intensityStr !== '-' ? '震度'+intensityLabel(intensityStr) : 'M'+mag}</span>
+            </div>
+            <div class="eq-item-detail">
+              <span>${time}</span>
+              <span>M${mag}</span>
+              <span>${depth}</span>
+            </div>`;
+          itemsEl.appendChild(div);
+
+          // マーカー追加
+          if (h.latitude && h.longitude) {
+            addMarker(h.latitude, h.longitude, intensityStr, i === 0 && isNew);
+          }
+        });
+      }
+
+      // ステータス更新
+      dot.classList.remove('alert');
+      label.textContent = 'P2P LIVE';
+    } catch(e) {
+      label.textContent = 'ERROR';
+      console.warn('P2P fetch failed:', e);
+    }
+  }
+
+  // --- maxScale数値 → 震度文字列 ---
+  function scaleToStr(scale) {
+    const map = {10:'1',20:'2',30:'3',40:'4',45:'5-',50:'5+',55:'6-',60:'6+',70:'7'};
+    return map[scale] || '-';
+  }
+
+  // --- Wolfx EEW WebSocket ---
+  let eewTimer = null;
   function connectEewWs() {
     try {
       const ws = new WebSocket('wss://ws-api.wolfx.jp/jma_eew');
@@ -826,21 +909,28 @@ initTopRightPanel();
           if (d.type === 'heartbeat' || d.isTraining) return;
 
           if (d.isCancel) {
-            dot.classList.remove('alert');
-            label.style.color = 'rgba(255,255,255,0.75)';
-            eewInfo.innerHTML = ''; return;
+            hideEew(); return;
           }
-
           if (!d.EventID) return;
 
+          // EEWバナー表示
           dot.classList.add('alert');
-          label.textContent = '⚠ 緊急地震速報';
-          label.style.color = '#ff5500';
-          eewInfo.innerHTML = `
-            <div class="eew-title">第${d.Serial || '-'}報${d.isFinal ? '【最終報】' : ''}${d.isWarn ? ' ⚠警報' : ''}</div>
-            <div class="eew-region">${d.Hypocenter || '-'}</div>
-            <div class="eew-detail">M${d.Magunitude ?? '-'} 深さ${d.Depth != null ? d.Depth + 'km' : '-'} / 最大震度: <strong>${d.MaxIntensity || '-'}</strong></div>`;
-        } catch (e) {}
+          label.textContent = '⚠ EEW';
+          if (eewBanner) {
+            eewBanner.classList.add('active');
+            eewBody.innerHTML =
+              `第${d.Serial||'-'}報${d.isFinal?'【最終報】':''}${d.isWarn?' ⚠警報':''}\n` +
+              `震源: ${d.Hypocenter||'-'}\n` +
+              `M${d.Magunitude??'-'}  深さ${d.Depth!=null?d.Depth+'km':'-'}\n` +
+              `最大震度: ${d.MaxIntensity||'-'}`;
+          }
+
+          // 最終報から30秒後に自動消去
+          if (d.isFinal) {
+            clearTimeout(eewTimer);
+            eewTimer = setTimeout(hideEew, 30000);
+          }
+        } catch(e) {}
       };
 
       ws.onclose = () => setTimeout(connectEewWs, 5000);
@@ -848,6 +938,14 @@ initTopRightPanel();
     } catch(e) {}
   }
 
+  function hideEew() {
+    if (eewBanner) eewBanner.classList.remove('active');
+    dot.classList.remove('alert');
+    label.textContent = 'P2P LIVE';
+  }
+
+  // --- 起動 ---
+  fetchEarthquakes();
+  setInterval(fetchEarthquakes, 30000); // 30秒ごとに更新
   connectEewWs();
 })();
-

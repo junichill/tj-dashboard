@@ -60,21 +60,82 @@
       <div id="news-card" class="glass-card">
       </div>
       <div id="seismo-card" class="glass-card">
-        <!-- ベース地図 -->
-        <img id="seismo-basemap"
-          src="http://www.kmoni.bosai.go.jp/realtimemap/tile/jmamap/map.jma.png"
-          alt="Japan basemap" crossorigin="anonymous" />
-        <!-- リアルタイム震度レイヤー -->
-        <img id="seismo-layer" alt="Seismic intensity" crossorigin="anonymous" />
-        <!-- EEW情報オーバーレイ -->
-        <div id="seismo-eew-overlay">
+        <!-- EEW警告バナー -->
+        <div id="eew-banner">
+          <div id="eew-banner-title">⚠ 緊急地震速報</div>
+          <div id="eew-banner-body"></div>
+        </div>
+
+        <!-- ヘッダー -->
+        <div id="seismo-header">
           <div id="seismo-status">
             <span id="seismo-dot"></span>
-            <span id="seismo-label">受信中...</span>
+            <span id="seismo-label">接続中...</span>
           </div>
-          <div id="seismo-eew-info"></div>
+          <div id="seismo-title">地震情報</div>
         </div>
-        <div id="seismo-credit">Data: 防災科研 強震モニタ (NIED)</div>
+
+        <!-- 日本地図 + 震源マーカー -->
+        <div id="seismo-map-wrap">
+          <svg id="seismo-map" viewBox="0 0 450 520" preserveAspectRatio="xMidYMid meet">
+            <!-- 日本地図パス（簡略版） -->
+            <g id="japan-map" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.25)" stroke-width="0.8">
+              <!-- 北海道 -->
+              <path d="M310,30 L355,28 L370,45 L365,68 L340,80 L318,75 L305,58 Z"/>
+              <path d="M355,28 L385,22 L400,38 L390,55 L370,45 Z"/>
+              <!-- 本州 -->
+              <path d="M240,95 L275,88 L305,95 L318,110 L310,130 L290,145 L265,148 L245,138 L232,118 Z"/>
+              <path d="M195,115 L240,95 L245,138 L228,158 L205,162 L188,148 L185,130 Z"/>
+              <path d="M155,140 L195,115 L205,162 L195,182 L170,190 L148,178 L142,158 Z"/>
+              <path d="M118,165 L155,140 L148,178 L135,200 L112,205 L98,192 L100,172 Z"/>
+              <path d="M85,195 L118,165 L112,205 L100,228 L78,235 L62,220 L68,200 Z"/>
+              <path d="M62,220 L85,195 L78,235 L70,258 L48,262 L38,245 L42,225 Z"/>
+              <path d="M48,262 L70,258 L68,285 L55,298 L35,292 L28,275 Z"/>
+              <path d="M265,148 L290,145 L295,170 L278,188 L258,185 L248,168 Z"/>
+              <path d="M228,158 L265,148 L258,185 L240,202 L218,198 L210,178 Z"/>
+              <path d="M195,182 L228,158 L218,198 L205,215 L185,210 L178,195 Z"/>
+              <path d="M170,190 L195,182 L185,210 L175,228 L155,222 L148,205 Z"/>
+              <path d="M135,200 L170,190 L155,222 L145,240 L125,235 L118,218 Z"/>
+              <path d="M100,228 L135,200 L125,235 L115,252 L95,248 L88,232 Z"/>
+              <!-- 関東 -->
+              <path d="M278,188 L305,182 L315,205 L300,225 L278,222 L262,208 Z"/>
+              <path d="M258,185 L278,188 L262,208 L248,215 L235,202 L240,188 Z"/>
+              <!-- 近畿・中国 -->
+              <path d="M170,228 L205,215 L210,240 L195,258 L172,255 L158,240 Z"/>
+              <path d="M145,240 L170,228 L158,240 L148,258 L128,255 L120,240 Z"/>
+              <path d="M115,252 L145,240 L120,240 L108,258 L95,255 L88,242 Z"/>
+              <!-- 四国 -->
+              <path d="M178,268 L210,262 L215,282 L198,295 L175,290 L165,275 Z"/>
+              <path d="M148,270 L178,268 L165,275 L155,290 L135,285 L130,270 Z"/>
+              <!-- 九州 -->
+              <path d="M95,278 L125,268 L130,290 L118,308 L98,308 L85,295 Z"/>
+              <path d="M75,295 L98,285 L98,308 L88,325 L68,322 L62,308 Z"/>
+              <path d="M62,308 L88,325 L82,342 L65,348 L50,335 L52,318 Z"/>
+              <!-- 沖縄（簡略） -->
+              <path d="M105,380 L118,375 L122,385 L112,392 L102,388 Z"/>
+              <path d="M128,390 L138,385 L142,395 L132,400 L125,396 Z"/>
+            </g>
+            <!-- 震源マーカーグループ -->
+            <g id="eq-markers"></g>
+            <!-- 緯度経度グリッド（薄く） -->
+            <g stroke="rgba(255,255,255,0.04)" stroke-width="0.5" fill="none">
+              <line x1="0" y1="130" x2="450" y2="130"/>
+              <line x1="0" y1="260" x2="450" y2="260"/>
+              <line x1="0" y1="390" x2="450" y2="390"/>
+              <line x1="112" y1="0" x2="112" y2="520"/>
+              <line x1="225" y1="0" x2="225" y2="520"/>
+              <line x1="338" y1="0" x2="338" y2="520"/>
+            </g>
+          </svg>
+        </div>
+
+        <!-- 最新地震情報リスト -->
+        <div id="seismo-list">
+          <div id="seismo-list-header">最近の地震</div>
+          <div id="seismo-items"></div>
+        </div>
+
+        <div id="seismo-credit">Data: P2P地震情報 / Wolfx EEW</div>
       </div>
     </div>
   </div>
