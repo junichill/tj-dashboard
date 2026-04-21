@@ -34,66 +34,26 @@ updateDate();
 setInterval(updateDate, 60000);
 
 // =========================
-// WEATHER 設定 & アイコン (Yahoo風・曇時々晴追加)
+// WEATHER 設定 & アイコン
 // =========================
 const API_KEY = 'eed3942fcebd430b2e32dfff2c611b11';
 const LAT = 35.6895;
 const LON = 139.6917;
 
 const WEATHER_ICONS = {
-  sunny: `
-    <svg viewBox="0 0 64 64">
-      <circle class="sun-body" cx="32" cy="32" r="14" stroke-width="2"/>
-      <g class="sun-rays" stroke-width="4" stroke-linecap="round">
-        <line x1="32" y1="6" x2="32" y2="12"/><line x1="32" y1="52" x2="32" y2="58"/>
-        <line x1="6" y1="32" x2="12" y2="32"/><line x1="52" y1="32" x2="58" y2="32"/>
-        <line x1="13.6" y1="13.6" x2="17.8" y2="17.8"/><line x1="46.2" y1="46.2" x2="50.4" y2="50.4"/>
-        <line x1="13.6" y1="50.4" x2="17.8" y2="46.2"/><line x1="46.2" y1="17.8" x2="50.4" y2="13.6"/>
-      </g>
-    </svg>`,
-  partly_cloudy: `
-    <svg viewBox="0 0 64 64">
-      <g transform="translate(18, -4) scale(0.75)">
-        <circle class="sun-body" cx="32" cy="32" r="14" stroke-width="2"/>
-        <g class="sun-rays" stroke-width="4" stroke-linecap="round">
-          <line x1="32" y1="6" x2="32" y2="12"/><line x1="32" y1="52" x2="32" y2="58"/>
-          <line x1="6" y1="32" x2="12" y2="32"/><line x1="52" y1="32" x2="58" y2="32"/>
-          <line x1="13.6" y1="13.6" x2="17.8" y2="17.8"/><line x1="46.2" y1="46.2" x2="50.4" y2="50.4"/>
-          <line x1="13.6" y1="50.4" x2="17.8" y2="46.2"/><line x1="46.2" y1="17.8" x2="50.4" y2="13.6"/>
-        </g>
-      </g>
-      <path class="cloud-body" d="M46,42a10,10,0,0,0,0-20,14,14,0,0,0-27-4,10,10,0,0,0,1,24Z" stroke-width="2" stroke-linejoin="round"/>
-    </svg>`,
-  cloudy: `
-    <svg viewBox="0 0 64 64">
-      <path class="cloud-dark" d="M46,42a10,10,0,0,0,0-20,14,14,0,0,0-27-4,10,10,0,0,0,1,24Z" stroke-width="2" stroke-linejoin="round"/>
-    </svg>`,
-  rainy: `
-    <svg viewBox="0 0 64 64">
-      <path class="cloud-dark" d="M46,36a10,10,0,0,0,0-20,14,14,0,0,0-27-4,10,10,0,0,0,1,24Z" stroke-width="2" stroke-linejoin="round"/>
-      <g transform="translate(15, 12) scale(0.75)">
-        <path class="rain-umbrella" d="M12,38a20,20,0,0,1,40,0Z" stroke-width="2"/>
-        <path class="rain-umbrella" d="M32,38V50a4,4,0,0,1-8,0" fill="none" stroke-width="3" stroke-linecap="round"/>
-      </g>
-    </svg>`,
-  snowy: `
-    <svg viewBox="0 0 64 64">
-      <path class="cloud-dark" d="M46,38a10,10,0,0,0,0-20,14,14,0,0,0-27-4,10,10,0,0,0,1,24Z" stroke-width="2" stroke-linejoin="round"/>
-      <circle class="snow-body" cx="24" cy="48" r="4" stroke-width="1"/>
-      <circle class="snow-body" cx="40" cy="48" r="4" stroke-width="1"/>
-      <circle class="snow-body" cx="32" cy="54" r="4" stroke-width="1"/>
-    </svg>`
+  sunny: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4"><circle cx="32" cy="32" r="12"/><line x1="32" y1="2" x2="32" y2="14"/><line x1="32" y1="50" x2="32" y2="62"/><line x1="2" y1="32" x2="14" y2="32"/><line x1="50" y1="32" x2="62" y2="32"/><line x1="10" y1="10" x2="18" y2="18"/><line x1="46" y1="46" x2="54" y2="54"/><line x1="46" y1="18" x2="54" y2="10"/><line x1="10" y1="54" x2="18" y2="46"/></svg>`,
+  cloudy: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 44h26a10 10 0 0 0 0-20 14 14 0 0 0-27-4A10 10 0 0 0 20 44z"/></svg>`,
+  rainy: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 36c0-11 9-20 20-20s20 9 20 20H12z" /><line x1="32" y1="16" x2="32" y2="12" /><path d="M32 36v12c0 4-3 7-7 7s-7-3-7-7" /></svg>`,
+  snowy: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="46" r="14" /><circle cx="32" cy="22" r="10" /><circle cx="28" cy="20" r="0.5" fill="currentColor" stroke="none" /><circle cx="36" cy="20" r="0.5" fill="currentColor" stroke="none" /><line x1="20" y1="40" x2="12" y2="32" /><line x1="44" y1="40" x2="52" y2="32" /></svg>`,
 };
 
 function getWeatherType(id) {
   if (id >= 200 && id < 600) return 'rainy';
   if (id >= 600 && id < 700) return 'snowy';
-  if (id === 800) return 'sunny';
-  // 801(雲11-25%), 802(雲25-50%) の場合に「曇り時々晴れ」を適用
-  if (id === 801 || id === 802) return 'partly_cloudy';
-  if (id >= 803) return 'cloudy';
+  if (id >= 801) return 'cloudy';
   return 'sunny';
 }
+
 // =========================
 // WEATHER 背景更新
 // =========================
@@ -130,6 +90,38 @@ function createForecastGroupHtml(list, label) {
   return `<div class="day-group"><div class="day-label">— ${label} —</div><div class="day-items">${itemsHtml}</div></div>`;
 }
 
+function createWeeklyForecastHtml(list) {
+  const dailyData = {};
+  list.forEach(item => {
+    const dateObj = new Date(item.dt * 1000);
+    const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
+    const dayNum = dateObj.getDate();
+    const dateKey = `${dayName} ${dayNum}`;
+    if (!dailyData[dateKey]) dailyData[dateKey] = { temps: [], ids: [] };
+    dailyData[dateKey].temps.push(item.main.temp);
+    dailyData[dateKey].ids.push(item.weather[0].id);
+  });
+  let itemsHtml = '';
+  Object.keys(dailyData).slice(1, 6).forEach(date => {
+    const day = dailyData[date];
+    const maxTemp = Math.round(Math.max(...day.temps));
+    const minTemp = Math.round(Math.min(...day.temps));
+    const midId = day.ids[Math.floor(day.ids.length / 2)];
+    const type = getWeatherType(midId);
+    itemsHtml += `<div class="forecast-item weekly-item"><div class="forecast-time">${date}</div><div class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</div><div class="forecast-temp weekly-temp"><span class="max">${maxTemp}</span><span class="separator">/</span><span class="min">${minTemp}</span></div></div>`;
+  });
+  return `<div class="day-group"><div class="day-label">— Weekly Outlook —</div><div class="day-items">${itemsHtml}</div></div>`;
+}
+
+let economicScheduleHtml = ""; 
+async function fetchEconomicSchedule() {
+  economicScheduleHtml = `
+    <div class="day-group">
+      <div class="day-label">— Economic Calendar —</div>
+      <div id="tv-economic-calendar" style="width:100%; height:200px;"></div>
+    </div>`;
+}
+
 // =========================
 // WEATHER & MARKET メイン表示
 // =========================
@@ -138,68 +130,31 @@ let weatherTimer = null;
 
 async function fetchWeather() {
   try {
+    await fetchEconomicSchedule();
     const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=ja`);
     const d = await r.json();
     if (!d || !d.list) return;
 
     const wrapper = document.getElementById('forecast-wrapper');
-    const todayHtml = createForecastGroupHtml(d.list.slice(0, 6), "Today's Forecast");
-    
+    const todayHtml = createForecastGroupHtml(d.list.slice(0, 8), "Today's Forecast");
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowStr = tomorrow.toLocaleDateString();
-    const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr).slice(0, 6);
+    const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr).slice(0, 8);
     const tomorrowHtml = createForecastGroupHtml(tomorrowList, "Tomorrow's Plan");
+    const weeklyHtml = createWeeklyForecastHtml(d.list);
 
-    // --- 追加：週間天気データ生成（各日のお昼のデータまたは最初のデータを抽出） ---
-    const dailyList = [];
-    const seenDates = new Set();
-    d.list.forEach(item => {
-        const dateStr = new Date(item.dt * 1000).toLocaleDateString();
-        if (!seenDates.has(dateStr)) {
-            const noonItem = d.list.find(x => new Date(x.dt * 1000).toLocaleDateString() === dateStr && new Date(x.dt * 1000).getHours() === 12);
-            dailyList.push(noonItem || item);
-            seenDates.add(dateStr);
-        }
-    });
-    const weekItemsHtml = dailyList.slice(0, 6).map(item => {
-        const date = new Date(item.dt * 1000);
-        const dayStr = (date.getMonth() + 1) + "/" + date.getDate();
-        const temp = Math.round(item.main.temp);
-        const type = getWeatherType(item.weather[0].id);
-        return `<div class="forecast-item"><div class="forecast-time">${dayStr}</div><div class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</div><div class="forecast-temp">${temp}℃</div></div>`;
-    }).join('');
-    const weekHtml = `<div class="day-group"><div class="day-label">— Weekly Forecast —</div><div class="day-items">${weekItemsHtml}</div></div>`;
-    // -------------------------------------------------------------
+    const mktHtml = (id, label) => `<div class="day-group"><div class="day-label">— ${label} —</div><div id="${id}" style="width:700px; height:130px;"></div></div>`;
 
-    // 経済指標用のHTMLブロック
-    const economicScheduleHtml = `
-      <div class="day-group">
-        <div class="day-label">— Economic Calendar —</div>
-        <div id="tv-economic-calendar" style="width:100%; height:200px;"></div>
-      </div>`;
+    wrapper.innerHTML = todayHtml + tomorrowHtml + weeklyHtml + 
+                        mktHtml("tv-sp500", "S&P 500 Futures") +
+                        mktHtml("tv-gold", "Gold Spot") +
+                        mktHtml("tv-oil", "WTI Crude Oil") +
+                        mktHtml("tv-eur-jpy", "EUR/JPY") +
+                        mktHtml("tv-eur-usd", "EUR/USD") +
+                        economicScheduleHtml;
 
-    // 4項目を結合して表示にセット（今日の天気 ＋ 明日の天気 ＋ 週間天気 ＋ 経済指標）
-    wrapper.innerHTML = todayHtml + tomorrowHtml + weekHtml + economicScheduleHtml;
-
-    // TradingView 経済指標カレンダーのスクリプトを注入
-    const ecoContainer = document.getElementById('tv-economic-calendar');
-    if (ecoContainer && ecoContainer.childElementCount === 0) {
-        const script = document.createElement('script');
-        script.src = "https://s3.tradingview.com/external-embedding/embed-widget-events.js";
-        script.async = true;
-        script.innerHTML = JSON.stringify({
-          "colorTheme": "dark",
-          "isTransparent": true,
-          "width": "100%",
-          "height": "100%",
-          "locale": "ja",
-          "importanceFilter": "-1,0,1",
-          "currencyFilter": "JPY,USD,EUR"
-        });
-        ecoContainer.appendChild(script);
-    }
-
+    initTradingViewWidgets();
     weatherSlideIndex = 0;
     wrapper.style.transform = `translateY(0px)`;
 
@@ -239,7 +194,7 @@ async function fetchWeather() {
 
         weatherFixed.innerHTML = `
             <div id="weather-fixed-wrapper">
-                ${createSlide("今日", getWeatherType(today.weather[0].id), Math.max(...dayTemps), Math.min(...dayTemps), today.pop || 0, null, null)}
+                ${createSlide("今日", getWeatherType(today.weather[0].id), Math.max(...dayTemps), Math.min(...dayTemps), today.pop || 0, 10, 2)}
                 ${createSlide("明日", getWeatherType(tomorrowList[0].weather[0].id), Math.max(...tomorrowList.map(v=>v.main.temp)), Math.min(...tomorrowList.map(v=>v.main.temp)), tomorrowList[0].pop || 0, Math.max(...dayTemps), Math.min(...dayTemps))}
             </div>`;
 
@@ -254,77 +209,40 @@ async function fetchWeather() {
 }
 
 let forexVIndex = 0;
-let forexTimer = null;
-let forexRotationDegree = 0;
 
-// --- 左パネルの3D回転設定 ---
-const LEFT_CONFIG = [
-    {
-        targetId: "forex-viewport-v", // 為替パネル
-        symbols: ["FX_IDC:USDJPY", "FX_IDC:EURJPY", "FX_IDC:EURUSD"],
-        delay: 0
-    },
-    {
-        targetId: "tv-n225-fixed", 
-        symbols: ["OSE:NK2251!", "OSE:NK225M1!", "TOPIX"],
-        delay: 5000
-    },
-    {
-        targetId: "tv-nasdaq-fixed", // 米国・コモディティ（指定シンボル）
-        symbols: ["CAPITALCOM:US100", "CAPITALCOM:US500", "TVC:GOLD", "CAPITALCOM:OIL_CRUDE"],
-        delay: 10000
-    }
-];
+function initTradingViewWidgets() {
+    const conf = { "width": "100%", "height": 155, "locale": "ja", "dateRange": "1D", "colorTheme": "dark", "isTransparent": true, "interval": "5" };
+    
+    // スライド用3通貨（IDを変更）
+    appendMiniWidget("slide-usd-jpy", { ...conf, "symbol": "FX:USDJPY" });
+    appendMiniWidget("slide-eur-jpy", { ...conf, "symbol": "FX:EURJPY" });
+    appendMiniWidget("slide-eur-usd", { ...conf, "symbol": "FX:EURUSD" });
 
-function initLeftPrisms() {
-    LEFT_CONFIG.forEach((conf, idx) => {
-        const container = document.getElementById(conf.targetId);
-        if (!container) return;
+    // 固定2指標（元のまま）
+    appendMiniWidget("tv-n225-fixed",    { ...conf, "symbol": "OSE:NK2251!" });
+    appendMiniWidget("tv-nasdaq-fixed",  { ...conf, "symbol": "CAPITALCOM:US100" });
 
-        const count = conf.symbols.length;
-        const step = 360 / count; 
-        
-        // 重なり防止：4面(90度)と3面(120度)で奥行きを調整
-        const translateZ = count === 4 ? "60px" : "40px";
+    // その他中央パネル用
+    appendMiniWidget("tv-sp500",   { ...conf, "symbol": "CAPITALCOM:US500" });
+    appendMiniWidget("tv-gold",    { ...conf, "symbol": "TVC:GOLD" });
+    appendMiniWidget("tv-oil",     { ...conf, "symbol": "CAPITALCOM:OIL_CRUDE" });
+    appendMiniWidget("tv-eur-jpy", { ...conf, "symbol": "FX:EURJPY" });
+    appendMiniWidget("tv-eur-usd", { ...conf, "symbol": "FX:EURUSD" });
 
-        // 各面をあらかじめ回転・配置させて重なりを解消
-        const facesHtml = conf.symbols.map((_, sIdx) => {
-            return `<div class="prism-face" id="f-${idx}-${sIdx}" 
-                         style="transform: rotateX(${sIdx * step}deg) translateZ(${translateZ});">
-                    </div>`;
-        }).join('');
+    // 縦スライド開始
+    startForexVerticalSlide();
+}
 
-        // 表題（Currency等）は一切入れず、構造のみ生成
-        container.innerHTML = `
-            <div class="mini-widget-fixed">
-                <div class="prism-stage" id="prism-stage-${idx}">
-                    ${facesHtml}
-                </div>
-            </div>`;
-
-        // TradingViewウィジェット埋め込み
-        conf.symbols.forEach((sym, sIdx) => {
-            const script = document.createElement('script');
-            script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
-            script.async = true;
-            script.innerHTML = JSON.stringify({
-                "symbol": sym, "width": "100%", "height": "100%", "locale": "ja",
-                "dateRange": "1D", "colorTheme": "dark", "isTransparent": true
-            });
-            const face = document.getElementById(`f-${idx}-${sIdx}`);
-            if (face) face.appendChild(script);
-        });
-
-        // 回転処理
-        setTimeout(() => {
-            let angle = 0;
-            setInterval(() => {
-                angle -= step;
-                const stage = document.getElementById(`prism-stage-${idx}`);
-                if (stage) stage.style.transform = `rotateX(${angle}deg)`;
-            }, 15000); 
-        }, conf.delay);
-    });
+function startForexVerticalSlide() {
+    const wrapper = document.getElementById('forex-wrapper-v');
+    if (!wrapper) return;
+    
+    setInterval(() => {
+        forexVIndex = (forexVIndex + 1) % 3;
+        // 縦方向（Y軸）に155pxずつ移動
+        const offset = -forexVIndex * 155;
+        wrapper.style.transform = `translateY(${offset}px)`;
+    }, 10000); // 10秒ごとに切り替え
 }
 
 function appendMiniWidget(containerId, config) {
@@ -383,153 +301,84 @@ function startFixedWeatherCycle() {
         const currentSlides = document.querySelectorAll('.weather-slide');
         if (currentSlides.length < 2) return;
 
+        // 1. 今のスライドに「粒子消去」クラスをつける
         currentSlides[fixedWeatherIndex].classList.remove('active');
         currentSlides[fixedWeatherIndex].classList.add('exit');
 
-        const particleTime = 3500; 
-        const silentTime = 2000;   
+  // 2. 消え去る粒子(3.5秒)を見せた後、さらに「無」の時間を足して待つ
+        const particleTime = 3500; // 粒子が消えるのにかかる時間
+        const silentTime = 2000;   // 背景だけを見せたい時間（2秒）
 
         setTimeout(() => {
+            // クリーンアップ
             currentSlides[fixedWeatherIndex].classList.remove('exit');
+
+            // 3. 完全に消えた後に、インデックスを進めて次を表示
             fixedWeatherIndex = (fixedWeatherIndex + 1) % currentSlides.length;
             currentSlides[fixedWeatherIndex].classList.add('active');
-        }, particleTime + silentTime); 
-    }, 12000); 
+            
+        }, particleTime + silentTime); // ここで合計の待ち時間を指定
+    }, 12000); // 12秒おきに切り替え
 }
 
 fetchWeather();
-initLeftPrisms(); 
 setInterval(fetchWeather, 600000);
 
+// =========================
+// NEWS
+// =========================
+const RSS_URL = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
+const newsCard = document.getElementById('news-card');
+let newsItems = [], newsEls = [], index = 0, newsT = null;
+let lastGoodNews = null;
+const AUTO_INTERVAL = 11000, FETCH_INTERVAL = 10*60*1000;
 
-// =========================
-// NEWS - シンクロ・スライド方式
-// =========================
-let newsData = [];
-let newsCursor = 0;
-const NEWS_FETCH_INTERVAL = 10 * 60 * 1000; 
-const NEWS_SLIDE_INTERVAL = 8000; 
+function createNews() {
+  newsCard.querySelectorAll('.news-item').forEach(e => e.remove());
+  newsEls = newsItems.map(n => {
+    const div = document.createElement('div');
+    div.className = 'news-item';
+    div.innerHTML = `<div class="news-mark"></div><a href="${n.link}" target="_blank" class="news-link-wrapper"><div class="news-title">${n.title}</div></a><div class="news-description">${n.description}</div><div class="news-date">${n.pubDate}</div>`;
+    newsCard.appendChild(div);
+    return div;
+  });
+}
+
+function showNews(next, init = false) {
+  if (!newsEls[next]) return;
+  newsEls.forEach(el => el.classList.remove('show', 'next', 'exit'));
+  if (!init) { newsEls[index].classList.add('exit'); }
+  newsEls[next].classList.add('show');
+  const nxtIdx = (next + 1) % newsEls.length;
+  if (newsEls[nxtIdx]) newsEls[nxtIdx].classList.add('next');
+  index = next;
+}
+
+function startAutoNews() { stopAutoNews(); newsT = setInterval(() => showNews((index+1)%newsEls.length), AUTO_INTERVAL); }
+function stopAutoNews() { if (newsT) clearInterval(newsT); }
 
 async function fetchNews() {
-    const MY_GAS_URL = "https://script.google.com/macros/s/AKfycbyWq0pZXLP2ZE2ptRr-1iAxD0fT6WzTFS1E1oCAMKba7AAroldDcCZcK_HRnjed-ua2/exec";
-
-    try {
-        const r = await fetch(MY_GAS_URL);
-        const xmlText = await r.text();
-        const parser = new DOMParser();
-        const xml = parser.parseFromString(xmlText, "application/xml");
-        const items = xml.querySelectorAll('item');
-
-        newsData = Array.from(items).map(item => ({
-            title: item.querySelector('title')?.textContent || "",
-            link: item.querySelector('link')?.textContent || "#",
-            pubDate: item.querySelector('pubDate')?.textContent || "",
-            description: item.querySelector('description')?.textContent || ""
-        }));
-
-        if (newsData.length > 0) {
-            const card = document.getElementById('news-card');
-            if (!card.querySelector('.news-container-overlay')) {
-                initNewsSystem();
-            }
-        }
-    } catch (e) {
-        console.error('GAS News Fetch Error:', e);
-    }
+  try {
+    const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL));
+    const data = await r.json();
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(data.contents, "application/xml");
+    const items = xml.querySelectorAll('item');
+    let fetched = Array.from(items).map(item => ({
+      title: item.querySelector('title')?.textContent,
+      link: item.querySelector('link')?.textContent,
+      pubDate: item.querySelector('pubDate')?.textContent,
+      description: item.querySelector('description')?.textContent
+    }));
+    if (fetched.length > 0) { newsItems = fetched; lastGoodNews = fetched; }
+    else if (lastGoodNews) { newsItems = lastGoodNews; }
+    createNews();
+    showNews(0, true);
+    if (newsItems.length > 1) startAutoNews();
+  } catch (e) { console.error('News fetch failed', e); }
 }
-
-function initNewsSystem() {
-    const card = document.getElementById('news-card');
-    
-    card.innerHTML = `
-        <div class="news-container-overlay">
-            <div class="news-main-area">
-                <div class="news-main-wrapper" id="news-main-wrapper">
-                    </div>
-            </div>
-            
-            <div class="news-sub-window">
-                <div class="news-sub-track" id="news-track">
-                    </div>
-            </div>
-        </div>
-    `;
-
-    updateNewsDisplay();
-    setInterval(slideNewsNext, NEWS_SLIDE_INTERVAL);
-}
-
-function updateNewsDisplay() {
-    const wrapper = document.getElementById('news-main-wrapper');
-    if (!wrapper || newsData.length === 0) return;
-
-    const mainItem = newsData[newsCursor % newsData.length];
-    
-    wrapper.innerHTML = `
-        <a href="${mainItem.link}" target="_blank" class="news-title">${mainItem.title}</a>
-        <div class="news-description">${mainItem.description}</div>
-        <div class="news-date">${mainItem.pubDate}</div>
-    `;
-    
-    wrapper.className = 'news-main-wrapper news-anim-idle';
-    renderSubTrack();
-}
-
-function renderSubTrack() {
-    const track = document.getElementById('news-track');
-    let html = '';
-    for (let i = 1; i <= 10; i++) {
-        const subItem = newsData[(newsCursor + i) % newsData.length];
-        html += `
-            <a href="${subItem.link}" target="_blank" class="news-sub-item">
-                <div class="sub-dot"></div>
-                <div class="sub-row-title">${subItem.title}</div>
-            </a>
-        `;
-    }
-    track.innerHTML = html;
-}
-
-function slideNewsNext() {
-    const wrapper = document.getElementById('news-main-wrapper');
-    const track = document.getElementById('news-track');
-    if (!wrapper || !track) return;
-
-    const animDuration = 600; 
-    const rowHeight = 51; 
-
-    wrapper.className = 'news-main-wrapper news-anim-exit';
-    
-    track.style.transition = `transform ${animDuration}ms cubic-bezier(0.2, 0.8, 0.2, 1)`;
-    track.style.transform = `translateY(-${rowHeight}px)`;
-
-    setTimeout(() => {
-        newsCursor++;
-        const nextMainItem = newsData[newsCursor % newsData.length];
-
-        wrapper.innerHTML = `
-            <a href="${nextMainItem.link}" target="_blank" class="news-title">${nextMainItem.title}</a>
-            <div class="news-description">${nextMainItem.description}</div>
-            <div class="news-date">${nextMainItem.pubDate}</div>
-        `;
-
-        wrapper.style.transition = 'none';
-        wrapper.className = 'news-main-wrapper news-anim-enter-prepare';
-        
-        track.style.transition = 'none';
-        track.style.transform = 'translateY(0)';
-        renderSubTrack(); 
-
-        void wrapper.offsetWidth; 
-
-        wrapper.style.transition = `transform ${animDuration}ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity ${animDuration}ms ease`;
-        wrapper.className = 'news-main-wrapper news-anim-idle';
-
-    }, animDuration); 
-}
-
 fetchNews();
-setInterval(fetchNews, NEWS_FETCH_INTERVAL);
+setInterval(fetchNews, FETCH_INTERVAL);
 
 // =========================
 // SCALING
@@ -546,201 +395,93 @@ window.addEventListener('resize', adjustScale);
 window.addEventListener('load', adjustScale);
 adjustScale();
 
-// =========================
-// TRENDS & TSE MONITOR (Real-time via GAS - Pro Market Mode)
-// =========================
-let isShowingTrends = true;
 
-// 取得した本物のデータを保持する変数
-let realNikkeiData = {
-    price: 0,
-    change: 0,
-    open: 0,
-    high: 0,
-    low: 0
-};
+let trendItems = [];
+let trendIndex = 0;
 
-// --- 市場判定：平日 9:00-11:30 / 12:30-15:30 ---
-function isMarketOpen() {
-    const now = new Date();
-    const day = now.getDay();
-    if (day === 0 || day === 6) return false; // 土日は休み
-
-    const time = now.getHours() * 100 + now.getMinutes();
-    if ((time >= 900 && time <= 1130) || (time >= 1230 && time <= 1530)) {
-        return true;
-    }
-    return false;
-}
-
-// --- 1. GASから日経平均データ取得（本物のみ） ---
-async function fetchNikkei() {
-    // 【重要】ここにあなたのGASのURLを正確に入れてください
-    const MY_GAS_URL = "https://script.google.com/macros/s/AKfycbyWq0pZXLP2ZE2ptRr-1iAxD0fT6WzTFS1E1oCAMKba7AAroldDcCZcK_HRnjed-ua2/exec?type=nikkei";
-    
-    try {
-        const r = await fetch(MY_GAS_URL);
-        const d = await r.json();
-        
-        if (d.chart && d.chart.result && d.chart.result.length > 0) {
-            const res = d.chart.result[0];
-            const meta = res.meta;
-            const quote = res.indicators.quote[0];
-            
-            const newPrice = meta.regularMarketPrice;
-            const newChange = meta.regularMarketPrice - meta.chartPreviousClose;
-            const lastIdx = quote.open.length - 1;
-
-            const pBox = document.getElementById('tse-priceBox');
-            const cBox = document.getElementById('tse-changeBox');
-            const pNum = document.getElementById('tse-pNum');
-            const cNum = document.getElementById('tse-cNum');
-
-            if (pNum && cNum) {
-                // 価格に変動があった時だけパカッと光らせる
-                if (realNikkeiData.price !== newPrice && realNikkeiData.price !== 0) {
-                    pBox.style.animation = 'none';
-                    cBox.style.animation = 'none';
-                    void pBox.offsetWidth; // リフロー
-                    pBox.style.animation = 'tse-anim-white 0.5s ease-out';
-                    cBox.style.animation = 'tse-anim-red 0.5s ease-out';
-                }
-
-                realNikkeiData.price = newPrice;
-                realNikkeiData.change = newChange;
-                realNikkeiData.open = quote.open[lastIdx];
-                realNikkeiData.high = quote.high[lastIdx];
-                realNikkeiData.low = quote.low[lastIdx];
-
-                pNum.innerText = realNikkeiData.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                let sign = realNikkeiData.change >= 0 ? "+" : "";
-                cNum.innerText = sign + realNikkeiData.change.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-            }
-
-            // サブデータ反映
-            document.getElementById('tse-open').innerText = realNikkeiData.open.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-            document.getElementById('tse-high').innerText = realNikkeiData.high.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-            document.getElementById('tse-low').innerText = realNikkeiData.low.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-        }
-    } catch(e) { 
-        console.error("Nikkei fetch error:", e); 
-    }
-}
-
-// --- 2. トレンド取得 ---
 async function fetchTrends() {
     const container = document.getElementById('trend-fixed-content');
     if (!container) return;
-    const MY_GAS_URL = "https://script.google.com/macros/s/AKfycbx6dVnRjptPeQouJM6Czl-GUBqQzxFq8Nj06POOVbqTEGb_w4Wx0rHm-M9_GgApEWnv/exec?type=trends";
-    let trendData = [];
+
+    // 最新のトレンドRSS URL候補（geo=JPを末尾にしっかり付ける）
+    const GOOGLE_TRENDS_RSS = 'https://trends.google.co.jp/trending/rss?geo=JP';
+    const HATENA_HOTENTRY = 'https://b.hatena.ne.jp/hotentry.rss'; // SNSでバズっている話題の宝庫
+
     try {
-        const r = await fetch(MY_GAS_URL);
-        const xmlText = await r.text();
+        // 1. まずGoogleトレンドの新URLを試す
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(GOOGLE_TRENDS_RSS)}`;
+        const r = await fetch(proxyUrl);
+        const data = await r.json();
+        
         const parser = new DOMParser();
-        const xml = parser.parseFromString(xmlText, "application/xml");
+        const xml = parser.parseFromString(data.contents, "application/xml");
         const items = xml.querySelectorAll('item');
+
         if (items.length > 0) {
-            trendData = Array.from(items).map(item => item.querySelector('title')?.textContent || "");
+            trendItems = Array.from(items).map(item => item.querySelector('title').textContent);
+        } else {
+            // 2. Googleが404や空なら、SNSのバズ（はてブ）を拾う
+            console.log("Switching to Hatena Trends...");
+            const r2 = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(HATENA_HOTENTRY)}`);
+            const data2 = await r2.json();
+            const xml2 = parser.parseFromString(data2.contents, "application/xml");
+            const items2 = xml2.querySelectorAll('item');
+            trendItems = Array.from(items2).map(item => item.querySelector('title').textContent.substring(0, 20));
         }
-    } catch (e) { console.error('Trends fetch failed:', e); }
 
-    const tiles = container.querySelectorAll('.trend-tile');
-    if (tiles.length > 0) {
-        tiles.forEach(t => { t.classList.remove('enter-active'); t.classList.add('exit-active'); });
-        setTimeout(() => renderTrends(container, trendData), 800);
-    } else {
-        renderTrends(container, trendData);
+    } catch (e) {
+        console.warn('Fetch failed', e);
+        trendItems = ["#推しの子", "円安ドル高", "新作AI", "地震速報", "iPhone17", "Amazonセール"];
     }
-}
 
-function renderTrends(container, data) {
-    if (!container) return;
-    container.style.display = "grid";
-    container.style.gridTemplateColumns = "repeat(8, 1fr)";
-    container.style.gridTemplateRows = "repeat(4, 1fr)";
-    container.style.gap = "0px"; 
-
-    const backupWords = ["CORE_NODE", "MARKET_IDX", "GLB_FEED", "SIG_PROC", "DATA_STREAM", "CLOUD_ARC", "API_LINK", "NET_STAT"];
-    let finalData = [];
-    for (let i = 0; i < 8; i++) { finalData.push(data[i] || backupWords[i]); }
-    const temp = finalData[2]; finalData[2] = finalData[3]; finalData[3] = temp;
-
-    let html = "";
-    const colormap = ["rgba(213,62,79,0.95)", "rgba(244,109,67,0.9)", "rgba(253,174,97,0.85)", "rgba(171,221,164,0.8)", "rgba(102,194,165,0.75)", "rgba(50,136,189,0.7)", "rgba(35,80,160,0.65)", "rgba(20,30,100,0.6)"];
-    const layouts = ["grid-area: 1/1/4/6;", "grid-area: 1/6/3/9;", "grid-area: 3/6/5/8;", "grid-area: 3/8/5/9;", "grid-area: 4/1/5/3;", "grid-area: 4/3/5/5;", "grid-area: 4/5/5/6;"];
-
-    for (let i = 1; i <= 7; i++) {
-        let style = layouts[i-1]; let content = finalData[i-1]; let bgColor = colormap[i-1];
-        let fontSize = i === 1 ? "44px" : (i <= 3 ? "20px" : "13px");
-        let textColor = (i >= 3 && i <= 5) ? "rgba(0,0,0,0.75)" : "#ffffff";
-        html += `<div class="trend-tile" style="${style} background-color: ${bgColor} !important; position: relative; display: flex; align-items: center; justify-content: center; font-size: ${fontSize}; font-weight: 300; color: ${textColor}; padding: 10px; text-align: center; text-transform: uppercase; opacity: 0;" onclick="window.open('https://www.google.com/search?q=${encodeURIComponent(content)}', '_blank')"> <div style="width:100%; word-wrap: break-word;">${content}</div></div>`;
-    }
-    container.innerHTML = html;
-    container.querySelectorAll('.trend-tile').forEach((tile, i) => { setTimeout(() => { tile.classList.add('enter-active'); }, i * 60); });
-}
-
-// --- 3. UI構築とループ設定 ---
-function initTopRightPanel() {
-    const trendEl = document.getElementById('trend-fixed-content');
-    if (!trendEl) return;
+    // 画面反映（粒子エフェクト用の構造を維持）
+    container.innerHTML = trendItems.map(word => `<div class="trend-word">${word}</div>`).join('');
     
-    const parent = trendEl.parentElement;
-    const tseWrapper = document.createElement('div');
-    tseWrapper.id = "tse-wrapper";
-    tseWrapper.innerHTML = `
-        <div class="tse-monitor-container">
-            <div class="tse-header"><span style="font-size: 52px; font-weight: bold; margin-right: 20px;">日経平均株価</span><span style="font-size: 32px;">Nikkei 225</span></div>
-            <div class="tse-main-content">
-                <div class="tse-labels">
-                    <div class="tse-label-group"><span class="tse-jp-text">現在値</span><span class="tse-en-text">Current</span></div>
-                    <div class="tse-label-group"><span class="tse-jp-text">前日比</span><span class="tse-en-text">Change</span></div>
-                </div>
-                <div class="tse-data-area">
-                    <div class="tse-price-box" id="tse-priceBox"><span class="tse-price-num" id="tse-pNum">--</span></div>
-                    <div class="tse-change-box" id="tse-changeBox"><span class="tse-change-num" id="tse-cNum">--</span></div>
-                    <div class="tse-sub-stats-table">
-                        <div class="tse-stat-row"><span>始値 Open</span><span class="tse-stat-val" id="tse-open">--</span></div>
-                        <div class="tse-stat-row"><span>高値 High</span><span class="tse-stat-val" id="tse-high">--</span></div>
-                        <div class="tse-stat-row"><span>安値 Low</span><span class="tse-stat-val" id="tse-low">--</span></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    parent.appendChild(tseWrapper);
-
-    fetchNikkei();
-    fetchTrends();
-
-    // 5秒おきに市場が開いているかチェックして取得
-    setInterval(() => {
-        if (isMarketOpen()) {
-            fetchNikkei();
-            console.log("Market is open: Fetching Nikkei...");
-        }
-    }, 5000); 
-
-    if (window.topRightTimer) clearInterval(window.topRightTimer);
-    window.topRightTimer = setInterval(toggleTopRightPanel, 15000);
-}
-
-function toggleTopRightPanel() {
-    const trendEl = document.getElementById('trend-fixed-content');
-    const tseEl = document.getElementById('tse-wrapper');
-    if (!trendEl || !tseEl) return;
-
-    if (isShowingTrends) {
-        trendEl.style.opacity = "0";
-        trendEl.style.pointerEvents = "none";
-        tseEl.classList.add('active');
-        isShowingTrends = false;
-    } else {
-        tseEl.classList.remove('active');
-        trendEl.style.opacity = "1";
-        trendEl.style.pointerEvents = "auto";
-        isShowingTrends = true;
-        fetchTrends();
+    const words = container.querySelectorAll('.trend-word');
+    if (words.length > 0) {
+        trendIndex = 0;
+        words.forEach(w => w.classList.remove('active', 'exit'));
+        words[0].classList.add('active');
+        startTrendCycle();
     }
 }
 
-initTopRightPanel();
+function renderTrends(container) {
+    if (!trendItems || trendItems.length === 0) return;
+
+    // トレンドの数だけタイルを作成（上位8個程度）
+    const displayCount = 8;
+    let tilesHtml = '';
+    
+    for (let i = 0; i < displayCount; i++) {
+        tilesHtml += `<div class="trend-tile"></div>`;
+    }
+    
+    container.innerHTML = tilesHtml;
+    
+    // サイクル開始
+    startHeatmapCycle();
+}
+
+function startHeatmapCycle() {
+    if (window.trendTimer) clearInterval(window.trendTimer);
+
+    window.trendTimer = setInterval(() => {
+        const tiles = document.querySelectorAll('.trend-tile');
+        if (tiles.length === 0) return;
+
+        // 全タイルを一斉に粒子化
+        tiles.forEach(tile => tile.classList.add('exit'));
+
+        // 粒子化が終わるのを待ってからデータを再取得・再描画
+        setTimeout(() => {
+            fetchTrends(); 
+        }, 5500);
+
+    }, 20000); 
+}
+
+// 起動時に実行
+fetchTrends();
+// 1時間ごとに最新トレンドに更新
+setInterval(fetchTrends, 3600000);
