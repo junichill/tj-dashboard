@@ -439,20 +439,18 @@ async function fetchNews() {
 }
 
 function initNewsSystem() {
-    // 中央下パネルの中にあるコンテナを指定します
-    const card = document.querySelector('.grid-item-bottom'); 
+    const card = document.getElementById('news-card');
     
-    // 中身を注入（構造はそのまま）
     card.innerHTML = `
         <div class="news-container-overlay">
             <div class="news-main-area">
                 <div class="news-main-wrapper" id="news-main-wrapper">
-                </div>
+                    </div>
             </div>
             
             <div class="news-sub-window">
                 <div class="news-sub-track" id="news-track">
-                </div>
+                    </div>
             </div>
         </div>
     `;
@@ -687,50 +685,40 @@ function initTopRightPanel() {
     if (!trendEl) return;
     
     const parent = trendEl.parentElement;
-    
-    // 【重要：修正】 既に tse-wrapper が存在するかチェックする
-    let tseWrapper = document.getElementById('tse-wrapper');
-    
-    if (!tseWrapper) {
-        // 存在しない場合のみ新規作成
-        tseWrapper = document.createElement('div');
-        tseWrapper.id = "tse-wrapper";
-        tseWrapper.innerHTML = `
-            <div class="tse-monitor-container">
-                <div class="tse-header"><span style="font-size: 52px; font-weight: bold; margin-right: 20px;">日経平均株価</span><span style="font-size: 32px;">Nikkei 225</span></div>
-                <div class="tse-main-content">
-                    <div class="tse-labels">
-                        <div class="tse-label-group"><span class="tse-jp-text">現在値</span><span class="tse-en-text">Current</span></div>
-                        <div class="tse-label-group"><span class="tse-jp-text">前日比</span><span class="tse-en-text">Change</span></div>
-                    </div>
-                    <div class="tse-data-area">
-                        <div class="tse-price-box" id="tse-priceBox"><span class="tse-price-num" id="tse-pNum">--</span></div>
-                        <div class="tse-change-box" id="tse-changeBox"><span class="tse-change-num" id="tse-cNum">--</span></div>
-                        <div class="tse-sub-stats-table">
-                            <div class="tse-stat-row"><span>始値 Open</span><span class="tse-stat-val" id="tse-open">--</span></div>
-                            <div class="tse-stat-row"><span>高値 High</span><span class="tse-stat-val" id="tse-high">--</span></div>
-                            <div class="tse-stat-row"><span>安値 Low</span><span class="tse-stat-val" id="tse-low">--</span></div>
-                        </div>
+    const tseWrapper = document.createElement('div');
+    tseWrapper.id = "tse-wrapper";
+    tseWrapper.innerHTML = `
+        <div class="tse-monitor-container">
+            <div class="tse-header"><span style="font-size: 52px; font-weight: bold; margin-right: 20px;">日経平均株価</span><span style="font-size: 32px;">Nikkei 225</span></div>
+            <div class="tse-main-content">
+                <div class="tse-labels">
+                    <div class="tse-label-group"><span class="tse-jp-text">現在値</span><span class="tse-en-text">Current</span></div>
+                    <div class="tse-label-group"><span class="tse-jp-text">前日比</span><span class="tse-en-text">Change</span></div>
+                </div>
+                <div class="tse-data-area">
+                    <div class="tse-price-box" id="tse-priceBox"><span class="tse-price-num" id="tse-pNum">--</span></div>
+                    <div class="tse-change-box" id="tse-changeBox"><span class="tse-change-num" id="tse-cNum">--</span></div>
+                    <div class="tse-sub-stats-table">
+                        <div class="tse-stat-row"><span>始値 Open</span><span class="tse-stat-val" id="tse-open">--</span></div>
+                        <div class="tse-stat-row"><span>高値 High</span><span class="tse-stat-val" id="tse-high">--</span></div>
+                        <div class="tse-stat-row"><span>安値 Low</span><span class="tse-stat-val" id="tse-low">--</span></div>
                     </div>
                 </div>
             </div>
-        `;
-        parent.appendChild(tseWrapper);
-    }
+        </div>
+    `;
+    parent.appendChild(tseWrapper);
 
     fetchNikkei();
     fetchTrends();
 
-    // インターバル設定（重複登録を防ぐため、一回限りで外に出すかここでチェック）
-    if (!window.marketIntervalSet) {
-        setInterval(() => {
-            if (isMarketOpen()) {
-                fetchNikkei();
-                console.log("Market is open: Fetching Nikkei...");
-            }
-        }, 5000);
-        window.marketIntervalSet = true;
-    }
+    // 5秒おきに市場が開いているかチェックして取得
+    setInterval(() => {
+        if (isMarketOpen()) {
+            fetchNikkei();
+            console.log("Market is open: Fetching Nikkei...");
+        }
+    }, 5000); 
 
     if (window.topRightTimer) clearInterval(window.topRightTimer);
     window.topRightTimer = setInterval(toggleTopRightPanel, 15000);
