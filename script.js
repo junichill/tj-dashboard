@@ -751,7 +751,7 @@ initTopRightPanel();
 // =========================
 (function () {
   // ↓ デプロイ後にご自身のWorker URLに書き換えてください
-  const WORKER_URL = 'kmoni-proxy.ilovehawks777.workers.dev';
+  const WORKER_URL = 'https://kmoni-proxy.ilovehawks777.workers.dev';
 
   const layerImg = document.getElementById('seismo-layer');
   const dot      = document.getElementById('seismo-dot');
