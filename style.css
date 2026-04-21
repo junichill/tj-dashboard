@@ -547,5 +547,17 @@ body {
   100% { background-color: #003688; }
 }
 
+/* 新規追加: 強震モニタのスタイル */
+.kmoni-wrapper {
+    width: 320px;
+    height: 100%; /* 親要素に合わせて高さを確保 */
+    overflow: hidden;
+    background-color: #000; /* モニタの背景色に馴染ませる */
+}
 
+.kmoni-iframe {
+    width: 320px;
+    height: 100%; /* もし高さが足りない場合は 600px など固定値に */
+    border: none;
+}
 
