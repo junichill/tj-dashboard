@@ -98,13 +98,11 @@ body {
   justify-content: center;
 }
 
-.grid-item-bottom {
-  grid-column: span 2;
-  height: 100%;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  padding: 0 !important;
+/* =========================================
+   修正：中央下パネルの「中身」だけを非表示にする
+   ========================================= */
+.grid-item-bottom > * {
+  visibility: hidden !important;
 }
 
 #right-panel {
