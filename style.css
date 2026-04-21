@@ -98,17 +98,19 @@ body {
   justify-content: center;
 }
 
+
+
+#right-panel {
+  display: none;
+}
+
 .grid-item-bottom {
   grid-column: span 2;
   height: 100%;
   overflow: hidden;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   padding: 0 !important;
-}
-
-#right-panel {
-  flex: 0 0 520px !important;
   position: relative;
 }
 
@@ -349,6 +351,7 @@ body {
    ========================================= */
 #news-card {
   height: 100%;
+  width: 100%;
   position: relative;
   overflow: hidden;
   background-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop');
@@ -359,23 +362,27 @@ body {
 .news-container-overlay {
   position: absolute;
   top: 0; left: 0; width: 100%; height: 100%;
-  padding: 30px;
+  padding: 20px 30px;
   box-sizing: border-box;
-  /* 透明度を 0.6 (60%) 程度に下げると、背景が綺麗に透けます */
   background-color: rgba(10, 15, 25, 0.6); 
-  /* ぼかし具合（blur）も少し下げると、より背景の形が見えるようになります */
   backdrop-filter: blur(8px); 
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  gap: 30px;
 }
 
 .news-main-area {
-  margin-bottom: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-  padding-bottom: 15px;
-  min-height: 180px;
+  flex: 0 0 45%;
+  margin-bottom: 0;
+  border-bottom: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 0;
+  padding-right: 30px;
+  min-height: unset;
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
 }
 
 .news-main-wrapper {
@@ -423,6 +430,9 @@ body {
   overflow: hidden;
   position: relative;
   mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .news-sub-track { display: flex; flex-direction: column; will-change: transform; }
