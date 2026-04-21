@@ -746,21 +746,23 @@ function toggleTopRightPanel() {
 initTopRightPanel();
 
 // =========================
-// 強震モニタ - 防災科研 画像直接表示 + Wolfx WebSocket EEW
+// 強震モニタ - Cloudflare Worker プロキシ経由でHTTPS表示
+// ★ WORKER_URL は自分のWorkerのURLに変更してください
 // =========================
 (function () {
+  // ↓ デプロイ後にご自身のWorker URLに書き換えてください
+  const WORKER_URL = 'kmoni-proxy.ilovehawks777.workers.dev';
+
   const layerImg = document.getElementById('seismo-layer');
   const dot      = document.getElementById('seismo-dot');
   const label    = document.getElementById('seismo-label');
   const eewInfo  = document.getElementById('seismo-eew-info');
   if (!layerImg) return;
 
-  // --- ゼロパディング ---
   const p = n => String(n).padStart(2, '0');
 
-  // --- 日時 → タイムスタンプ文字列 (JST) ---
+  // JSTタイムスタンプ生成
   function toTS(d) {
-    // JSTに変換
     const jst = new Date(d.getTime() + (d.getTimezoneOffset() + 540) * 60000);
     return (
       jst.getFullYear() +
@@ -772,88 +774,88 @@ initTopRightPanel();
     );
   }
 
-  // --- 1秒ごとに画像URLを更新 (fetchなし・img.srcで直接参照) ---
-  function updateMapImage() {
-    // 現在時刻の2秒前 (画像生成ラグ)
-    const t = new Date(Date.now() - 2000);
-    const ts = toTS(t);
-    const dateStr = ts.slice(0, 8);
-    // リアルタイム震度マップ (acmap)
-    const url = `http://www.kmoni.bosai.go.jp/realtimemap/tile/acmap/${dateStr}/${ts}.acmap.jma.gif`;
-    // キャッシュバスター付きで更新
-    layerImg.src = url + '?_=' + Date.now();
-    label.textContent = 'K-NET LIVE  ' + ts.slice(8, 10) + ':' + ts.slice(10, 12) + ':' + ts.slice(12, 14);
+  let serverTimeDiff = 0; // ローカル時刻とサーバー時刻のずれ(ms)
+  let synced = false;
+
+  // 起動時にサーバー時刻を同期
+  async function syncTime() {
+    try {
+      const res = await fetch(`${WORKER_URL}/latest?_=${Date.now()}`);
+      const json = await res.json();
+      // "2026/04/21 12:34:56" → JST Date
+      const srvTime = new Date(json.latest_time.replace(
+        /(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}):(\d{2})/,
+        '$1-$2-$3T$4:$5:$6+09:00'
+      ));
+      serverTimeDiff = srvTime.getTime() - Date.now();
+      synced = true;
+      dot.classList.remove('alert');
+      dot.style.background = '#00ff88';
+      dot.style.boxShadow = '0 0 6px #00ff88';
+      label.style.color = 'rgba(255,255,255,0.75)';
+      console.log('Seismo: time synced, diff =', serverTimeDiff, 'ms');
+    } catch (e) {
+      console.warn('Seismo: time sync failed', e);
+      // 同期失敗でもローカル時刻で続行
+      synced = true;
+    }
   }
 
-  // 起動直後と1秒ごとに実行
-  updateMapImage();
-  setInterval(updateMapImage, 1000);
+  // 1秒ごとに画像URLを更新
+  function updateMapImage() {
+    if (!synced) return;
+    // サーバー補正済み時刻の2秒前
+    const t = new Date(Date.now() + serverTimeDiff - 2000);
+    const ts = toTS(t);
+    const dateStr = ts.slice(0, 8);
+    const url = `${WORKER_URL}/img/${dateStr}/${ts}.acmap.jma.gif?_=${Date.now()}`;
+    layerImg.src = url;
+    label.textContent = 'K-NET  ' + ts.slice(8,10) + ':' + ts.slice(10,12) + ':' + ts.slice(12,14);
+  }
 
-  // 画像ロード失敗時は静かに無視 (時刻ずれ等で一時的に404が出ることがある)
   layerImg.onerror = () => { layerImg.src = ''; };
 
-  // --- Wolfx WebSocket で EEW をリアルタイム受信 ---
-  let lastEventId = '';
-  let eewWs = null;
+  // 起動
+  syncTime().then(() => {
+    updateMapImage();
+    setInterval(updateMapImage, 1000);
+    // 5分ごとに時刻を再同期
+    setInterval(syncTime, 5 * 60 * 1000);
+  });
 
+  // --- Wolfx WebSocket で EEW をリアルタイム受信 ---
   function connectEewWs() {
     try {
-      eewWs = new WebSocket('wss://ws-api.wolfx.jp/jma_eew');
+      const ws = new WebSocket('wss://ws-api.wolfx.jp/jma_eew');
 
-      eewWs.onopen = () => {
-        dot.classList.remove('alert');
-        dot.style.background = '#00ff88';
-        dot.style.boxShadow = '0 0 6px #00ff88';
-      };
-
-      eewWs.onmessage = (event) => {
+      ws.onmessage = (event) => {
         try {
           const d = JSON.parse(event.data);
-          // heartbeat や type チェック
-          if (d.type === 'heartbeat') return;
+          if (d.type === 'heartbeat' || d.isTraining) return;
+
           if (d.isCancel) {
-            resetEew(); return;
+            dot.classList.remove('alert');
+            label.style.color = 'rgba(255,255,255,0.75)';
+            eewInfo.innerHTML = ''; return;
           }
 
-          const eventId = d.EventID || '';
-          if (!eventId || d.isTraining) return;
+          if (!d.EventID) return;
 
-          lastEventId = eventId;
           dot.classList.add('alert');
           label.textContent = '⚠ 緊急地震速報';
           label.style.color = '#ff5500';
-
-          const serial    = d.Serial || '-';
-          const isFinal   = d.isFinal ? '【最終報】' : '';
-          const isWarn    = d.isWarn  ? ' ⚠警報' : '';
-          const region    = d.Hypocenter || '-';
-          const mag       = d.Magunitude != null ? `M${d.Magunitude}` : '-';
-          const depth     = d.Depth != null ? `${d.Depth}km` : '-';
-          const intensity = d.MaxIntensity || '-';
-
           eewInfo.innerHTML = `
-            <div class="eew-title">第${serial}報${isFinal}${isWarn}</div>
-            <div class="eew-region">${region}</div>
-            <div class="eew-detail">${mag} 深さ${depth} / 最大震度: <strong>${intensity}</strong></div>`;
-
-        } catch (e) { /* ignore parse errors */ }
+            <div class="eew-title">第${d.Serial || '-'}報${d.isFinal ? '【最終報】' : ''}${d.isWarn ? ' ⚠警報' : ''}</div>
+            <div class="eew-region">${d.Hypocenter || '-'}</div>
+            <div class="eew-detail">M${d.Magunitude ?? '-'} 深さ${d.Depth != null ? d.Depth + 'km' : '-'} / 最大震度: <strong>${d.MaxIntensity || '-'}</strong></div>`;
+        } catch (e) {}
       };
 
-      eewWs.onerror = () => {};
-      eewWs.onclose = () => {
-        // 5秒後に再接続
-        setTimeout(connectEewWs, 5000);
-      };
+      ws.onclose = () => setTimeout(connectEewWs, 5000);
+      ws.onerror = () => {};
     } catch(e) {}
-  }
-
-  function resetEew() {
-    dot.classList.remove('alert');
-    label.textContent = 'K-NET LIVE';
-    label.style.color = 'rgba(255,255,255,0.75)';
-    eewInfo.innerHTML = '';
-    lastEventId = '';
   }
 
   connectEewWs();
 })();
+
