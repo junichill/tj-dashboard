@@ -80,22 +80,18 @@ body {
 .center-grid-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 250px 1fr; /* 上段をTSEボードに合わせて250pxに圧縮 */
+  grid-template-rows: 250px 1fr; /* 上段固定、下段（ニュース）が広がる */
   gap: 20px;
   height: 100%;
-  width: 100%;
-  box-sizing: border-box;
 }
 
-.grid-item-tl, .grid-item-tr {
-  width: 100%;
-  height: 100%; /* 元の 400px を 100% に変更 */
-  min-height: 0;
-  position: relative;
-  overflow: hidden;
+/* 各アイテムの配置 */
+.grid-item-tl { grid-area: 1 / 1 / 2 / 2; } /* 左上：現在の天気 */
+.grid-item-tr { grid-area: 1 / 2 / 2 / 3; } /* 右上：空 */
+.grid-item-bc { 
+  grid-area: 2 / 1 / 3 / 3; /* 下段を2列分つなげてニュースに */
   display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow: hidden;
 }
 
 .grid-item-bottom {
@@ -107,9 +103,19 @@ body {
   padding: 0 !important;
 }
 
-#right-panel {
-  flex: 0 0 520px !important;
-  position: relative;
+/* ニュースコンテナをカードいっぱいに広げる */
+#news-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 右パネルの調整（天気がはみ出さないように） */
+#right-panel .news-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 /* =========================================
