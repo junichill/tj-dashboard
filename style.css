@@ -289,7 +289,7 @@ body {
 }
 
 /* --- 週間天気 (下段) --- */
-#forecast-viewport { height: 250px; width: 100%; overflow: hidden; }
+#forecast-viewport { display: none; } /* 中身を消去 */
 .day-group { height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
 .day-group.inactive { opacity: 0.1; filter: blur(8px) scale(0.95); }
 
@@ -546,5 +546,3 @@ body {
   0% { background-color: #D00000; }
   100% { background-color: #003688; }
 }
-
-
