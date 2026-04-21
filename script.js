@@ -744,3 +744,35 @@ function toggleTopRightPanel() {
 }
 
 initTopRightPanel();
+// =========================
+// SEISMO IFRAME フォールバック検知
+// =========================
+(function() {
+  const iframe = document.getElementById('seismo-iframe');
+  const msg = document.getElementById('seismo-blocked-msg');
+  if (!iframe || !msg) return;
+
+  // ロード後にコンテンツにアクセスできなければブロックとみなす
+  iframe.addEventListener('load', () => {
+    try {
+      // 同一オリジンならアクセスできる。クロスオリジンならエラーが出る
+      const doc = iframe.contentDocument || iframe.contentWindow.document;
+      if (!doc || doc.body.innerHTML === '') throw new Error('empty');
+    } catch (e) {
+      // X-Frame-Options / CSP でブロックされている場合
+      iframe.style.display = 'none';
+      msg.style.display = 'flex';
+    }
+  });
+
+  // タイムアウト保険（5秒後に何もロードされていなければ表示）
+  setTimeout(() => {
+    try {
+      const doc = iframe.contentDocument || iframe.contentWindow.document;
+      if (!doc || doc.URL === 'about:blank') throw new Error('timeout');
+    } catch(e) {
+      iframe.style.display = 'none';
+      msg.style.display = 'flex';
+    }
+  }, 5000);
+})();

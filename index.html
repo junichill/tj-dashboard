@@ -56,7 +56,22 @@
 <div class="glass-card grid-item-tr">
     <div id="trend-fixed-content"></div>
 </div>
-    <div id="news-card" class="glass-card grid-item-bottom">
+    <div class="grid-item-bottom grid-bottom-split">
+      <div id="news-card" class="glass-card">
+      </div>
+      <div id="seismo-card" class="glass-card">
+        <iframe
+          id="seismo-iframe"
+          src="https://kwatch-24h.net/2sec_alm_t.html#"
+          scrolling="no"
+          frameborder="0"
+          allowtransparency="true"
+        ></iframe>
+        <div id="seismo-blocked-msg">
+          <span>⚠️ iframeがブロックされています</span>
+          <a href="https://kwatch-24h.net/2sec_alm_t.html#" target="_blank">別タブで開く →</a>
+        </div>
+      </div>
     </div>
   </div>
 </div>
