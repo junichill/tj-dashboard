@@ -89,7 +89,7 @@ body {
 
 .grid-item-tl, .grid-item-tr {
   width: 100%;
-  height: 100%; /* 元の 400px を 100% に変更 */
+  height: 100%; 
   min-height: 0;
   position: relative;
   overflow: hidden;
@@ -103,8 +103,9 @@ body {
   height: 100%;
   overflow: hidden;
   display: flex;
-  align-items: center;
+  align-items: stretch; /* ニュースコンテンツを広げるため stretch に変更 */
   padding: 0 !important;
+  position: relative;
 }
 
 #right-panel {
@@ -151,7 +152,7 @@ body {
    ========================================= */
 .mini-widget-fixed {
   height: 155px;
-  perspective: 1000px; /* 3Dの奥行き */
+  perspective: 1000px; 
   position: relative;
   margin-bottom: 10px;
 }
@@ -206,7 +207,6 @@ body {
   z-index: 0;
 }
 
-/* 粒子アニメーション定義 */
 @keyframes particle-dissolve {
   0% { mask-image: radial-gradient(circle, #000 100%, #000 100%); mask-size: 100% 100%; opacity: 1; }
   50% { mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); mask-size: 150% 150%; opacity: 0.8; }
@@ -288,72 +288,19 @@ body {
   background-color: transparent !important; border: none !important;
 }
 
-/* --- 週間天気 (下段) --- */
-#forecast-viewport { display: none; } /* 中身を消去 */
-.day-group { height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-.day-group.inactive { opacity: 0.1; filter: blur(8px) scale(0.95); }
-
-/* --- 週間天気パネル内のサイズ調整 --- */
-.day-label {
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: 0.25em; /* 少し字間を詰めてソリッドに */
-  color: var(--accent);
-  margin-bottom: 20px; /* 見出しとアイコン群の距離を詰める */
-}
-
-.day-items {
-  display: flex;
-  gap: 15px; /* ここを大幅に縮小（35px -> 15px）して一体感を出す */
-  justify-content: center;
-  align-items: center;
-  padding: 0 20px; /* 両端の余白を確保して中央に寄せる */
-}
-
-.forecast-item {
-  text-align: center;
-  width: 90px; /* 横幅を絞り、情報密度を上げる */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.forecast-time {
-  font-size: 20px; /* 少しだけ小さくして上品に */
-  margin-bottom: 2px; /* アイコンとの隙間を詰める */
-  opacity: 0.85;
-  font-family: 'JetBrains Mono', sans-serif; /* 時計とフォントを合わせる */
-}
-
-.forecast-temp {
-  font-size: 24px;
-  font-weight: 700;
-  margin-top: 2px; /* アイコンとの隙間を詰める */
-  font-family: 'JetBrains Mono', sans-serif;
-}
-
-.weather-icon {
-  width: 75px;  /* アイコンサイズを枠に合わせて微調整 */
-  height: 75px;
-  margin: 5px auto; /* 上下マージンを最小限に */
-  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); /* アイコンを少し浮かせて高級感を出す */
-}
-
-.weather-sunny { color: #ffeb3b; }
-.weather-cloudy { color: #cfd8dc; }
-.weather-rainy { color: #4fc3f7; }
-.weather-snowy { color: #ffffff; }
-
 /* =========================================
-   6. ニュース (右パネル) - ストリームアニメーション・完全修正版
+   6. ニュース (中央下段パネルへ移設)
    ========================================= */
+/* 旧週間天気の設定は削除または上書き */
 #news-card {
+  width: 100%;
   height: 100%;
   position: relative;
   overflow: hidden;
   background-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop');
   background-size: cover;
   background-position: center;
+  border-radius: 24px; /* 親の glass-card に合わせる */
 }
 
 .news-container-overlay {
@@ -361,19 +308,17 @@ body {
   top: 0; left: 0; width: 100%; height: 100%;
   padding: 30px;
   box-sizing: border-box;
-  /* 透明度を 0.6 (60%) 程度に下げると、背景が綺麗に透けます */
   background-color: rgba(10, 15, 25, 0.6); 
-  /* ぼかし具合（blur）も少し下げると、より背景の形が見えるようになります */
   backdrop-filter: blur(8px); 
   display: flex;
   flex-direction: column;
 }
 
 .news-main-area {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-  padding-bottom: 15px;
-  min-height: 180px;
+  padding-bottom: 10px;
+  min-height: 100px; /* 下段の高さに合わせて調整 */
   position: relative;
   overflow: hidden;
 }
@@ -391,13 +336,12 @@ body {
 .news-anim-exit { transform: translateY(-40px) scale(0.95); opacity: 0; filter: blur(5px); }
 .news-anim-enter-prepare { transform: translateY(60px) scale(0.95); opacity: 0; }
 
-/* 元のスタイルを厳守 */
 .news-title {
   font-size: 22px !important;
   font-weight: 600 !important;
   color: #ffffff !important;
   line-height: 1.3;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   text-decoration: none !important;
   display: block;
 }
@@ -405,14 +349,13 @@ body {
 .news-description {
   font-size: 15px;
   color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 15px;
+  margin-bottom: 5px;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2; /* 高さを抑えるために2行に */
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-/* 色を元の 0.5 不透明度に戻しました */
 .news-date {
   font-size: 13px;
   color: rgba(255, 255, 255, 0.5);
@@ -428,7 +371,7 @@ body {
 .news-sub-track { display: flex; flex-direction: column; will-change: transform; }
 
 .news-sub-item {
-  height: 50px;
+  height: 45px;
   display: flex;
   align-items: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -452,42 +395,13 @@ body {
   flex: 1;
 }
 
-/* ホバー時の発光演出（維持） */
 .news-title:hover,
 .news-sub-item:hover .sub-row-title {
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
 }
 
-/* その他パーツ（スケジュール等） */
-.panel-label { display: none; }
-.schedule-list { display: none; }
-
-
-/* --- Yahoo天気風アイコンカラー --- */
-.weather-icon svg, .weather-icon-large svg {
-  filter: drop-shadow(0 3px 5px rgba(0,0,0,0.4)); /* 全体に少し立体感を出す */
-  opacity: 1 !important; /* 強制的にSVG元の色を表示 */
-}
-
-/* 太陽: オレンジ×イエロー */
-.sun-body { fill: #f1c40f; stroke: #e67e22; }
-.sun-rays { stroke: #e67e22; }
-
-/* 雲(明るめ): 曇時々晴などに使用 */
-.cloud-body { fill: #ecf0f1; stroke: #bdc3c7; }
-
-/* 雲(暗め): 曇りや雨に使用 */
-.cloud-dark { fill: #bdc3c7; stroke: #95a5a6; }
-
-/* 雨・傘: 鮮やかな青 */
-.rain-umbrella { fill: #3498db; stroke: #2980b9; }
-.rain-drops { stroke: #3498db; }
-
-/* 雪: 白 */
-.snow-body { fill: #ffffff; stroke: #ecf0f1; }
-
 /* =========================================
-   7. TSE Monitor (日経平均パネル・右上ローテーション用)
+   7. TSE Monitor (日経平均パネル)
    ========================================= */
 #tse-wrapper {
   position: absolute;
@@ -501,13 +415,11 @@ body {
   opacity: 1; pointer-events: auto;
 }
 
-/* トレンドパネルのフェードアウト用 */
 #trend-fixed-content {
   transition: opacity 1.5s ease-in-out;
 }
 
 .tse-monitor-container {
-  /* 親パネル(約440x400)に収まるように1024x576を縮小 */
   transform: scale(0.42);
   transform-origin: center;
   width: 1024px; height: 576px;
@@ -537,7 +449,6 @@ body {
 .tse-stat-row { display: flex; justify-content: space-between; padding: 5px 25px; font-size: 28px; font-weight: bold; }
 .tse-stat-val { font-family: Arial, sans-serif; font-size: 36px; }
 
-/* パカパカ点滅アニメーション */
 @keyframes tse-anim-white {
   0% { background-color: #FFFFFF; color: #000; }
   100% { background-color: #003688; color: #fff; }
