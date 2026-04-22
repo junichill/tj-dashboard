@@ -189,73 +189,171 @@ body {
    5. 中央パネルコンテンツ (天気・トレンド)
    ========================================= */
 
-/* --- 天気表示 (左上) --- */
+/* --- 天気表示 (左上) --- Yahoo風 横並び2カラム */
 #weather-fixed-content {
   position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   overflow: hidden;
   height: 100%;
   width: 100%;
+  background-size: cover;
+  background-position: center;
 }
 
 #weather-fixed-content::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.8) 100%);
+  background: linear-gradient(135deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.75) 100%);
   z-index: 0;
 }
 
-/* 粒子アニメーション定義 */
-@keyframes particle-dissolve {
-  0% { mask-image: radial-gradient(circle, #000 100%, #000 100%); mask-size: 100% 100%; opacity: 1; }
-  50% { mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); mask-size: 150% 150%; opacity: 0.8; }
-  100% { mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); mask-size: 600% 600%; opacity: 0; }
+/* Yahoo風パネル本体 */
+#yw-panel {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  height: 100%;
+  width: 100%;
 }
 
-.weather-slide {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 95%;
-  text-align: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 1.5s ease-in;
+.yw-day-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 16px 10px;
+  gap: 4px;
+  min-width: 0;
 }
 
-.weather-slide.active {
-  opacity: 1;
-  pointer-events: auto;
-  mask-image: none;
+.yw-today {
+  border-right: 1px solid rgba(255,255,255,0.1);
 }
 
-.weather-slide.exit {
-  animation: particle-dissolve 3.5s forwards ease-out;
-  opacity: 1;
+.yw-day-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  font-family: 'JetBrains Mono', monospace;
+}
+.yw-date {
+  color: rgba(255,255,255,0.35);
+  font-weight: 400;
+  font-size: 10px;
 }
 
-.weather-slide-label {
-  font-size: 1.2rem; font-weight: 300; color: rgba(255, 255, 255, 0.4);
-  margin-bottom: 8px; letter-spacing: 0.5em; text-transform: uppercase;
+.yw-main-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0;
 }
-.weather-sub-info {
-  display: flex; align-items: center; gap: 20px; font-size: 1.2rem; font-weight: 200;
-  color: rgba(255, 255, 255, 0.3); margin-bottom: 8px; letter-spacing: 0.1em;
+
+.yw-icon-wrap svg {
+  width: 52px;
+  height: 52px;
+  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.5));
 }
-.weather-icon-large svg { width: 70px; height: 70px; margin: 5px 0; opacity: 0.9; }
-.weather-data-line {
-  display: flex; align-items: baseline; justify-content: center; gap: 18px;
-  font-size: 2.8rem; font-weight: 200; white-space: nowrap; font-family: 'JetBrains Mono', sans-serif;
+
+.yw-temps {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
 }
-.weather-data-line .hi { color: #ff5252; text-shadow: 0 0 15px rgba(255, 82, 82, 0.3); opacity: 0.9; }
-.weather-data-line .lo { color: #448aff; text-shadow: 0 0 15px rgba(68, 138, 255, 0.3); opacity: 0.9; }
-.weather-data-line .sep { color: rgba(255, 255, 255, 0.1); margin: 0 2px; }
-.diff-plus, .diff-minus, .diff-zero { font-size: 1.1rem; font-weight: 400; margin-left: 6px; vertical-align: super; }
-.diff-plus { color: #ff5252; } .diff-minus { color: #448aff; } .diff-zero { color: #888; }
+.yw-hi {
+  font-size: 2.4rem;
+  font-weight: 300;
+  color: #ff6b6b;
+  font-family: 'JetBrains Mono', monospace;
+  text-shadow: 0 0 12px rgba(255,107,107,0.4);
+}
+.yw-sep {
+  font-size: 1.4rem;
+  color: rgba(255,255,255,0.2);
+}
+.yw-lo {
+  font-size: 1.8rem;
+  font-weight: 300;
+  color: #74b9ff;
+  font-family: 'JetBrains Mono', monospace;
+  text-shadow: 0 0 12px rgba(116,185,255,0.4);
+}
+
+.yw-desc-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 2px;
+}
+.yw-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+  letter-spacing: 0.05em;
+}
+.yw-pop {
+  font-size: 12px;
+  color: #74b9ff;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.yw-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin: 6px 0 4px;
+}
+
+/* 時間別予報 */
+.yw-hourly {
+  display: flex;
+  gap: 6px;
+  overflow: hidden;
+}
+.yw-hourly-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+}
+.yw-hourly-time {
+  font-size: 9px;
+  color: rgba(255,255,255,0.4);
+  font-family: 'JetBrains Mono', monospace;
+}
+.yw-hourly-icon svg {
+  width: 22px;
+  height: 22px;
+}
+.yw-hourly-temp {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.8);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* 明日の前日比 */
+.yw-diff-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+.yw-diff-label {
+  font-size: 9px;
+  color: rgba(255,255,255,0.35);
+  font-family: 'JetBrains Mono', monospace;
+}
+.yw-diff {
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+.diff-up { color: #ff6b6b; }
+.diff-dn { color: #74b9ff; }
+.diff-eq { color: rgba(255,255,255,0.3); }
 
 /* --- トレンド (右上) --- */
 #trend-fixed-content {
@@ -517,14 +615,15 @@ body {
 }
 
 .tse-monitor-container {
-  /* 親パネル(約440x400)に収まるように1024x576を縮小 */
-  transform: scale(0.42);
+  /* grid-item-trのサイズ(約550x250px)に合わせてscaleを調整 */
+  transform: scale(0.32);
   transform-origin: center;
   width: 1024px; height: 576px;
   background-color: #0055D4; color: white;
   padding: 40px 50px; box-sizing: border-box;
   box-shadow: 0 15px 45px rgba(0,0,0,0.5);
   border-radius: 16px;
+  flex-shrink: 0;
 }
 
 .tse-header { display: flex; align-items: baseline; border-bottom: 2px solid rgba(255,255,255,0.3); margin-bottom: 30px; }

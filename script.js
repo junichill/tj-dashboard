@@ -207,49 +207,100 @@ async function fetchWeather() {
     if (weatherFixed) {
         const today = d.list[0];
         const dayTemps = d.list.slice(0, 8).map(v => v.main.temp);
-        const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr);
+        const tomorrowListFull = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr);
 
-        const createSlide = (title, iconType, high, low, pop, prevHigh = null, prevLow = null) => {
-            const dateObj = new Date();
-            if (title === "明日") dateObj.setDate(dateObj.getDate() + 1);
-            const dateStr = `${dateObj.getMonth() + 1}/${dateObj.getDate()}(${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dateObj.getDay()]})`;
-            const formatDiff = (h, ph) => {
-                if (ph === null) return "";
-                const diff = Math.round(h - ph);
-                if (diff > 0) return `<span class="diff-plus">[+${diff}]</span>`;
-                if (diff < 0) return `<span class="diff-minus">[${diff}]</span>`;
-                return `<span class="diff-zero">[±0]</span>`;
-            };
+        // 天気説明文
+        const weatherLabel = (type) => ({
+            'sunny': '晴れ', 'partly_cloudy': '曇時々晴', 'cloudy': '曇り',
+            'rainy': '雨', 'snowy': '雪'
+        }[type] || '');
 
-            return `
-            <div class="weather-slide">
-                <div class="weather-slide-label">${title} ${dateStr}</div>
-                <div class="weather-icon-large weather-${iconType}">${WEATHER_ICONS[iconType]}</div>
-                <div class="weather-sub-info">
-                    <span>${iconType === 'sunny' ? '晴れ' : iconType === 'cloudy' ? '曇り' : '雨'}</span>
-                    <span><svg class="drop-icon" viewBox="0 0 24 24" fill="#4fc3f7" width="16"><path d="M12,2C12,2 6,8.19 6,12.5C6,15.78 8.42,18.5 12,18.5C15.58,18.5 18,15.78 18,12.5C18,8.19 12,2 12,2Z"/></svg>${Math.round(pop * 100)}%</span>
-                </div>
-                <div class="weather-data-line">
-                    <span class="hi">${Math.round(high)}°${formatDiff(high, prevHigh)}</span>
-                    <span class="sep">/</span>
-                    <span class="lo">${Math.round(low)}°${formatDiff(low, prevLow)}</span>
-                </div>
+        // 降水確率
+        const todayPop  = Math.round((today.pop || 0) * 100);
+        const tomorrowPop = tomorrowListFull.length
+            ? Math.round(Math.max(...tomorrowListFull.map(v => v.pop || 0)) * 100) : 0;
+
+        const todayType    = getWeatherType(today.weather[0].id);
+        const tomorrowType = tomorrowListFull.length
+            ? getWeatherType(tomorrowListFull[0].weather[0].id) : 'sunny';
+
+        const todayHi  = Math.round(Math.max(...dayTemps));
+        const todayLo  = Math.round(Math.min(...dayTemps));
+        const tomHi    = tomorrowListFull.length
+            ? Math.round(Math.max(...tomorrowListFull.map(v => v.main.temp))) : '--';
+        const tomLo    = tomorrowListFull.length
+            ? Math.round(Math.min(...tomorrowListFull.map(v => v.main.temp))) : '--';
+
+        // 今日の日付・曜日
+        const now = new Date();
+        const days = ['日','月','火','水','木','金','土'];
+        const tomObj = new Date(); tomObj.setDate(now.getDate() + 1);
+        const todayLabel    = `${now.getMonth()+1}/${now.getDate()}(${days[now.getDay()]})`;
+        const tomorrowLabel = `${tomObj.getMonth()+1}/${tomObj.getDate()}(${days[tomObj.getDay()]})`;
+
+        // 時間別予報（今日の3時間毎）
+        const hourlyHtml = d.list.slice(0, 5).map(item => {
+            const h = new Date(item.dt * 1000).getHours();
+            const t = Math.round(item.main.temp);
+            const type = getWeatherType(item.weather[0].id);
+            return `<div class="yw-hourly-item">
+                <div class="yw-hourly-time">${String(h).padStart(2,'0')}時</div>
+                <div class="yw-hourly-icon weather-${type}">${WEATHER_ICONS[type]}</div>
+                <div class="yw-hourly-temp">${t}°</div>
             </div>`;
-        };
+        }).join('');
 
         weatherFixed.innerHTML = `
-            <div id="weather-fixed-wrapper">
-                ${createSlide("今日", getWeatherType(today.weather[0].id), Math.max(...dayTemps), Math.min(...dayTemps), today.pop || 0, null, null)}
-                ${createSlide("明日", getWeatherType(tomorrowList[0].weather[0].id), Math.max(...tomorrowList.map(v=>v.main.temp)), Math.min(...tomorrowList.map(v=>v.main.temp)), tomorrowList[0].pop || 0, Math.max(...dayTemps), Math.min(...dayTemps))}
-            </div>`;
+        <div id="yw-panel">
+          <!-- 左: 今日 -->
+          <div class="yw-day-card yw-today">
+            <div class="yw-day-label">今日 <span class="yw-date">${todayLabel}</span></div>
+            <div class="yw-main-row">
+              <div class="yw-icon-wrap weather-${todayType}">${WEATHER_ICONS[todayType]}</div>
+              <div class="yw-temps">
+                <span class="yw-hi">${todayHi}°</span>
+                <span class="yw-sep">/</span>
+                <span class="yw-lo">${todayLo}°</span>
+              </div>
+            </div>
+            <div class="yw-desc-row">
+              <span class="yw-label">${weatherLabel(todayType)}</span>
+              <span class="yw-pop">☂ ${todayPop}%</span>
+            </div>
+            <div class="yw-divider"></div>
+            <div class="yw-hourly">${hourlyHtml}</div>
+          </div>
+
+          <!-- 右: 明日 -->
+          <div class="yw-day-card yw-tomorrow">
+            <div class="yw-day-label">明日 <span class="yw-date">${tomorrowLabel}</span></div>
+            <div class="yw-main-row">
+              <div class="yw-icon-wrap weather-${tomorrowType}">${WEATHER_ICONS[tomorrowType]}</div>
+              <div class="yw-temps">
+                <span class="yw-hi">${tomHi}°</span>
+                <span class="yw-sep">/</span>
+                <span class="yw-lo">${tomLo}°</span>
+              </div>
+            </div>
+            <div class="yw-desc-row">
+              <span class="yw-label">${weatherLabel(tomorrowType)}</span>
+              <span class="yw-pop">☂ ${tomorrowPop}%</span>
+            </div>
+            <div class="yw-diff-row">
+              <span class="yw-diff-label">最高</span>
+              <span class="yw-diff ${tomHi > todayHi ? 'diff-up' : tomHi < todayHi ? 'diff-dn' : 'diff-eq'}">
+                ${tomHi > todayHi ? '▲' : tomHi < todayHi ? '▼' : '─'}${Math.abs(tomHi - todayHi)}°
+              </span>
+              <span class="yw-diff-label">最低</span>
+              <span class="yw-diff ${tomLo > todayLo ? 'diff-up' : tomLo < todayLo ? 'diff-dn' : 'diff-eq'}">
+                ${tomLo > todayLo ? '▲' : tomLo < todayLo ? '▼' : '─'}${Math.abs(tomLo - todayLo)}°
+              </span>
+            </div>
+          </div>
+        </div>`;
 
         if (today && today.weather[0]) updateWeatherBackground(today.weather[0].id);
-
-        const slides = weatherFixed.querySelectorAll('.weather-slide');
-        if(slides.length > 0) slides[0].classList.add('active'); 
-        startFixedWeatherCycle();
     }
-    startWeatherCycle();
   } catch (err) { console.error('Weather/Market Fetch Error:', err); }
 }
 
