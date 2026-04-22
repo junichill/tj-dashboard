@@ -801,3 +801,20 @@ body {
   font-size: 9px; color: rgba(255,255,255,.4);
   font-family:'JetBrains Mono',monospace;
 }
+
+/* 音ボタン */
+.sound-btn {
+  margin-left: auto;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 13px;
+  padding: 2px 7px;
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
+  line-height: 1.4;
+}
+.sound-btn:hover { background: rgba(255,255,255,0.15); }
+.sound-btn.sound-on  { border-color: var(--accent); color: var(--accent); }
+.sound-btn.sound-off { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.3); }

@@ -775,6 +775,18 @@ initTopRightPanel();
     r.addEventListener('change', () => { curSfbh = r.value; });
   });
 
+  // 音ボタン
+  let soundOn = true;
+  const soundBtn = document.getElementById('seismo-sound-btn');
+  if (soundBtn) {
+    soundBtn.addEventListener('click', () => {
+      soundOn = !soundOn;
+      soundBtn.textContent = soundOn ? '🔊' : '🔇';
+      soundBtn.classList.toggle('sound-on',  soundOn);
+      soundBtn.classList.toggle('sound-off', !soundOn);
+    });
+  }
+
   // ---- Web Audio アラート音 ----
   let audioCtx = null;
   function getAudioCtx() {
@@ -782,6 +794,7 @@ initTopRightPanel();
     return audioCtx;
   }
   function playAlert(level) {
+    if (!soundOn) return;
     // level: 'eew'=警報音, 'eq'=地震検知音
     try {
       const ctx  = getAudioCtx();
