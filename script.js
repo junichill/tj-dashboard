@@ -784,6 +784,8 @@ initTopRightPanel();
       soundBtn.textContent = soundOn ? '🔊' : '🔇';
       soundBtn.classList.toggle('sound-on',  soundOn);
       soundBtn.classList.toggle('sound-off', !soundOn);
+      // ON にしたとき確認音（ピッピ）を鳴らす
+      if (soundOn) playConfirm();
     });
   }
 
@@ -810,6 +812,24 @@ initTopRightPanel();
         gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
         osc.start(t); osc.stop(t + 0.3);
         t += 0.35;
+      });
+    } catch(e) {}
+  }
+
+  // 確認音（ピッピ）: 音ONにしたとき
+  function playConfirm() {
+    try {
+      const ctx = getAudioCtx();
+      [1200, 1600].forEach((freq, i) => {
+        const osc  = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = freq;
+        osc.type = 'sine';
+        const t = ctx.currentTime + i * 0.18;
+        gain.gain.setValueAtTime(0.25, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+        osc.start(t); osc.stop(t + 0.15);
       });
     } catch(e) {}
   }

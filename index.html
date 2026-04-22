@@ -73,6 +73,8 @@
           <!-- 強震モニタ画像 -->
           <div id="seismo-map-wrap">
             <img id="seismo-layer" alt="強震モニタ" />
+            <!-- 音ボタン（地図右上） -->
+            <button id="seismo-sound-btn" class="sound-btn sound-on" title="アラート音 ON/OFF">🔊</button>
             <!-- EEWオーバーレイ -->
             <div id="seismo-eew-overlay" class="hidden">
               <div id="seismo-eew-title">⚠ 緊急地震速報</div>
@@ -92,7 +94,6 @@
               <span class="ctrl-label">観測</span>
               <label class="ctrl-radio"><input type="radio" name="s-sfbh" value="s" checked> 地表</label>
               <label class="ctrl-radio"><input type="radio" name="s-sfbh" value="b"> 地中</label>
-              <button id="seismo-sound-btn" class="sound-btn sound-on" title="アラート音 ON/OFF">🔊</button>
             </div>
           </div>
 

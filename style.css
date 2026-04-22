@@ -802,19 +802,23 @@ body {
   font-family:'JetBrains Mono',monospace;
 }
 
-/* 音ボタン */
+/* 音ボタン（地図右上に絶対配置） */
 .sound-btn {
-  margin-left: auto;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.15);
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 15;
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.2);
   border-radius: 6px;
   color: #fff;
-  font-size: 13px;
-  padding: 2px 7px;
+  font-size: 14px;
+  padding: 3px 8px;
   cursor: pointer;
   transition: background .2s, border-color .2s;
   line-height: 1.4;
+  backdrop-filter: blur(4px);
 }
-.sound-btn:hover { background: rgba(255,255,255,0.15); }
-.sound-btn.sound-on  { border-color: var(--accent); color: var(--accent); }
-.sound-btn.sound-off { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.3); }
+.sound-btn:hover { background: rgba(0,0,0,0.75); }
+.sound-btn.sound-on  { border-color: var(--accent); }
+.sound-btn.sound-off { border-color: rgba(255,255,255,0.15); opacity: 0.5; }
