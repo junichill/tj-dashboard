@@ -750,7 +750,7 @@ initTopRightPanel();
 // 強震モニタ + 地震情報 - kwatch風
 // =========================
 (function () {
-  const GAS_URL  = 'https://script.google.com/macros/s/AKfycbynRJc1XQpWz5nd5Ko9ZVV1zzAzhGAjsNRUai6KWpXZm6Up0zi53S8uDEYB9RwfQPFt/exec';
+  const GAS_URL  = 'https://script.google.com/macros/s/AKfycbyKu4fnj5PPWPc3ezlmUhokRAwCyhUhSXeY0RKqB4WC0yXfI7nZ_mbIL52EJpOlVSRx/exec';
   const P2P_URL  = 'https://api.p2pquake.net/v2/history?codes=551&limit=8';
 
   // DOM
