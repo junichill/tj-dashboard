@@ -301,6 +301,7 @@ async function fetchWeather() {
 
         if (today && today.weather[0]) updateWeatherBackground(today.weather[0].id);
     }
+    startWeatherCycle();
   } catch (err) { console.error('Weather/Market Fetch Error:', err); }
 }
 
@@ -740,11 +741,20 @@ function initTopRightPanel() {
     tseWrapper.id = "tse-wrapper";
     tseWrapper.innerHTML = `
         <div class="tse-monitor-container">
-            <div class="tse-header"><span style="font-size: 52px; font-weight: bold; margin-right: 20px;">日経平均株価</span><span style="font-size: 32px;">Nikkei 225</span></div>
+            <div class="tse-header">
+                <span>日経平均株価</span>
+                <span>Nikkei 225</span>
+            </div>
             <div class="tse-main-content">
                 <div class="tse-labels">
-                    <div class="tse-label-group"><span class="tse-jp-text">現在値</span><span class="tse-en-text">Current</span></div>
-                    <div class="tse-label-group"><span class="tse-jp-text">前日比</span><span class="tse-en-text">Change</span></div>
+                    <div class="tse-label-group">
+                        <span class="tse-jp-text">現在値</span>
+                        <span class="tse-en-text">Current</span>
+                    </div>
+                    <div class="tse-label-group">
+                        <span class="tse-jp-text">前日比</span>
+                        <span class="tse-en-text">Change</span>
+                    </div>
                 </div>
                 <div class="tse-data-area">
                     <div class="tse-price-box" id="tse-priceBox"><span class="tse-price-num" id="tse-pNum">--</span></div>
