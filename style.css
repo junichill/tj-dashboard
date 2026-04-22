@@ -614,37 +614,81 @@ body {
   transition: opacity 1.5s ease-in-out;
 }
 
+/* TSEモニターを親の枠に100%フィットさせる */
 .tse-monitor-container {
-  /* grid-item-trのサイズ(約550x250px)に合わせてscaleを調整 */
-  transform: scale(0.32);
-  transform-origin: center;
-  width: 1024px; height: 576px;
-  background-color: #0055D4; color: white;
-  padding: 40px 50px; box-sizing: border-box;
-  box-shadow: 0 15px 45px rgba(0,0,0,0.5);
-  border-radius: 16px;
-  flex-shrink: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #0055D4;
+  color: white;
+  padding: 14px 18px;
+  box-sizing: border-box;
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.tse-header { display: flex; align-items: baseline; border-bottom: 2px solid rgba(255,255,255,0.3); margin-bottom: 30px; }
-.tse-main-content { display: flex; justify-content: space-between; }
-.tse-labels { width: 280px; }
-.tse-label-group { height: 110px; margin-bottom: 25px; display: flex; flex-direction: column; justify-content: center; }
-.tse-jp-text { font-size: 48px; font-weight: bold; }
-.tse-en-text { font-size: 24px; color: #cbdfff; }
-.tse-data-area { flex-grow: 1; display: flex; flex-direction: column; align-items: flex-end; }
-.tse-price-box, .tse-change-box {
-  background-color: #003688; color: #fff;
-  display: flex; justify-content: flex-end; align-items: center;
-  padding: 0 25px; box-sizing: border-box;
+.tse-header {
+  display: flex;
+  align-items: baseline;
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
 }
-.tse-price-box { width: 620px; height: 110px; margin-bottom: 20px; }
-.tse-change-box { width: 500px; height: 80px; margin-bottom: 30px; }
-.tse-price-num { font-size: 95px; font-weight: bold; font-family: Arial, sans-serif; }
-.tse-change-num { font-size: 55px; font-weight: bold; font-family: Arial, sans-serif; }
-.tse-sub-stats-table { background-color: #003688; width: 500px; padding: 10px 0; }
-.tse-stat-row { display: flex; justify-content: space-between; padding: 5px 25px; font-size: 28px; font-weight: bold; }
-.tse-stat-val { font-family: Arial, sans-serif; font-size: 36px; }
+.tse-header > span:first-child { font-size: 18px; font-weight: bold; margin-right: 10px; }
+.tse-header > span:last-child  { font-size: 12px; opacity: 0.7; }
+
+.tse-main-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex: 1;
+  gap: 10px;
+}
+
+.tse-labels { display: flex; flex-direction: column; gap: 6px; justify-content: center; }
+.tse-label-group { display: flex; flex-direction: column; }
+.tse-jp-text { font-size: 14px; font-weight: bold; }
+.tse-en-text { font-size: 10px; color: #cbdfff; }
+
+.tse-data-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.tse-price-box, .tse-change-box {
+  background-color: #003688;
+  color: #fff;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 4px 12px;
+  box-sizing: border-box;
+  width: 100%;
+  border-radius: 4px;
+}
+.tse-price-box { min-height: 52px; }
+.tse-change-box { min-height: 36px; }
+.tse-price-num { font-size: 2.2rem; font-weight: bold; font-family: 'JetBrains Mono', Arial, sans-serif; }
+.tse-change-num { font-size: 1.4rem; font-weight: bold; font-family: 'JetBrains Mono', Arial, sans-serif; }
+
+.tse-sub-stats-table {
+  background-color: #003688;
+  width: 100%;
+  padding: 4px 0;
+  border-radius: 4px;
+}
+.tse-stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 12px;
+  font-size: 11px;
+  font-weight: bold;
+}
+.tse-stat-val { font-family: 'JetBrains Mono', Arial, sans-serif; font-size: 12px; }
 
 /* パカパカ点滅アニメーション */
 @keyframes tse-anim-white {
