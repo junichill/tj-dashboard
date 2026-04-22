@@ -60,24 +60,59 @@
       <div id="news-card" class="glass-card">
       </div>
       <div id="seismo-card" class="glass-card">
-        <!-- リアルタイム震度レイヤー（GAS経由Base64） -->
-        <img id="seismo-layer" alt="強震モニタ リアルタイム震度" />
-        <!-- EEW情報オーバーレイ -->
-        <div id="seismo-eew-overlay">
-          <div id="seismo-status">
+
+        <!-- 左カラム: 強震モニタ画像 + コントロール -->
+        <div id="seismo-left">
+          <!-- ステータスバー -->
+          <div id="seismo-header">
             <span id="seismo-dot"></span>
             <span id="seismo-label">接続中...</span>
+            <span id="seismo-time"></span>
           </div>
-          <div id="seismo-eew-info"></div>
+
+          <!-- 強震モニタ画像 -->
+          <div id="seismo-map-wrap">
+            <img id="seismo-layer" alt="強震モニタ" />
+            <!-- EEWオーバーレイ -->
+            <div id="seismo-eew-overlay" class="hidden">
+              <div id="seismo-eew-title">⚠ 緊急地震速報</div>
+              <div id="seismo-eew-info"></div>
+            </div>
+          </div>
+
+          <!-- ラジオボタン: 指標 -->
+          <div id="seismo-controls">
+            <div class="ctrl-group">
+              <span class="ctrl-label">指標</span>
+              <label class="ctrl-radio"><input type="radio" name="s-lyr" value="jma" checked> 震度</label>
+              <label class="ctrl-radio"><input type="radio" name="s-lyr" value="acmap"> 加速度</label>
+              <label class="ctrl-radio"><input type="radio" name="s-lyr" value="vcmap"> 速度</label>
+            </div>
+            <div class="ctrl-group">
+              <span class="ctrl-label">観測</span>
+              <label class="ctrl-radio"><input type="radio" name="s-sfbh" value="s" checked> 地表</label>
+              <label class="ctrl-radio"><input type="radio" name="s-sfbh" value="b"> 地中</label>
+            </div>
+          </div>
+
+          <div id="seismo-credit">防災科研 強震モニタ (NIED)</div>
         </div>
-        <div id="seismo-credit">Data: 防災科研 強震モニタ (NIED) / Wolfx EEW</div>
+
+        <!-- 右カラム: 地震情報リスト -->
+        <div id="seismo-right">
+          <div id="eq-list-header">
+            <span class="eq-list-title">最近の地震</span>
+            <span id="eq-list-updated"></span>
+          </div>
+          <div id="eq-list-items"></div>
+        </div>
+
       </div>
     </div>
   </div>
 </div>
 
-</div>
-
+<!-- 地震アラート音（Web Audio APIで生成） -->
 <script src="flip.min.js"></script>
 <script src="script.js"></script>
 
