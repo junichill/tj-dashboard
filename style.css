@@ -557,7 +557,7 @@ body {
   100% { background-color: #003688; }
 }
 /* =========================================
-   8. 地震情報パネル (下段 右側) - P2P地震情報 + EEW
+   8. 強震モニタパネル (下段 右側) - GAS経由画像表示
    ========================================= */
 .grid-bottom-split {
   display: flex;
@@ -575,71 +575,46 @@ body {
 }
 
 #seismo-card {
-  flex: 0 0 400px;
+  flex: 0 0 380px;
   height: 100%;
   position: relative;
   overflow: hidden;
   border-radius: 24px;
-  background: linear-gradient(160deg, #020c1a 0%, #041428 100%);
+  background: #000d1a;
   display: flex;
-  flex-direction: row;
-}
-
-/* --- EEWバナー（地震速報時に全面表示） --- */
-#eew-banner {
-  display: none;
-  position: absolute;
-  inset: 0;
-  z-index: 50;
-  background: rgba(180, 20, 0, 0.92);
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  animation: eew-flash 0.6s infinite alternate;
-}
-#eew-banner.active { display: flex; }
-
-@keyframes eew-flash {
-  from { background: rgba(180,20,0,0.92); }
-  to   { background: rgba(255,60,0,0.97); }
 }
 
-#eew-banner-title {
-  font-size: 22px;
-  font-weight: 900;
-  letter-spacing: 0.2em;
-  color: #fff;
-  text-shadow: 0 0 20px rgba(255,200,0,0.8);
-}
-#eew-banner-body {
-  font-size: 13px;
-  color: rgba(255,255,180,0.95);
-  text-align: center;
-  font-family: 'JetBrains Mono', monospace;
-  line-height: 1.8;
+/* リアルタイム震度画像（GASからBase64で受け取る） */
+#seismo-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
-/* --- ヘッダー --- */
-#seismo-header {
+/* EEW・ステータス オーバーレイ */
+#seismo-eew-overlay {
   position: absolute;
   top: 0; left: 0; right: 0;
-  padding: 8px 12px 6px;
+  padding: 10px 14px;
   background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%);
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 4px;
   z-index: 10;
 }
 
 #seismo-status {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 #seismo-dot {
-  width: 7px; height: 7px;
+  width: 8px; height: 8px;
   border-radius: 50%;
   background: #00ff88;
   box-shadow: 0 0 6px #00ff88;
@@ -649,156 +624,54 @@ body {
 #seismo-dot.alert {
   background: #ff3300;
   box-shadow: 0 0 12px #ff3300;
-  animation: seismo-alert-flash 0.4s infinite;
+  animation: seismo-alert-flash 0.5s infinite;
 }
 @keyframes seismo-pulse {
-  0%,100% { opacity:1; } 50% { opacity:0.3; }
+  0%, 100% { opacity: 1; } 50% { opacity: 0.3; }
 }
 @keyframes seismo-alert-flash {
-  0%,100% { opacity:1; transform:scale(1.3); } 50% { opacity:0.5; transform:scale(0.9); }
+  0%, 100% { opacity: 1; transform: scale(1.2); } 50% { opacity: 0.5; transform: scale(0.9); }
 }
 
 #seismo-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: rgba(255,255,255,0.65);
-  font-family: 'JetBrains Mono', monospace;
-  text-transform: uppercase;
-}
-#seismo-title {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.25em;
-  color: var(--accent);
-  font-family: 'JetBrains Mono', monospace;
-}
-
-/* --- 地図エリア --- */
-#seismo-map-wrap {
-  flex: 0 0 200px;
-  height: 100%;
-  position: relative;
-  padding-top: 32px;
-  box-sizing: border-box;
-}
-#seismo-map {
-  width: 100%;
-  height: 100%;
-}
-
-/* 震源マーカー */
-.eq-marker-ring {
-  fill: none;
-  stroke-width: 1.5;
-  opacity: 0;
-  animation: eq-ring-expand 2s ease-out forwards;
-}
-@keyframes eq-ring-expand {
-  0%   { r: 4px; opacity: 0.9; }
-  100% { r: 18px; opacity: 0; }
-}
-.eq-marker-dot {
-  animation: eq-dot-in 0.3s ease-out forwards;
-}
-@keyframes eq-dot-in {
-  from { r: 0; opacity: 0; }
-  to   { opacity: 1; }
-}
-
-/* --- 地震リストエリア --- */
-#seismo-list {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 32px 10px 20px 8px;
-  overflow: hidden;
-  border-left: 1px solid rgba(255,255,255,0.06);
-}
-#seismo-list-header {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.3em;
-  color: var(--accent);
-  text-transform: uppercase;
-  font-family: 'JetBrains Mono', monospace;
-  margin-bottom: 8px;
-  padding-bottom: 5px;
-  border-bottom: 1px solid rgba(0,212,255,0.2);
-}
-#seismo-items {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  overflow: hidden;
-}
-
-.eq-item {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 8px;
-  padding: 6px 8px;
-  transition: background 0.3s;
-  animation: eq-item-in 0.4s ease-out;
-}
-.eq-item.eq-item-new {
-  background: rgba(0,212,255,0.08);
-  border-color: rgba(0,212,255,0.25);
-}
-@keyframes eq-item-in {
-  from { opacity:0; transform: translateX(10px); }
-  to   { opacity:1; transform: translateX(0); }
-}
-
-.eq-item-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 2px;
-}
-.eq-item-region {
   font-size: 11px;
   font-weight: 700;
-  color: #fff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 110px;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.75);
+  text-transform: uppercase;
+  font-family: 'JetBrains Mono', monospace;
 }
-.eq-item-intensity {
+
+/* EEW発生時の情報表示 */
+#seismo-eew-info {
   font-size: 13px;
-  font-weight: 900;
+  color: #fff;
   font-family: 'JetBrains Mono', monospace;
-  padding: 1px 5px;
-  border-radius: 4px;
-  flex-shrink: 0;
+  line-height: 1.5;
 }
-.int-0  { color:#aaa; background:rgba(150,150,150,0.2); }
-.int-1  { color:#7ecef4; background:rgba(126,206,244,0.15); }
-.int-2  { color:#7ecef4; background:rgba(126,206,244,0.15); }
-.int-3  { color:#a0e060; background:rgba(160,224,96,0.15); }
-.int-4  { color:#ffe94d; background:rgba(255,233,77,0.18); }
-.int-5l { color:#ffb347; background:rgba(255,179,71,0.2); }
-.int-5u { color:#ff7f2a; background:rgba(255,127,42,0.2); }
-.int-6l { color:#ff4444; background:rgba(255,68,68,0.2); }
-.int-6u { color:#ff0000; background:rgba(255,0,0,0.25); }
-.int-7  { color:#ff00ff; background:rgba(255,0,255,0.2); }
-
-.eq-item-detail {
-  font-size: 9px;
-  color: rgba(255,255,255,0.45);
-  font-family: 'JetBrains Mono', monospace;
-  display: flex;
-  gap: 6px;
+.eew-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ff5500;
+  text-shadow: 0 0 8px rgba(255,85,0,0.7);
+  margin-bottom: 2px;
+}
+.eew-region {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+}
+.eew-detail {
+  font-size: 12px;
+  color: rgba(255,255,255,0.65);
 }
 
-/* クレジット */
 #seismo-credit {
   position: absolute;
-  bottom: 5px;
-  right: 8px;
-  font-size: 8px;
-  color: rgba(255,255,255,0.2);
+  bottom: 6px;
+  right: 10px;
+  font-size: 9px;
+  color: rgba(255,255,255,0.3);
   font-family: 'JetBrains Mono', monospace;
   z-index: 10;
 }
