@@ -80,7 +80,7 @@ body {
 .center-grid-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 250px 1fr; /* 上段をTSEボードに合わせて250pxに圧縮 */
+  grid-template-rows: 320px 1fr;
   gap: 20px;
   height: 100%;
   width: 100%;
@@ -89,13 +89,13 @@ body {
 
 .grid-item-tl, .grid-item-tr {
   width: 100%;
-  height: 100%; /* 元の 400px を 100% に変更 */
+  height: 100%;
   min-height: 0;
   position: relative;
   overflow: hidden;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: stretch;
 }
 
 
@@ -191,29 +191,28 @@ body {
 
 /* --- 天気表示 (左上) --- Yahoo風 横並び2カラム */
 #weather-fixed-content {
-  position: relative;
+  position: absolute;
+  inset: 0;
   overflow: hidden;
-  height: 100%;
-  width: 100%;
   background-size: cover;
   background-position: center;
+  background-color: #0a1628;
 }
 
 #weather-fixed-content::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.75) 100%);
+  background: linear-gradient(135deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.65) 100%);
   z-index: 0;
 }
 
 /* Yahoo風パネル本体 */
 #yw-panel {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 1;
   display: flex;
-  height: 100%;
-  width: 100%;
 }
 
 .yw-day-card {
@@ -614,81 +613,117 @@ body {
   transition: opacity 1.5s ease-in-out;
 }
 
-/* TSEモニターを親の枠に100%フィットさせる */
+/* TSEモニターを親の枠に100%フィットさせる（縦長・東証風） */
 .tse-monitor-container {
   width: 100%;
   height: 100%;
   background-color: #0055D4;
   color: white;
-  padding: 14px 18px;
+  padding: 16px 14px 12px;
   box-sizing: border-box;
-  border-radius: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  gap: 8px;
 }
 
 .tse-header {
   display: flex;
-  align-items: baseline;
-  border-bottom: 1px solid rgba(255,255,255,0.3);
-  margin-bottom: 10px;
-  padding-bottom: 6px;
+  flex-direction: column;
+  border-bottom: 2px solid rgba(255,255,255,0.35);
+  padding-bottom: 8px;
+  gap: 2px;
 }
-.tse-header > span:first-child { font-size: 18px; font-weight: bold; margin-right: 10px; }
-.tse-header > span:last-child  { font-size: 12px; opacity: 0.7; }
+.tse-header > span:first-child {
+  font-size: 15px;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+}
+.tse-header > span:last-child {
+  font-size: 10px;
+  opacity: 0.6;
+  letter-spacing: 0.1em;
+}
 
 .tse-main-content {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  flex-direction: column;
   flex: 1;
-  gap: 10px;
+  gap: 8px;
 }
 
-.tse-labels { display: flex; flex-direction: column; gap: 6px; justify-content: center; }
-.tse-label-group { display: flex; flex-direction: column; }
-.tse-jp-text { font-size: 14px; font-weight: bold; }
-.tse-en-text { font-size: 10px; color: #cbdfff; }
+.tse-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.tse-label-group {
+  display: flex;
+  flex-direction: column;
+}
+.tse-jp-text { font-size: 12px; font-weight: bold; }
+.tse-en-text { font-size: 9px; color: #cbdfff; opacity: 0.8; }
 
 .tse-data-area {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   flex: 1;
+}
+
+.tse-price-box {
+  background-color: #003688;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 6px;
-}
-
-.tse-price-box, .tse-change-box {
-  background-color: #003688;
-  color: #fff;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 4px 12px;
-  box-sizing: border-box;
-  width: 100%;
+  justify-content: center;
+  padding: 8px 14px;
   border-radius: 4px;
+  flex: 2;
 }
-.tse-price-box { min-height: 52px; }
-.tse-change-box { min-height: 36px; }
-.tse-price-num { font-size: 2.2rem; font-weight: bold; font-family: 'JetBrains Mono', Arial, sans-serif; }
-.tse-change-num { font-size: 1.4rem; font-weight: bold; font-family: 'JetBrains Mono', Arial, sans-serif; }
+.tse-change-box {
+  background-color: #003688;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 6px 14px;
+  border-radius: 4px;
+  flex: 1;
+}
+.tse-price-label {
+  font-size: 10px;
+  color: #cbdfff;
+  opacity: 0.7;
+  align-self: flex-start;
+  letter-spacing: 0.1em;
+}
+.tse-price-num {
+  font-size: 2rem;
+  font-weight: bold;
+  font-family: 'JetBrains Mono', Arial, sans-serif;
+  letter-spacing: 0.02em;
+}
+.tse-change-num {
+  font-size: 1.3rem;
+  font-weight: bold;
+  font-family: 'JetBrains Mono', Arial, sans-serif;
+}
 
 .tse-sub-stats-table {
   background-color: #003688;
-  width: 100%;
-  padding: 4px 0;
+  padding: 6px 0;
   border-radius: 4px;
 }
 .tse-stat-row {
   display: flex;
   justify-content: space-between;
-  padding: 2px 12px;
+  padding: 3px 12px;
   font-size: 11px;
   font-weight: bold;
 }
-.tse-stat-val { font-family: 'JetBrains Mono', Arial, sans-serif; font-size: 12px; }
+.tse-stat-val {
+  font-family: 'JetBrains Mono', Arial, sans-serif;
+  font-size: 12px;
+}
 
 /* パカパカ点滅アニメーション */
 @keyframes tse-anim-white {
