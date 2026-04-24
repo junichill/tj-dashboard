@@ -79,7 +79,7 @@ body {
 
 .center-grid-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 300px;
   grid-template-rows: 220px 1fr;
   gap: 20px;
   height: 100%;
@@ -622,54 +622,52 @@ body {
   transition: opacity 1.5s ease-in-out;
 }
 
-/* TSEモニター - 東証パネル忠実再現 */
+/* TSEモニター - 東証パネル 220px高さ・300px幅に最適化 */
 .tse-monitor-container {
   width: 100%;
   height: 100%;
   background-color: #0055D4;
   color: white;
-  padding: 10px 16px 12px;
+  padding: 8px 14px 10px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 /* タイトル行 */
 .tse-header {
   display: flex;
   align-items: baseline;
-  gap: 14px;
+  gap: 10px;
   border-bottom: 2px solid rgba(255,255,255,0.4);
-  padding-bottom: 6px;
+  padding-bottom: 5px;
   flex-shrink: 0;
 }
 .tse-header > span:first-child {
-  font-size: 22px;
+  font-size: 17px;
   font-weight: 900;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
 }
 .tse-header > span:last-child {
-  font-size: 15px;
-  font-weight: 400;
-  opacity: 0.85;
+  font-size: 12px;
+  opacity: 0.8;
 }
 
-/* メイン: 左ラベル + 右数値 - 東証通り横並び */
+/* メイン: 左ラベル + 右数値 */
 .tse-main-content {
   display: flex;
   flex: 1;
-  gap: 12px;
+  gap: 8px;
   min-height: 0;
 }
 
-/* 左: ラベル縦並び */
+/* 左ラベル縦並び */
 .tse-labels {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  flex: 0 0 auto;
-  min-width: 100px;
+  flex: 0 0 72px;
 }
 .tse-label-group {
   display: flex;
@@ -677,55 +675,53 @@ body {
   line-height: 1.1;
 }
 .tse-jp-text {
-  font-size: 18px;
+  font-size: 13px;
   font-weight: 900;
-  letter-spacing: 0.03em;
 }
 .tse-en-text {
-  font-size: 11px;
+  font-size: 9px;
   color: #cbdfff;
-  font-weight: 400;
 }
 
-/* 右: 数値ボックス縦並び */
+/* 右数値エリア */
 .tse-data-area {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
   min-width: 0;
 }
 
-/* 現在値ボックス */
+/* 現在値 */
 .tse-price-box {
   background-color: #003688;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding: 0 14px;
+  padding: 0 10px;
   border-radius: 3px;
   flex: 2.2;
 }
 .tse-price-num {
-  font-size: 2.6rem;
+  font-size: 1.75rem;
   font-weight: 900;
   font-family: 'JetBrains Mono', Arial, sans-serif;
-  letter-spacing: 0.02em;
   color: #fff;
+  letter-spacing: 0.01em;
 }
 
-/* 前日比ボックス */
+/* 前日比 */
 .tse-change-box {
   background-color: #003688;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding: 0 14px;
+  padding: 0 10px;
   border-radius: 3px;
-  flex: 1.4;
+  flex: 1.3;
 }
 .tse-change-num {
-  font-size: 1.8rem;
+  font-size: 1.25rem;
   font-weight: 900;
   font-family: 'JetBrains Mono', Arial, sans-serif;
   color: #ff6666;
@@ -735,7 +731,7 @@ body {
 .tse-sub-stats-table {
   background-color: #003688;
   border-radius: 3px;
-  flex: 2.4;
+  flex: 2.5;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -743,11 +739,11 @@ body {
 .tse-stat-row {
   display: flex;
   justify-content: flex-end;
-  padding: 0 14px;
+  padding: 0 10px;
 }
 .tse-stat-val {
   font-family: 'JetBrains Mono', Arial, sans-serif;
-  font-size: 1.3rem;
+  font-size: 1.0rem;
   font-weight: 700;
 }
 

@@ -201,8 +201,11 @@ async function fetchWeather() {
     const weatherFixed = document.getElementById('weather-fixed-content');
     if (weatherFixed) {
         const today = d.list[0];
-        const dayTemps = d.list.slice(0, 8).map(v => v.main.temp);
+        // 今日・明日のリストをJST日付で確実に絞り込む
+        const todayListFull    = d.list.filter(item => toJstDateStr(item.dt * 1000) === todayDateStr);
         const tomorrowListFull = d.list.filter(item => toJstDateStr(item.dt * 1000) === tomorrowStr);
+        // 今日データがない場合は最初の8件で代替
+        const dayTemps = (todayListFull.length ? todayListFull : d.list.slice(0, 8)).map(v => v.main.temp);
 
         // 天気説明文
         const weatherLabel = (type) => ({
