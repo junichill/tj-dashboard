@@ -152,10 +152,9 @@ async function fetchWeather() {
              String(jst.getUTCMonth()+1).padStart(2,'0') + '-' +
              String(jst.getUTCDate()).padStart(2,'0');
     };
-    const nowJst = new Date(Date.now() + 9*60*60*1000);
-    const todayDateStr    = nowJst.getUTCFullYear() + '-' + String(nowJst.getUTCMonth()+1).padStart(2,'0') + '-' + String(nowJst.getUTCDate()).padStart(2,'0');
-    const tomorrowDate    = new Date(nowJst.getTime() + 24*60*60*1000);
-    const tomorrowStr     = tomorrowDate.getUTCFullYear() + '-' + String(tomorrowDate.getUTCMonth()+1).padStart(2,'0') + '-' + String(tomorrowDate.getUTCDate()).padStart(2,'0');
+    // 今日・明日のJST日付文字列（ローカル時刻に依存しない）
+    const todayDateStr = toJstDateStr(Date.now());
+    const tomorrowStr  = toJstDateStr(Date.now() + 24*60*60*1000);
 
     const wrapper = document.getElementById('forecast-wrapper');
     if (wrapper) {
