@@ -145,15 +145,23 @@ async function fetchWeather() {
       return;
     }
 
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowStr = tomorrow.toLocaleDateString();
+    // JSTで日付文字列を生成する関数（タイムゾーン問題を回避）
+    const toJstDateStr = (ms) => {
+      const jst = new Date(ms + 9*60*60*1000);
+      return jst.getUTCFullYear() + '-' +
+             String(jst.getUTCMonth()+1).padStart(2,'0') + '-' +
+             String(jst.getUTCDate()).padStart(2,'0');
+    };
+    const nowJst = new Date(Date.now() + 9*60*60*1000);
+    const todayDateStr    = nowJst.getUTCFullYear() + '-' + String(nowJst.getUTCMonth()+1).padStart(2,'0') + '-' + String(nowJst.getUTCDate()).padStart(2,'0');
+    const tomorrowDate    = new Date(nowJst.getTime() + 24*60*60*1000);
+    const tomorrowStr     = tomorrowDate.getUTCFullYear() + '-' + String(tomorrowDate.getUTCMonth()+1).padStart(2,'0') + '-' + String(tomorrowDate.getUTCDate()).padStart(2,'0');
 
     const wrapper = document.getElementById('forecast-wrapper');
     if (wrapper) {
       const todayHtml = createForecastGroupHtml(d.list.slice(0, 6), "Today's Forecast");
       
-      const tomorrowListSlice = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr).slice(0, 6);
+      const tomorrowListSlice = d.list.filter(item => toJstDateStr(item.dt * 1000) === tomorrowStr).slice(0, 6);
       const tomorrowHtml = createForecastGroupHtml(tomorrowListSlice, "Tomorrow's Plan");
 
       const dailyList = [];
@@ -194,7 +202,7 @@ async function fetchWeather() {
     if (weatherFixed) {
         const today = d.list[0];
         const dayTemps = d.list.slice(0, 8).map(v => v.main.temp);
-        const tomorrowListFull = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr);
+        const tomorrowListFull = d.list.filter(item => toJstDateStr(item.dt * 1000) === tomorrowStr);
 
         // 天気説明文
         const weatherLabel = (type) => ({
