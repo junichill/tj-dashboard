@@ -79,7 +79,7 @@ body {
 
 .center-grid-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 220px;
   grid-template-rows: 220px 1fr;
   gap: 20px;
   height: 100%;

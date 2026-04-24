@@ -145,66 +145,50 @@ async function fetchWeather() {
       return;
     }
 
-    const wrapper = document.getElementById('forecast-wrapper');
-    const todayHtml = createForecastGroupHtml(d.list.slice(0, 6), "Today's Forecast");
-    
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowStr = tomorrow.toLocaleDateString();
-    const tomorrowList = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr).slice(0, 6);
-    const tomorrowHtml = createForecastGroupHtml(tomorrowList, "Tomorrow's Plan");
 
-    // --- 追加：週間天気データ生成（各日のお昼のデータまたは最初のデータを抽出） ---
-    const dailyList = [];
-    const seenDates = new Set();
-    d.list.forEach(item => {
-        const dateStr = new Date(item.dt * 1000).toLocaleDateString();
-        if (!seenDates.has(dateStr)) {
-            const noonItem = d.list.find(x => new Date(x.dt * 1000).toLocaleDateString() === dateStr && new Date(x.dt * 1000).getHours() === 12);
-            dailyList.push(noonItem || item);
-            seenDates.add(dateStr);
-        }
-    });
-    const weekItemsHtml = dailyList.slice(0, 6).map(item => {
-        const date = new Date(item.dt * 1000);
-        const dayStr = (date.getMonth() + 1) + "/" + date.getDate();
-        const temp = Math.round(item.main.temp);
-        const type = getWeatherType(item.weather[0].id);
-        return `<div class="forecast-item"><div class="forecast-time">${dayStr}</div><div class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</div><div class="forecast-temp">${temp}℃</div></div>`;
-    }).join('');
-    const weekHtml = `<div class="day-group"><div class="day-label">— Weekly Forecast —</div><div class="day-items">${weekItemsHtml}</div></div>`;
-    // -------------------------------------------------------------
+    const wrapper = document.getElementById('forecast-wrapper');
+    if (wrapper) {
+      const todayHtml = createForecastGroupHtml(d.list.slice(0, 6), "Today's Forecast");
+      
+      const tomorrowListSlice = d.list.filter(item => new Date(item.dt * 1000).toLocaleDateString() === tomorrowStr).slice(0, 6);
+      const tomorrowHtml = createForecastGroupHtml(tomorrowListSlice, "Tomorrow's Plan");
 
-    // 経済指標用のHTMLブロック
-    const economicScheduleHtml = `
-      <div class="day-group">
-        <div class="day-label">— Economic Calendar —</div>
-        <div id="tv-economic-calendar" style="width:100%; height:200px;"></div>
-      </div>`;
+      const dailyList = [];
+      const seenDates = new Set();
+      d.list.forEach(item => {
+          const dateStr = new Date(item.dt * 1000).toLocaleDateString();
+          if (!seenDates.has(dateStr)) {
+              const noonItem = d.list.find(x => new Date(x.dt * 1000).toLocaleDateString() === dateStr && new Date(x.dt * 1000).getHours() === 12);
+              dailyList.push(noonItem || item);
+              seenDates.add(dateStr);
+          }
+      });
+      const weekItemsHtml = dailyList.slice(0, 6).map(item => {
+          const date = new Date(item.dt * 1000);
+          const dayStr = (date.getMonth() + 1) + "/" + date.getDate();
+          const temp = Math.round(item.main.temp);
+          const type = getWeatherType(item.weather[0].id);
+          return `<div class="forecast-item"><div class="forecast-time">${dayStr}</div><div class="weather-icon weather-${type}">${WEATHER_ICONS[type]}</div><div class="forecast-temp">${temp}℃</div></div>`;
+      }).join('');
+      const weekHtml = `<div class="day-group"><div class="day-label">— Weekly Forecast —</div><div class="day-items">${weekItemsHtml}</div></div>`;
+      const economicScheduleHtml = `<div class="day-group"><div class="day-label">— Economic Calendar —</div><div id="tv-economic-calendar" style="width:100%; height:200px;"></div></div>`;
 
-    // 4項目を結合して表示にセット（今日の天気 ＋ 明日の天気 ＋ 週間天気 ＋ 経済指標）
-    wrapper.innerHTML = todayHtml + tomorrowHtml + weekHtml + economicScheduleHtml;
+      wrapper.innerHTML = todayHtml + tomorrowHtml + weekHtml + economicScheduleHtml;
 
-    // TradingView 経済指標カレンダーのスクリプトを注入
-    const ecoContainer = document.getElementById('tv-economic-calendar');
-    if (ecoContainer && ecoContainer.childElementCount === 0) {
-        const script = document.createElement('script');
-        script.src = "https://s3.tradingview.com/external-embedding/embed-widget-events.js";
-        script.async = true;
-        script.innerHTML = JSON.stringify({
-          "colorTheme": "dark",
-          "isTransparent": true,
-          "width": "100%",
-          "height": "100%",
-          "locale": "ja",
-          "importanceFilter": "-1,0,1",
-          "currencyFilter": "JPY,USD,EUR"
-        });
-        ecoContainer.appendChild(script);
+      const ecoContainer = document.getElementById('tv-economic-calendar');
+      if (ecoContainer && ecoContainer.childElementCount === 0) {
+          const script = document.createElement('script');
+          script.src = "https://s3.tradingview.com/external-embedding/embed-widget-events.js";
+          script.async = true;
+          script.innerHTML = JSON.stringify({ "colorTheme": "dark", "isTransparent": true, "width": "100%", "height": "100%", "locale": "ja", "importanceFilter": "-1,0,1", "currencyFilter": "JPY,USD,EUR" });
+          ecoContainer.appendChild(script);
+      }
+      weatherSlideIndex = 0;
+      wrapper.style.transform = `translateY(0px)`;
     }
-
-    weatherSlideIndex = 0;
-    wrapper.style.transform = `translateY(0px)`;
 
     const weatherFixed = document.getElementById('weather-fixed-content');
     if (weatherFixed) {
