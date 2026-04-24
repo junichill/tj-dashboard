@@ -140,7 +140,10 @@ async function fetchWeather() {
   try {
     const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=ja`);
     const d = await r.json();
-    if (!d || !d.list) return;
+    if (!d || !d.list) {
+      showWeatherError('データ取得失敗: ' + (d && d.message ? d.message : 'list未取得'));
+      return;
+    }
 
     const wrapper = document.getElementById('forecast-wrapper');
     const todayHtml = createForecastGroupHtml(d.list.slice(0, 6), "Today's Forecast");
@@ -302,7 +305,16 @@ async function fetchWeather() {
         if (today && today.weather[0]) updateWeatherBackground(today.weather[0].id);
     }
     startWeatherCycle();
-  } catch (err) { console.error('Weather/Market Fetch Error:', err); }
+  } catch (err) {
+    showWeatherError('通信エラー: ' + err.message);
+    console.error('Weather/Market Fetch Error:', err);
+  }
+}
+
+function showWeatherError(msg) {
+  const weatherFixed = document.getElementById('weather-fixed-content');
+  if (!weatherFixed) return;
+  weatherFixed.innerHTML = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);font-size:12px;font-family:monospace;padding:10px;text-align:center;">${msg}</div>`;
 }
 
 let forexVIndex = 0;
@@ -743,21 +755,42 @@ function initTopRightPanel() {
         <div class="tse-monitor-container">
             <div class="tse-header">
                 <span>日経平均株価</span>
-                <span>NIKKEI 225</span>
+                <span>Nikkei 225</span>
             </div>
             <div class="tse-main-content">
+                <div class="tse-labels">
+                    <div class="tse-label-group">
+                        <span class="tse-jp-text">現在値</span>
+                        <span class="tse-en-text">Current</span>
+                    </div>
+                    <div class="tse-label-group">
+                        <span class="tse-jp-text">前日比</span>
+                        <span class="tse-en-text">Change</span>
+                    </div>
+                    <div class="tse-label-group">
+                        <span class="tse-jp-text">始値</span>
+                        <span class="tse-en-text">Open</span>
+                    </div>
+                    <div class="tse-label-group">
+                        <span class="tse-jp-text">高値</span>
+                        <span class="tse-en-text">High</span>
+                    </div>
+                    <div class="tse-label-group">
+                        <span class="tse-jp-text">安値</span>
+                        <span class="tse-en-text">Low</span>
+                    </div>
+                </div>
                 <div class="tse-data-area">
                     <div class="tse-price-box" id="tse-priceBox">
-                        <span class="tse-price-label">現在値 Current</span>
                         <span class="tse-price-num" id="tse-pNum">--</span>
                     </div>
                     <div class="tse-change-box" id="tse-changeBox">
-                        <span class="tse-change-num" id="tse-cNum">前日比 --</span>
+                        <span class="tse-change-num" id="tse-cNum">--</span>
                     </div>
                     <div class="tse-sub-stats-table">
-                        <div class="tse-stat-row"><span>始値 Open</span><span class="tse-stat-val" id="tse-open">--</span></div>
-                        <div class="tse-stat-row"><span>高値 High</span><span class="tse-stat-val" id="tse-high">--</span></div>
-                        <div class="tse-stat-row"><span>安値 Low</span><span class="tse-stat-val" id="tse-low">--</span></div>
+                        <div class="tse-stat-row"><span class="tse-stat-val" id="tse-open">--</span></div>
+                        <div class="tse-stat-row"><span class="tse-stat-val" id="tse-high">--</span></div>
+                        <div class="tse-stat-row"><span class="tse-stat-val" id="tse-low">--</span></div>
                     </div>
                 </div>
             </div>
