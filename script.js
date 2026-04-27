@@ -235,65 +235,115 @@ async function fetchWeather() {
         const todayLabel    = `${now.getMonth()+1}/${now.getDate()}(${days[now.getDay()]})`;
         const tomorrowLabel = `${tomObj.getMonth()+1}/${tomObj.getDate()}(${days[tomObj.getDay()]})`;
 
-        // 時間別予報（今日の3時間毎）
-        const hourlyHtml = d.list.slice(0, 5).map(item => {
-            const h = new Date(item.dt * 1000).getHours();
-            const t = Math.round(item.main.temp);
+        // 時間別予報（今後6コマ）
+        const hourlyItems = (todayListFull.length >= 4 ? todayListFull : d.list).slice(0, 6).map((item, i) => {
+            const h    = new Date(item.dt * 1000).getHours();
+            const t    = Math.round(item.main.temp);
+            const pop  = Math.round((item.pop || 0) * 100);
             const type = getWeatherType(item.weather[0].id);
-            return `<div class="yw-hourly-item">
-                <div class="yw-hourly-time">${String(h).padStart(2,'0')}時</div>
-                <div class="yw-hourly-icon weather-${type}">${WEATHER_ICONS[type]}</div>
-                <div class="yw-hourly-temp">${t}°</div>
+            return { h, t, pop, type };
+        });
+
+        // 気温バーの最大最小（時間別グラフ用）
+        const hourTemps = hourlyItems.map(x => x.t);
+        const hMax = Math.max(...hourTemps), hMin = Math.min(...hourTemps);
+        const barH = (t) => hMax === hMin ? 50 : Math.round(20 + ((t - hMin) / (hMax - hMin)) * 60);
+
+        const hourlyHtml = hourlyItems.map(({h, t, pop, type}, i) => {
+            const bh = barH(t);
+            const isRain = pop >= 30;
+            return `<div class="wx-h-col">
+              <div class="wx-h-temp">${t}°</div>
+              <div class="wx-h-bar-wrap">
+                <div class="wx-h-bar" style="height:${bh}px; animation-delay:${i*80}ms"></div>
+                ${isRain ? `<div class="wx-h-rain" style="height:${bh}px; animation-delay:${i*80}ms"></div>` : ''}
+              </div>
+              <div class="wx-h-icon weather-${type}">${WEATHER_ICONS[type]}</div>
+              <div class="wx-h-time">${String(h).padStart(2,'0')}</div>
+              <div class="wx-h-pop${isRain?' wx-h-pop-on':''}">${pop}%</div>
             </div>`;
         }).join('');
 
+        // 明日
+        const tomType = tomorrowListFull.length ? getWeatherType(tomorrowListFull[0].weather[0].id) : 'sunny';
+        const hiDiff  = typeof tomHi === 'number' && typeof todayHi === 'number' ? tomHi - todayHi : null;
+        const loDiff  = typeof tomLo === 'number' && typeof todayLo === 'number' ? tomLo - todayLo : null;
+        const diffTag = (d, label) => {
+            if (d === null) return '';
+            const cls = d > 0 ? 'wx-diff-up' : d < 0 ? 'wx-diff-dn' : 'wx-diff-eq';
+            const sym = d > 0 ? '▲' : d < 0 ? '▼' : '—';
+            return `<div class="wx-tom-diff-row"><span class="wx-tom-diff-label">${label}</span><span class="${cls}">${sym}${Math.abs(d)}°</span></div>`;
+        };
+
+        // 降水確率リング SVG
+        const ringPct = tomorrowPop;
+        const r = 22, circ = 2 * Math.PI * r;
+        const dash = (circ * ringPct / 100).toFixed(1);
+
         weatherFixed.innerHTML = `
-        <div id="yw-panel">
-          <!-- 左: 今日 -->
-          <div class="yw-day-card yw-today">
-            <div class="yw-day-label">今日 <span class="yw-date">${todayLabel}</span></div>
-            <div class="yw-main-row">
-              <div class="yw-icon-wrap weather-${todayType}">${WEATHER_ICONS[todayType]}</div>
-              <div class="yw-temps">
-                <span class="yw-hi">${todayHi}°</span>
-                <span class="yw-sep">/</span>
-                <span class="yw-lo">${todayLo}°</span>
-              </div>
+        <div id="wx-panel">
+
+          <!-- LEFT: 今日 -->
+          <div id="wx-main">
+            <div class="wx-eyebrow">
+              <span class="wx-badge">TODAY</span>
+              <span class="wx-date-lbl">${todayLabel}</span>
             </div>
-            <div class="yw-desc-row">
-              <span class="yw-label">${weatherLabel(todayType)}</span>
-              <span class="yw-pop">☂ ${todayPop}%</span>
+            <div class="wx-icon-giant weather-${todayType}">${WEATHER_ICONS[todayType]}</div>
+            <div class="wx-temp-block">
+              <span class="wx-hi">${todayHi}°</span>
+              <span class="wx-lo-inline">${todayLo}°</span>
             </div>
-            <div class="yw-divider"></div>
-            <div class="yw-hourly">${hourlyHtml}</div>
+            <div class="wx-desc-line">${weatherLabel(todayType)}</div>
+            <div class="wx-meta-grid">
+              <div class="wx-meta-item"><span class="wx-meta-val">${Math.round((today.pop||0)*100)}%</span><span class="wx-meta-label">降水</span></div>
+              <div class="wx-meta-item"><span class="wx-meta-val">${Math.round(today.main.feels_like)}°</span><span class="wx-meta-label">体感</span></div>
+              <div class="wx-meta-item"><span class="wx-meta-val">${today.main.humidity}%</span><span class="wx-meta-label">湿度</span></div>
+              <div class="wx-meta-item"><span class="wx-meta-val">${Math.round((today.wind?.speed||0)*3.6)}</span><span class="wx-meta-label">km/h</span></div>
+            </div>
           </div>
 
-          <!-- 右: 明日 -->
-          <div class="yw-day-card yw-tomorrow">
-            <div class="yw-day-label">明日 <span class="yw-date">${tomorrowLabel}</span></div>
-            <div class="yw-main-row">
-              <div class="yw-icon-wrap weather-${tomorrowType}">${WEATHER_ICONS[tomorrowType]}</div>
-              <div class="yw-temps">
-                <span class="yw-hi">${tomHi}°</span>
-                <span class="yw-sep">/</span>
-                <span class="yw-lo">${tomLo}°</span>
+          <div class="wx-divider-v"></div>
+
+          <!-- CENTER: 時間別バーグラフ -->
+          <div id="wx-hourly">
+            <div class="wx-section-label">HOURLY</div>
+            <div class="wx-h-chart">${hourlyHtml}</div>
+          </div>
+
+          <div class="wx-divider-v"></div>
+
+          <!-- RIGHT: 明日 -->
+          <div id="wx-tomorrow">
+            <div class="wx-eyebrow">
+              <span class="wx-badge wx-badge-dim">TOMORROW</span>
+              <span class="wx-date-lbl">${tomorrowLabel}</span>
+            </div>
+            <div class="wx-tom-main">
+              <div class="wx-tom-icon weather-${tomType}">${WEATHER_ICONS[tomType]}</div>
+              <div class="wx-tom-temps-block">
+                <span class="wx-hi wx-hi-sm">${tomHi}°</span>
+                <span class="wx-lo-inline wx-lo-sm">${tomLo}°</span>
               </div>
             </div>
-            <div class="yw-desc-row">
-              <span class="yw-label">${weatherLabel(tomorrowType)}</span>
-              <span class="yw-pop">☂ ${tomorrowPop}%</span>
+            <div class="wx-tom-label">${weatherLabel(tomType)}</div>
+            <div class="wx-ring-wrap">
+              <svg class="wx-ring" viewBox="0 0 60 60">
+                <circle cx="30" cy="30" r="${r}" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="5"/>
+                <circle cx="30" cy="30" r="${r}" fill="none" stroke="#74b9ff" stroke-width="5"
+                  stroke-dasharray="${dash} ${circ}"
+                  stroke-dashoffset="${circ * 0.25}"
+                  stroke-linecap="round"/>
+                <text x="30" y="34" text-anchor="middle" fill="#fff" font-size="11" font-weight="700" font-family="JetBrains Mono">${ringPct}%</text>
+              </svg>
+              <span class="wx-ring-label">降水確率</span>
             </div>
-            <div class="yw-diff-row">
-              <span class="yw-diff-label">最高</span>
-              <span class="yw-diff ${tomHi > todayHi ? 'diff-up' : tomHi < todayHi ? 'diff-dn' : 'diff-eq'}">
-                ${tomHi > todayHi ? '▲' : tomHi < todayHi ? '▼' : '─'}${Math.abs(tomHi - todayHi)}°
-              </span>
-              <span class="yw-diff-label">最低</span>
-              <span class="yw-diff ${tomLo > todayLo ? 'diff-up' : tomLo < todayLo ? 'diff-dn' : 'diff-eq'}">
-                ${tomLo > todayLo ? '▲' : tomLo < todayLo ? '▼' : '─'}${Math.abs(tomLo - todayLo)}°
-              </span>
+            <div class="wx-tom-diffs">
+              ${diffTag(hiDiff, '最高')}
+              ${diffTag(loDiff, '最低')}
             </div>
           </div>
+
         </div>`;
 
         if (today && today.weather[0]) updateWeatherBackground(today.weather[0].id);

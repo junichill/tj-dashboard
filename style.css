@@ -197,171 +197,325 @@ body {
    5. 中央パネルコンテンツ (天気・トレンド)
    ========================================= */
 
-/* --- 天気表示 (左上) --- Yahoo風 横並び2カラム */
+/* --- 天気表示 (左上) --- 気象衛星モニタースタイル */
 #weather-fixed-content {
   position: absolute;
   inset: 0;
   overflow: hidden;
+  background-color: #03080f;
   background-size: cover;
   background-position: center;
-  background-color: #0a1628;
 }
 
 #weather-fixed-content::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.65) 100%);
+  background: linear-gradient(135deg,
+    rgba(2,8,20,0.80) 0%,
+    rgba(4,12,28,0.70) 60%,
+    rgba(2,6,18,0.85) 100%);
   z-index: 0;
   pointer-events: none;
 }
 
-/* Yahoo風パネル本体 */
-#yw-panel {
+/* ノイズテクスチャ風の細かいグリッドライン */
+#weather-fixed-content::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
+  background-size: 24px 24px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* 3カラム本体 */
+#wx-panel {
   position: absolute;
   inset: 0;
   z-index: 1;
   display: flex;
+  align-items: stretch;
 }
 
-.yw-day-card {
+/* 縦区切り線 */
+.wx-divider-v {
+  width: 1px;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(0,212,255,0.15) 20%,
+    rgba(0,212,255,0.15) 80%,
+    transparent 100%);
+  flex-shrink: 0;
+  margin: 12px 0;
+}
+
+/* バッジ */
+.wx-badge {
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.3em;
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+  background: rgba(0,212,255,0.1);
+  border: 1px solid rgba(0,212,255,0.25);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.wx-badge-dim { color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
+
+.wx-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.wx-date-lbl {
+  font-size: 10px;
+  color: rgba(255,255,255,0.3);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.08em;
+}
+
+.wx-section-label {
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.35em;
+  color: rgba(255,255,255,0.3);
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+/* ---- LEFT: 今日 (40%) ---- */
+#wx-main {
+  flex: 0 0 40%;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 16px 12px 18px;
+  gap: 6px;
+}
+
+.wx-icon-giant svg {
+  width: 64px;
+  height: 64px;
+  filter: drop-shadow(0 0 20px rgba(255,220,100,0.3));
+}
+
+.wx-temp-block {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  line-height: 1;
+}
+.wx-hi {
+  font-size: 3rem;
+  font-weight: 200;
+  font-family: 'JetBrains Mono', monospace;
+  color: #ff7675;
+  text-shadow: 0 0 30px rgba(255,118,117,0.4);
+  letter-spacing: -0.02em;
+}
+.wx-lo-inline {
+  font-size: 1.6rem;
+  font-weight: 200;
+  font-family: 'JetBrains Mono', monospace;
+  color: #74b9ff;
+  text-shadow: 0 0 20px rgba(116,185,255,0.4);
+}
+.wx-desc-line {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.12em;
+}
+
+/* 4マスのメタグリッド */
+.wx-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 8px;
+  margin-top: auto;
+}
+.wx-meta-item {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 6px;
+  padding: 5px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.wx-meta-val {
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  color: rgba(255,255,255,0.9);
+  line-height: 1;
+}
+.wx-meta-label {
+  font-size: 8px;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.1em;
+  margin-top: 2px;
+}
+
+/* ---- CENTER: 時間別バーグラフ (38%) ---- */
+#wx-hourly {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 14px 16px 10px;
-  gap: 4px;
+  padding: 14px 12px 10px;
   min-width: 0;
 }
 
-.yw-today {
-  border-right: 1px solid rgba(255,255,255,0.1);
-}
-
-.yw-day-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  color: rgba(255,255,255,0.5);
-  text-transform: uppercase;
-  font-family: 'JetBrains Mono', monospace;
-}
-.yw-date {
-  color: rgba(255,255,255,0.35);
-  font-weight: 400;
-  font-size: 10px;
-}
-
-.yw-main-row {
+.wx-h-chart {
+  flex: 1;
   display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 4px 0;
+  align-items: flex-end;
+  gap: 5px;
+  min-height: 0;
 }
 
-.yw-icon-wrap svg {
-  width: 52px;
-  height: 52px;
-  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.5));
-}
-
-.yw-temps {
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-}
-.yw-hi {
-  font-size: 2.4rem;
-  font-weight: 300;
-  color: #ff6b6b;
-  font-family: 'JetBrains Mono', monospace;
-  text-shadow: 0 0 12px rgba(255,107,107,0.4);
-}
-.yw-sep {
-  font-size: 1.4rem;
-  color: rgba(255,255,255,0.2);
-}
-.yw-lo {
-  font-size: 1.8rem;
-  font-weight: 300;
-  color: #74b9ff;
-  font-family: 'JetBrains Mono', monospace;
-  text-shadow: 0 0 12px rgba(116,185,255,0.4);
-}
-
-.yw-desc-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 2px;
-}
-.yw-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: rgba(255,255,255,0.85);
-  letter-spacing: 0.05em;
-}
-.yw-pop {
-  font-size: 12px;
-  color: #74b9ff;
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.yw-divider {
-  height: 1px;
-  background: rgba(255,255,255,0.08);
-  margin: 6px 0 4px;
-}
-
-/* 時間別予報 */
-.yw-hourly {
-  display: flex;
-  gap: 6px;
-  overflow: hidden;
-}
-.yw-hourly-item {
+.wx-h-col {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  flex: 1;
-}
-.yw-hourly-time {
-  font-size: 9px;
-  color: rgba(255,255,255,0.4);
-  font-family: 'JetBrains Mono', monospace;
-}
-.yw-hourly-icon svg {
-  width: 22px;
-  height: 22px;
-}
-.yw-hourly-temp {
-  font-size: 11px;
-  font-weight: 600;
-  color: rgba(255,255,255,0.8);
-  font-family: 'JetBrains Mono', monospace;
+  gap: 3px;
+  min-width: 0;
 }
 
-/* 明日の前日比 */
-.yw-diff-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: auto;
-  padding-top: 4px;
-}
-.yw-diff-label {
-  font-size: 9px;
-  color: rgba(255,255,255,0.35);
-  font-family: 'JetBrains Mono', monospace;
-}
-.yw-diff {
-  font-size: 12px;
+.wx-h-temp {
+  font-size: 10px;
   font-weight: 700;
   font-family: 'JetBrains Mono', monospace;
+  color: rgba(255,255,255,0.75);
 }
-.diff-up { color: #ff6b6b; }
-.diff-dn { color: #74b9ff; }
-.diff-eq { color: rgba(255,255,255,0.3); }
+
+.wx-h-bar-wrap {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  height: 80px;
+  align-items: flex-end;
+}
+
+.wx-h-bar {
+  width: 70%;
+  background: linear-gradient(to top, rgba(0,212,255,0.6), rgba(0,212,255,0.15));
+  border-radius: 4px 4px 2px 2px;
+  border-top: 1px solid rgba(0,212,255,0.8);
+  animation: wx-bar-grow 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  transform-origin: bottom;
+  transform: scaleY(0);
+}
+@keyframes wx-bar-grow {
+  to { transform: scaleY(1); }
+}
+
+.wx-h-rain {
+  position: absolute;
+  bottom: 0;
+  width: 70%;
+  background: linear-gradient(to top, rgba(116,185,255,0.4), transparent);
+  border-radius: 4px 4px 2px 2px;
+  animation: wx-bar-grow 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  transform: scaleY(0);
+  transform-origin: bottom;
+  mix-blend-mode: screen;
+}
+
+.wx-h-icon svg { width: 18px; height: 18px; }
+
+.wx-h-time {
+  font-size: 9px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.wx-h-pop {
+  font-size: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  color: rgba(255,255,255,0.2);
+}
+.wx-h-pop-on { color: #74b9ff; font-weight: 700; }
+
+/* ---- RIGHT: 明日 (22%) ---- */
+#wx-tomorrow {
+  flex: 0 0 22%;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 14px 12px 12px;
+  gap: 6px;
+}
+
+.wx-tom-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.wx-tom-icon svg { width: 36px; height: 36px; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5)); }
+
+.wx-tom-temps-block {
+  display: flex;
+  flex-direction: column;
+}
+.wx-hi-sm { font-size: 1.5rem; }
+.wx-lo-sm { font-size: 1.1rem; }
+
+.wx-tom-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.1em;
+}
+
+/* 降水確率リング */
+.wx-ring-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  margin-top: auto;
+}
+.wx-ring {
+  width: 56px;
+  height: 56px;
+}
+.wx-ring circle { transition: stroke-dasharray 1s ease; }
+.wx-ring-label {
+  font-size: 8px;
+  color: rgba(255,255,255,0.3);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.08em;
+}
+
+/* 前日比 */
+.wx-tom-diffs {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.wx-tom-diff-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  background: rgba(255,255,255,0.03);
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+.wx-tom-diff-label { color: rgba(255,255,255,0.3); }
+.wx-diff-up { color: #ff7675; font-weight: 700; }
+.wx-diff-dn { color: #74b9ff; font-weight: 700; }
+.wx-diff-eq { color: rgba(255,255,255,0.3); }
 
 /* --- トレンド (右上) --- */
 #trend-fixed-content {
