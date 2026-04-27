@@ -289,12 +289,16 @@ async function fetchWeather() {
               <span class="wx-badge">TODAY</span>
               <span class="wx-date-lbl">${todayLabel}</span>
             </div>
-            <div class="wx-icon-giant weather-${todayType}">${WEATHER_ICONS[todayType]}</div>
-            <div class="wx-temp-block">
-              <span class="wx-hi">${todayHi}°</span>
-              <span class="wx-lo-inline">${todayLo}°</span>
+            <div class="wx-today-row">
+              <div class="wx-icon-giant weather-${todayType}">${WEATHER_ICONS[todayType]}</div>
+              <div style="display:flex;flex-direction:column;gap:2px;justify-content:center;">
+                <div class="wx-temp-block">
+                  <span class="wx-hi">${todayHi}°</span>
+                  <span class="wx-lo-inline">${todayLo}°</span>
+                </div>
+                <div class="wx-desc-line">${weatherLabel(todayType)}</div>
+              </div>
             </div>
-            <div class="wx-desc-line">${weatherLabel(todayType)}</div>
             <div class="wx-meta-grid">
               <div class="wx-meta-item"><span class="wx-meta-val">${Math.round((today.pop||0)*100)}%</span><span class="wx-meta-label">降水</span></div>
               <div class="wx-meta-item"><span class="wx-meta-val">${Math.round(today.main.feels_like)}°</span><span class="wx-meta-label">体感</span></div>
@@ -307,7 +311,7 @@ async function fetchWeather() {
 
           <!-- CENTER: 時間別バーグラフ -->
           <div id="wx-hourly">
-            <div class="wx-section-label">HOURLY</div>
+            <div class="wx-section-label">HOURLY FORECAST</div>
             <div class="wx-h-chart">${hourlyHtml}</div>
           </div>
 
@@ -316,14 +320,14 @@ async function fetchWeather() {
           <!-- RIGHT: 明日 -->
           <div id="wx-tomorrow">
             <div class="wx-eyebrow">
-              <span class="wx-badge wx-badge-dim">TOMORROW</span>
+              <span class="wx-badge wx-badge-dim">TMR</span>
               <span class="wx-date-lbl">${tomorrowLabel}</span>
             </div>
             <div class="wx-tom-main">
               <div class="wx-tom-icon weather-${tomType}">${WEATHER_ICONS[tomType]}</div>
               <div class="wx-tom-temps-block">
-                <span class="wx-hi wx-hi-sm">${tomHi}°</span>
-                <span class="wx-lo-inline wx-lo-sm">${tomLo}°</span>
+                <span class="wx-hi-sm">${tomHi}°</span>
+                <span class="wx-lo-sm">${tomLo}°</span>
               </div>
             </div>
             <div class="wx-tom-label">${weatherLabel(tomType)}</div>
