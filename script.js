@@ -651,8 +651,17 @@ function adjustScale() {
     if (!container) return;
     const baseWidth = 1920, baseHeight = 720;
     const sW = window.innerWidth, sH = window.innerHeight;
-    let scale = Math.min(sW / baseWidth, sH / baseHeight);
+    const scaleW = sW / baseWidth;
+    const scaleH = sH / baseHeight;
+    // 高さが余らないよう、縦基準と横基準の大きい方を使う
+    // ただし両方収まる最大値にする
+    const scale = Math.min(scaleW, scaleH);
+    // 上下中央に配置して隙間を消す
+    const scaledH = baseHeight * scale;
+    const offsetY = Math.max(0, (sH - scaledH) / 2);
     container.style.transform = `scale(${scale})`;
+    container.style.top = offsetY + 'px';
+    container.style.left = '0px';
 }
 window.addEventListener('resize', adjustScale);
 window.addEventListener('load', adjustScale);
